@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <div t-name="stock_barcode.MainComponent" class="o_content o_barcode_client_action" owl="1">
+        <div class="o_barcode_header">
+            <div class="navbar navbar-expand navbar-dark">
+                <nav class="navbar-nav mr-auto">
+                    <button t-on-click="exit" class="o_exit btn nav-link mr-4">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <span class="o_title navbar-text text-white" t-esc="env.model.name"/>
+                </nav>
+                <nav class="navbar-nav">
+                    <t t-if="displayBarcodeApplication">
+                        <button t-if="informationParams" t-on-click="toggleInformation" class="o_show_information btn nav-link">
+                            <i class="fa fa-info-circle"/>
+                        </button>
+                        <button t-if="mobileScanner" class="o_stock_mobile_barcode btn nav-link" t-on-click="openMobileScanner">
+                            <i class="fa fa-barcode"/>
+                        </button>
+                        <button t-on-click="toggleBarcodeActions" class="o_barcode_actions btn nav-link">
+                            <i class="fa fa-cog"/>
+                        </button>
+                    </t>
+                    <button t-else="" t-on-click="toggleBarcodeLines" class="o_close btn nav-link">
+                        <i class="fa fa-times"/>
+                    </button>
+                </nav>
+            </div>
+            <t t-if="displayBarcodeApplication">
+                <div t-if="displayNote" class="alert alert-warning text-left mb-0">
+                    <button type="button" class="close" title="Close" aria-label="Close" t-on-click="hideNote">&#215;</button>
+                    <t t-esc="env.model.record.note"/>
+                </div>
+                <div class="o_barcode_lines_header row bg-800 alert m-0 px-1 "
+                    t-attf-class="{{displayHeaderInfoAsColumn ? 'flex-column justify-content-center align-items-center' : 'justify-content-between'}}">
+                    <div t-if="displayLocations" class="col-12 col-md-8">
+                        <div class="o_barcode_locations">
+                            <t t-if="displaySourceLocation">
+                                <span t-if="isTransfer" class="o_barcode_location_label">From </span>
+                                <span t-if="sourceLocations" t-on-click="toggleSourceSelection"
+                                    class="o_barcode_summary_location_src o_clickable o_barcode_summary_location_highlight"
+                                    t-attf-class="{{highlightSourceLocation ? 'o_strong' : ''}}">
+                                    <span class="o_current_location" t-esc="currentSourceLocation"/>
+                                    <ul t-if="state.displaySourceSelection" class="o_barcode_list_locations o_source_locations">
+                                        <t t-foreach="sourceLocations" t-as="location">
+                                            <LocationButton t-key="location.id" location="location" source="true"/>
+                                        </t>
+                                    </ul>
+                                </span>
+                            </t>
+                            <br t-if="displaySourceLocation &amp;&amp; displayDestinationLocation" class="d-md-none"/>
+                            <span t-if="displayDestinationLocation" class="text-truncate d-block d-md-inline mb-2">
+                                <span class="o_barcode_location_label"> To </span>
+                                <span t-if="destinationLocations" t-on-click="toggleDestinationSelection"
+                                    class="o_barcode_summary_location_dest o_clickable o_barcode_summary_location_highlight"
+                                    t-attf-class="{{highlightDestinationLocation ? 'o_strong' : ''}}">
+                                    <span class="o_current_dest_location" t-esc="currentDestinationLocation"/>
+                                    <ul t-if="state.displayDestinationSelection" class="o_barcode_list_locations o_destination_locations">
+                                        <t t-foreach="destinationLocations" t-as="location">
+                                            <LocationButton t-key="location.id" location="location" source="false"/>
+                                        </t>
+                                    </ul>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="o_barcode_move_number font-weight-bold"
+                            t-esc="currentPageIndex + '/' + numberOfPages"/>
+                    </div>
+                    <div t-if="info.warning" class="o_barcode_pic position-relative text-center mt-2 mb-1">
+                        <i class="fa fa-5x fa-exclamation-triangle"/>
+                    </div>
+                    <div name="barcode_messages" class="col-12 text-left text-md-right" t-attf-class="{{displayLocations? 'col-md-4' : ''}}">
+                        <span class="o_scan_message" t-attf-class="o_scan_message_{{info.class}}">
+                            <span t-if="info.warning" name="warning" class="fa fa-exclamation-triangle mr-1"/>
+                            <t t-esc="info.message"/>
+                        </span>
+                    </div>
+                </div>
+            </t>
+        </div>
+        <div t-if="displayBarcodeLines &amp;&amp; (lines.length || packageLines.length)" class="o_barcode_lines"> <!-- Lines -->
+            <t t-foreach="lines" t-as="line" t-key="line.virtual_id">
+                <GroupedLineComponent t-if="line.lines" line="line" displayUOM="groups.group_uom"/>
+                <LineComponent t-else="" line="line" displayUOM="groups.group_uom"/>
+            </t>
+            <t t-foreach="packageLines" t-as="line" t-key="line.virtual_id">
+                <PackageLineComponent line="line" displayUOM="groups.group_uom"/>
+            </t>
+        </div>
+        <div t-if="displayProductPage"> <!-- Barcode Line Edit Form View -->
+            <ViewsWidgetAdapter Component="ViewsWidget" data="viewsWidgetData"/>
+        </div>
+        <div t-if="displayPackageContent"> <!-- Quants (in package) Kanban View -->
+            <ViewsWidgetAdapter Component="ViewsWidget" data="viewsWidgetDataForPackage"/>
+        </div>
+        <div t-if="displayInformation"> <!-- Picking Form View -->
+            <ViewsWidgetAdapter Component="ViewsWidget" data="informationParams"/>
+        </div>
+        <div t-if="displayBarcodeActions" class="o_barcode_settings flex-column h100 bg-700">
+            <t t-foreach="env.model.printButtons" t-as="button" t-key="button.class">
+                <button class="btn-lg btn btn-dark text-uppercase"
+                    t-attf-class="{{button.class}}" t-esc="button.name"
+                    t-on-click="print(button.action, button.method)"/>
+            </t>
+            <button t-if="env.model.displayCancelButton"
+                t-on-click="cancel"
+                class="o_cancel_operation btn-lg btn btn-dark text-uppercase">
+                Cancel
+            </button>
+        </div>
+        <div t-if="displayBarcodeLines" class="fixed-bottom"> <!-- Footer -->
+            <div class="o_barcode_control o_action_buttons d-flex">
+                <button class="o_add_line btn btn-secondary text-uppercase" t-on-click="openProductPage">
+                    <i class="fa fa-plus mr-1"/> Add Product
+                </button>
+                <button t-if="groups.group_tracking_lot" t-on-click="putInPack" class="o_put_in_pack btn btn-secondary text-uppercase">
+                    <i class="fa fa-cube mr-1"/> Put In Pack
+                </button>
+            </div>
+            <div class="o_barcode_control o_navigation_buttons d-flex">
+                <button t-if="numberOfPages > 1" t-on-click="previousPage"
+                    class="btn btn-secondary text-uppercase o_previous_page">
+                    <i class="fa fa-angle-left mr-1"/> Previous
+                </button>
+                <button t-if="displayNextButton" t-on-click="nextPage"
+                    class="btn text-uppercase o_next_page"
+                    t-attf-class="{{highlightNextButton ? 'btn-primary' : 'btn-secondary'}}">
+                    Next <i class="fa fa-angle-right ml-1"/>
+                </button>
+                <button t-if="env.model.displayValidateButton" t-on-click="validate"
+                    class="btn text-uppercase o_validate_page"
+                    t-att-disabled="!env.model.canBeValidate"
+                    t-attf-class="{{highlightValidateButton ? 'btn-success' : 'btn-secondary'}}">
+                    <i class="fa fa-check mr-1"/> Validate
+                </button>
+                <button t-if="env.model.displayApplyButton" t-on-click="env.model.apply.bind(env.model)"
+                    class="btn text-uppercase o_apply_page"
+                    t-att-disabled="env.model.applyOn === 0"
+                    t-attf-class="{{highlightValidateButton ? 'btn-success' : 'btn-secondary'}}">
+                    <i class="fa fa-check mr-1"/> Apply
+                    <span t-attf-class="{{highlightValidateButton ? '' : 'text-muted'}}">
+                        (<t t-esc="env.model.applyOn"/>)
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</templates>

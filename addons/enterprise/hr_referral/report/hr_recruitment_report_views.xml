@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="hr_recruitment_report_view_dashboard_inherit" model="ir.ui.view">
+            <field name="name">hr.recruitment.report.view.inherit.dashboard</field>
+            <field name="model">hr.recruitment.report</field>
+            <field name="inherit_id" ref="hr_recruitment_reports.hr_recruitment_report_view_dashboard"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@col='4']//group" position="inside">
+                    <aggregate name="has_referrer" string="Referrer People" field="has_referrer" invisible="1"/>
+                    <aggregate name="referral_hired" string="Referred Hired People" field="referral_hired" invisible="1"/>
+                    <formula name="recruitment_referral_rate" string="Referral Rate" value="100 * record.referral_hired / record.has_referrer" value_label="%"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="Calendar.calendar_link_buttons">
+        <div id="scheduling_box" class="mb-3">
+            <div id="message_text" class="pt-2 o_hidden">
+                <p class="mx-2">
+                    Click in your calendar to pick meeting time proposals.
+                </p>
+            </div>
+            <div id="copy_text" class="pt-2 o_hidden">
+                <p class="mx-2">
+                    Link Copied in your clipboard !
+                </p>
+            </div>
+            <span class="o_appointment_scheduling_buttons d-flex px-2">
+                <button class="btn btn-primary o_appointment_create_custom_appointment col-9 mb-2 o_hidden disabled" aria-label="Get Share Link">
+                    Get Share Link
+                </button>
+                <button class="btn btn-primary o_appointment_get_last_copy_link col-9 mb-2 o_hidden" title="Copied !" aria-label="Get Share Link">
+                    Get Share Link
+                </button>
+                <button class="btn btn-secondary o_appointment_discard_slots col-2 ml-auto mb-2 o_hidden" aria-label="Discard">
+                    <i class="fa fa-trash"/>
+                </button>
+                <button class="btn btn-secondary o_appointment_change_display col-2 ml-auto mb-2 o_hidden" aria-label="Discard">
+                    <i class="fa fa-trash"/>
+                </button>
+            </span>
+            <div class="btn-group col px-0 o_appointment_appointment_group_buttons">
+                <button class="btn btn-primary o_appointment_select_slots" aria-label="Share Availabilities" title="Share Availabilities">
+                    Share Availabilities
+                </button>
+                <button id="dropdownAppointmentLink" class="btn btn-primary col-2 dropdown-toggle" data-toggle="dropdown">
+                    <span class="fa fa-2x fa-angle-down"/>
+                </button>
+                <div id="dropdownMenuAppointmentLink" class="dropdown-menu dropdown-menu-right col" data-labelledby="dropdownAppointmentLink">
+                    <t t-foreach="appointments" t-as="appointment">
+                        <button t-if="appointment.category == 'website'" t-att-id="appointment.id"
+                            t-attf-data-url="/calendar/#{appointment.id}#{employee_id ? '?filter_employee_ids=[' + employee_id + ']' : ''}"
+                            class="btn btn-secondary dropdown-item text-uppercase font-weigth-bold pl-3 o_appointment_button_link o_appointment_appointment_link_clipboard text-truncate">
+                            <span class="align-bottom" t-out="appointment.name"/>
+                        </button>
+                    </t>
+                    <button id="search_create_work_hours_appointment"
+                        class="btn btn-secondary dropdown-item text-uppercase font-weigth-bold pl-3 o_appointment_button_link o_appointment_search_create_work_hours_appointment">
+                        <span class="align-bottom">Work Hours</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

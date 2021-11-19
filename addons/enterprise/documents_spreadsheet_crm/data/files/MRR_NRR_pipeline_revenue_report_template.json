@@ -1,0 +1,5030 @@
+{
+  "version": 9,
+  "sheets": [
+    {
+      "id": "a9d3b61d-b996-4144-b391-a1b246e80c9b",
+      "name": "Revenue by Team",
+      "colNumber": 20,
+      "rowNumber": 66,
+      "rows": {},
+      "cols": {
+        "0": { "size": 118.5205078125 },
+        "1": { "size": 96.18310546875 },
+        "2": { "size": 96.18310546875 },
+        "3": { "size": 96.18310546875 },
+        "4": { "size": 96.18310546875 },
+        "5": { "size": 96.18310546875 },
+        "6": { "size": 96.18310546875 },
+        "7": { "size": 96.18310546875 },
+        "8": { "size": 96.18310546875 },
+        "9": { "size": 48 },
+        "10": { "size": 192 },
+        "11": { "size": 123 },
+        "12": { "size": 123 },
+        "13": { "size": 123 },
+        "14": { "size": 123 }
+      },
+      "merges": ["A1:I2", "B3:C3", "D3:E3", "F3:G3", "H3:I3", "A3:A4", "K1:O2"],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "formula": {
+            "text": "=\"Monthly Revenue by Team - \"&FILTER.VALUE(\"Year\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A2": { "style": 1, "content": "" },
+        "B1": { "style": 1, "content": "" },
+        "B2": { "style": 1, "content": "" },
+        "C1": { "style": 1, "content": "" },
+        "C2": { "style": 1, "content": "" },
+        "H1": { "style": 1, "content": "" },
+        "H2": { "style": 1, "content": "" },
+        "I1": { "style": 1, "content": "" },
+        "I2": { "style": 1, "content": "" },
+        "A5": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A6": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A7": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B4": { "style": 4, "content": "MRR" },
+        "C4": { "style": 5, "content": "NRR" },
+        "B5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B6:B7"],
+            "value": "Loading..."
+          }
+        },
+        "B6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C6:C7"],
+            "value": "Loading..."
+          }
+        },
+        "C6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H4": { "style": 4, "content": "MRR" },
+        "I4": { "style": 5, "content": "NRR" },
+        "H5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H6:H7"],
+            "value": "Loading..."
+          }
+        },
+        "H6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I6:I7"],
+            "value": "Loading..."
+          }
+        },
+        "I6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D4": { "style": 4, "content": "MRR" },
+        "E4": { "style": 5, "content": "NRR" },
+        "F4": { "style": 4, "format": "0.00%", "content": "MRR" },
+        "G4": { "style": 5, "format": "0.00%", "content": "NRR" },
+        "D5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D6:D7"],
+            "value": "Loading..."
+          }
+        },
+        "E5": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E6:E7"],
+            "value": "Loading..."
+          }
+        },
+        "F5": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B5", "D5"],
+            "value": "Loading..."
+          }
+        },
+        "G5": {
+          "style": 7,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C5", "E5"],
+            "value": "Loading..."
+          }
+        },
+        "D6": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E6": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F6": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B6", "D6"],
+            "value": "Loading..."
+          }
+        },
+        "G6": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C6", "E6"],
+            "value": "Loading..."
+          }
+        },
+        "D7": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E7": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F7": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B7", "D7"],
+            "value": "Loading..."
+          }
+        },
+        "G7": {
+          "style": 10,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C7", "E7"],
+            "value": "Loading..."
+          }
+        },
+        "J4": { "style": 11, "content": "" },
+        "K4": {
+          "formula": {
+            "text": "=LIST(\"1\",\"1\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L4": {
+          "formula": {
+            "text": "=LIST(\"1\",\"1\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M4": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"1\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N4": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"1\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O4": {
+          "formula": {
+            "text": "=LIST(\"1\",\"1\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "P4": { "style": 11, "content": "" },
+        "A3": { "style": 12, "content": "" },
+        "B3": { "style": 13, "content": "Actuals" },
+        "D3": { "style": 13, "content": "Target" },
+        "F3": { "style": 13, "format": "0.00%", "content": "Performance" },
+        "H3": { "style": 13, "content": "Forecasted" },
+        "J3": { "style": 14, "content": "" },
+        "K3": {
+          "style": 2,
+          "formula": {
+            "text": "=LIST.HEADER(\"1\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L3": {
+          "style": 2,
+          "formula": {
+            "text": "=LIST.HEADER(\"1\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M3": {
+          "style": 2,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST.HEADER(\"1\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N3": {
+          "style": 2,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST.HEADER(\"1\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O3": {
+          "style": 2,
+          "formula": {
+            "text": "=LIST.HEADER(\"1\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "P3": { "style": 14, "content": "" },
+        "D1": { "style": 1, "content": "" },
+        "D2": { "style": 1, "content": "" },
+        "E1": { "style": 1, "content": "" },
+        "E2": { "style": 1, "content": "" },
+        "F1": { "style": 1, "format": "0.00%", "content": "" },
+        "F2": { "style": 1, "format": "0.00%", "content": "" },
+        "G1": { "style": 1, "format": "0.00%", "content": "" },
+        "G2": { "style": 1, "format": "0.00%", "content": "" },
+        "J5": { "style": 15, "content": "" },
+        "K5": {
+          "formula": {
+            "text": "=LIST(\"1\",\"2\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L5": {
+          "formula": {
+            "text": "=LIST(\"1\",\"2\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M5": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"2\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N5": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"2\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O5": {
+          "formula": {
+            "text": "=LIST(\"1\",\"2\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "P5": { "style": 15, "content": "" },
+        "G3": { "style": 13, "format": "0.00%", "content": "" },
+        "A4": { "style": 12, "content": "" },
+        "A8": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A9": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A10": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B9:B10"],
+            "value": "Loading..."
+          }
+        },
+        "B9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C9:C10"],
+            "value": "Loading..."
+          }
+        },
+        "C9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H9:H10"],
+            "value": "Loading..."
+          }
+        },
+        "H9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I9:I10"],
+            "value": "Loading..."
+          }
+        },
+        "I9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D9:D10"],
+            "value": "Loading..."
+          }
+        },
+        "E8": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E9:E10"],
+            "value": "Loading..."
+          }
+        },
+        "F8": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B8", "D8"],
+            "value": "Loading..."
+          }
+        },
+        "G8": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C8", "E8"],
+            "value": "Loading..."
+          }
+        },
+        "D9": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E9": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F9": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B9", "D9"],
+            "value": "Loading..."
+          }
+        },
+        "G9": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C9", "E9"],
+            "value": "Loading..."
+          }
+        },
+        "D10": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E10": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F10": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B10", "D10"],
+            "value": "Loading..."
+          }
+        },
+        "G10": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C10", "E10"],
+            "value": "Loading..."
+          }
+        },
+        "J8": { "style": 15, "content": "" },
+        "K8": {
+          "formula": {
+            "text": "=LIST(\"1\",\"5\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L8": {
+          "formula": {
+            "text": "=LIST(\"1\",\"5\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"5\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"5\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O8": {
+          "formula": {
+            "text": "=LIST(\"1\",\"5\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "P8": { "style": 15, "content": "" },
+        "A11": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A12": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A13": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B12:B13"],
+            "value": "Loading..."
+          }
+        },
+        "B12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C12:C13"],
+            "value": "Loading..."
+          }
+        },
+        "C12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H12:H13"],
+            "value": "Loading..."
+          }
+        },
+        "H12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I12:I13"],
+            "value": "Loading..."
+          }
+        },
+        "I12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D12:D13"],
+            "value": "Loading..."
+          }
+        },
+        "E11": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E12:E13"],
+            "value": "Loading..."
+          }
+        },
+        "F11": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B11", "D11"],
+            "value": "Loading..."
+          }
+        },
+        "G11": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C11", "E11"],
+            "value": "Loading..."
+          }
+        },
+        "D12": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E12": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F12": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B12", "D12"],
+            "value": "Loading..."
+          }
+        },
+        "G12": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C12", "E12"],
+            "value": "Loading..."
+          }
+        },
+        "D13": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E13": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F13": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B13", "D13"],
+            "value": "Loading..."
+          }
+        },
+        "G13": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C13", "E13"],
+            "value": "Loading..."
+          }
+        },
+        "J11": { "style": 15, "content": "" },
+        "K11": {
+          "formula": {
+            "text": "=LIST(\"1\",\"8\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L11": {
+          "formula": {
+            "text": "=LIST(\"1\",\"8\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"8\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"8\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O11": {
+          "formula": {
+            "text": "=LIST(\"1\",\"8\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "P11": { "style": 15, "content": "" },
+        "A14": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A15": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A16": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B15:B16"],
+            "value": "Loading..."
+          }
+        },
+        "B15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C15:C16"],
+            "value": "Loading..."
+          }
+        },
+        "C15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H15:H16"],
+            "value": "Loading..."
+          }
+        },
+        "H15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I15:I16"],
+            "value": "Loading..."
+          }
+        },
+        "I15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D15:D16"],
+            "value": "Loading..."
+          }
+        },
+        "E14": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E15:E16"],
+            "value": "Loading..."
+          }
+        },
+        "F14": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B14", "D14"],
+            "value": "Loading..."
+          }
+        },
+        "G14": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C14", "E14"],
+            "value": "Loading..."
+          }
+        },
+        "D15": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E15": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F15": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B15", "D15"],
+            "value": "Loading..."
+          }
+        },
+        "G15": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C15", "E15"],
+            "value": "Loading..."
+          }
+        },
+        "D16": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E16": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F16": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B16", "D16"],
+            "value": "Loading..."
+          }
+        },
+        "G16": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C16", "E16"],
+            "value": "Loading..."
+          }
+        },
+        "J14": { "style": 15, "content": "" },
+        "K14": { "style": 15, "content": "" },
+        "L14": { "style": 15, "content": "" },
+        "M14": { "style": 15, "content": "" },
+        "N14": { "style": 15, "content": "" },
+        "O14": { "style": 15, "content": "" },
+        "P14": { "style": 15, "content": "" },
+        "A17": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A18": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A19": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B18:B19"],
+            "value": "Loading..."
+          }
+        },
+        "B18": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B19": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C18:C19"],
+            "value": "Loading..."
+          }
+        },
+        "C18": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C19": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H18:H19"],
+            "value": "Loading..."
+          }
+        },
+        "H18": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H19": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I18:I19"],
+            "value": "Loading..."
+          }
+        },
+        "I18": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I19": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D18:D19"],
+            "value": "Loading..."
+          }
+        },
+        "E17": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E18:E19"],
+            "value": "Loading..."
+          }
+        },
+        "F17": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B17", "D17"],
+            "value": "Loading..."
+          }
+        },
+        "G17": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C17", "E17"],
+            "value": "Loading..."
+          }
+        },
+        "D18": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E18": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F18": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B18", "D18"],
+            "value": "Loading..."
+          }
+        },
+        "G18": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C18", "E18"],
+            "value": "Loading..."
+          }
+        },
+        "D19": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E19": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F19": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B19", "D19"],
+            "value": "Loading..."
+          }
+        },
+        "G19": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C19", "E19"],
+            "value": "Loading..."
+          }
+        },
+        "J17": { "style": 15, "content": "" },
+        "K17": {
+          "style": 16,
+          "content": "NB: Make sure the 'Recurring Revenues' feature is enabled in the CRM settings before using this template"
+        },
+        "L17": { "style": 15, "content": "" },
+        "M17": { "style": 15, "content": "" },
+        "N17": { "style": 15, "content": "" },
+        "O17": { "style": 15, "content": "" },
+        "P17": { "style": 15, "content": "" },
+        "A20": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A21": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A22": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B21:B22"],
+            "value": "Loading..."
+          }
+        },
+        "B21": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B22": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C21:C22"],
+            "value": "Loading..."
+          }
+        },
+        "C21": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C22": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H21:H22"],
+            "value": "Loading..."
+          }
+        },
+        "H21": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H22": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I21:I22"],
+            "value": "Loading..."
+          }
+        },
+        "I21": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I22": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D21:D22"],
+            "value": "Loading..."
+          }
+        },
+        "E20": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E21:E22"],
+            "value": "Loading..."
+          }
+        },
+        "F20": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B20", "D20"],
+            "value": "Loading..."
+          }
+        },
+        "G20": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C20", "E20"],
+            "value": "Loading..."
+          }
+        },
+        "D21": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E21": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F21": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B21", "D21"],
+            "value": "Loading..."
+          }
+        },
+        "G21": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C21", "E21"],
+            "value": "Loading..."
+          }
+        },
+        "D22": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E22": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F22": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B22", "D22"],
+            "value": "Loading..."
+          }
+        },
+        "G22": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C22", "E22"],
+            "value": "Loading..."
+          }
+        },
+        "J20": { "style": 15, "content": "" },
+        "K20": { "style": 15, "content": "" },
+        "L20": { "style": 15, "content": "" },
+        "M20": { "style": 15, "content": "" },
+        "N20": { "style": 15, "content": "" },
+        "O20": { "style": 15, "content": "" },
+        "P20": { "style": 15, "content": "" },
+        "A23": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A24": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A25": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B24:B25"],
+            "value": "Loading..."
+          }
+        },
+        "B24": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B25": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C24:C25"],
+            "value": "Loading..."
+          }
+        },
+        "C24": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C25": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H24:H25"],
+            "value": "Loading..."
+          }
+        },
+        "H24": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H25": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I24:I25"],
+            "value": "Loading..."
+          }
+        },
+        "I24": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I25": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D24:D25"],
+            "value": "Loading..."
+          }
+        },
+        "E23": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E24:E25"],
+            "value": "Loading..."
+          }
+        },
+        "F23": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B23", "D23"],
+            "value": "Loading..."
+          }
+        },
+        "G23": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C23", "E23"],
+            "value": "Loading..."
+          }
+        },
+        "D24": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E24": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F24": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B24", "D24"],
+            "value": "Loading..."
+          }
+        },
+        "G24": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C24", "E24"],
+            "value": "Loading..."
+          }
+        },
+        "D25": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E25": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F25": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B25", "D25"],
+            "value": "Loading..."
+          }
+        },
+        "G25": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C25", "E25"],
+            "value": "Loading..."
+          }
+        },
+        "J23": { "style": 15, "content": "" },
+        "K23": { "style": 15, "content": "" },
+        "L23": { "style": 15, "content": "" },
+        "M23": { "style": 15, "content": "" },
+        "N23": { "style": 15, "content": "" },
+        "O23": { "style": 15, "content": "" },
+        "P23": { "style": 15, "content": "" },
+        "A26": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A27": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A28": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B27:B28"],
+            "value": "Loading..."
+          }
+        },
+        "B27": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B28": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C27:C28"],
+            "value": "Loading..."
+          }
+        },
+        "C27": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C28": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H27:H28"],
+            "value": "Loading..."
+          }
+        },
+        "H27": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H28": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I27:I28"],
+            "value": "Loading..."
+          }
+        },
+        "I27": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I28": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D27:D28"],
+            "value": "Loading..."
+          }
+        },
+        "E26": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E27:E28"],
+            "value": "Loading..."
+          }
+        },
+        "F26": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B26", "D26"],
+            "value": "Loading..."
+          }
+        },
+        "G26": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C26", "E26"],
+            "value": "Loading..."
+          }
+        },
+        "D27": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E27": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F27": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B27", "D27"],
+            "value": "Loading..."
+          }
+        },
+        "G27": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C27", "E27"],
+            "value": "Loading..."
+          }
+        },
+        "D28": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E28": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F28": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B28", "D28"],
+            "value": "Loading..."
+          }
+        },
+        "G28": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C28", "E28"],
+            "value": "Loading..."
+          }
+        },
+        "J26": { "style": 15, "content": "" },
+        "K26": { "style": 15, "content": "" },
+        "L26": { "style": 15, "content": "" },
+        "M26": { "style": 15, "content": "" },
+        "N26": { "style": 15, "content": "" },
+        "O26": { "style": 15, "content": "" },
+        "P26": { "style": 15, "content": "" },
+        "A29": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A30": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A31": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B30:B31"],
+            "value": "Loading..."
+          }
+        },
+        "B30": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B31": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C30:C31"],
+            "value": "Loading..."
+          }
+        },
+        "C30": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C31": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H30:H31"],
+            "value": "Loading..."
+          }
+        },
+        "H30": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H31": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I30:I31"],
+            "value": "Loading..."
+          }
+        },
+        "I30": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I31": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D30:D31"],
+            "value": "Loading..."
+          }
+        },
+        "E29": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E30:E31"],
+            "value": "Loading..."
+          }
+        },
+        "F29": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B29", "D29"],
+            "value": "Loading..."
+          }
+        },
+        "G29": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C29", "E29"],
+            "value": "Loading..."
+          }
+        },
+        "D30": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E30": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F30": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B30", "D30"],
+            "value": "Loading..."
+          }
+        },
+        "G30": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C30", "E30"],
+            "value": "Loading..."
+          }
+        },
+        "D31": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E31": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F31": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B31", "D31"],
+            "value": "Loading..."
+          }
+        },
+        "G31": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C31", "E31"],
+            "value": "Loading..."
+          }
+        },
+        "J29": { "style": 15, "content": "" },
+        "K29": { "style": 15, "content": "" },
+        "L29": { "style": 15, "content": "" },
+        "M29": { "style": 15, "content": "" },
+        "N29": { "style": 15, "content": "" },
+        "O29": { "style": 15, "content": "" },
+        "P29": { "style": 15, "content": "" },
+        "A32": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A33": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A34": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B33:B34"],
+            "value": "Loading..."
+          }
+        },
+        "B33": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B34": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C33:C34"],
+            "value": "Loading..."
+          }
+        },
+        "C33": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C34": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H33:H34"],
+            "value": "Loading..."
+          }
+        },
+        "H33": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H34": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I33:I34"],
+            "value": "Loading..."
+          }
+        },
+        "I33": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I34": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D33:D34"],
+            "value": "Loading..."
+          }
+        },
+        "E32": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E33:E34"],
+            "value": "Loading..."
+          }
+        },
+        "F32": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B32", "D32"],
+            "value": "Loading..."
+          }
+        },
+        "G32": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C32", "E32"],
+            "value": "Loading..."
+          }
+        },
+        "D33": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E33": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F33": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B33", "D33"],
+            "value": "Loading..."
+          }
+        },
+        "G33": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C33", "E33"],
+            "value": "Loading..."
+          }
+        },
+        "D34": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E34": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F34": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B34", "D34"],
+            "value": "Loading..."
+          }
+        },
+        "G34": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C34", "E34"],
+            "value": "Loading..."
+          }
+        },
+        "J32": { "style": 15, "content": "" },
+        "K32": { "style": 15, "content": "" },
+        "L32": { "style": 15, "content": "" },
+        "M32": { "style": 15, "content": "" },
+        "N32": { "style": 15, "content": "" },
+        "O32": { "style": 15, "content": "" },
+        "P32": { "style": 15, "content": "" },
+        "A35": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A36": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A37": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B36:B37"],
+            "value": "Loading..."
+          }
+        },
+        "B36": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B37": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C36:C37"],
+            "value": "Loading..."
+          }
+        },
+        "C36": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C37": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H36:H37"],
+            "value": "Loading..."
+          }
+        },
+        "H36": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H37": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I36:I37"],
+            "value": "Loading..."
+          }
+        },
+        "I36": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I37": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D36:D37"],
+            "value": "Loading..."
+          }
+        },
+        "E35": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E36:E37"],
+            "value": "Loading..."
+          }
+        },
+        "F35": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B35", "D35"],
+            "value": "Loading..."
+          }
+        },
+        "G35": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C35", "E35"],
+            "value": "Loading..."
+          }
+        },
+        "D36": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E36": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F36": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B36", "D36"],
+            "value": "Loading..."
+          }
+        },
+        "G36": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C36", "E36"],
+            "value": "Loading..."
+          }
+        },
+        "D37": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E37": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F37": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B37", "D37"],
+            "value": "Loading..."
+          }
+        },
+        "G37": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C37", "E37"],
+            "value": "Loading..."
+          }
+        },
+        "J35": { "style": 15, "content": "" },
+        "K35": { "style": 15, "content": "" },
+        "L35": { "style": 15, "content": "" },
+        "M35": { "style": 15, "content": "" },
+        "N35": { "style": 15, "content": "" },
+        "O35": { "style": 15, "content": "" },
+        "P35": { "style": 15, "content": "" },
+        "A38": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A39": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A40": {
+          "style": 3,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"1\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B39:B40"],
+            "value": "Loading..."
+          }
+        },
+        "B39": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B40": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C39:C40"],
+            "value": "Loading..."
+          }
+        },
+        "C39": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C40": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"expected_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H39:H40"],
+            "value": "Loading..."
+          }
+        },
+        "H39": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H40": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I39:I40"],
+            "value": "Loading..."
+          }
+        },
+        "I39": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I40": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"1\",\"prorated_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"team_id\",PIVOT.POSITION(\"1\",\"team_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "D38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D39:D40"],
+            "value": "Loading..."
+          }
+        },
+        "E38": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E39:E40"],
+            "value": "Loading..."
+          }
+        },
+        "F38": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B38", "D38"],
+            "value": "Loading..."
+          }
+        },
+        "G38": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C38", "E38"],
+            "value": "Loading..."
+          }
+        },
+        "D39": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E39": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F39": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B39", "D39"],
+            "value": "Loading..."
+          }
+        },
+        "G39": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C39", "E39"],
+            "value": "Loading..."
+          }
+        },
+        "D40": { "style": 8, "format": "#,##0.00", "content": "100000" },
+        "E40": { "style": 8, "format": "#,##0.00", "content": "50000" },
+        "F40": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B40", "D40"],
+            "value": "Loading..."
+          }
+        },
+        "G40": {
+          "style": 9,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C40", "E40"],
+            "value": "Loading..."
+          }
+        },
+        "J38": { "style": 15, "content": "" },
+        "K38": { "style": 15, "content": "" },
+        "L38": { "style": 15, "content": "" },
+        "M38": { "style": 15, "content": "" },
+        "N38": { "style": 15, "content": "" },
+        "O38": { "style": 15, "content": "" },
+        "P38": { "style": 15, "content": "" },
+        "A41": { "style": 2, "content": "Total" },
+        "B41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "B5",
+              "B8",
+              "B11",
+              "B14",
+              "B17",
+              "B20",
+              "B23",
+              "B26",
+              "B29",
+              "B32",
+              "B35",
+              "B38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "C41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "C5",
+              "C8",
+              "C11",
+              "C14",
+              "C17",
+              "C20",
+              "C23",
+              "C26",
+              "C29",
+              "C32",
+              "C35",
+              "C38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "H41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "H5",
+              "H8",
+              "H11",
+              "H14",
+              "H17",
+              "H20",
+              "H23",
+              "H26",
+              "H29",
+              "H32",
+              "H35",
+              "H38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "I41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "I5",
+              "I8",
+              "I11",
+              "I14",
+              "I17",
+              "I20",
+              "I23",
+              "I26",
+              "I29",
+              "I32",
+              "I35",
+              "I38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "D41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "D5",
+              "D8",
+              "D11",
+              "D14",
+              "D17",
+              "D20",
+              "D23",
+              "D26",
+              "D29",
+              "D32",
+              "D35",
+              "D38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "E41": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|,|1|,|2|,|3|,|4|,|5|,|6|,|7|,|8|,|9|,|10|,|11|)",
+            "dependencies": [
+              "E5",
+              "E8",
+              "E11",
+              "E14",
+              "E17",
+              "E20",
+              "E23",
+              "E26",
+              "E29",
+              "E32",
+              "E35",
+              "E38"
+            ],
+            "value": "Loading..."
+          }
+        },
+        "F41": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B41", "D41"],
+            "value": "Loading..."
+          }
+        },
+        "G41": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C41", "E41"],
+            "value": "Loading..."
+          }
+        },
+        "K41": { "style": 15, "content": "" },
+        "L41": { "style": 15, "content": "" },
+        "M41": { "style": 15, "content": "" },
+        "N41": { "style": 15, "content": "" },
+        "O41": { "style": 15, "content": "" },
+        "P41": { "style": 15, "content": "" },
+        "F42": { "format": "0.00%", "content": "" },
+        "G42": { "format": "0.00%", "content": "" },
+        "F43": { "format": "0.00%", "content": "" },
+        "G43": { "format": "0.00%", "content": "" },
+        "F44": { "format": "0.00%", "content": "" },
+        "G44": { "format": "0.00%", "content": "" },
+        "F45": { "format": "0.00%", "content": "" },
+        "G45": { "format": "0.00%", "content": "" },
+        "F46": { "format": "0.00%", "content": "" },
+        "G46": { "format": "0.00%", "content": "" },
+        "F47": { "format": "0.00%", "content": "" },
+        "G47": { "format": "0.00%", "content": "" },
+        "F48": { "format": "0.00%", "content": "" },
+        "G48": { "format": "0.00%", "content": "" },
+        "F49": { "format": "0.00%", "content": "" },
+        "G49": { "format": "0.00%", "content": "" },
+        "F50": { "format": "0.00%", "content": "" },
+        "G50": { "format": "0.00%", "content": "" },
+        "F51": { "format": "0.00%", "content": "" },
+        "G51": { "format": "0.00%", "content": "" },
+        "F52": { "format": "0.00%", "content": "" },
+        "G52": { "format": "0.00%", "content": "" },
+        "F53": { "format": "0.00%", "content": "" },
+        "G53": { "format": "0.00%", "content": "" },
+        "F54": { "format": "0.00%", "content": "" },
+        "G54": { "format": "0.00%", "content": "" },
+        "F55": { "format": "0.00%", "content": "" },
+        "G55": { "format": "0.00%", "content": "" },
+        "F56": { "format": "0.00%", "content": "" },
+        "G56": { "format": "0.00%", "content": "" },
+        "F57": { "format": "0.00%", "content": "" },
+        "G57": { "format": "0.00%", "content": "" },
+        "F58": { "format": "0.00%", "content": "" },
+        "G58": { "format": "0.00%", "content": "" },
+        "F59": { "format": "0.00%", "content": "" },
+        "G59": { "format": "0.00%", "content": "" },
+        "F60": { "format": "0.00%", "content": "" },
+        "G60": { "format": "0.00%", "content": "" },
+        "F61": { "format": "0.00%", "content": "" },
+        "G61": { "format": "0.00%", "content": "" },
+        "F62": { "format": "0.00%", "content": "" },
+        "G62": { "format": "0.00%", "content": "" },
+        "F63": { "format": "0.00%", "content": "" },
+        "G63": { "format": "0.00%", "content": "" },
+        "F64": { "format": "0.00%", "content": "" },
+        "G64": { "format": "0.00%", "content": "" },
+        "F65": { "format": "0.00%", "content": "" },
+        "G65": { "format": "0.00%", "content": "" },
+        "F66": { "format": "0.00%", "content": "" },
+        "G66": { "format": "0.00%", "content": "" },
+        "J41": { "style": 15, "content": "" },
+        "C3": { "style": 13, "content": "" },
+        "E3": { "style": 13, "content": "" },
+        "I3": { "style": 13, "content": "" },
+        "K6": {
+          "formula": {
+            "text": "=LIST(\"1\",\"3\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L6": {
+          "formula": {
+            "text": "=LIST(\"1\",\"3\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"3\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"3\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O6": {
+          "formula": {
+            "text": "=LIST(\"1\",\"3\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K7": {
+          "formula": {
+            "text": "=LIST(\"1\",\"4\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L7": {
+          "formula": {
+            "text": "=LIST(\"1\",\"4\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"4\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"4\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O7": {
+          "formula": {
+            "text": "=LIST(\"1\",\"4\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K9": {
+          "formula": {
+            "text": "=LIST(\"1\",\"6\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L9": {
+          "formula": {
+            "text": "=LIST(\"1\",\"6\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"6\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"6\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O9": {
+          "formula": {
+            "text": "=LIST(\"1\",\"6\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K10": {
+          "formula": {
+            "text": "=LIST(\"1\",\"7\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L10": {
+          "formula": {
+            "text": "=LIST(\"1\",\"7\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"7\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"7\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O10": {
+          "formula": {
+            "text": "=LIST(\"1\",\"7\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K12": {
+          "formula": {
+            "text": "=LIST(\"1\",\"9\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L12": {
+          "formula": {
+            "text": "=LIST(\"1\",\"9\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"9\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"9\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O12": {
+          "formula": {
+            "text": "=LIST(\"1\",\"9\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K13": {
+          "formula": {
+            "text": "=LIST(\"1\",\"10\",\"name\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "L13": {
+          "formula": {
+            "text": "=LIST(\"1\",\"10\",\"user_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "M13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"10\",\"expected_revenue\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "N13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=LIST(\"1\",\"10\",\"recurring_revenue_monthly\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "O13": {
+          "formula": {
+            "text": "=LIST(\"1\",\"10\",\"stage_id\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "K15": {
+          "style": 17,
+          "content": "[Click here to go to the pipeline](odoo://view/{\"viewType\":\"kanban\",\"action\":{\"domain\":\"[[\\\"type\\\", \\\"=\\\", \\\"opportunity\\\"]]\",\"context\":{\"group_by\":[]},\"modelName\":\"crm.lead\",\"views\":[[false,\"kanban\"],[false,\"list\"],[false,\"calendar\"],[false,\"pivot\"],[false,\"graph\"],[false,\"cohort\"],[false,\"dashboard\"],[false,\"map\"],[false,\"form\"],[false,\"activity\"]]},\"name\":\"Pipeline\"})"
+        },
+        "Q3": { "style": 14, "content": "" },
+        "Q4": { "style": 11, "content": "" },
+        "Q5": { "style": 15, "content": "" },
+        "Q8": { "style": 15, "content": "" },
+        "Q11": { "style": 15, "content": "" },
+        "Q14": { "style": 15, "content": "" },
+        "Q17": { "style": 15, "content": "" },
+        "Q20": { "style": 15, "content": "" },
+        "Q23": { "style": 15, "content": "" },
+        "Q26": { "style": 15, "content": "" },
+        "Q29": { "style": 15, "content": "" },
+        "Q32": { "style": 15, "content": "" },
+        "Q35": { "style": 15, "content": "" },
+        "Q38": { "style": 15, "content": "" },
+        "Q41": { "style": 15, "content": "" },
+        "S3": { "style": 14, "content": "" },
+        "T3": { "style": 14, "content": "" },
+        "S4": { "style": 11, "content": "" },
+        "T4": { "style": 11, "content": "" },
+        "S5": { "style": 15, "content": "" },
+        "T5": { "style": 15, "content": "" },
+        "S8": { "style": 15, "content": "" },
+        "T8": { "style": 15, "content": "" },
+        "S11": { "style": 15, "content": "" },
+        "T11": { "style": 15, "content": "" },
+        "S14": { "style": 15, "content": "" },
+        "T14": { "style": 15, "content": "" },
+        "S17": { "style": 15, "content": "" },
+        "T17": { "style": 15, "content": "" },
+        "S20": { "style": 15, "content": "" },
+        "T20": { "style": 15, "content": "" },
+        "S23": { "style": 15, "content": "" },
+        "T23": { "style": 15, "content": "" },
+        "S26": { "style": 15, "content": "" },
+        "T26": { "style": 15, "content": "" },
+        "S29": { "style": 15, "content": "" },
+        "T29": { "style": 15, "content": "" },
+        "S32": { "style": 15, "content": "" },
+        "T32": { "style": 15, "content": "" },
+        "S35": { "style": 15, "content": "" },
+        "T35": { "style": 15, "content": "" },
+        "S38": { "style": 15, "content": "" },
+        "T38": { "style": 15, "content": "" },
+        "S41": { "style": 15, "content": "" },
+        "T41": { "style": 15, "content": "" },
+        "R3": { "style": 14, "content": "" },
+        "R4": { "style": 11, "content": "" },
+        "R5": { "style": 15, "content": "" },
+        "R8": { "style": 15, "content": "" },
+        "R11": { "style": 15, "content": "" },
+        "R14": { "style": 15, "content": "" },
+        "R17": { "style": 15, "content": "" },
+        "R20": { "style": 15, "content": "" },
+        "R23": { "style": 15, "content": "" },
+        "R26": { "style": 15, "content": "" },
+        "R29": { "style": 15, "content": "" },
+        "R32": { "style": 15, "content": "" },
+        "R35": { "style": 15, "content": "" },
+        "R38": { "style": 15, "content": "" },
+        "R41": { "style": 15, "content": "" },
+        "K1": { "style": 18, "content": "Top 10 Open Leads" },
+        "K2": { "style": 18, "content": "" },
+        "L1": { "style": 18, "content": "" },
+        "L2": { "style": 18, "content": "" },
+        "M1": { "style": 18, "content": "" },
+        "M2": { "style": 18, "content": "" },
+        "N1": { "style": 18, "content": "" },
+        "N2": { "style": 18, "content": "" },
+        "O1": { "style": 18, "content": "" },
+        "O2": { "style": 18, "content": "" }
+      },
+      "conditionalFormats": [
+        {
+          "id": "90c15d8f-ad16-44df-8e0e-1c2ded5f08d0",
+          "rule": {
+            "type": "ColorScaleRule",
+            "minimum": { "type": "value", "color": 16777215 },
+            "maximum": { "type": "value", "color": 10997900 }
+          },
+          "ranges": [
+            "F5:F41",
+            "G6:G7",
+            "G9:G10",
+            "G12:G13",
+            "G15:G16",
+            "G18:G19",
+            "G21:G22",
+            "G24:G25",
+            "G27:G28",
+            "G30:G31",
+            "G33:G34",
+            "G36:G37",
+            "G39:G40"
+          ]
+        },
+        {
+          "id": "34f710a3-1185-48c5-b68f-5b1c06d100da",
+          "rule": {
+            "type": "ColorScaleRule",
+            "minimum": { "type": "value", "color": 16777215 },
+            "maximum": { "type": "value", "color": 10997900 }
+          },
+          "ranges": ["G5:G41"]
+        }
+      ],
+      "figures": [],
+      "areGridLinesVisible": true
+    },
+    {
+      "id": "cdb44c0b-fcf2-44d0-bd30-307da7e4306c",
+      "name": "Revenue by Salesperson",
+      "colNumber": 22,
+      "rowNumber": 103,
+      "rows": {},
+      "cols": {
+        "0": { "size": 118.5205078125 },
+        "1": { "size": 94.18310546875 },
+        "2": { "size": 94.18310546875 },
+        "3": { "size": 94.18310546875 },
+        "4": { "size": 94.18310546875 },
+        "5": { "size": 94.18310546875 },
+        "6": { "size": 94.18310546875 },
+        "7": { "size": 94.18310546875 },
+        "8": { "size": 94.18310546875 }
+      },
+      "merges": ["A1:I2", "B4:C4", "H4:I4", "D4:E4", "F4:G4", "A3:I3"],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "formula": {
+            "text": "=\"Monthly Revenue by Salesperson - \"&FILTER.VALUE(\"Year\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A2": { "style": 1, "content": "" },
+        "B1": { "style": 1, "content": "" },
+        "B2": { "style": 1, "content": "" },
+        "C1": { "style": 1, "content": "" },
+        "C2": { "style": 1, "content": "" },
+        "H1": { "style": 1, "content": "" },
+        "H2": { "style": 1, "content": "" },
+        "I1": { "style": 1, "content": "" },
+        "I2": { "style": 1, "content": "" },
+        "D1": { "style": 1, "content": "" },
+        "D2": { "style": 1, "content": "" },
+        "E1": { "style": 1, "content": "" },
+        "E2": { "style": 1, "content": "" },
+        "F1": { "style": 1, "format": "0.00%", "content": "" },
+        "F2": { "style": 1, "format": "0.00%", "content": "" },
+        "G1": { "style": 1, "format": "0.00%", "content": "" },
+        "G2": { "style": 1, "format": "0.00%", "content": "" },
+        "A6": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A7": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A8": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A9": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A10": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A11": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A12": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A13": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A14": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A15": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A16": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A17": {
+          "style": 2,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"2\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A18": { "style": 2, "content": "Total" },
+        "B5": { "style": 4, "content": "MRR" },
+        "C5": { "style": 5, "content": "NRR" },
+        "B6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["B6:B17"],
+            "value": "Loading..."
+          }
+        },
+        "C6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"expected_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"),\"won_status\",\"won\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["C6:C17"],
+            "value": "Loading..."
+          }
+        },
+        "A4": {
+          "style": 19,
+          "formula": {
+            "text": "=FILTER.VALUE(\"Salesperson\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B4": { "style": 13, "content": "Actuals" },
+        "C4": { "style": 13, "content": "" },
+        "H5": { "style": 4, "content": "MRR" },
+        "I5": { "style": 5, "content": "NRR" },
+        "H6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"recurring_revenue_monthly_prorated\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "H18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["H6:H17"],
+            "value": "Loading..."
+          }
+        },
+        "I6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"01/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"02/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"03/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"04/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"05/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"06/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"07/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"08/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"09/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"10/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"11/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=PIVOT(\"2\",\"prorated_revenue\",\"date_deadline:month\",\"12/\"&FILTER.VALUE(\"Year\"))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "I18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["I6:I17"],
+            "value": "Loading..."
+          }
+        },
+        "H4": { "style": 13, "content": "Forecasted" },
+        "I4": { "style": 13, "content": "" },
+        "D4": { "style": 13, "content": "Target" },
+        "F4": { "style": 13, "format": "0.00%", "content": "Performance" },
+        "D5": { "style": 4, "content": "MRR" },
+        "E5": { "style": 5, "content": "NRR" },
+        "F5": { "style": 4, "format": "0.00%", "content": "MRR" },
+        "G5": { "style": 5, "format": "0.00%", "content": "NRR" },
+        "D6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B10"],
+            "value": "Loading..."
+          }
+        },
+        "E6": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B10"],
+            "value": "Loading..."
+          }
+        },
+        "F6": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B6", "D6"],
+            "value": "Loading..."
+          }
+        },
+        "G6": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C6", "E6"],
+            "value": "Loading..."
+          }
+        },
+        "D7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B11"],
+            "value": "Loading..."
+          }
+        },
+        "E7": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B11"],
+            "value": "Loading..."
+          }
+        },
+        "F7": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B7", "D7"],
+            "value": "Loading..."
+          }
+        },
+        "G7": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C7", "E7"],
+            "value": "Loading..."
+          }
+        },
+        "D8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B12"],
+            "value": "Loading..."
+          }
+        },
+        "E8": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B12"],
+            "value": "Loading..."
+          }
+        },
+        "F8": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B8", "D8"],
+            "value": "Loading..."
+          }
+        },
+        "G8": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C8", "E8"],
+            "value": "Loading..."
+          }
+        },
+        "D9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B13"],
+            "value": "Loading..."
+          }
+        },
+        "E9": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B13"],
+            "value": "Loading..."
+          }
+        },
+        "F9": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B9", "D9"],
+            "value": "Loading..."
+          }
+        },
+        "G9": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C9", "E9"],
+            "value": "Loading..."
+          }
+        },
+        "D10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B14"],
+            "value": "Loading..."
+          }
+        },
+        "E10": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B14"],
+            "value": "Loading..."
+          }
+        },
+        "F10": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B10", "D10"],
+            "value": "Loading..."
+          }
+        },
+        "G10": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C10", "E10"],
+            "value": "Loading..."
+          }
+        },
+        "D11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B15"],
+            "value": "Loading..."
+          }
+        },
+        "E11": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B15"],
+            "value": "Loading..."
+          }
+        },
+        "F11": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B11", "D11"],
+            "value": "Loading..."
+          }
+        },
+        "G11": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C11", "E11"],
+            "value": "Loading..."
+          }
+        },
+        "D12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B16"],
+            "value": "Loading..."
+          }
+        },
+        "E12": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B16"],
+            "value": "Loading..."
+          }
+        },
+        "F12": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B12", "D12"],
+            "value": "Loading..."
+          }
+        },
+        "G12": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C12", "E12"],
+            "value": "Loading..."
+          }
+        },
+        "D13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B17"],
+            "value": "Loading..."
+          }
+        },
+        "E13": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B17"],
+            "value": "Loading..."
+          }
+        },
+        "F13": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B13", "D13"],
+            "value": "Loading..."
+          }
+        },
+        "G13": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C13", "E13"],
+            "value": "Loading..."
+          }
+        },
+        "D14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B18"],
+            "value": "Loading..."
+          }
+        },
+        "E14": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B18"],
+            "value": "Loading..."
+          }
+        },
+        "F14": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B14", "D14"],
+            "value": "Loading..."
+          }
+        },
+        "G14": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C14", "E14"],
+            "value": "Loading..."
+          }
+        },
+        "D15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B19"],
+            "value": "Loading..."
+          }
+        },
+        "E15": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B19"],
+            "value": "Loading..."
+          }
+        },
+        "F15": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B15", "D15"],
+            "value": "Loading..."
+          }
+        },
+        "G15": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C15", "E15"],
+            "value": "Loading..."
+          }
+        },
+        "D16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B20"],
+            "value": "Loading..."
+          }
+        },
+        "E16": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B20"],
+            "value": "Loading..."
+          }
+        },
+        "F16": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B16", "D16"],
+            "value": "Loading..."
+          }
+        },
+        "G16": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C16", "E16"],
+            "value": "Loading..."
+          }
+        },
+        "D17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,2,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B21"],
+            "value": "Loading..."
+          }
+        },
+        "E17": {
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=vlookup(|0|,|1|,3,false)*|2|",
+            "dependencies": ["$A$4", "Targets!$A$5:$C$7", "Targets!B21"],
+            "value": "Loading..."
+          }
+        },
+        "F17": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B17", "D17"],
+            "value": "Loading..."
+          }
+        },
+        "G17": {
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C17", "E17"],
+            "value": "Loading..."
+          }
+        },
+        "D18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["D6:D17"],
+            "value": "Loading..."
+          }
+        },
+        "E18": {
+          "style": 6,
+          "format": "#,##0.00",
+          "formula": {
+            "text": "=sum(|0|)",
+            "dependencies": ["E6:E17"],
+            "value": "Loading..."
+          }
+        },
+        "F18": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["B18", "D18"],
+            "value": "Loading..."
+          }
+        },
+        "G18": {
+          "style": 6,
+          "format": "0.00%",
+          "formula": {
+            "text": "=iferror(|0|/|1|,0)",
+            "dependencies": ["C18", "E18"],
+            "value": "Loading..."
+          }
+        },
+        "E4": { "style": 13, "content": "" },
+        "G4": { "style": 13, "format": "0.00%", "content": "" },
+        "J4": { "style": 14, "content": "" },
+        "K4": { "style": 14, "content": "" },
+        "L4": { "style": 14, "content": "" },
+        "M4": { "style": 14, "content": "" },
+        "N4": { "style": 14, "content": "" },
+        "O4": { "style": 14, "content": "" },
+        "P4": { "style": 14, "content": "" },
+        "Q4": { "style": 14, "content": "" },
+        "R4": { "style": 14, "content": "" },
+        "S4": { "style": 14, "content": "" },
+        "T4": { "style": 14, "content": "" },
+        "U4": { "style": 14, "content": "" },
+        "V4": { "style": 14, "content": "" },
+        "J5": { "style": 11, "content": "" },
+        "K5": { "style": 11, "content": "" },
+        "L5": { "style": 11, "content": "" },
+        "M5": { "style": 11, "content": "" },
+        "N5": { "style": 11, "content": "" },
+        "O5": { "style": 11, "content": "" },
+        "P5": { "style": 11, "content": "" },
+        "Q5": { "style": 11, "content": "" },
+        "R5": { "style": 11, "content": "" },
+        "S5": { "style": 11, "content": "" },
+        "T5": { "style": 11, "content": "" },
+        "U5": { "style": 11, "content": "" },
+        "V5": { "style": 11, "content": "" },
+        "J18": { "style": 15, "content": "" },
+        "K18": { "style": 15, "content": "" },
+        "L18": { "style": 15, "content": "" },
+        "M18": { "style": 15, "content": "" },
+        "N18": { "style": 15, "content": "" },
+        "O18": { "style": 15, "content": "" },
+        "P18": { "style": 15, "content": "" },
+        "Q18": { "style": 15, "content": "" },
+        "R18": { "style": 15, "content": "" },
+        "S18": { "style": 15, "content": "" },
+        "T18": { "style": 15, "content": "" },
+        "U18": { "style": 15, "content": "" },
+        "V18": { "style": 15, "content": "" },
+        "A5": { "style": 19, "content": "" },
+        "A3": {
+          "style": 20,
+          "content": "Use the \"Salesperson\" filter from the top right icon to get individual actuals/targets"
+        },
+        "J3": { "style": 14, "content": "" },
+        "K3": { "style": 14, "content": "" },
+        "L3": { "style": 14, "content": "" },
+        "M3": { "style": 14, "content": "" },
+        "N3": { "style": 14, "content": "" },
+        "O3": { "style": 14, "content": "" },
+        "P3": { "style": 14, "content": "" },
+        "Q3": { "style": 14, "content": "" },
+        "R3": { "style": 14, "content": "" },
+        "S3": { "style": 14, "content": "" },
+        "T3": { "style": 14, "content": "" },
+        "U3": { "style": 14, "content": "" },
+        "V3": { "style": 14, "content": "" },
+        "B3": { "style": 20, "content": "" },
+        "C3": { "style": 20, "content": "" },
+        "D3": { "style": 20, "content": "" },
+        "E3": { "style": 20, "content": "" },
+        "F3": { "style": 20, "format": "0.00%", "content": "" },
+        "G3": { "style": 20, "format": "0.00%", "content": "" },
+        "H3": { "style": 20, "content": "" },
+        "I3": { "style": 20, "content": "" },
+        "F19": { "format": "0.00%", "content": "" },
+        "G19": { "format": "0.00%", "content": "" },
+        "F20": { "format": "0.00%", "content": "" },
+        "G20": { "format": "0.00%", "content": "" },
+        "F21": { "format": "0.00%", "content": "" },
+        "G21": { "format": "0.00%", "content": "" },
+        "F22": { "format": "0.00%", "content": "" },
+        "G22": { "format": "0.00%", "content": "" },
+        "F23": { "format": "0.00%", "content": "" },
+        "G23": { "format": "0.00%", "content": "" },
+        "F24": { "format": "0.00%", "content": "" },
+        "G24": { "format": "0.00%", "content": "" },
+        "F25": { "format": "0.00%", "content": "" },
+        "G25": { "format": "0.00%", "content": "" },
+        "F26": { "format": "0.00%", "content": "" },
+        "G26": { "format": "0.00%", "content": "" },
+        "F27": { "format": "0.00%", "content": "" },
+        "G27": { "format": "0.00%", "content": "" },
+        "F28": { "format": "0.00%", "content": "" },
+        "G28": { "format": "0.00%", "content": "" },
+        "F29": { "format": "0.00%", "content": "" },
+        "G29": { "format": "0.00%", "content": "" },
+        "F30": { "format": "0.00%", "content": "" },
+        "G30": { "format": "0.00%", "content": "" },
+        "F31": { "format": "0.00%", "content": "" },
+        "G31": { "format": "0.00%", "content": "" },
+        "F32": { "format": "0.00%", "content": "" },
+        "G32": { "format": "0.00%", "content": "" },
+        "F33": { "format": "0.00%", "content": "" },
+        "G33": { "format": "0.00%", "content": "" },
+        "F34": { "format": "0.00%", "content": "" },
+        "G34": { "format": "0.00%", "content": "" },
+        "F35": { "format": "0.00%", "content": "" },
+        "G35": { "format": "0.00%", "content": "" },
+        "F36": { "format": "0.00%", "content": "" },
+        "G36": { "format": "0.00%", "content": "" },
+        "F37": { "format": "0.00%", "content": "" },
+        "G37": { "format": "0.00%", "content": "" },
+        "F38": { "format": "0.00%", "content": "" },
+        "G38": { "format": "0.00%", "content": "" },
+        "F39": { "format": "0.00%", "content": "" },
+        "G39": { "format": "0.00%", "content": "" },
+        "F40": { "format": "0.00%", "content": "" },
+        "G40": { "format": "0.00%", "content": "" },
+        "F41": { "format": "0.00%", "content": "" },
+        "G41": { "format": "0.00%", "content": "" },
+        "F42": { "format": "0.00%", "content": "" },
+        "G42": { "format": "0.00%", "content": "" },
+        "F43": { "format": "0.00%", "content": "" },
+        "G43": { "format": "0.00%", "content": "" },
+        "F44": { "format": "0.00%", "content": "" },
+        "G44": { "format": "0.00%", "content": "" },
+        "F45": { "format": "0.00%", "content": "" },
+        "G45": { "format": "0.00%", "content": "" },
+        "F46": { "format": "0.00%", "content": "" },
+        "G46": { "format": "0.00%", "content": "" },
+        "F47": { "format": "0.00%", "content": "" },
+        "G47": { "format": "0.00%", "content": "" },
+        "F48": { "format": "0.00%", "content": "" },
+        "G48": { "format": "0.00%", "content": "" },
+        "F49": { "format": "0.00%", "content": "" },
+        "G49": { "format": "0.00%", "content": "" },
+        "F50": { "format": "0.00%", "content": "" },
+        "G50": { "format": "0.00%", "content": "" },
+        "F51": { "format": "0.00%", "content": "" },
+        "G51": { "format": "0.00%", "content": "" },
+        "F52": { "format": "0.00%", "content": "" },
+        "G52": { "format": "0.00%", "content": "" },
+        "F53": { "format": "0.00%", "content": "" },
+        "G53": { "format": "0.00%", "content": "" },
+        "F54": { "format": "0.00%", "content": "" },
+        "G54": { "format": "0.00%", "content": "" },
+        "F55": { "format": "0.00%", "content": "" },
+        "G55": { "format": "0.00%", "content": "" },
+        "F56": { "format": "0.00%", "content": "" },
+        "G56": { "format": "0.00%", "content": "" },
+        "F57": { "format": "0.00%", "content": "" },
+        "G57": { "format": "0.00%", "content": "" },
+        "F58": { "format": "0.00%", "content": "" },
+        "G58": { "format": "0.00%", "content": "" },
+        "F59": { "format": "0.00%", "content": "" },
+        "G59": { "format": "0.00%", "content": "" },
+        "F60": { "format": "0.00%", "content": "" },
+        "G60": { "format": "0.00%", "content": "" },
+        "F61": { "format": "0.00%", "content": "" },
+        "G61": { "format": "0.00%", "content": "" },
+        "F62": { "format": "0.00%", "content": "" },
+        "G62": { "format": "0.00%", "content": "" },
+        "F63": { "format": "0.00%", "content": "" },
+        "G63": { "format": "0.00%", "content": "" },
+        "F64": { "format": "0.00%", "content": "" },
+        "G64": { "format": "0.00%", "content": "" },
+        "F65": { "format": "0.00%", "content": "" },
+        "G65": { "format": "0.00%", "content": "" },
+        "F66": { "format": "0.00%", "content": "" },
+        "G66": { "format": "0.00%", "content": "" },
+        "F67": { "format": "0.00%", "content": "" },
+        "G67": { "format": "0.00%", "content": "" },
+        "F68": { "format": "0.00%", "content": "" },
+        "G68": { "format": "0.00%", "content": "" },
+        "F69": { "format": "0.00%", "content": "" },
+        "G69": { "format": "0.00%", "content": "" },
+        "F70": { "format": "0.00%", "content": "" },
+        "G70": { "format": "0.00%", "content": "" },
+        "F71": { "format": "0.00%", "content": "" },
+        "G71": { "format": "0.00%", "content": "" },
+        "F72": { "format": "0.00%", "content": "" },
+        "G72": { "format": "0.00%", "content": "" },
+        "F73": { "format": "0.00%", "content": "" },
+        "G73": { "format": "0.00%", "content": "" },
+        "F74": { "format": "0.00%", "content": "" },
+        "G74": { "format": "0.00%", "content": "" },
+        "F75": { "format": "0.00%", "content": "" },
+        "G75": { "format": "0.00%", "content": "" },
+        "F76": { "format": "0.00%", "content": "" },
+        "G76": { "format": "0.00%", "content": "" },
+        "F77": { "format": "0.00%", "content": "" },
+        "G77": { "format": "0.00%", "content": "" },
+        "F78": { "format": "0.00%", "content": "" },
+        "G78": { "format": "0.00%", "content": "" },
+        "F79": { "format": "0.00%", "content": "" },
+        "G79": { "format": "0.00%", "content": "" },
+        "F80": { "format": "0.00%", "content": "" },
+        "G80": { "format": "0.00%", "content": "" },
+        "F81": { "format": "0.00%", "content": "" },
+        "G81": { "format": "0.00%", "content": "" },
+        "F82": { "format": "0.00%", "content": "" },
+        "G82": { "format": "0.00%", "content": "" },
+        "F83": { "format": "0.00%", "content": "" },
+        "G83": { "format": "0.00%", "content": "" },
+        "F84": { "format": "0.00%", "content": "" },
+        "G84": { "format": "0.00%", "content": "" },
+        "F85": { "format": "0.00%", "content": "" },
+        "G85": { "format": "0.00%", "content": "" },
+        "F86": { "format": "0.00%", "content": "" },
+        "G86": { "format": "0.00%", "content": "" },
+        "F87": { "format": "0.00%", "content": "" },
+        "G87": { "format": "0.00%", "content": "" },
+        "F88": { "format": "0.00%", "content": "" },
+        "G88": { "format": "0.00%", "content": "" },
+        "F89": { "format": "0.00%", "content": "" },
+        "G89": { "format": "0.00%", "content": "" },
+        "F90": { "format": "0.00%", "content": "" },
+        "G90": { "format": "0.00%", "content": "" },
+        "F91": { "format": "0.00%", "content": "" },
+        "G91": { "format": "0.00%", "content": "" },
+        "F92": { "format": "0.00%", "content": "" },
+        "G92": { "format": "0.00%", "content": "" },
+        "F93": { "format": "0.00%", "content": "" },
+        "G93": { "format": "0.00%", "content": "" },
+        "F94": { "format": "0.00%", "content": "" },
+        "G94": { "format": "0.00%", "content": "" },
+        "F95": { "format": "0.00%", "content": "" },
+        "G95": { "format": "0.00%", "content": "" },
+        "F96": { "format": "0.00%", "content": "" },
+        "G96": { "format": "0.00%", "content": "" },
+        "F97": { "format": "0.00%", "content": "" },
+        "G97": { "format": "0.00%", "content": "" },
+        "F98": { "format": "0.00%", "content": "" },
+        "G98": { "format": "0.00%", "content": "" },
+        "F99": { "format": "0.00%", "content": "" },
+        "G99": { "format": "0.00%", "content": "" },
+        "F100": { "format": "0.00%", "content": "" },
+        "G100": { "format": "0.00%", "content": "" },
+        "F101": { "format": "0.00%", "content": "" },
+        "G101": { "format": "0.00%", "content": "" },
+        "F102": { "format": "0.00%", "content": "" },
+        "G102": { "format": "0.00%", "content": "" },
+        "F103": { "format": "0.00%", "content": "" },
+        "G103": { "format": "0.00%", "content": "" }
+      },
+      "conditionalFormats": [
+        {
+          "id": "feda389b-2e3e-49ce-a586-4c295b3a2b76",
+          "rule": {
+            "type": "ColorScaleRule",
+            "minimum": { "type": "value", "color": 16777215 },
+            "maximum": { "type": "value", "color": 10997900 }
+          },
+          "ranges": ["F6:F18"]
+        },
+        {
+          "id": "07454173-dbb1-4fac-8d00-359e0bc8244d",
+          "rule": {
+            "type": "ColorScaleRule",
+            "minimum": { "type": "value", "color": 16777215 },
+            "maximum": { "type": "value", "color": 10997900 }
+          },
+          "ranges": ["G6:G18"]
+        }
+      ],
+      "figures": [],
+      "areGridLinesVisible": true
+    },
+    {
+      "id": "9fd67908-cf49-4c7a-aa30-1d9bff8f243f",
+      "name": "Targets",
+      "colNumber": 26,
+      "rowNumber": 95,
+      "rows": {},
+      "cols": {
+        "0": { "size": 115.45166015625 },
+        "1": { "size": 108.3125 },
+        "2": { "size": 108.3125 }
+      },
+      "merges": ["A1:C2", "A3:C3", "A8:B9"],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "formula": {
+            "text": "=\"Monthly Target - \"&FILTER.VALUE(\"Year\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A2": { "style": 1, "content": "" },
+        "B1": { "style": 1, "format": "#,##0.00", "content": "" },
+        "B2": { "style": 1, "format": "#,##0.00", "content": "" },
+        "C1": { "style": 1, "format": "#,##0.00", "content": "" },
+        "C2": { "style": 1, "format": "#,##0.00", "content": "" },
+        "A5": {
+          "style": 21,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"3\",\"user_id\",PIVOT.POSITION(\"3\",\"user_id\",1))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "A6": {
+          "style": 21,
+          "formula": {
+            "text": "=PIVOT.HEADER(\"3\",\"user_id\",PIVOT.POSITION(\"3\",\"user_id\",2))",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "B5": { "format": "#,##0.00", "content": "10000" },
+        "B6": { "format": "#,##0.00", "content": "10000" },
+        "A4": { "style": 2, "content": "" },
+        "B4": { "style": 4, "format": "#,##0.00", "content": "MRR" },
+        "C4": { "style": 5, "format": "#,##0.00", "content": "NRR" },
+        "A3": {
+          "style": 20,
+          "content": "Define the monthly target of each salesperson"
+        },
+        "B3": { "style": 20, "format": "#,##0.00", "content": "" },
+        "C3": { "style": 20, "format": "#,##0.00", "content": "" },
+        "C5": { "format": "#,##0.00", "content": "5000" },
+        "C6": { "format": "#,##0.00", "content": "5000" },
+        "A8": {
+          "style": 1,
+          "formula": {
+            "text": "=\"Monthly Factors - \"&FILTER.VALUE(\"Year\")",
+            "dependencies": [],
+            "value": "Loading..."
+          }
+        },
+        "C8": { "style": 22, "format": "#,##0.00", "content": "" },
+        "C9": { "style": 22, "format": "#,##0.00", "content": "" },
+        "A9": { "style": 1, "content": "" },
+        "B8": { "style": 1, "format": "#,##0.00", "content": "" },
+        "B9": { "style": 1, "format": "#,##0.00", "content": "" },
+        "A10": { "style": 15, "content": "January" },
+        "B10": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A11": { "style": 15, "content": "February" },
+        "B11": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A12": { "style": 15, "content": "March" },
+        "B12": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A13": { "style": 15, "content": "April" },
+        "B13": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A14": { "style": 15, "content": "May" },
+        "B14": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A15": { "style": 15, "content": "June" },
+        "B15": { "style": 8, "format": "#,##0.00", "content": "1.1" },
+        "A16": { "style": 15, "content": "July" },
+        "B16": { "style": 8, "format": "#,##0.00", "content": "0.9" },
+        "A17": { "style": 15, "content": "August" },
+        "B17": { "style": 8, "format": "#,##0.00", "content": "0.9" },
+        "A18": { "style": 15, "content": "September" },
+        "B18": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A19": { "style": 15, "content": "October" },
+        "B19": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "A20": { "style": 15, "content": "November" },
+        "B20": { "style": 8, "format": "#,##0.00", "content": "1.1" },
+        "A21": { "style": 15, "content": "December" },
+        "B21": { "style": 8, "format": "#,##0.00", "content": "1" },
+        "B7": { "format": "#,##0.00", "content": "" },
+        "C7": { "format": "#,##0.00", "content": "" },
+        "C10": { "format": "#,##0.00", "content": "" },
+        "C11": { "format": "#,##0.00", "content": "" },
+        "C12": { "format": "#,##0.00", "content": "" },
+        "C13": { "format": "#,##0.00", "content": "" },
+        "C14": { "format": "#,##0.00", "content": "" },
+        "C15": { "format": "#,##0.00", "content": "" },
+        "C16": { "format": "#,##0.00", "content": "" },
+        "C17": { "format": "#,##0.00", "content": "" },
+        "C18": { "format": "#,##0.00", "content": "" },
+        "C19": { "format": "#,##0.00", "content": "" },
+        "C20": { "format": "#,##0.00", "content": "" },
+        "C21": { "format": "#,##0.00", "content": "" },
+        "B22": { "format": "#,##0.00", "content": "" },
+        "C22": { "format": "#,##0.00", "content": "" },
+        "B23": { "format": "#,##0.00", "content": "" },
+        "C23": { "format": "#,##0.00", "content": "" },
+        "B24": { "format": "#,##0.00", "content": "" },
+        "C24": { "format": "#,##0.00", "content": "" },
+        "B25": { "format": "#,##0.00", "content": "" },
+        "C25": { "format": "#,##0.00", "content": "" },
+        "B26": { "format": "#,##0.00", "content": "" },
+        "C26": { "format": "#,##0.00", "content": "" },
+        "B27": { "format": "#,##0.00", "content": "" },
+        "C27": { "format": "#,##0.00", "content": "" },
+        "B28": { "format": "#,##0.00", "content": "" },
+        "C28": { "format": "#,##0.00", "content": "" },
+        "B29": { "format": "#,##0.00", "content": "" },
+        "C29": { "format": "#,##0.00", "content": "" },
+        "B30": { "format": "#,##0.00", "content": "" },
+        "C30": { "format": "#,##0.00", "content": "" },
+        "B31": { "format": "#,##0.00", "content": "" },
+        "C31": { "format": "#,##0.00", "content": "" },
+        "B32": { "format": "#,##0.00", "content": "" },
+        "C32": { "format": "#,##0.00", "content": "" },
+        "B33": { "format": "#,##0.00", "content": "" },
+        "C33": { "format": "#,##0.00", "content": "" },
+        "B34": { "format": "#,##0.00", "content": "" },
+        "C34": { "format": "#,##0.00", "content": "" },
+        "B35": { "format": "#,##0.00", "content": "" },
+        "C35": { "format": "#,##0.00", "content": "" },
+        "B36": { "format": "#,##0.00", "content": "" },
+        "C36": { "format": "#,##0.00", "content": "" },
+        "B37": { "format": "#,##0.00", "content": "" },
+        "C37": { "format": "#,##0.00", "content": "" },
+        "B38": { "format": "#,##0.00", "content": "" },
+        "C38": { "format": "#,##0.00", "content": "" },
+        "B39": { "format": "#,##0.00", "content": "" },
+        "C39": { "format": "#,##0.00", "content": "" },
+        "B40": { "format": "#,##0.00", "content": "" },
+        "C40": { "format": "#,##0.00", "content": "" },
+        "B41": { "format": "#,##0.00", "content": "" },
+        "C41": { "format": "#,##0.00", "content": "" },
+        "B42": { "format": "#,##0.00", "content": "" },
+        "C42": { "format": "#,##0.00", "content": "" },
+        "B43": { "format": "#,##0.00", "content": "" },
+        "C43": { "format": "#,##0.00", "content": "" },
+        "B44": { "format": "#,##0.00", "content": "" },
+        "C44": { "format": "#,##0.00", "content": "" },
+        "B45": { "format": "#,##0.00", "content": "" },
+        "C45": { "format": "#,##0.00", "content": "" },
+        "B46": { "format": "#,##0.00", "content": "" },
+        "C46": { "format": "#,##0.00", "content": "" },
+        "B47": { "format": "#,##0.00", "content": "" },
+        "C47": { "format": "#,##0.00", "content": "" },
+        "B48": { "format": "#,##0.00", "content": "" },
+        "C48": { "format": "#,##0.00", "content": "" },
+        "B49": { "format": "#,##0.00", "content": "" },
+        "C49": { "format": "#,##0.00", "content": "" },
+        "B50": { "format": "#,##0.00", "content": "" },
+        "C50": { "format": "#,##0.00", "content": "" },
+        "B51": { "format": "#,##0.00", "content": "" },
+        "C51": { "format": "#,##0.00", "content": "" },
+        "B52": { "format": "#,##0.00", "content": "" },
+        "C52": { "format": "#,##0.00", "content": "" },
+        "B53": { "format": "#,##0.00", "content": "" },
+        "C53": { "format": "#,##0.00", "content": "" },
+        "B54": { "format": "#,##0.00", "content": "" },
+        "C54": { "format": "#,##0.00", "content": "" },
+        "B55": { "format": "#,##0.00", "content": "" },
+        "C55": { "format": "#,##0.00", "content": "" },
+        "B56": { "format": "#,##0.00", "content": "" },
+        "C56": { "format": "#,##0.00", "content": "" },
+        "B57": { "format": "#,##0.00", "content": "" },
+        "C57": { "format": "#,##0.00", "content": "" },
+        "B58": { "format": "#,##0.00", "content": "" },
+        "C58": { "format": "#,##0.00", "content": "" },
+        "B59": { "format": "#,##0.00", "content": "" },
+        "C59": { "format": "#,##0.00", "content": "" },
+        "B60": { "format": "#,##0.00", "content": "" },
+        "C60": { "format": "#,##0.00", "content": "" },
+        "B61": { "format": "#,##0.00", "content": "" },
+        "C61": { "format": "#,##0.00", "content": "" },
+        "B62": { "format": "#,##0.00", "content": "" },
+        "C62": { "format": "#,##0.00", "content": "" },
+        "B63": { "format": "#,##0.00", "content": "" },
+        "C63": { "format": "#,##0.00", "content": "" },
+        "B64": { "format": "#,##0.00", "content": "" },
+        "C64": { "format": "#,##0.00", "content": "" },
+        "B65": { "format": "#,##0.00", "content": "" },
+        "C65": { "format": "#,##0.00", "content": "" },
+        "B66": { "format": "#,##0.00", "content": "" },
+        "C66": { "format": "#,##0.00", "content": "" },
+        "B67": { "format": "#,##0.00", "content": "" },
+        "C67": { "format": "#,##0.00", "content": "" },
+        "B68": { "format": "#,##0.00", "content": "" },
+        "C68": { "format": "#,##0.00", "content": "" },
+        "B69": { "format": "#,##0.00", "content": "" },
+        "C69": { "format": "#,##0.00", "content": "" },
+        "B70": { "format": "#,##0.00", "content": "" },
+        "C70": { "format": "#,##0.00", "content": "" },
+        "B71": { "format": "#,##0.00", "content": "" },
+        "C71": { "format": "#,##0.00", "content": "" },
+        "B72": { "format": "#,##0.00", "content": "" },
+        "C72": { "format": "#,##0.00", "content": "" },
+        "B73": { "format": "#,##0.00", "content": "" },
+        "C73": { "format": "#,##0.00", "content": "" },
+        "B74": { "format": "#,##0.00", "content": "" },
+        "C74": { "format": "#,##0.00", "content": "" },
+        "B75": { "format": "#,##0.00", "content": "" },
+        "C75": { "format": "#,##0.00", "content": "" },
+        "B76": { "format": "#,##0.00", "content": "" },
+        "C76": { "format": "#,##0.00", "content": "" },
+        "B77": { "format": "#,##0.00", "content": "" },
+        "C77": { "format": "#,##0.00", "content": "" },
+        "B78": { "format": "#,##0.00", "content": "" },
+        "C78": { "format": "#,##0.00", "content": "" },
+        "B79": { "format": "#,##0.00", "content": "" },
+        "C79": { "format": "#,##0.00", "content": "" },
+        "B80": { "format": "#,##0.00", "content": "" },
+        "C80": { "format": "#,##0.00", "content": "" },
+        "B81": { "format": "#,##0.00", "content": "" },
+        "C81": { "format": "#,##0.00", "content": "" },
+        "B82": { "format": "#,##0.00", "content": "" },
+        "C82": { "format": "#,##0.00", "content": "" },
+        "B83": { "format": "#,##0.00", "content": "" },
+        "C83": { "format": "#,##0.00", "content": "" },
+        "B84": { "format": "#,##0.00", "content": "" },
+        "C84": { "format": "#,##0.00", "content": "" },
+        "B85": { "format": "#,##0.00", "content": "" },
+        "C85": { "format": "#,##0.00", "content": "" },
+        "B86": { "format": "#,##0.00", "content": "" },
+        "C86": { "format": "#,##0.00", "content": "" },
+        "B87": { "format": "#,##0.00", "content": "" },
+        "C87": { "format": "#,##0.00", "content": "" },
+        "B88": { "format": "#,##0.00", "content": "" },
+        "C88": { "format": "#,##0.00", "content": "" },
+        "B89": { "format": "#,##0.00", "content": "" },
+        "C89": { "format": "#,##0.00", "content": "" },
+        "B90": { "format": "#,##0.00", "content": "" },
+        "C90": { "format": "#,##0.00", "content": "" },
+        "B91": { "format": "#,##0.00", "content": "" },
+        "C91": { "format": "#,##0.00", "content": "" },
+        "B92": { "format": "#,##0.00", "content": "" },
+        "C92": { "format": "#,##0.00", "content": "" },
+        "B93": { "format": "#,##0.00", "content": "" },
+        "C93": { "format": "#,##0.00", "content": "" },
+        "B94": { "format": "#,##0.00", "content": "" },
+        "C94": { "format": "#,##0.00", "content": "" },
+        "B95": { "format": "#,##0.00", "content": "" },
+        "C95": { "format": "#,##0.00", "content": "" }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "areGridLinesVisible": true
+    }
+  ],
+  "entities": {},
+  "styles": {
+    "1": {
+      "fillColor": "#deeaf6",
+      "align": "center",
+      "bold": true,
+      "fontSize": 12
+    },
+    "2": { "fillColor": "#f2f2f2", "bold": true },
+    "3": { "fillColor": "#f2f2f2" },
+    "4": {
+      "fillColor": "#e3efd9",
+      "bold": false,
+      "textColor": "#756f6f",
+      "align": "center"
+    },
+    "5": {
+      "fillColor": "#fff2cd",
+      "bold": false,
+      "textColor": "#756f6f",
+      "align": "center"
+    },
+    "6": { "bold": true, "fillColor": "#f3f3f3" },
+    "7": { "bold": true, "fillColor": "#ff9900" },
+    "8": { "fillColor": "#fff2cd" },
+    "9": { "bold": false },
+    "10": { "bold": false, "fillColor": "#ff0000" },
+    "11": { "bold": false, "align": "center" },
+    "12": { "fillColor": "#f2f2f2", "bold": true, "align": "center" },
+    "13": {
+      "fillColor": "#f2f2f2",
+      "bold": true,
+      "textColor": "#756f6f",
+      "align": "center"
+    },
+    "14": { "bold": true, "align": "center" },
+    "15": { "bold": true },
+    "16": { "textColor": "#7f7f7f", "italic": true },
+    "17": { "textColor": "#00f", "underline": true },
+    "18": {
+      "fillColor": "#cfe2f3",
+      "fontSize": 12,
+      "align": "center",
+      "bold": true
+    },
+    "19": {
+      "fillColor": "#f2f2f2",
+      "bold": true,
+      "align": "center",
+      "textColor": "#2f5596"
+    },
+    "20": {
+      "fillColor": "#e3efd9",
+      "bold": false,
+      "align": "center",
+      "italic": true
+    },
+    "21": { "fillColor": "#ffffff", "bold": true },
+    "22": { "fillColor": "#ffffff" }
+  },
+  "borders": {},
+  "revisionId": "d6a9bc37-3dc4-4b3b-be6a-4a4c80a94aaa",
+  "pivots": {
+    "1": {
+      "model": "crm.lead",
+      "rowGroupBys": ["date_deadline:month", "team_id"],
+      "colGroupBys": ["won_status"],
+      "measures": [
+        { "field": "recurring_revenue_monthly", "operator": "sum" },
+        { "field": "expected_revenue", "operator": "sum" },
+        { "field": "recurring_revenue_monthly_prorated", "operator": "sum" },
+        { "field": "prorated_revenue", "operator": "sum" }
+      ],
+      "domain": [
+        "&",
+        ["type", "=", "opportunity"],
+        ["date_deadline", "!=", false]
+      ],
+      "context": {
+        "lang": "en_US",
+        "tz": "Europe/Brussels",
+        "uid": 2,
+        "allowed_company_ids": [1],
+        "default_type": "opportunity",
+        "search_default_assigned_to_me": 1,
+        "default_team_id": 1,
+        "pivot_measures": ["expected_revenue", "prorated_revenue"],
+        "pivot_column_groupby": ["won_status"],
+        "pivot_row_groupby": ["date_deadline:month", "team_id"]
+      },
+      "id": 1,
+      "isLoaded": false,
+      "promise": {}
+    },
+    "2": {
+      "model": "crm.lead",
+      "rowGroupBys": ["date_deadline:month"],
+      "colGroupBys": ["won_status"],
+      "measures": [
+        { "field": "recurring_revenue_monthly", "operator": "sum" },
+        { "field": "expected_revenue", "operator": "sum" },
+        { "field": "recurring_revenue_monthly_prorated", "operator": "sum" },
+        { "field": "prorated_revenue", "operator": "sum" }
+      ],
+      "domain": [
+        "&",
+        ["type", "=", "opportunity"],
+        ["date_deadline", "!=", false]
+      ],
+      "context": {
+        "lang": "en_US",
+        "tz": "Europe/Brussels",
+        "uid": 2,
+        "allowed_company_ids": [1],
+        "default_type": "opportunity",
+        "search_default_assigned_to_me": 1,
+        "default_team_id": 1,
+        "pivot_measures": ["expected_revenue", "prorated_revenue"],
+        "pivot_column_groupby": ["won_status"],
+        "pivot_row_groupby": []
+      },
+      "id": 2,
+      "isLoaded": false,
+      "promise": {}
+    },
+    "3": {
+      "model": "crm.lead",
+      "rowGroupBys": ["user_id"],
+      "colGroupBys": [],
+      "measures": [{ "field": "expected_revenue", "operator": "sum" }],
+      "domain": ["&", ["type", "=", "opportunity"], ["user_id", "!=", false]],
+      "context": {
+        "lang": "en_US",
+        "tz": "Europe/Brussels",
+        "uid": 2,
+        "allowed_company_ids": [1],
+        "default_type": "opportunity",
+        "search_default_assigned_to_me": 1,
+        "default_team_id": 1,
+        "pivot_measures": ["expected_revenue"],
+        "pivot_column_groupby": [],
+        "pivot_row_groupby": ["user_id"]
+      },
+      "id": 3,
+      "isLoaded": false,
+      "promise": {}
+    }
+  },
+  "lists": {
+    "1": {
+      "model": "crm.lead",
+      "domain": [
+        "&",
+        ["type", "=", "opportunity"],
+        ["won_status", "=", "pending"]
+      ],
+      "orderBy": [
+        { "name": "recurring_revenue_monthly", "asc": false },
+        { "name": "expected_revenue", "asc": false }
+      ],
+      "context": {
+        "lang": "en_US",
+        "tz": "Asia/Calcutta",
+        "uid": 2,
+        "allowed_company_ids": [1],
+        "params": {
+          "menu_id": 415,
+          "cids": 1,
+          "action": 578,
+          "model": "crm.lead",
+          "view_type": "list"
+        },
+        "default_type": "opportunity",
+        "search_default_assigned_to_me": 1
+      },
+      "columns": [
+        "name",
+        "contact_name",
+        "email_from",
+        "phone",
+        "company_id",
+        "user_id",
+        "activity_ids",
+        "my_activity_date_deadline",
+        "expected_revenue",
+        "recurring_revenue_monthly",
+        "stage_id"
+      ],
+      "id": "1"
+    }
+  },
+  "globalFilters": [
+    {
+      "id": "86fcd40e-c0b6-41ef-bb8e-3dbc380499bf",
+      "label": "Salesperson",
+      "type": "relation",
+      "rangeType": "year",
+      "fields": {
+        "1": { "field": "user_id", "type": "many2one" },
+        "2": { "field": "user_id", "type": "many2one" }
+      },
+      "defaultValue": [],
+      "modelName": "res.users",
+      "pivotFields": {
+        "1": { "field": "user_id", "type": "many2one" },
+        "2": { "field": "user_id", "type": "many2one" }
+      },
+      "listFields": {}
+    },
+    {
+      "id": "3b1ded51-de6c-48e7-bd53-48609b66a6d1",
+      "label": "Year",
+      "type": "date",
+      "rangeType": "year",
+      "fields": {
+        "1": { "field": "date_deadline", "type": "date" },
+        "2": { "field": "date_deadline", "type": "date" }
+      },
+      "defaultValue": { "year": "this_year" },
+      "pivotFields": {
+        "1": { "field": "date_deadline", "type": "date" },
+        "2": { "field": "date_deadline", "type": "date" }
+      },
+      "listFields": {}
+    }
+  ]
+}

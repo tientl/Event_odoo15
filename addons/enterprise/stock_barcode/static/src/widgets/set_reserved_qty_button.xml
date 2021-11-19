@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stock_barcode.SetReservedQuantityButtonTemplate">
+        <button t-if="widget.qty" type="object"
+            class="o_button_qty_done d-flex btn btn-primary">
+            / <span name="product_uom_qty" class="ml-1" t-esc="widget.qty"/>
+            <span t-if="widget.display_uom" name="product_uom_id" class="text-capitalize ml-1" t-esc="widget.uom"/>
+        </button>
+        <button t-elif="widget.display_uom" type="object" disabled=""
+            class="o_button_qty_done d-flex btn btn-secondary">
+            <span name="product_uom_id" class="text-capitalize ml-1" t-esc="widget.uom"/>
+        </button>
+    </t>
+
+</templates>

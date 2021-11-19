@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="l10n_cl_daily_sales_book_tree" model="ir.ui.view">
+            <field name="name">l10n_cl.daily.sales.book.tree</field>
+            <field name="model">l10n_cl.daily.sales.book</field>
+            <field name="arch" type="xml">
+                <tree edit="0" create="0">
+                    <field name="date"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="l10n_cl_daily_sales_book_form" model="ir.ui.view">
+            <field name="name">l10n_cl.daily.sales.book.form</field>
+            <field name="model">l10n_cl.daily.sales.book</field>
+            <field name="arch" type="xml">
+                <form edit="0" create="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="send_sequence"/>
+                                <field name="company_id"/>
+                            </group>
+                            <group>
+                                <label for="l10n_cl_dte_status"/>
+                                <div attrs="{'invisible': [('l10n_cl_dte_status', '=', False)]}">
+                                    <field name="l10n_cl_dte_status" class="oe_inline" />
+                                    <button name="l10n_cl_send_dte_to_sii" type="object" attrs="{'invisible': [('l10n_cl_dte_status', '!=', 'not_sent')]}" string="⇒ Send Now to SII" class="oe_inline oe_link" groups="base.group_user"/>
+                                    <button name="l10n_cl_verify_dte_status" type="object" attrs="{'invisible': [('l10n_cl_dte_status', '!=', 'ask_for_status')]}" string="⇒ Verify on SII" class="oe_inline oe_link" groups="base.group_user"/>
+                                    <button name="l10n_cl_retry_daily_sales_book_report" type="object" attrs="{'invisible': [('l10n_cl_dte_status', '!=', 'rejected')]}" string="⇒ Retry" class="oe_inline oe_link" groups="base.group_user"/>
+                                </div>
+                                <field name='l10n_cl_sii_send_ident' attrs="{'invisible':[('l10n_cl_sii_send_ident', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Moves">
+                                <field name="move_ids" editable="bottom" widget="many2many_list" options="{'no_create':True}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="o_attachment_preview"/>
+                    <div class="oe_chatter">
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    <record id="action_l10n_daily_sales_book" model="ir.actions.act_window">
+          <field name="name">Daily Sales Book</field>
+          <field name="res_model">l10n_cl.daily.sales.book</field>
+          <field name="view_mode">tree,form</field>
+          <field name="view_id" ref="l10n_cl_daily_sales_book_tree"/>
+    </record>
+
+    <menuitem id="l10n_cl_daily_sales_book_menu"
+              name="Daily Sales Book"
+              parent="l10n_cl.account_reports_cl_statements_menu"
+              sequence="3"
+              action="action_l10n_daily_sales_book"
+              groups="account.group_account_manager"/>
+
+    </data>
+</odoo>

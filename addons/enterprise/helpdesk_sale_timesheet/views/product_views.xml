@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_invoice_policy_inherit_helpdesk" model="ir.ui.view">
+        <field name="name">product.template.timesheet.form.inherit.helpdesk</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sale_project.product_template_form_view_invoice_policy_inherit_sale_project"/>
+        <field name="arch" type="xml">
+            <field name="project_template_id" position="after">
+                <field name="sla_id" attrs="{'invisible': ['|', ('type', '!=', 'service'), ('sale_ok', '=', False)]}" groups="helpdesk.group_use_sla" options="{'no_quick_create': True, 'no_open': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_form_view_invoice_policy_inherit_helpdesk_user" model="ir.ui.view">
+        <field name="name">product.template.timesheet.form.inherit.helpdesk.user</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product_template_form_view_invoice_policy_inherit_helpdesk"/>
+        <field name="groups_id" eval="[(4, ref('helpdesk.group_helpdesk_user'))]"/>
+        <field name="arch" type="xml">
+            <field name="sla_id" position="attributes">
+                <attribute name="options">{'no_quick_create': True}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

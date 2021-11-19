@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="view_move_line_tree_grouped" model="ir.ui.view">
+        <field name="name">view.move.line.tree.inherit.account.accountant</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree_grouped"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">account_move_line_list</attribute>
+            </xpath>
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button name="action_reconcile" type="object" string="Reconcile" groups="account.group_account_user"/>
+                </header>
+            </xpath>
+            <xpath expr="//tree" position= "inside">
+                <field name="move_attachment_ids" invisible="1">
+                    <tree>
+                        <field name="mimetype"/> <!--  We want to fetch the data for using it in the js-->
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_line_tree" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="mode">extension</field>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+               <header>
+                    <button name="action_reconcile" type="object" string="Reconcile" groups="account.group_account_user"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@id='other_tab']//field[@name='fiscal_position_id']" position="after">
+                <field name="inalterable_hash" groups="base.group_no_one"/>
+            </xpath>
+            <xpath expr="//page[@id='other_tab_entry']//field[@name='company_id']" position="after">
+                <field name="inalterable_hash" groups="base.group_no_one"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <!-- Invoice suspense accounts -->
+                <div groups="account.group_account_invoice,account.group_account_readonly" class="alert alert-info" role="alert" style="margin-bottom:0px;"
+                     attrs="{'invisible': ['|', ('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt')), ('invoice_has_matching_suspense_amount','=',False)]}">
+                    You have suspense account moves that match this invoice. <bold><button class="alert-link" type="object" name="action_open_matching_suspense_moves" role="button" string="Check them" style="padding: 0;vertical-align: baseline;"/></bold> to mark this invoice as paid.
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+     <record model="ir.actions.server" id="action_view_account_move_line_reconcile">
+            <field name="name">Reconcile</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="binding_model_id" ref="account.model_account_move_line" />
+            <field name="state">code</field>
+            <field name="groups_id" eval="[(4,ref('account.group_account_user'))]"/>
+            <field name="code">
+if records:
+    action = records.action_reconcile()
+            </field>
+     </record>
+
+     <record id="action_manual_reconcile" model="ir.actions.client">
+         <field name="name">Journal Items to Reconcile</field>
+         <field name="res_model">account.move.line</field>
+         <field name="tag">manual_reconciliation_view</field>
+     </record>
+</odoo>

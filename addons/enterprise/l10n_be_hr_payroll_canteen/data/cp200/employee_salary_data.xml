@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cp200_employees_salary_canteen" model="hr.salary.rule">
+        <field name="category_id" ref="l10n_be_hr_payroll.hr_payroll_head_div_net"/>
+        <field name="name">Canteen Cost</field>
+        <field name="code">CANTEEN</field>
+        <field name="amount_select">code</field>
+        <field name="sequence">173</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.l10n_be_canteen_cost</field>
+        <field name="amount_python_compute">
+result = -contract.l10n_be_canteen_cost
+        </field>
+        <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary"/>
+    </record>
+</odoo>

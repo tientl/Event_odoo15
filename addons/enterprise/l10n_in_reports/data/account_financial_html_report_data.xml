@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="total_tax_payable_l10n_in_report" model="account.financial.html.report">
+        <field name="name">GSTR-3</field>
+        <field name="date_range" eval="1" />
+        <field name='parent_id' ref='l10n_in.account_reports_in_statements_menu'/>
+        <field name="tax_report" eval="1"/>
+        <field name="show_journal_filter" eval="1"/>
+        <field name="country_id" ref="base.in"/>
+    </record>
+
+    <record id="total_output_liability_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Total Output Liability</field>
+        <field name="financial_report_id" ref="total_tax_payable_l10n_in_report"/>
+        <field name="level" eval="0" />
+        <field name="sequence" eval="1"/>
+        <field name="code">TOTALOUTLIA</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">OUTLIASGST + OUTLIACGST + OUTLIAIGST</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="output_liability_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Output Liability</field>
+        <field name="parent_id" ref="total_output_liability_l10n_in_line_0"/>
+        <field name="level" eval="1" />
+        <field name="sequence" eval="1"/>
+        <field name="code">OUTLIA</field>
+        <field name="show_domain">never</field>
+        <field name="formulas"></field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="output_liability_l10n_in_line_0_sgst" model="account.financial.html.report.line">
+        <field name="name">SGST</field>
+        <field name="parent_id" ref="output_liability_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="1"/>
+        <field name="code">OUTLIASGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">-sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('credit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.sgst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="output_liability_l10n_in_line_0_cgst" model="account.financial.html.report.line">
+        <field name="name">CGST</field>
+        <field name="parent_id" ref="output_liability_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="2"/>
+        <field name="code">OUTLIACGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">-sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('credit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.cgst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="output_liability_l10n_in_line_0_igst" model="account.financial.html.report.line">
+        <field name="name">IGST</field>
+        <field name="parent_id" ref="output_liability_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="3"/>
+        <field name="code">OUTLIAIGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">-sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('credit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.igst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+
+    <record id="total_input_tax_credit_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Total Input Tax Credit</field>
+        <field name="financial_report_id" ref="total_tax_payable_l10n_in_report"/>
+        <field name="level" eval="0" />
+        <field name="sequence" eval="2"/>
+        <field name="code">TOTALINTAXCREDIT</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">INTAXCREDITSGST + INTAXCREDITCGST + INTAXCREDITIGST</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="input_tax_credit_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Input Tax Credit</field>
+        <field name="parent_id" ref="total_input_tax_credit_l10n_in_line_0"/>
+        <field name="level" eval="1" />
+        <field name="sequence" eval="2"/>
+        <field name="code">INTAXCREDIT</field>
+        <field name="show_domain">never</field>
+        <field name="formulas"></field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="input_tax_credit_l10n_in_line_0_sgst" model="account.financial.html.report.line">
+        <field name="name">SGST</field>
+        <field name="parent_id" ref="input_tax_credit_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="1"/>
+        <field name="code">INTAXCREDITSGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('debit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.sgst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="input_tax_credit_l10n_in_line_0_cgst" model="account.financial.html.report.line">
+        <field name="name">CGST</field>
+        <field name="parent_id" ref="input_tax_credit_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="2"/>
+        <field name="code">INTAXCREDITCGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('debit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.cgst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="input_tax_credit_l10n_in_line_0_igst" model="account.financial.html.report.line">
+        <field name="name">IGST</field>
+        <field name="parent_id" ref="input_tax_credit_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="3"/>
+        <field name="code">INTAXCREDITIGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="groupby">account_id</field>
+        <field name="show_domain">foldable</field>
+        <field name="domain" eval="[('debit', '>', 0.0), ('account_id.tag_ids', 'in', [ref('l10n_in.igst_tag_account')])]" />
+        <field name="special_date_changer">strict_range</field>
+    </record>
+
+    <record id="total_tax_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Total Tax Balance (Output Liability - Input Tax Credit)</field>
+        <field name="financial_report_id" ref="total_tax_payable_l10n_in_report"/>
+        <field name="level" eval="0" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TOTALTAXOLITC</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">TAXOLITCSGST + TAXOLITCCGST + TAXOLITCIGST</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="tax_olitc_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Tax Balance (Output Liability - Input Tax Credit)</field>
+        <field name="parent_id" ref="total_tax_l10n_in_line_0"/>
+        <field name="level" eval="1" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TAXOLITC</field>
+        <field name="show_domain">never</field>
+        <field name="formulas"></field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="tax_olitc_l10n_in_line_0_sgst" model="account.financial.html.report.line">
+        <field name="name">SGST</field>
+        <field name="parent_id" ref="tax_olitc_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="1"/>
+        <field name="code">TAXOLITCSGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_in.sgst_tag_account')])]" />
+    </record>
+    <record id="tax_olitc_l10n_in_line_0_cgst" model="account.financial.html.report.line">
+        <field name="name">CGST</field>
+        <field name="parent_id" ref="tax_olitc_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="2"/>
+        <field name="code">TAXOLITCCGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_in.cgst_tag_account')])]" />
+    </record>
+    <record id="tax_olitc_l10n_in_line_0_igst" model="account.financial.html.report.line">
+        <field name="name">IGST</field>
+        <field name="parent_id" ref="tax_olitc_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TAXOLITCIGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">- sum</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_in.igst_tag_account')])]" />
+    </record>
+
+    <record id="total_amount_payable_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Total Tax Payable</field>
+        <field name="financial_report_id" ref="total_tax_payable_l10n_in_report"/>
+        <field name="level" eval="0" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TOTALTAXPAY</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">TAXPAYSGST + TAXPAYCGST + TAXPAYIGST</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="amount_payable_l10n_in_line_0" model="account.financial.html.report.line">
+        <field name="name">Tax Payable</field>
+        <field name="parent_id" ref="total_amount_payable_l10n_in_line_0"/>
+        <field name="level" eval="1" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TAXPAY</field>
+        <field name="show_domain">never</field>
+        <field name="formulas"></field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="amount_payable_l10n_in_line_0_sgst" model="account.financial.html.report.line">
+        <field name="name">SGST</field>
+        <field name="parent_id" ref="amount_payable_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="1"/>
+        <field name="code">TAXPAYSGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">(
+            (TAXOLITCSGST &lt; 0 and TAXOLITCCGST &lt; 0 and TAXOLITCIGST &gt; 0 and (TAXOLITCSGST+(TAXOLITCCGST+TAXOLITCIGST &lt; 0) and TAXOLITCSGST or TAXOLITCSGST+TAXOLITCIGST)) or
+            (TAXOLITCSGST &gt; 0 and TAXOLITCSGST+(TAXOLITCCGST+(TAXOLITCIGST &lt; 0 and TAXOLITCIGST) &lt; 0 and TAXOLITCCGST+TAXOLITCIGST) &lt; 0 and 0) or
+            (TAXOLITCSGST &gt; 0 and TAXOLITCCGST+(TAXOLITCIGST &lt; 0 and TAXOLITCIGST) &gt; 0 and TAXOLITCSGST) or
+            (TAXOLITCSGST &gt; 0 and TAXOLITCIGST &lt; 0 and (TAXOLITCSGST+TAXOLITCCGST &gt; - TAXOLITCIGST) and TAXOLITCSGST+TAXOLITCCGST+TAXOLITCIGST) or
+            (TAXOLITCSGST &gt; 0 and TAXOLITCIGST in [0,] and TAXOLITCSGST)
+            )</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="amount_payable_l10n_in_line_0_cgst" model="account.financial.html.report.line">
+        <field name="name">CGST</field>
+        <field name="parent_id" ref="amount_payable_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="2"/>
+        <field name="code">TAXPAYCGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">(
+            (TAXOLITCCGST &lt; 0 and TAXOLITCIGST &gt; 0 and (TAXOLITCCGST+TAXOLITCIGST &lt; 0 and 0 or TAXOLITCCGST+TAXOLITCIGST)) or
+            (TAXOLITCCGST &gt; 0 and TAXOLITCIGST &lt; 0 and (TAXOLITCCGST+TAXOLITCIGST &gt; 0 and 0)) or
+            (TAXOLITCCGST &gt; 0 and TAXOLITCIGST &lt; 0 and (TAXOLITCCGST &gt; - TAXOLITCIGST) and TAXOLITCCGST+TAXOLITCIGST) or
+            (TAXOLITCCGST &gt; 0 and (TAXOLITCIGST in [0,] or TAXOLITCIGST &gt; 0) and TAXOLITCCGST))</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+    <record id="amount_payable_l10n_in_line_0_igst" model="account.financial.html.report.line">
+        <field name="name">IGST</field>
+        <field name="parent_id" ref="amount_payable_l10n_in_line_0"/>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="3"/>
+        <field name="code">TAXPAYIGST</field>
+        <field name="show_domain">never</field>
+        <field name="formulas">(
+            (TAXOLITCIGST &lt; 0 and (TAXOLITCCGST in [0,] and TAXOLITCSGST in [0,] and TAXOLITCIGST)) or
+            (TAXOLITCIGST &lt; 0 and TAXOLITCSGST &gt; 0 and (TAXOLITCCGST &lt; 0 or TAXOLITCCGST in [0,]) and (((- TAXOLITCIGST) &gt; TAXOLITCSGST) and TAXOLITCIGST+TAXOLITCSGST)) or
+            (TAXOLITCIGST &lt; 0 and TAXOLITCCGST &gt; 0 and (TAXOLITCSGST &lt; 0 or TAXOLITCSGST in [0,]) and (((- TAXOLITCIGST) &gt; TAXOLITCCGST) and TAXOLITCIGST+TAXOLITCCGST)) or
+            (TAXOLITCIGST &lt; 0 and TAXOLITCCGST &gt; 0 and TAXOLITCSGST &gt; 0 and (((- TAXOLITCIGST) &gt; TAXOLITCSGST+TAXOLITCCGST) and TAXOLITCIGST+TAXOLITCCGST+TAXOLITCSGST)) or
+            (TAXOLITCIGST &gt; 0 and TAXOLITCCGST &lt; 0 and TAXOLITCSGST &lt; 0 and (((TAXOLITCIGST) &lt; TAXOLITCSGST+TAXOLITCCGST) and TAXOLITCIGST+TAXOLITCCGST+TAXOLITCSGST)) or
+            (TAXOLITCIGST &gt; 0 and (TAXOLITCCGST &gt;0 or TAXOLITCCGST in [0,]) and (TAXOLITCSGST &gt; 0 or TAXOLITCSGST in [0,]) and TAXOLITCIGST)
+            )</field>
+        <field name="show_domain">foldable</field>
+        <field name="special_date_changer">strict_range</field>
+    </record>
+
+    <record id="action_account_report_tax_payable" model="ir.actions.client">
+        <field name="name">GSTR-3</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.financial.html.report', 'id': ref('total_tax_payable_l10n_in_report')}" />
+    </record>
+
+    <record id="action_l10n_in_report_account" model="ir.actions.client">
+        <field name="name">GSTR-1 Sales Return</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'l10n.in.report.account'}" />
+    </record>
+
+    <menuitem id="menu_l10n_in_report_account" name="GSTR-1 Sales Return" action="action_l10n_in_report_account" parent="l10n_in.account_reports_in_statements_menu" sequence="1"/>
+
+</odoo>

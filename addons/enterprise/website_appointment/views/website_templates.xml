@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="user_navbar_inherit_website_enterprise_inherit_website_appointment" inherit_id="website_enterprise.user_navbar_inherit_website_enterprise">
+        <xpath expr="//div[@name='module_website_appointment']" position="attributes">
+            <attribute name="name"/>
+            <attribute name="t-att-data-module-id"/>
+            <attribute name="t-att-data-module-shortdesc"/>
+            <attribute name="if">env.user.has_group('appointment.group_calendar_manager')</attribute>
+        </xpath>
+        <xpath expr="//div[@id='edit-page-menu']" position="after">
+            <t t-if="main_object._name == 'calendar.appointment.type'" t-set="action" t-value="'appointment.calendar_appointment_type_action'"/>
+        </xpath>
+    </template>
+
+</odoo>

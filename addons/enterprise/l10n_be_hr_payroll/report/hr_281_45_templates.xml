@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="report_281_45">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-10 border text-center text-uppercase font-weight-bold">
+                                Fiche 281.45 - Année <span t-esc="data['f2002_inkomstenjaar']"/>
+                            </div>
+                            <div class="col-2 border text-center" t-esc="datetime.datetime.now().date()"/>
+                        </div>
+                        <div class="row border">
+                            <div class="col-12">
+                                <strong>1. N° :</strong> <span t-esc="data['f2009_volgnummer']"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 border">
+                                <div class="font-weight-bold">3. Nom et adresse du débiteur des revenus:</div>
+                                <div class="ml-4" t-esc="data['v0014_naam']"></div>
+                                <div class="ml-4" t-esc="data['v0015_adres']"></div>
+                                <div class="ml-4">
+                                    <span t-esc="data['v0016_postcode']"/>
+                                    <span t-esc="data['v0017_gemeente']"/>
+                                </div>
+                                <div>
+                                    <span class="font-weight-bold">Numéro d'entreprise: </span>
+                                    <t t-esc="data['v0024_nationaalnr']"/>
+                                </div>
+                            </div>
+                            <div class="col-6 border">
+                                <div class="font-weight-bold">2a. Bénéficiaire des revenus</div>
+                                <div class="ml-4" t-esc="data['f2013_naam']"/>
+                                <div class="ml-4" t-esc="data['f2015_adres']"/>
+                                <div class="ml-4" >
+                                    <span t-esc="data['employee_city']"/>
+                                    <span t-esc="data['f2016_postcodebelgisch']"/>
+                                </div>
+                                <div>
+                                    <span class="font-weight-bold">NISS: </span>
+                                    <t t-esc="data['f2011_nationaalnr']"/>
+                                </div>
+                                <div>
+                                    <span class="font-weight-bold">Nature du bénéficiaire: </span>
+                                    <span>Personne Physique</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row border">
+                            <div class="col-7 font-weight-bold">4. Montant brut des revenus</div>
+                            <div class="col-5 text-right"><span t-esc="data['f45_2060_brutoinkomsten']"/></div>
+                        </div>
+                        <div class="row border">
+                            <div class="col-3">
+                                <div class="font-weight-bold">5. Frais déduits</div>
+                            </div>
+                            <div class="col-5">
+                                <div class="font-weight-bold">A. Forfaitaires</div>
+                                <div class="font-weight-bold">B. Réels</div>
+                            </div>
+                            <div class="col-4 text-right">
+                                <div t-esc="data['f45_2061_forfaitairekosten']"/>
+                                <div t-esc="data['f45_2062_werkelijkekosten']"/>
+                            </div>
+                        </div>
+                        <div class="row border">
+                            <div class="col-7 font-weight-bold">6. Montant du précompte mobilier retenu</div>
+                            <div class="col-5 text-right"><span t-esc="data['f45_2063_roerendevoorheffing']"/></div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

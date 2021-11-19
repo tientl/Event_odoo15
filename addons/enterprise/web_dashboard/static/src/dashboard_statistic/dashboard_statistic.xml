@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+<t t-name="web_dashboard.DashboardStatistic" owl="1">
+    <div t-att-name="props.name" t-att-class="getAttClass()" t-on-click="onClicked" t-att="getNodeAttributes()">
+        <label t-esc="props.displayName"/>
+
+        <div t-if="!hasComparison" class="o_value">
+            <t t-call="web_dashboard.DashboardStatistic.renderValue"><t t-set="valIndex" t-value="0" /></t>
+            <t t-call="web_dashboard.DashboardStatistic.renderValueLabel" />
+        </div>
+
+        <t t-else="" >
+            <div  class="o_variation" t-att-class="variationClass">
+                <t t-esc="variation || ' - '" />
+            </div>
+            <div class="o_comparison" t-if="variation">
+                <t t-call="web_dashboard.DashboardStatistic.renderValue"><t t-set="valIndex" t-value="0" /></t>
+                <span> vs </span>
+                <t t-call="web_dashboard.DashboardStatistic.renderValue"><t t-set="valIndex" t-value="1" /></t>
+                <span><t t-call="web_dashboard.DashboardStatistic.renderValueLabel" /></span>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+<t t-name="web_dashboard.DashboardStatistic.renderValue" owl="1">
+    <t t-if="formatter" t-esc="formatValue(getRawValue(valIndex))" />
+    <Field t-else="" record="getFakeRecord(valIndex)" model="props.model" name="props.name" type="widgetName" />
+</t>
+
+<t t-name="web_dashboard.DashboardStatistic.renderValueLabel" owl="1">
+    <t t-esc="props.valueLabel ? ' ' + props.valueLabel : ''" />
+</t>
+
+</templates>

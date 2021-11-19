@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_sharing_inherit_project_task_view_form" model="ir.ui.view">
+        <field name="name">project.sharing.inherit.project.task.view.form.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.project_sharing_project_task_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- [XBO] TODO: remove me in master -->
+                <field string="Tickets" name="helpdesk_ticket_id" invisible="1" />
+                <button
+                    string="Ticket"
+                    class="oe_stat_button o_debounce_disabled"
+                    name="action_view_ticket"
+                    type="object"
+                    icon="fa-life-ring"
+                    invisible="1"
+                    help="Ticket from this task"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

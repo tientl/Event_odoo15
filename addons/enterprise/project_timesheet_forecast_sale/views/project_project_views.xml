@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_timesheet_forecast_view_kanban_inherit_sale_timesheet" model="ir.ui.view">
+        <field name="name">project.project.kanban.inherit.sale.timesheet</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="hr_timesheet.view_project_kanban_inherited"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="display_planning_timesheet_analysis" invisible="1"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_manage_reporting')]" position="inside">
+                <div t-if="record.display_planning_timesheet_analysis.raw_value" role="menuitem">
+                    <a name="open_timesheets_planning_report" type="object">
+                        Timesheets and Planning Analysis
+                    </a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_project_view_form" model="ir.ui.view">
+        <field name="name">project.project.form.inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(project.action_project_task_burndown_chart_report)d']" position="after">
+                <field name="display_planning_timesheet_analysis" invisible="1"/>
+                <button name="open_timesheets_planning_report" type="object" class="oe_stat_button" icon="fa-clock-o" attrs="{'invisible': [('display_planning_timesheet_analysis', '=', False)]}">
+                    <span class="o_stat_text">
+                        Timesheets and Planning
+                    </span>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

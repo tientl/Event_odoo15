@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_timesheet_forecast_sale_report_view_pivot" model="ir.ui.view">
+         <field name="name">timesheet.forecast.report.pivot.inherit</field>
+         <field name="model">project.timesheet.forecast.report.analysis</field>
+         <field name="inherit_id" ref="project_timesheet_forecast.project_timesheet_forecast_report_view_pivot"/>
+         <field name="arch" type="xml">
+            <xpath expr="//pivot" position="inside">
+                <field name="sale_order_id" type="row"/>
+                <field name="sale_line_id" type="row"/>
+            </xpath>
+         </field>
+    </record>
+
+    <record id="project_timesheet_forecast_sale_report_view_search" model="ir.ui.view">
+        <field name="name">timesheet.forecast.report.search.inherit</field>
+        <field name="model">project.timesheet.forecast.report.analysis</field>
+        <field name="inherit_id" ref="project_timesheet_forecast.project_timesheet_forecast_report_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='entry_date']" position="after">
+                <field name="sale_order_id" filter_domain="[('sale_order_id', 'ilike', self)]"/>
+                <field name="sale_line_id" filter_domain="[('sale_line_id', 'ilike', self)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='date_month']" position="before">
+                <filter string="Sales Order" name="group_sale_order" context="{'group_by':'sale_order_id'}"/>
+                <filter string="Sales Order Item" name="group_sale_order_line" context="{'group_by':'sale_line_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

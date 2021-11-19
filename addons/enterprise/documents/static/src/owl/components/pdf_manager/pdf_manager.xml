@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="documents.component.PdfManager" owl="1">
+        <div class='o_documents_pdf_manager' t-on-click="_onClickManager">
+            <div class="o_documents_pdf_manager_top_bar">
+                <t t-if="env.device.isMobile" t-call="documents.component.PdfManager.ButtonsMobile"/>
+                <span t-else="" class="o_pdf_global_buttons">
+                    <div>
+                        <t t-call="documents.component.PdfManager.GlobalButtons"/>
+                        <span t-if="state.lShiftKeyDown or state.rShiftKeyDown" class="ml-3 text-muted o_pdf_shortcut_helper">Select All: Shift + A</span>
+                    </div>
+                </span>
+                <span class="pdf_manager_topbar_buttons_right">
+                    <span class="o_pdf_archive_menu mr-2" t-on-click="_onClickArchive" t-if="env.isDebug()">
+                        <span>Archive original file(s) </span>
+                        <input class="ml-2" id="pdf_archive" type="checkbox" name="archive" t-att-checked="state.archive"/>
+                    </span>
+                    <button class="btn btn-secondary o_pdf_manager_button mr-2"
+                        aria-label="Add new file"
+                        title="Add new file"
+                        t-att-disabled="state.uploadingLock"
+                        t-on-click="_onClickGlobalAdd" t-if="!env.device.isMobile">
+                        <span>Add File</span>
+                    </button>
+                    <button class="btn btn-danger mr-2 text-uppercase"
+                        t-att-class="{'o_pdf_manager_button': !env.device.isMobile}"
+                        aria-label="Discard"
+                        title="Discard"
+                        t-att-disabled="state.uploadingLock"
+                        t-on-click="_onClickGlobalClose">
+                        <span>Discard</span>
+                    </button>
+                </span>
+            </div>
+            <div class="o_documents_pdf_page_preview" t-if="previewCanvas">
+                <PdfPage pageId="state.viewedPage"
+                    canvas="previewCanvas"
+                    isPreview="true"
+                    t-on-page-clicked="_onClickPreview"
+                />
+            </div>
+            <div class='o_documents_pdf_page_viewer'>
+                <t t-foreach="state.groupIds" t-as="groupId" t-key="groupId">
+                    <t t-foreach="state.groupData[groupId].pageIds" t-as="pageId" t-key="pageId">
+                        <div class="o_documents_pdf_page_frame" t-key="'div_' + pageId">
+                            <PdfPage t-ref="PdfPage_{{pageId}}"
+                                canvas="_pageCanvas[pageId].canvas"
+                                isPreview="false"
+                                isSelected="state.pages[pageId].isSelected"
+                                pageId="pageId"
+                                t-on-page-clicked="_onClickPage"
+                                t-on-page-dragged="_onPageDragStart"
+                                t-on-page-dropped="_onPageDrop"
+                                t-on-select-clicked="_onSelectClicked"
+                            />
+                            <div t-if="pageId_first" class="o_pdf_group_name_wrapper">
+                                <PdfGroupName groupId="groupId"
+                                    name="state.groupData[groupId].name"
+                                    t-on-edit-name="_onEditName"
+                                />
+                            </div>
+                        </div>
+                        <t t-if="!(groupId_last and pageId_last)">
+                            <div class="o_page_splitter_wrapper" t-att-class="{ o_pdf_separator_activated: pageId_last }" t-on-click="_onClickPageSeparator(pageId, groupId)">
+                                <div class="o_page_splitter"/>
+                                <i class="o_pdf_scissors fa fa-scissors fa-lg"/>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="documents.component.PdfManager.GlobalButtons" owl="1">
+        <t t-set="isMobile" t-value="env.device.isMobile"/>
+        <button class="btn btn-primary o_pdf_manager_button"
+            t-att-class="{'dropdown-item': isMobile, 'm-0': isMobile, 'h-auto': isMobile}"
+            t-att-disabled="state.uploadingLock"
+            t-on-click="_onClickSplit">
+            Split
+            <span t-if="state.uploadingLock" class="fa fa-circle-o-notch fa-spin"/>
+        </button>
+        <t t-foreach="props.rules" t-as="rule" t-key="rule.id">
+            <button class="btn"
+                t-att-class="{
+                    'btn-primary': !isMobile,
+                    'btn-secondary': isMobile,
+                    'o_pdf_rule_buttons': !isMobile,
+                    'dropdown-item': isMobile,
+                    'ml-3': !isMobile &amp;&amp; rule_index === 0}"
+                t-on-click="_onClickRule(rule.id)"
+                t-esc="rule.display_name"
+                t-att-disabled="state.uploadingLock"/>
+        </t>
+    </t>
+
+    <div t-name="documents.component.PdfManager.ButtonsMobile" class="dropdown" owl="1">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" t-on-click="_onClickDropdown">Action</button>
+        <div class="dropdown-menu" role="menu">
+            <t t-call="documents.component.PdfManager.GlobalButtons"/>
+            <button class="btn btn-secondary dropdown-item"
+                aria-label="Add new file"
+                title="Add new file"
+                t-att-disabled="state.uploadingLock"
+                t-on-click="_onClickGlobalAdd">
+                <span>Add File</span>
+            </button>
+        </div>
+    </div>
+</templates>

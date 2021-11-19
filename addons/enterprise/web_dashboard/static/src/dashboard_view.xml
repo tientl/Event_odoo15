@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+    <t t-name="web_dashboard.DashboardView" owl="1">
+        <Layout viewType="'dashboard'" useSampleModel="model.useSampleModel">
+            <t t-set="displayNoContent" t-value="props.info.noContentHelp !== false and (model.useSampleModel)" />
+            <t t-if="displayNoContent">
+                <t t-if="props.info.noContentHelp" t-call="web.ActionHelper">
+                    <t t-set="noContentHelp" t-value="props.info.noContentHelp" />
+                </t>
+                <t t-else="" t-call="web.NoContentHelper" />
+            </t>
+            <t t-call="{{ template }}" />
+        </Layout>
+    </t>
+
+</templates>

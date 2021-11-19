@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_company_form_inherit_l10n_mx_edi" model="ir.ui.view">
+            <field name="name">res.company.form.inherit.l10n_mx_edi</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr=".//field[@name='street2']" position="after">
+                    <div attrs="{'invisible': [('country_code', '!=', 'MX')]}">
+                        <div class="o_row">
+                            <field name="l10n_mx_edi_colony" placeholder="Colony..."/>
+                            <field name="l10n_mx_edi_colony_code" placeholder="Colony Code"/>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

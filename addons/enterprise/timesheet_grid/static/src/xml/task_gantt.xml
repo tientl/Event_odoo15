@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-name="TaskGanttPopoverTimesheetInfo">
+        <span
+            t-if="pill.allow_timesheets"
+            t-attf-class="position-absolute #{'_color' in pill ? 'o_task_progress_gantt_' + pill._color : ''}"
+            t-attf-data-progress="#{pill.progress ? pill.progress : 0}%;"
+            t-attf-style="width:#{pill.progress ? pill.progress : 0}%;">&amp;nbsp;
+        </span>
+    </t>
+    <t t-extend="TaskGanttMilestonesView.Row">
+        <!-- Add a span to convert the gantt cells into progress bars -->
+        <t t-jquery='.o_gantt_pill_title' t-operation="before">
+            <!-- README: be careful when modifying the DOM inside the pill ; @_onMouseMove is strongly dependant of it -->
+            <t t-call="TaskGanttPopoverTimesheetInfo"></t>
+        </t>
+    </t>
+    <t t-extend="TaskGanttConnectorView.Row">
+        <!-- Add a span to convert the gantt cells into progress bars -->
+        <t t-jquery='.o_gantt_pill_title' t-operation="before">
+            <!-- README: be careful when modifying the DOM inside the pill ; @_onMouseMove is strongly dependant of it -->
+            <t t-call="TaskGanttPopoverTimesheetInfo"></t>
+        </t>
+    </t>
+</templates>

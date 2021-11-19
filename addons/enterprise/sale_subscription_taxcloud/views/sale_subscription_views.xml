@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="sale_subscription_view_form">
+        <field name="name">sale.subscription.view.form.inherit.sale_subscription_taxccloud</field>
+        <field name="model">sale.subscription</field>
+        <field name="inherit_id" ref="sale_subscription.sale_subscription_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <field name="is_taxcloud" invisible="1"/>
+                <field name="is_taxcloud_configured" invisible="1"/>
+            </xpath>
+            <xpath expr="//tree/field[@name='tax_ids']" position="attributes">
+                <attribute name="attrs">{'column_invisible': [('parent.is_taxcloud', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//tree/field[@name='price_tax']" position="replace"/>
+            <xpath expr="//tree/field[@name='tax_ids']" position="after">
+                <field name="price_tax" string="Tax" attrs="{'column_invisible': [('parent.is_taxcloud', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//header" position="after">
+                <div class="alert alert-info text-center" role="alert" attrs="{'invisible': ['|', ('is_taxcloud_configured', '=', True), ('is_taxcloud', '=', False)]}">
+                    Please enter your Taxcloud credentials to compute tax rates automatically.
+                    <a class="alert-link" href="/web#action=account.action_account_config" role="button">Go to Settings.</a>
+                </div>
+            </xpath>
+            <xpath expr="//group[@name='group_note']" position="before">
+                <div class="oe_right" attrs="{'invisible': [('is_taxcloud', '=', False)]}">
+                    <button name="validate_taxes_on_subscription" string="Update taxes" type="object" help="Taxes are automatically updated before each invoice."/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

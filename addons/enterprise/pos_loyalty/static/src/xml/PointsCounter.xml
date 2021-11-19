@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PointsCounter" owl="1">
+        <t t-if="order and (get_points_won() != 0 or get_points_spent() != 0)">
+            <div class='loyalty-points'>
+                <div class='loyalty-points-title'>
+                    Points
+                </div>
+                <t t-if='get_points_won()'>
+                    <div class="loyalty-points-won">
+                        <span class='value'>+<t t-esc='get_points_won()'/></span>
+                    </div>
+                </t>
+                <t t-if='get_points_spent()'>
+                    <div class="loyalty-points-spent">
+                        <span class='value'>-<t t-esc='get_points_spent()'/></span>
+                    </div>
+                </t>
+                <div class='loyalty-points-total'>
+                    <span class='value'><t t-esc='get_points_total()' /></span>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <div></div>
+        </t>
+    </t>
+
+ </templates>

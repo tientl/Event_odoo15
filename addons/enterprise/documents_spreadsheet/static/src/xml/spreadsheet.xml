@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+    <div t-name="documents_spreadsheet.SpreadsheetComponent" class="o_spreadsheet_container" owl="1">
+        <Spreadsheet client="client"
+                     data="data"
+                     stateUpdateMessages="stateUpdateMessages"
+                     transportService="transportService"
+                     snapshotRequested="props.snapshotRequested"
+                     isReadonly="isReadonly"
+                     t-on-ask-confirmation="askConfirmation"
+                     t-on-edit-text="editText"
+                     t-on-notify-user="notifyUser"
+                     t-ref="spreadsheet"
+        />
+        <Dialog t-if="state.dialog.isDisplayed"
+            title="state.dialog.title || 'Odoo Spreadsheet'"
+            size="'medium'"
+            t-on-dialog-closed.stop="closeDialog"
+            >
+            <div t-if="dialogContent" t-esc="dialogContent"/>
+            <input t-if="state.dialog.isEditText" type="text" class="form-control" t-model="state.inputContent"/>
+            <input t-if="state.dialog.isEditInteger" type="number" class="form-control" t-model="state.dialog.inputIntegerContent"/>
+            <t t-set="buttons">
+                <button class="btn btn-primary" t-on-click="confirmDialog">Confirm</button>
+                <button class="btn btn-secondary" t-on-click="closeDialog">Cancel</button>
+            </t>
+        </Dialog>
+
+        <Dialog t-if="state.pivotDialog.isDisplayed"
+            title="getMissingValueDialogTitle()"
+            size="'large'"
+            t-on-dialog-closed.stop="closePivotDialog"
+            renderFooter="false"
+            >
+            <PivotDialog pivotId="pivotId" getters="model.getters" title="getPivotTitle()"  t-on-cell-selected="_onCellClicked" cellClickedCallBack="cellClickedCallback"/>
+        </Dialog>
+
+    </div>
+
+    <div t-name="documents_spreadsheet.FilterComponent" class="o_filter_component" owl="1">
+        <div
+            t-attf-class="o_topbar_filter_icon fa fa-filter {{activeFilter ? 'btn-link': ''}}"
+            title="Filters"
+            t-on-click="toggleDropdown"></div>
+    </div>
+
+    <div t-name="documents_spreadsheet.RelationTags"/>
+
+    <div t-name="documents_spreadsheet.StandaloneMany2OneField"/>
+
+    <div t-name="documents_spreadsheet.GlobalFiltersSidePanel" class="o_spreadsheet_global_filters_side_panel" owl="1">
+        <div class="o_side_panel_section pivot_filter_section" t-foreach="filters" t-as="filter" t-key="'filter_' + filter_index">
+            <div class="pivot_filter">
+                <div class="o_side_panel_title">
+                    <span class="o_side_panel_filter_label" t-esc="filter.label"/>
+                </div>
+                <div class="pivot_filter_input">
+                    <t t-set="filterValue" t-value="getters.getGlobalFilterValue(filter.id)"/>
+                    <input t-if="filter.type === 'text'"
+                        class="o_input"
+                        t-att-value="filterValue"
+                        t-on-change="onTextInput(filter.id)"/>
+                    <TagSelectorWidgetAdapter
+                        t-if="filter.type === 'relation'"
+                        Component="TagSelectorWidget"
+                        relatedModel="filter.modelName"
+                        selectedValues="filterValue"
+                        t-on-value-changed="onTagSelected(filter.id)"
+                        t-on-click.stop=""
+                        t-key="filter.id + filter.modelName"/>
+                    <DateFilterValue
+                        t-if="filter.type === 'date'"
+                        t-on-time-range-changed="onDateInput(filter.id)"
+                        year="filterValue &amp;&amp; filterValue.year"
+                        period="filterValue &amp;&amp; filterValue.period"
+                        type="filter.rangeType"
+                        isReadonly="isReadonly"/>
+                    <i t-if="!isReadonly" 
+                        class="fa fa-cog btn btn-link text-muted o_side_panel_filter_icon"
+                        title="Edit"
+                        t-on-click="onEdit(filter.id)"/>
+                </div>
+            </div>
+        </div>
+        <div t-if="!isReadonly" class="o_side_panel_section">
+            <div class="o_add_filter">Add a new filter...</div>
+            <div class="o-sidePanelButtons">
+                <button t-on-click="newDate" class="o-sidePanelButton o_global_filter_new_time">
+                    <span>Date</span>
+                </button>
+                <button t-on-click="newRelation" class="o-sidePanelButton o_global_filter_new_relation">
+                    <span>Relation</span>
+                </button>
+                <button t-on-click="newText" class="o-sidePanelButton o_global_filter_new_text">
+                    <span>Text</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div t-name="documents_spreadsheet.FilterEditorSidePanel" class="o_spreadsheet_filter_editor_side_panel" owl="1">
+        <div class="o_side_panel_section">
+            <div class="o_side_panel_title">Label</div>
+            <div t-att-class="missingLabel ? 'o_field_invalid' : ''" class="o_required_modifier">
+                <input
+                    class="o_input o_global_filter_label"
+                    t-model="state.label"
+                    t-att-placeholder="placeholder"/>
+            </div>
+        </div>
+        <div class="o_side_panel_section o_side_panel_related_model" t-if="state.type === 'relation'">
+            <div class="o_side_panel_title">Related Model</div>
+            <div t-att-class="missingModel ? 'o_field_invalid' : ''" class="o_required_modifier">
+                <ModelSelectorWidgetAdapter
+                    Component="StandaloneMany2OneField"
+                    modelID="state.relation.relatedModelID"
+                    models="relatedModels"
+                    t-on-value-changed="onModelSelected"/>
+            </div>
+        </div>
+        <div t-if="state.type === 'date'" class="o_side_panel_section">
+            <div class="o_side_panel_title">Time Range</div>
+                <select
+                    t-model="state.date.type"
+                    t-on-change="onDateOptionChange"
+                    class="o_input">
+                <option value="year" t-key="'year'">Year</option>
+                <option value="quarter" t-key="'quarter'">Quarter</option>
+                <option value="month" t-key="'month'">Month</option>
+            </select>
+        </div>
+        <div class="o_side_panel_section" t-if="state.type !== 'relation' || state.relation.relatedModelName">
+            <div class="o_side_panel_title">Default Value</div>
+            <DateFilterValue
+                    t-if="state.type === 'date'"
+                    t-on-time-range-changed="onTimeRangeChanged"
+                    year="state.date.defaultValue.year"
+                    period="state.date.defaultValue.period"
+                    type="state.date.type"/>
+            <input t-if="state.type === 'text'"
+                class="o_input o_global_filter_default_value"
+                t-model="state.text.defaultValue"/>
+            <TagSelectorWidgetAdapter
+                t-if="state.type === 'relation' and state.relation.relatedModelName"
+                Component="TagSelectorWidget"
+                relatedModel="state.relation.relatedModelName"
+                selectedValues="state.relation.defaultValue"
+                t-on-value-changed="onValuesSelected"
+                t-key="state.relation.relatedModelName"/>
+        </div>
+        <div class="o_side_panel_section" t-if="state.type !== 'relation' || state.relation.relatedModelName">
+            <div class="o_side_panel_title o_field_matching_title">Field Matching</div>
+            <div class="text-muted">
+                Match this filter to a field for each pivot/list
+            </div>
+            <div t-foreach="pivotIds" t-as="pivotId" t-key="pivotId" t-att-class="missingPivotField ? 'o_field_invalid' : ''" class="o_pivot_field_matching o_required_field">
+                <div><t t-esc="getters.getPivotModelDisplayName(pivotId)"/> <span class="o_pivot_model_technical_name text-muted">(Pivot #<t t-esc="pivotId"/>)</span></div>
+                <FieldSelectorAdapter
+                    Component="FieldSelectorWidget"
+                    model="getters.getPivotModel(pivotId)"
+                    fields="getters.getPivotFields(pivotId)"
+                    type="state.type"
+                    relatedModel="state.relation.relatedModelName"
+                    selected="state.pivotFields[pivotId]"
+                    t-key="pivotId + (state.relation.relatedModelName or 'not_defined')"
+                    t-on-field-chain-changed="onSelectedPivotField(pivotId)"
+                    />
+            </div>
+            <div t-foreach="listIds" t-as="listId" t-key="listId" t-att-class="missingListField ? 'o_field_invalid' : ''" class="o_pivot_field_matching o_required_field">
+                <div><t t-esc="getters.getListModelDisplayName(listId)"/> <span class="o_pivot_model_technical_name text-muted">(List #<t t-esc="listId"/>)</span></div>
+                <FieldSelectorAdapter
+                    Component="FieldSelectorWidget"
+                    model="getters.getListModel(listId)"
+                    fields="getters.getListFields(listId)"
+                    type="state.type"
+                    relatedModel="state.relation.relatedModelName"
+                    selected="state.listFields[listId]"
+                    t-key="listId + (state.relation.relatedModelName or 'not_defined')"
+                    t-on-field-chain-changed="onSelectedListField(listId)"
+                    />
+            </div>
+        </div>
+        <div class="o_side_panel_section o-sidePanelButtons">
+            <button t-if="props.id" t-on-click="onDelete" class="o-sidePanelButton o_global_filter_delete text-danger">Remove</button>
+            <button t-on-click="onCancel" class="o-sidePanelButton o_global_filter_cancel">Cancel</button>
+            <button t-on-click="onSave" class="o-sidePanelButton o_global_filter_save">Save</button>
+        </div>
+    </div>
+
+    <div t-name="documents_spreadsheet.DateFilterValue" class="date_filter_values" owl="1">
+        <select t-if="!isYear()" class="o_input" t-on-change="onPeriodChanged">
+            <option value="empty"/>
+            <t t-set="type" t-value="props.type"/>
+            <t t-foreach="dateOptions(type)" t-as="period" >
+                <option t-if="isSelected(period.id)" selected="1" t-att-value="period.id">
+                    <t t-esc="period.description"/>
+                </option>
+                <option t-else="" t-att-value="period.id">
+                    <t t-esc="period.description"/>
+                </option>
+            </t>
+        </select>
+        <select class="o_input" t-on-change="onYearChanged">
+            <option t-if="!props.period" value="empty"/>
+            <t t-foreach="dateOptions('year')" t-as="year">
+                <option t-if="isSelected(year.id)" selected="1" t-att-value="year.id">
+                    <t t-esc="year.description"/>
+                </option>
+                <option t-else="" t-att-value="year.id">
+                    <t t-esc="year.description"/>
+                </option>
+            </t>
+        </select>
+    </div>
+
+    <div t-name="documents_spreadsheet.AutofillTooltip" owl="1">
+        <t t-foreach="props.content" t-as="line">
+            <div><t t-esc="line.value"/></div>
+        </t>
+    </div>
+
+</templates>

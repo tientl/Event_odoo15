@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="approvals.Approval" owl="1">
+        <div class="o_Approval">
+            <t t-if="approval">
+                <t t-if="approval.status === 'pending'">
+                    <t t-if="approval.isCurrentPartnerApprover">
+                        <button class="o_Approval_toolButton o_Approval_approveButton btn btn-success btn-link" t-on-click="_onClickApprove">
+                            <i class="fa fa-check"/> Approve
+                        </button>
+                        <button class="o_Approval_toolButton o_Approval_refuseButton btn btn-danger btn-link" t-on-click="_onClickRefuse">
+                            <i class="fa fa-times"/> Refuse
+                        </button>
+                    </t>
+                    <t t-else="">
+                        <span class="o_Approval_toApproveText text-warning">
+                            <i class="fa fa-pencil"/> To Approve
+                        </span>
+                    </t>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!--
+            BALANCE SHEET
+        -->
+
+        <record id="account_financial_report_NO_balancesheet" model="account.financial.html.report">
+            <field name="name">Balance Sheet</field>
+            <field name="unfold_all_filter" eval="True"/>
+            <field name="date_range" eval="False" />
+            <field name='parent_id' ref='l10n_no.account_reports_no_statements_menu'/>
+            <field name="show_journal_filter" eval="True"/>
+        </record>
+        <record id="account_financial_report_NO_active_title" model="account.financial.html.report.line">
+            <field name="name">ACTIVE</field>
+            <field name="sequence" eval="1000"/>
+            <field name="financial_report_id" ref="account_financial_report_NO_balancesheet"/>
+            <field name="level" eval="0" />
+        </record>
+        <record id="account_financial_report_NO_active" model="account.financial.html.report.line">
+            <field name="name">ACTIVE TOTAL</field>
+            <field name="code">NO_ACTIVE</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_title'/>
+            <field name="formulas">NO_ACTIVE_A + NO_ACTIVE_B</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="0" />
+        </record>
+        <record id="account_financial_report_NO_active_FA" model="account.financial.html.report.line">
+            <field name="name">A. Fixed Assets</field>
+            <field name="code">NO_ACTIVE_A</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_title'/>
+            <field name="formulas">NO_10 + NO_11_12 + NO_13</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="1" />
+        </record>
+        <record id="account_financial_report_NO_active_Intangible_Assets" model="account.financial.html.report.line">
+            <field name="name">I. Intangible Assets</field>
+            <field name="code">NO_10</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_FA'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_100 + NO_102_106 + NO_107 + NO_108_109</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_active_RD" model="account.financial.html.report.line">
+            <field name="name">Research and Development</field>
+            <field name="code">NO_100</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Intangible_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '100%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_Licences" model="account.financial.html.report.line">
+            <field name="name">Licences</field>
+            <field name="code">NO_102_106</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Intangible_Assets'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '102%'), '|', ('account_id.code', '=like', '103%'),
+                                        '|', ('account_id.code', '=like', '104%'), '|', ('account_id.code', '=like', '105%'),
+                                        ('account_id.code', '=like', '106%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_Deferred_Tax_Assets" model="account.financial.html.report.line">
+            <field name="name">Deferred Tax Assets</field>
+            <field name="code">NO_107</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Intangible_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '107%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_Goodwill" model="account.financial.html.report.line">
+            <field name="name">Goodwill</field>
+            <field name="code">NO_108_109</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Intangible_Assets'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '108%'), ('account_id.code', '=like', '109%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_Fixed_Assets" model="account.financial.html.report.line">
+            <field name="name">II. Fixed Assets</field>
+            <field name="code">NO_11_12</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_FA'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_11 + NO_120_121 + NO_122 + NO_123_129</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_active_land" model="account.financial.html.report.line">
+            <field name="name">Land, Building and Other Real Estate</field>
+            <field name="code">NO_11</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Fixed_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '11%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_machinery" model="account.financial.html.report.line">
+            <field name="name">Machinery and Equipment</field>
+            <field name="code">NO_120_121</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Fixed_Assets'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '120%'), ('account_id.code', '=like', '121%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_ships" model="account.financial.html.report.line">
+            <field name="name">Ships, Rigs, Aeroplans etc</field>
+            <field name="code">NO_122</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Fixed_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '122%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_operating_movable_property_furniture_tools_other" model="account.financial.html.report.line">
+            <field name="name">Operating Movable Property, Furniture, Tools, Other</field>
+            <field name="code">NO_123_129</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_Fixed_Assets'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '123%'), '|', ('account_id.code', '=like', '124%'),
+                                        '|', ('account_id.code', '=like', '125%'), '|', ('account_id.code', '=like', '126%'),
+                                        '|', ('account_id.code', '=like', '127%'), '|', ('account_id.code', '=like', '128%'),
+                                        ('account_id.code', '=like', '129%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_Fixed_Financial_Assets" model="account.financial.html.report.line">
+            <field name="name">III. Fixed Financial Assets</field>
+            <field name="code">NO_13</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_FA'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_130 + NO_131 + NO_132 + NO_133 + NO_134 + NO_135 + NO_136 + NO_137_139</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_active_investment_in_subsidiaries" model="account.financial.html.report.line">
+            <field name="name">Investment in Subsidiaries</field>
+            <field name="code">NO_130</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '130%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_investment_in_group_companies_etc" model="account.financial.html.report.line">
+            <field name="name">Investment in Group Companies etc</field>
+            <field name="code">NO_131</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '131%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_loan_to_group_companies" model="account.financial.html.report.line">
+            <field name="name">Loan to Group Companies</field>
+            <field name="code">NO_132</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '132%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_investment_in_associated_companies" model="account.financial.html.report.line">
+            <field name="name">Investment in Associated Companies</field>
+            <field name="code">NO_133</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '133%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_loan_to_associated_companies" model="account.financial.html.report.line">
+            <field name="name">Loan to Associated Companies and Joint Venture Activities</field>
+            <field name="code">NO_134</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '134%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="5"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_equities_and_investments" model="account.financial.html.report.line">
+            <field name="name">Equities and Investments</field>
+            <field name="code">NO_135</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '135%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="6"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_bonds" model="account.financial.html.report.line">
+            <field name="name">Bonds</field>
+            <field name="code">NO_136</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="[('account_id.code', '=like', '136%'), '!', ('account_id.code', '=like', '1369%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="7"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_other_receivables" model="account.financial.html.report.line">
+            <field name="name">Other Receivables</field>
+            <field name="code">NO_137_139</field>
+            <field name="parent_id" ref='account_financial_report_NO_Fixed_Financial_Assets'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '1369%'), '|', ('account_id.code', '=like', '137%'),
+                                        '|', ('account_id.code', '=like', '138%'), ('account_id.code', '=like', '139%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="8"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_CurA" model="account.financial.html.report.line">
+            <field name="name">B. Current Assets</field>
+            <field name="code">NO_ACTIVE_B</field>
+            <field name="parent_id" ref='account_financial_report_NO_active_title'/>
+            <field name="formulas">NO_14 + NO_15_16_17 + NO_18 + NO_19</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="1" />
+        </record>
+        <record id="account_financial_report_NO_Inv" model="account.financial.html.report.line">
+            <field name="name">I. Inventories</field>
+            <field name="code">NO_14</field>
+            <field name="parent_id" ref='account_financial_report_NO_CurA'/>
+            <field name="domain" eval="[('account_id.code', '=like', '14%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_Deb" model="account.financial.html.report.line">
+            <field name="name">II. Debitors</field>
+            <field name="code">NO_15_16_17</field>
+            <field name="parent_id" ref='account_financial_report_NO_CurA'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_150_155 + NO_156_176 + NO_178 </field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_active_account_recceivable" model="account.financial.html.report.line">
+            <field name="name">Account Receivable</field>
+            <field name="code">NO_150_155</field>
+            <field name="parent_id" ref='account_financial_report_NO_Deb'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '150%'), '|', ('account_id.code', '=like', '151%'),
+                                        '|', ('account_id.code', '=like', '152%'), '|', ('account_id.code', '=like', '153%'),
+                                        '|', ('account_id.code', '=like', '154%'), ('account_id.code', '=like', '155%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_other_receivables_2" model="account.financial.html.report.line">
+            <field name="name">Other Receivables</field>
+            <field name="code">NO_156_176</field>
+            <field name="parent_id" ref='account_financial_report_NO_Deb'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '156%'), '|', ('account_id.code', '=like', '157%'),
+                                        '|', ('account_id.code', '=like', '158%'), '|', ('account_id.code', '=like', '159%'),
+                                        '|', ('account_id.code', '=like', '16%'), '|', ('account_id.code', '=like', '170%'),
+                                        '|', ('account_id.code', '=like', '171%'), '|', ('account_id.code', '=like', '172%'),
+                                        '|',('account_id.code', '=like', '173%'), '|',('account_id.code', '=like', '174%'),
+                                        '|',('account_id.code', '=like', '175%'), ('account_id.code', '=like', '176%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_other_payment_to_be_received_by_owner" model="account.financial.html.report.line">
+            <field name="name">Payment to be Received by Owner</field>
+            <field name="code">NO_178</field>
+            <field name="parent_id" ref='account_financial_report_NO_Deb'/>
+            <field name="domain" eval="[('account_id.code', '=like', '178%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_sti" model="account.financial.html.report.line">
+            <field name="name">III. Short-Term Investments</field>
+            <field name="code">NO_18</field>
+            <field name="parent_id" ref='account_financial_report_NO_CurA'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_180 + NO_181_182 + NO_183_186 + NO_187_189</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_active_equities_and_investments_in_group_companies" model="account.financial.html.report.line">
+            <field name="name">Equities and Investments in Group Companies</field>
+            <field name="code">NO_180</field>
+            <field name="parent_id" ref='account_financial_report_NO_sti'/>
+            <field name="domain" eval="[('account_id.code', '=like', '180%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_marketable_shares" model="account.financial.html.report.line">
+            <field name="name">Marketable Shares</field>
+            <field name="code">NO_181_182</field>
+            <field name="parent_id" ref='account_financial_report_NO_sti'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '181%'), ('account_id.code', '=like', '182%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_marketable_bonds" model="account.financial.html.report.line">
+            <field name="name">Marketable Bonds</field>
+            <field name="code">NO_183_186</field>
+            <field name="parent_id" ref='account_financial_report_NO_sti'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '183%'), '|', ('account_id.code', '=like', '184%'),
+                                        '|', ('account_id.code', '=like', '185%'), ('account_id.code', '=like', '186%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_active_other_marketable_financial_instruments" model="account.financial.html.report.line">
+            <field name="name">Other Marketable Financial Instruments</field>
+            <field name="code">NO_187_189</field>
+            <field name="parent_id" ref='account_financial_report_NO_sti'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '187%'), '|', ('account_id.code', '=like', '188%'),
+                                        ('account_id.code', '=like', '189%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_CASH" model="account.financial.html.report.line">
+            <field name="name">IV. Cash and deposits</field>
+            <field name="code">NO_19</field>
+            <field name="parent_id" ref='account_financial_report_NO_CurA'/>
+            <field name="domain" eval="[('account_id.code', '=like', '19%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_passive_title" model="account.financial.html.report.line">
+            <field name="name">Passive</field>
+            <field name="sequence" eval="2000"/>
+            <field name="financial_report_id" ref="account_financial_report_NO_balancesheet"/>
+            <field name="level" eval="0" />
+        </record>
+        <record id="account_financial_report_NO_passive" model="account.financial.html.report.line">
+            <field name="name">Passive TOTAL</field>
+            <field name="code">NO_Passive</field>
+            <field name="parent_id" ref="account_financial_report_NO_passive_title"/>
+            <field name="formulas">NO_PASSIVE_C + NO_PASSIVE_D</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="0" />
+        </record>
+        <record id="account_financial_report_NO_equity" model="account.financial.html.report.line">
+            <field name="name">C. Equity</field>
+            <field name="code">NO_PASSIVE_C</field>
+            <field name="parent_id" ref='account_financial_report_NO_passive'/>
+            <field name="formulas">NO_200_203 + NO_204_209</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="1" />
+        </record>
+        <record id="account_financial_report_NO_equity_paid_in_capital" model="account.financial.html.report.line">
+            <field name="name">I. Paid-in Capital</field>
+            <field name="code">NO_200_203</field>
+            <field name="parent_id" ref='account_financial_report_NO_equity'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_200_201 + NO_202 + NO_203</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_passive_share_capital" model="account.financial.html.report.line">
+            <field name="name">Share Capital</field>
+            <field name="code">NO_200_201</field>
+            <field name="parent_id" ref='account_financial_report_NO_equity_paid_in_capital'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '200%'), ('account_id.code', '=like', '201%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_passive_share_premium_reserve" model="account.financial.html.report.line">
+            <field name="name">Share Premium Reserve</field>
+            <field name="code">NO_202</field>
+            <field name="parent_id" ref='account_financial_report_NO_equity_paid_in_capital'/>
+            <field name="domain" eval="[('account_id.code', '=like', '202%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_equity_other_paid_in_capital" model="account.financial.html.report.line">
+            <field name="name">Other Paid-in Capital</field>
+            <field name="code">NO_203</field>
+            <field name="parent_id" ref='account_financial_report_NO_equity_paid_in_capital'/>
+            <field name="domain" eval="[('account_id.code', '=like', '203%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_retained_earnings" model="account.financial.html.report.line">
+            <field name="name">II. Retained Earnings</field>
+            <field name="code">NO_204_209</field>
+            <field name="parent_id" ref='account_financial_report_NO_equity'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_204 + NO_205_209</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_passive_reserves" model="account.financial.html.report.line">
+            <field name="name">Reserves</field>
+            <field name="code">NO_204</field>
+            <field name="parent_id" ref='account_financial_report_NO_retained_earnings'/>
+            <field name="domain" eval="[('account_id.code', '=like', '204%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_passive_share_premium_retained_equity" model="account.financial.html.report.line">
+            <field name="name">Retained Equity</field>
+            <field name="code">NO_205_209</field>
+            <field name="parent_id" ref='account_financial_report_NO_retained_earnings'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '205%'), '|', ('account_id.code', '=like', '206%'),
+                                        '|', ('account_id.code', '=like', '207%'), '|', ('account_id.code', '=like', '208%'),
+                                        ('account_id.code', '=like', '209%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_liabilities" model="account.financial.html.report.line">
+            <field name="name">D. Liabilities</field>
+            <field name="code">NO_PASSIVE_D</field>
+            <field name="parent_id" ref='account_financial_report_NO_passive'/>
+            <field name="formulas">NO_21 + NO_22 + NO_23_29</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="1" />
+        </record>
+        <record id="account_financial_report_NO_Allowances_for_liability" model="account.financial.html.report.line">
+            <field name="name">I. Allowances for liability</field>
+            <field name="code">NO_21</field>
+            <field name="parent_id" ref='account_financial_report_NO_liabilities'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_210 + NO_212 + NO_216_218</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_pension_liability" model="account.financial.html.report.line">
+            <field name="name">Pension Liability</field>
+            <field name="code">NO_210</field>
+            <field name="parent_id" ref='account_financial_report_NO_Allowances_for_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '210%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_deferred_tax" model="account.financial.html.report.line">
+            <field name="name">Deferred Tax</field>
+            <field name="code">NO_212</field>
+            <field name="parent_id" ref='account_financial_report_NO_Allowances_for_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '212%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_other_provisions" model="account.financial.html.report.line">
+            <field name="name">Other Provisions</field>
+            <field name="code">NO_216_218</field>
+            <field name="parent_id" ref='account_financial_report_NO_Allowances_for_liability'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '216%'), ('account_id.code', '=like', '218%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_Other_longterm_liabilities" model="account.financial.html.report.line">
+            <field name="name">II. Other longterm liabilities</field>
+            <field name="code">NO_22</field>
+            <field name="parent_id" ref='account_financial_report_NO_liabilities'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_220 + NO_221 + NO_222 + NO_225_229</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_convertible_debt" model="account.financial.html.report.line">
+            <field name="name">Convertible Debt</field>
+            <field name="code">NO_220</field>
+            <field name="parent_id" ref='account_financial_report_NO_Other_longterm_liabilities'/>
+            <field name="domain" eval="[('account_id.code', '=like', '220%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_debenture_loan" model="account.financial.html.report.line">
+            <field name="name">Debenture Loan</field>
+            <field name="code">NO_221</field>
+            <field name="parent_id" ref='account_financial_report_NO_Other_longterm_liabilities'/>
+            <field name="domain" eval="[('account_id.code', '=like', '221%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_debt_to_financial_institutions" model="account.financial.html.report.line">
+            <field name="name">Debt to Financial Institutions</field>
+            <field name="code">NO_222</field>
+            <field name="parent_id" ref='account_financial_report_NO_Other_longterm_liabilities'/>
+            <field name="domain" eval="[('account_id.code', '=like', '222%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_other_long_term_liabilities" model="account.financial.html.report.line">
+            <field name="name">Other Long Term Liabilities</field>
+            <field name="code">NO_225_229</field>
+            <field name="parent_id" ref='account_financial_report_NO_Other_longterm_liabilities'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '225%'), '|', ('account_id.code', '=like', '226%'),
+                                        '|', ('account_id.code', '=like', '227%'), '|', ('account_id.code', '=like', '228%'),
+                                        ('account_id.code', '=like', '229%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_Current_liability" model="account.financial.html.report.line">
+            <field name="name">III. Current liability</field>
+            <field name="code">NO_23_29</field>
+            <field name="parent_id" ref='account_financial_report_NO_liabilities'/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">NO_230 + NO_232 + NO_236_239 + NO_24 + NO_25 + NO_26_27 + NO_28_29  </field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_NO_short_term_convertible_loans" model="account.financial.html.report.line">
+            <field name="name">Short-Term Convertible Loans</field>
+            <field name="code">NO_230</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '230%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_short_term_debenture_loans" model="account.financial.html.report.line">
+            <field name="name">Short-Term Debenture Loans</field>
+            <field name="code">NO_232</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '232%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_short_term_debt_to_financial_institutions" model="account.financial.html.report.line">
+            <field name="name">Short-Term Debt to Financial Institutions</field>
+            <field name="code">NO_236_239</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '236%'), '|', ('account_id.code', '=like', '238%'),
+                                        ('account_id.code', '=like', '239%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="3"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_trade_creditors" model="account.financial.html.report.line">
+            <field name="name">Trade Creditors</field>
+            <field name="code">NO_24</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '24%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_tax_payable" model="account.financial.html.report.line">
+            <field name="name">Tax Payable</field>
+            <field name="code">NO_25</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="[('account_id.code', '=like', '25%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="5"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_value_added_tax" model="account.financial.html.report.line">
+            <field name="name">Value Added Tax</field>
+            <field name="code">NO_26_27</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '26%'), ('account_id.code', '=like', '27%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="6"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_NO_other_short_term_liabilities" model="account.financial.html.report.line">
+            <field name="name">Other Short-Term Liabilities</field>
+            <field name="code">NO_28_29</field>
+            <field name="parent_id" ref='account_financial_report_NO_Current_liability'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '28%'), ('account_id.code', '=like', '29%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+            <field name="sequence" eval="7"/>
+            <field name="level" eval="3" />
+        </record>
+</odoo>

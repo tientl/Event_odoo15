@@ -1,0 +1,40 @@
+.database_expiration_panel {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 768px;
+    width: 100%;
+    @include media-breakpoint-up(md) {
+        margin: 25px auto 0 auto;
+    }
+
+    a > i.fa {
+        margin: 0 0.2em;
+    }
+
+    .oe_instance_register_form {
+        @include media-breakpoint-down(sm) {
+            .form-group {
+                margin-right: 25px;
+            }
+        }
+
+        &.vertical-slide-enter,
+        &.vertical-slide-leave-to {
+            max-height: 0;
+            margin-top: 0 !important;
+        }
+        &.vertical-slide-enter-active,
+        &.vertical-slide-leave-active {
+            overflow: hidden;
+            transition-property: max-height, margin-top;
+            transition-duration: 0.4s;
+        }
+        &.vertical-slide-enter-to,
+        &.vertical-slide-leave {
+            max-height: 32px;
+            @include media-breakpoint-down(sm) {
+                max-height: 72px;
+            }
+        }
+    }
+}

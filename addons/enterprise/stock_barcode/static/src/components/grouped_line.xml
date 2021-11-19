@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stock_barcode.GroupedLineComponent" owl="1">
+        <div t-name="GroupedLineComponent" t-on-click="select"
+            class="o_barcode_line list-group-item d-flex flex-row flex-wrap"
+            t-att-data-barcode="line.product_id.barcode" t-attf-class="
+                {{isComplete ? 'o_line_completed' : ''}}
+                {{env.model.lineIsFaulty(line) ? 'o_faulty' : ''}}
+                {{isSelected ? 'o_selected o_highlight' : ''}}
+            ">
+            <div class="o_barcode_line_summary d-flex flex-grow-1">
+                <div class="o_barcode_line_details flex-grow-1">
+                    <t t-if="line.product_id.default_code">
+                        <div class="o_barcode_line_title">
+                            <i class="fa fa-fw fa-tags"/>
+                            <span class="o_barcode_product_ref">
+                                <b>[<t t-esc="line.product_id.default_code"/>]</b>
+                            </span>
+                        </div>
+                        <div>
+                            <i class="fa fa-fw"/>
+                            <span class="product-label" t-esc="line.product_id.display_name"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="o_barcode_line_title pb-1">
+                            <i class="fa fa-fw fa-tags"/>
+                            <span class="product-label" t-esc="line.product_id.display_name"/>
+                        </div>
+                    </t>
+                    <div name="quantity">
+                        <i class="fa fa-fw fa-cube" t-attf-class="{{nextExpected === 'quantity' ? 'o_next_expected' : ''}}"/>
+                        <span t-attf-class="o_barcode_scanner_qty text-monospace badge #{' '}">
+                            <span class="qty-done d-inline-block text-left" t-esc="env.model.IsNotSet(line) ? '?' : qtyDone"/>
+                            <span t-if="qtyDemand" t-esc="'/ ' + qtyDemand"/>
+                        </span>
+                        <span t-if="props.displayUOM" t-esc="line.product_uom_id.name"/>
+                    </div>
+                </div>
+                <button t-on-click="toggleSublines" class="o_line_button o_toggle_sublines btn btn-primary ml-2 ml-sm-4">                <i t-if="!line.opened" class="fa fa-2x fa-caret-down"/>
+                    <i t-elif="line.opened" class="fa fa-2x fa-caret-up"/>
+                </button>
+            </div>
+            <div class="o_sublines my-2 flex-grow-1" t-if="opened">
+                <t t-foreach="line.lines" t-as="subline" t-key="subline.virtual_id">
+                    <LineComponent line="subline" displayUOM="props.displayUOM" subline="true"/>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

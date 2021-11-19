@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+
+<t t-name="documents.SearchPanel" t-inherit="web.Legacy.SearchPanel" t-inherit-mode="primary" owl="1">
+    <xpath expr="//*[@t-call='web.Legacy.SearchPanel.Category']" position="attributes">
+        <attribute name="t-call">documents.SearchPanel.Category</attribute>
+    </xpath>
+    <xpath expr="//*[@t-call='web.Legacy.SearchPanel.FiltersGroup']" position="attributes">
+        <attribute name="t-call">documents.SearchPanel.FiltersGroup</attribute>
+    </xpath>
+</t>
+
+<t t-name="documents.SearchPanel.Category" t-inherit="web.Legacy.SearchPanel.Category" t-inherit-mode="primary" owl="1">
+    <xpath expr="//*[@t-call='web.Legacy.SearchPanel.Category']" position="attributes">
+        <attribute name="t-call">documents.SearchPanel.Category</attribute>
+    </xpath>
+    <xpath expr="//li[contains(@class, 'o_search_panel_category_value')]" position="attributes">
+        <attribute name="t-on-dragenter.stop.prevent">_onDragEnter(section.id, valueId)</attribute>
+        <attribute name="t-on-dragleave.stop.prevent">_onDragLeave</attribute>
+        <attribute name="t-on-dragover.stop.prevent"> </attribute>
+        <attribute name="t-on-drop.stop.prevent">_onDrop(section.id, valueId)</attribute>
+    </xpath>
+    <xpath expr="//*[contains(@class, 'o_search_panel_label')]" position="inside">
+        <span t-if="_isUploading(valueId)" class="fa fa-circle-o-notch fa-spin"/>
+    </xpath>
+</t>
+
+<t t-name="documents.SearchPanel.FiltersGroup" t-inherit="web.Legacy.SearchPanel.FiltersGroup" t-inherit-mode="primary" owl="1">
+    <xpath expr="//li[contains(@class, 'o_search_panel_filter_value')]" position="attributes">
+        <attribute name="t-on-dragenter.stop.prevent">_onDragEnter(section.id, valueId)</attribute>
+        <attribute name="t-on-dragleave.stop.prevent">_onDragLeave</attribute>
+        <attribute name="t-on-dragover.stop.prevent"> </attribute>
+        <attribute name="t-on-drop.stop.prevent">_onDrop(section.id, valueId)</attribute>
+    </xpath>
+</t>
+
+</templates>

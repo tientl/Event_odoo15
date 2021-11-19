@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="web_dashboard.DashboardStatisticTooltip" owl="1">
+    <div>
+        <div t-if="info.help or env.debug" class="o-tooltip--string">
+            <t t-esc="info.displayName" />
+        </div>
+        <p t-if="info.help" class="o-tooltip--help">
+            <t t-esc="info.help"/>
+        </p>
+        <ul t-if="env.debug" class="o-tooltip--technical">
+            <li t-if="info.statisticType === 'aggregate'" data-item="aggregate">
+                <span class="o-tooltip--technical--title">Name: </span>
+                <t t-esc="info.name"/>
+            </li>
+            <li t-if="info.statisticType === 'formula' and info.name"
+                data-item="formula">
+                <span class="o-tooltip--technical--title">Name: </span>
+                <t t-esc="info.name"/>
+            </li>
+            <li data-item="string">
+                <span class="o-tooltip--technical--title">String: </span>
+                <t t-esc="info.displayName"/>
+            </li>
+            <li t-if="info.statisticType === 'aggregate'" data-item="field">
+                <span class="o-tooltip--technical--title">Field: </span>
+                <t t-esc="info.statistic.field"/>
+            </li>
+            <li t-if="info.statisticType === 'formula'" data-item="value" >
+                <span class="o-tooltip--technical--title">Value: </span>
+                <t t-esc="info.statistic.operation"/>
+            </li>
+            <li t-if="info.statisticType === 'aggregate' and info.statistic.domain"
+                data-item="domain">
+                <span class="o-tooltip--technical--title">Domain: </span>
+                <t t-esc="info.statistic.domain"/>
+            </li>
+            <li t-if="info.statisticType === 'aggregate' and info.statistic.domainLabel"
+                data-item="domain_label">
+                <span class="o-tooltip--technical--title">Domain Label: </span>
+                <t t-esc="info.statistic.domainLabel"/>
+            </li>
+            <li t-if="info.statisticType === 'aggregate' and info.statistic.groupOperator"
+                data-item="group_operator">
+                <span class="o-tooltip--technical--title">Group Operator: </span>
+                <t t-esc="info.statistic.groupOperator"/>
+            </li>
+            <li data-item="formatter" t-if="info.formatter" >
+                <span class="o-tooltip--technical--title">Widget: </span>
+                <t t-esc="info.formatter"/>
+            </li>
+            <li data-item="modifiers" t-if="info.modifiers" >
+                <span class="o-tooltip--technical--title">Modifiers: </span>
+                <t t-esc="info.modifiers"/>
+            </li>
+            <li data-item="value_label" t-if="info.valueLabel">
+                <span class="o-tooltip--technical--title">Value Label: </span>
+                <t t-esc="info.valueLabel"/>
+            </li>
+            <li data-item="help" t-if="info.help" >
+                <span class="o-tooltip--technical--title">Help: </span>
+                <t t-esc="info.help"/>
+            </li>
+            <li data-item="col" t-if="info.col" >
+                <span class="o-tooltip--technical--title">Column: </span>
+                <t t-esc="info.col"/>
+            </li>
+        </ul>
+    </div>
+</t>
+
+</templates>

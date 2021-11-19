@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="helpdesk_sla_report_analysis_view_pivot" model="ir.ui.view">
+        <field name="name">helpdesk.sla.report.analysis.pivot</field>
+        <field name="model">helpdesk.sla.report.analysis</field>
+        <field name="arch" type="xml">
+        <pivot string="SLA Status Analysis" disable_linking="1" sample="1">
+            <field name="team_id" type="row"/>
+            <field name="create_date" interval="month" type="col"/>
+            <field name="ticket_failed" type="measure"/>
+            <field name="sla_status_failed" type="measure"/>
+         </pivot>
+     </field>
+    </record>
+
+    <record id="helpdesk_sla_report_analysis_view_graph" model="ir.ui.view">
+        <field name="name">helpdesk.sla.report.analysis.graph</field>
+        <field name="model">helpdesk.sla.report.analysis</field>
+        <field name="arch" type="xml">
+            <graph string="SLA Status Analysis" disable_linking="1" sample="1">
+                 <field name="team_id"/>
+                 <field name="create_date" interval="month"/>
+             </graph>
+         </field>
+    </record>
+
+    <record id="helpdesk_sla_report_analysis_view_search" model="ir.ui.view">
+        <field name="name">helpdesk.sla.report.analysis.search</field>
+        <field name="model">helpdesk.sla.report.analysis</field>
+        <field name="arch" type="xml">
+            <search string="SLA Status Analysis">
+                <field name="ticket_id" string="Ticket"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="team_id"/>
+                <field name="ticket_type_id"/>
+                <field name="ticket_stage_id"/>
+                <field name="sla_id" groups="helpdesk.group_use_sla"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="sla_deadline" groups="helpdesk.group_use_sla"/>
+                <filter string="My Ticket" name="my_ticket" domain="[('user_id', '=',uid)]"/>
+                <filter string="Followed" domain="[('ticket_id.message_is_follower', '=', True)]" name="my_follow_ticket"/>
+                <filter string="Unassigned" domain="[('user_id', '=', False)]" name="unassigned"/>
+                <separator/>
+                <filter string="Urgent" domain="[('priority', '=', 3)]" name="urgent_priority"/>
+                <filter string="High Priority" domain="[('priority', '=', 2)]" name="high_priority"/>
+                <filter string="Medium Priority" domain="[('priority', '=', 1)]" name="medium_priority"/>
+                <filter string="Low Priority" domain="[('priority', '=', 0)]" name="low_priority"/>
+                <separator groups="helpdesk.group_use_sla"/>
+                <filter string="SLA Success" domain="[('sla_status', '=', 'reached')]" name="sla_success" groups="helpdesk.group_use_sla"/>
+                <filter string="SLA in Progress" domain="[('sla_status', '=', 'ongoing')]" name="sla_inprogress" groups="helpdesk.group_use_sla"/>
+                <filter string="SLA Failed" domain="[('sla_status', '=', 'failed')]" name="sla_failed" groups="helpdesk.group_use_sla"/>
+                <separator/>
+                <filter string="Open" domain="[('ticket_closed', '=', False)]" name="is_open"/>
+                <filter string="Closed" domain="[('ticket_closed', '=', True)]" name="is_close"/>
+                <separator/>
+                <filter string="Rated Tickets" domain="[('ticket_id.rating_last_value', '!=', 0.0)]" name="rated_ticket"/>
+                <separator/>
+                <filter string="Creation Date" name="filter_create_date" date="create_date"/>
+                <filter string="SLA Deadline" name="filter_sla_status_failed" date="sla_status_failed"/>
+                <filter string="Ticket Deadline" name="filter_ticket_deadline" date="ticket_deadline"/>
+                <separator/>
+                <filter string="Archived" domain="[('ticket_id.active', '=', False)]" name="archive"/>
+                <group expand="0" string="Group By">
+                    <filter string="Assigned to" name="assignee" context="{'group_by':'user_id'}"/>
+                    <filter string="Team" name="team" context="{'group_by':'team_id'}"/>
+                    <filter string="Stage" name="stage" context="{'group_by':'ticket_stage_id'}"/>
+                    <filter string="Type" name="ticket_type_id" context="{'group_by':'ticket_type_id'}"/>
+                    <filter string="Priority" name="priority" context="{'group_by': 'priority'}"/>
+                    <filter string="Customer" name="partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Company" name="company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="SLA" name="sla" context="{'group_by': 'sla_id'}"/>
+                    <filter string="SLA Status" name="sla_status" context="{'group_by': 'sla_status'}"/>
+                    <filter string="SLA Deadline" name="sla_status_deadline" context="{'group_by':'sla_deadline'}"/>
+                    <filter string="Ticket Deadline" name="ticket_deadline" context="{'group_by':'ticket_deadline'}"/>
+                    <filter string="Creation Date" name="created_by" context="{'group_by': 'create_date'}"/>
+                    <filter string="Closing Date" name="ticket_close_date" context="{'group_by':'close_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="helpdesk_sla_report_analysis_action" model="ir.actions.act_window">
+        <field name="name">SLA Status Analysis</field>
+        <field name="res_model">helpdesk.sla.report.analysis</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="helpdesk_sla_report_analysis_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No data yet ! 
+            </p><p>
+                Create tickets to get statistics.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_appraisal_view_report_pivot" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="helpdesk_sla_report_analysis_view_pivot"/>
+        <field name="act_window_id" ref="helpdesk_sla_report_analysis_action"/>
+    </record>
+
+    <record id="action_appraisal_view_report_graph" model="ir.actions.act_window.view">
+        <field name="sequence" eval="5"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="helpdesk_sla_report_analysis_view_graph"/>
+        <field name="act_window_id" ref="helpdesk_sla_report_analysis_action"/>
+    </record>
+
+    <menuitem
+        id="helpdesk_ticket_report_menu_sla_analysis"
+        name="SLA Status Analysis"
+        action="helpdesk_sla_report_analysis_action"
+        sequence="10"
+        parent="helpdesk_ticket_report_menu_main"/>
+
+</odoo>

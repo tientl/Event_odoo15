@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_salary_resume_monthly_benefit" model="hr.contract.salary.resume">
+        <field name="name">Nature</field>
+        <field name="value_type">sum</field>
+        <field name="code">monthly_benefit</field>
+        <field name="advantage_ids" eval="[
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_transport_company_car')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_transport_public')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_transport_train')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_transport_private_car')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_internet')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_mobile')),
+        ]"/>
+        <field name="category_id" ref="hr_contract_salary.hr_contract_salary_resume_category_monthly_advantages"/>
+        <field name="structure_type_id" ref="hr_contract.structure_type_employee_cp200"/>
+        <field name="impacts_monthly_total" eval="True"/>
+    </record>
+
+    <record id="hr_contract_salary_resume_monthly_cash" model="hr.contract.salary.resume">
+        <field name="name">Cash</field>
+        <field name="code">monthly_cash</field>
+        <field name="value_type">sum</field>
+        <field name="advantage_ids" eval="[
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_fuel_card')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_yearly_commission')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_meal_vouchers')),
+        ]"/>
+        <field name="category_id" ref="hr_contract_salary.hr_contract_salary_resume_category_monthly_advantages"/>
+        <field name="structure_type_id" ref="hr_contract.structure_type_employee_cp200"/>
+        <field name="impacts_monthly_total" eval="True"/>
+    </record>
+
+    <record id="hr_contract_salary_resume_yearly_cash" model="hr.contract.salary.resume">
+        <field name="name">Cash</field>
+        <field name="code">yearly_cash</field>
+        <field name="value_type">sum</field>
+        <field name="advantage_ids" eval="[
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_eco_voucher')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_thirteen_month')),
+            (4, ref('l10n_be_hr_contract_salary.l10n_be_double_holiday')),
+        ]"/>
+        <field name="category_id" ref="hr_contract_salary.hr_contract_salary_resume_category_yearly_advantages"/>
+        <field name="structure_type_id" ref="hr_contract.structure_type_employee_cp200"/>
+        <field name="impacts_monthly_total" eval="True"/>
+    </record>
+
+    <record id="hr_contract_salary_resume_annual_time_off" model="hr.contract.salary.resume">
+        <field name="name">Annual Time Off</field>
+        <field name="code">annual_time_off</field>
+        <field name="value_type">fixed</field>
+        <field name="fixed_value">20</field>
+        <field name="category_id" ref="hr_contract_salary.hr_contract_salary_resume_category_yearly_advantages"/>
+        <field name="structure_type_id" ref="hr_contract.structure_type_employee_cp200"/>
+        <field name="uom">days</field>
+    </record>
+
+    <record id="hr_contract_salary_resume_extra_time_off" model="hr.contract.salary.resume">
+        <field name="name">Extra Time Off</field>
+        <field name="value_type">contract</field>
+        <field name="code">holidays</field>
+        <field name="category_id" ref="hr_contract_salary.hr_contract_salary_resume_category_yearly_advantages"/>
+        <field name="structure_type_id" ref="hr_contract.structure_type_employee_cp200"/>
+        <field name="uom">days</field>
+    </record>
+</odoo>

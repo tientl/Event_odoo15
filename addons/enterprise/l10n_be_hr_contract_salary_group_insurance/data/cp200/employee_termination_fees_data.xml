@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cp200_employees_termination_fees_ambulatory_insurance" model="hr.salary.rule">
+        <field name="category_id" ref="l10n_be_hr_payroll.hr_payroll_head_div_impos"/>
+        <field name="name">Monthly ambulatory insurance (employer's share)</field>
+        <field name="code">AMBULATORY_INSURANCE</field>
+        <field name="sequence">12</field>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result_qty = 12
+result = inputs.AMBULATORY_INSURANCE.amount if inputs.AMBULATORY_INSURANCE else 0
+        </field>
+        <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_termination_fees"/>
+    </record>
+
+    <record id="cp200_employees_termination_fees_group_insurance" model="hr.salary.rule">
+        <field name="category_id" ref="l10n_be_hr_payroll.hr_payroll_head_div_impos"/>
+        <field name="name">Monthly group insurance (employer's share)</field>
+        <field name="code">GROUP_INSURANCE</field>
+        <field name="sequence">12</field>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result_qty = 12
+result = inputs.GROUP_INSURANCE.amount if inputs.GROUP_INSURANCE else 0
+        </field>
+        <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_termination_fees"/>
+    </record>
+</odoo>

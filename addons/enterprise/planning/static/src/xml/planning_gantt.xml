@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t t-name="PlanningGanttView.buttons" t-extend="GanttView.buttons">
+        <t t-jquery="> :last-child" t-operation="after">
+            <button t-if="activeActions.create &amp;&amp; activateScale == 'week'" class="o_gantt_button_copy_previous_week btn btn-primary" title="Copy previous week">
+                Copy previous
+            </button>
+            <button t-if="activeActions.edit" class="o_gantt_button_send_all btn btn-primary" title="Send schedule">
+                Publish
+            </button>
+        </t>
+    </t>
+
+    <t t-name="PlanningGanttView.Row" t-extend="HrGanttView.Row">
+        <t t-jquery="*[t-esc='pill.display_name']" t-operation="attributes">
+            <attribute name="t-esc" value="typeof pill.label === 'undefined' ? pill.display_name : pill.label"/>
+        </t>
+    </t>
+</templates>

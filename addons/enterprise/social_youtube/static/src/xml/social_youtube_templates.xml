@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="social_youtube.YoutubeUploadField">
+        <div t-if="widget.mode !== 'readonly'" class="o_field_binary_file o_social_youtube_field" aria-atomic="true">
+            <input type="text" class="o_input o_social_youtube_upload_filename"
+                readonly="readonly"
+                t-att-name="widget.name"
+                t-att-tabindex="widget.attrs.tabindex"
+                t-att-autofocus="widget.attrs.autofocus"/>
+
+            <div class="o_social_youtube_upload_bar d-none w-100 position-relative">
+                <div class="position-absolute font-weight-bold w-100 h-100 text-center">
+                    <span class="fa fa-spin fa-spinner mr-1"></span>
+                    <span class="o_social_youtube_upload_text">Uploading... 0%</span>
+                </div>
+                <div class="o_social_youtube_upload_progress h-100"/>
+            </div>
+            <button type="button" class="btn btn-primary o_select_file_button" title="Select">Upload Video</button>
+            <button type="button" class="btn btn-secondary fa fa-trash-o o_clear_file_button" title="Clear" aria-label="Clear"/>
+
+            <div class="o_hidden_input_file" aria-atomic="true">
+                <form class="o_form_binary_form o_social_youtube_upload_form" method="post" enctype="multipart/form-data">
+                    <input type="file" class="o_input_file" name="file" accept="video/*"/>
+                </form>
+            </div>
+        </div>
+        <div t-else="" class="o_social_youtube_field">
+            <span type="text" class="o_social_youtube_upload_filename"/>
+        </div>
+    </t>
+
+    <t t-name="social.StreamPostCommentsOriginalPost" t-extend="social.StreamPostCommentsOriginalPost">
+        <t t-jquery="span.o_social_original_post_author_image" t-operation="append">
+            <img t-if="originalPost.mediaType == 'youtube'"
+                t-attf-src="/web/image/social.account/#{originalPost.youtubeAccountId}/image/48x48" alt="Author Image"/>
+        </t>
+        <t t-jquery="div[name='o_social_original_post_message_body']" t-operation="before">
+            <div class="pt-2 pb-3" t-if="originalPost.mediaType === 'youtube'">
+                <div class="font-weight-bold pb-3" t-esc="originalPost.linkTitle"/>
+                <div class="w-100 embed-responsive embed-responsive-16by9 bg-200">
+                    <iframe
+                        t-attf-src="https://www.youtube.com/embed/#{originalPost.youtubeVideoId}?origin=#{window.document.location.host}&amp;rel=0"
+                        frameborder="0" allowfullscreen="1"></iframe>
+                </div>
+            </div>
+        </t>
+        <t t-jquery="div.o_social_comments_modal_original_post_content" t-operation="append">
+            <div class="o_social_original_post_youtube_stats d-flex pt-2"
+                t-if="originalPost.mediaType === 'youtube'">
+                <div class="o_social_subtle_btn_disabled pl-2">
+                    <i class="fa fa-thumbs-up" title="Likes"/>
+                    <b class="o_social_kanban_likes_count" t-esc="originalPost.youtubeLikesCount"/>
+                </div>
+                <div class="o_social_subtle_btn_disabled pl-2">
+                    <i class="fa fa-thumbs-down" title="Dislikes"/>
+                    <b class="o_social_kanban_likes_count" t-esc="originalPost.youtubeDislikesCount"/>
+                </div>
+                <div class="o_social_subtle_btn_disabled pl-3">
+                    <i class="fa fa-eye" title="Views"/>
+                    <b t-esc="originalPost.youtubeViewsCount"/>
+                </div>
+            </div>
+        </t>
+    </t>
+</templates>

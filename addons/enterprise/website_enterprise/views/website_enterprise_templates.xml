@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="user_navbar" inherit_id="website.user_navbar">
+        <xpath expr="//div[@id='oe_applications']" position="replace">
+            <a href="#" class="fa fa-th o_menu_toggle" accesskey="h"/>
+        </xpath>
+        <xpath expr="//div[hasclass('o_menu_sections')]" position="before">
+            <div class="o_menu_brand">Website</div>
+        </xpath>
+    </template>
+
+    <template id="user_navbar_inherit_website_enterprise" inherit_id="website.user_navbar">
+        <xpath expr="//div[@id='o_new_content_menu_choices']/div/div">
+            <t t-set='mod' t-value="env.ref('base.module_website_appointment')" />
+            <div t-if="is_system"
+                 name="module_website_appointment"
+                 t-att-data-module-id="mod.id"
+                 t-att-data-module-shortdesc="mod.shortdesc"
+                 class="col-md-4 mb8 o_new_content_element">
+                <a href="#" data-action="new_appointment">
+                    <i class="fa fa-calendar"/>
+                    <p>Appointment Form</p>
+                </a>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="account_disallowed_expenses_rate_tree" model="ir.ui.view">
+        <field name="name">account.disallowed.expenses.rate.tree</field>
+        <field name="model">account.disallowed.expenses.rate</field>
+        <field name="arch" type="xml">
+            <tree default_order="date_from" editable="bottom" create="1" delete="1">
+                <field name="date_from"/>
+                <field name="rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_disallowed_expenses_rate_form" model="ir.ui.view">
+        <field name="name">account.disallowed.expenses.rate.form</field>
+        <field name="model">account.disallowed.expenses.rate</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="rate"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_account_disallowed_expenses_category_tree" model="ir.ui.view">
+        <field name="name">account.disallowed.expenses.category.tree</field>
+        <field name="model">account.disallowed.expenses.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_disallowed_expenses_category_search" model="ir.ui.view">
+        <field name="name">account.disallowed.expenses.category.search</field>
+        <field name="model">account.disallowed.expenses.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_account_disallowed_expenses_category_form" model="ir.ui.view">
+        <field name="name">account.disallowed.expenses.category.form</field>
+        <field name="model">account.disallowed.expenses.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="account_ids" invisible="1"/>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_account_select" string="Accounts" type="object" icon="fa-bars" attrs="{'invisible': [('account_ids', '=', [])]}"/>
+                    </div>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="company_id" options="{'no_create': True}"/>
+                    </group>
+                    <group string="Rates">
+                        <field name="rate_ids" nolabel="1" editable="bottom">
+                            <tree order="date_from desc">
+                                <field name="date_from"/>
+                                <field name="rate"/>
+                                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_account_disallowed_expenses_category_list" model="ir.actions.act_window">
+        <field name="name">Disallowed Expenses Categories</field>
+        <field name="res_model">account.disallowed.expenses.category</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a Disallowed Expenses Category
+            </p>
+        </field>
+    </record>
+
+    <menuitem action="action_account_disallowed_expenses_category_list"
+              id="menu_action_account_disallowed_expenses_category_list"
+              parent="account.account_management_menu"
+              groups="account.group_account_manager"/>
+</odoo>

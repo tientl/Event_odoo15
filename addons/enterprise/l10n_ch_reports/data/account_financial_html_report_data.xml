@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+   <!-- BS REPORT  -->
+
+    <record id="account_financial_report_l10n_ch_bilan" model="account.financial.html.report">
+        <field name="name">Balance Sheet</field>
+        <field name="date_range" eval="False"/>
+        <field name="parent_id" ref="l10n_ch.account_reports_ch_statements_menu"/>
+        <field name="country_id" ref="base.ch"/>
+    </record>
+
+    <record id="account_financial_report_line_ch_1" model="account.financial.html.report.line">
+        <field name="name">ASSETS</field>
+        <field name="code">CH_1</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="1"/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_bilan"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_10 + CH_14</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_10" model="account.financial.html.report.line">
+        <field name="name">Current Assets</field>
+        <field name="code">CH_10</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_1"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_100 + CH_106 + CH_110 + CH_114 + CH_120 + CH_130</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_100" model="account.financial.html.report.line">
+        <field name="name">Cash</field>
+        <field name="code">CH_100</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '1'), ('account_id.code', '&lt;', '106')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_106" model="account.financial.html.report.line">
+        <field name="name">Short-term assets with stock exchange price</field>
+        <field name="code">CH_106</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '106'), ('account_id.code', '&lt;', '11')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_110" model="account.financial.html.report.line">
+        <field name="name">Accounts receivable from goods and services</field>
+        <field name="code">CH_110</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '11'), ('account_id.code', '&lt;', '114')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_114" model="account.financial.html.report.line">
+        <field name="name">Other short-term receivables</field>
+        <field name="code">CH_114</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="4"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '114'), ('account_id.code', '&lt;', '120')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_120" model="account.financial.html.report.line">
+        <field name="name">Inventories</field>
+        <field name="code">CH_120</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="5"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '120'), ('account_id.code', '&lt;', '130')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_130" model="account.financial.html.report.line">
+        <field name="name">Accrued revenue and deferred expense</field>
+        <field name="code">CH_130</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="6"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_10"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '130'), ('account_id.code', '&lt;', '14')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_14" model="account.financial.html.report.line">
+        <field name="name">CAPITAL ASSETS</field>
+        <field name="code">CH_14</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_1"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_140 + CH_148 + CH_150 + CH_160 + CH_170 + CH_180</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_140" model="account.financial.html.report.line">
+        <field name="name">Financial assets</field>
+        <field name="code">CH_140</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '14'), ('account_id.code', '&lt;', '148')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_148" model="account.financial.html.report.line">
+        <field name="name">Participations</field>
+        <field name="code">CH_148</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '148'), ('account_id.code', '&lt;', '150')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_150" model="account.financial.html.report.line">
+        <field name="name">Movable tangible assets</field>
+        <field name="code">CH_150</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '150'), ('account_id.code', '&lt;', '160')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_160" model="account.financial.html.report.line">
+        <field name="name">Immovable tangible assets</field>
+        <field name="code">CH_160</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="4"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '160'), ('account_id.code', '&lt;', '170')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_170" model="account.financial.html.report.line">
+        <field name="name">Intangible assets</field>
+        <field name="code">CH_170</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="5"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '170'), ('account_id.code', '&lt;', '180')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_180" model="account.financial.html.report.line">
+        <field name="name">Non-paid-in share, corporate or foundation capital</field>
+        <field name="code">CH_180</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="6"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_14"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '180'), ('account_id.code', '&lt;', '2')]"/>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_2" model="account.financial.html.report.line">
+        <field name="name">LIABILITIES AND EQUITY</field>
+        <field name="code">CH_2</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="2"/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_bilan"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_20 + CH_24 + CH_28</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_20" model="account.financial.html.report.line">
+        <field name="name">Current Liabilities</field>
+        <field name="code">CH_20</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_2"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_200 + CH_210 + CH_220 + CH_230</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_200" model="account.financial.html.report.line">
+        <field name="name">Accounts payable from goods and services</field>
+        <field name="code">CH_200</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_20"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '2'), ('account_id.code', '&lt;', '210')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_210" model="account.financial.html.report.line">
+        <field name="name">Current interest-bearing liabilities</field>
+        <field name="code">CH_210</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_20"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '210'), ('account_id.code', '&lt;', '220')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_220" model="account.financial.html.report.line">
+        <field name="name">Other current liabilities</field>
+        <field name="code">CH_220</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_20"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '220'), ('account_id.code', '&lt;', '230')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_230" model="account.financial.html.report.line">
+        <field name="name">Deferred revenue and accrued expense</field>
+        <field name="code">CH_230</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="4"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_20"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '230'), ('account_id.code', '&lt;', '24')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_24" model="account.financial.html.report.line">
+        <field name="name">Long-term Liabilities</field>
+        <field name="code">CH_24</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_2"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_240 + CH_250 + CH_260</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_240" model="account.financial.html.report.line">
+        <field name="name">Long-term interest-bearing liabilities</field>
+        <field name="code">CH_240</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_24"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '24'), ('account_id.code', '&lt;', '250')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_250" model="account.financial.html.report.line">
+        <field name="name">Other long-term liabilities</field>
+        <field name="code">CH_250</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_24"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '250'), ('account_id.code', '&lt;', '260')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_260" model="account.financial.html.report.line">
+        <field name="name">Provisions</field>
+        <field name="code">CH_260</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_24"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '260'), ('account_id.code', '&lt;', '28')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_28" model="account.financial.html.report.line">
+        <field name="name">Equity</field>
+        <field name="code">CH_28</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_2"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_280 + CH_290 + CH_299</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_280" model="account.financial.html.report.line">
+        <field name="name">Share, corporate or foundation capital</field>
+        <field name="code">CH_280</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_28"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '28'), ('account_id.code', '&lt;', '290')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_290" model="account.financial.html.report.line">
+        <field name="name">Legal capital reserves</field>
+        <field name="code">CH_290</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_28"/>
+        <field name="groupby">account_id</field>
+        <field name="special_date_changer">normal</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '290'), ('account_id.code', '&lt;', '2991')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_299" model="account.financial.html.report.line">
+        <field name="name">Annual profit or annual loss</field>
+        <field name="code">CH_299</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_28"/>
+        <field name="special_date_changer">from_beginning</field>
+        <field name="green_on_positive">true</field>
+        <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_unaffected_earnings'))]"/>
+        <field name="formulas">CH_R - sum</field>
+    </record>
+
+   <!-- P&L REPORT  -->
+
+    <record id="account_financial_report_l10n_ch_cdr" model="account.financial.html.report">
+        <field name="name">Profit And Loss</field>
+        <field name="parent_id" ref="l10n_ch.account_reports_ch_statements_menu"/>
+        <field name="country_id" ref="base.ch"/>
+    </record>
+
+    <record id="account_financial_report_line_ch_3" model="account.financial.html.report.line">
+        <field name="name">Operating revenue from goods and services</field>
+        <field name="code">CH_3</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_30 + CH_39</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_30" model="account.financial.html.report.line">
+        <field name="name">Net sales from goods and services</field>
+        <field name="code">CH_30</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_3"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '3'), ('account_id.code', '&lt;', '39')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_39" model="account.financial.html.report.line">
+        <field name="name">Changes in inventories of unfinished and finished products and in non-invoiced services</field>
+        <field name="code">CH_39</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_3"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '39'), ('account_id.code', '&lt;', '4')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_ebitda" model="account.financial.html.report.line">
+        <field name="name">Earnings before interest, tax and depreciation and amortisation (EBITDA)</field>
+        <field name="code">CH_EBITDA</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_3 +CH_4 + CH_5 + CH_60</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_4" model="account.financial.html.report.line">
+        <field name="name">Expenses for materials, goods and services</field>
+        <field name="code">CH_4</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_ebitda"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '4'), ('account_id.code', '&lt;', '5')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_5" model="account.financial.html.report.line">
+        <field name="name">Staff cost</field>
+        <field name="code">CH_5</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_ebitda"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '5'), ('account_id.code', '&lt;', '6')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_60" model="account.financial.html.report.line">
+        <field name="name">Other operating expenses (without depreciation and financial result)</field>
+        <field name="code">CH_60</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="4"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_ebitda"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '6'), ('account_id.code', '&lt;', '68')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_ebit" model="account.financial.html.report.line">
+        <field name="name">Earnings before interest and taxes (EBIT)</field>
+        <field name="code">CH_EBIT</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_EBITDA + CH_68</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_68" model="account.financial.html.report.line">
+        <field name="name">Depreciation and valuation adjustments on capital asset items</field>
+        <field name="code">CH_68</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_ebit"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '68'), ('account_id.code', '&lt;', '69')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+
+    <record id="account_financial_report_line_ch_ebt" model="account.financial.html.report.line">
+        <field name="name">Earnings before taxes (EBT)</field>
+        <field name="code">CH_EBT</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="4"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_EBIT + CH_69</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_69" model="account.financial.html.report.line">
+        <field name="name">Financial Result</field>
+        <field name="code">CH_69</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_ebt"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '69'), ('account_id.code', '&lt;', '7')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_rai" model="account.financial.html.report.line">
+        <field name="name">Annual (net) profit or loss before taxes</field>
+        <field name="code">CH_RAI</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="5"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_EBT + CH_7 + CH_80 + CH_85</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_7" model="account.financial.html.report.line">
+        <field name="name">Profit and loss from non-core business</field>
+        <field name="code">CH_7</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_rai"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '7'), ('account_id.code', '&lt;', '8')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_80" model="account.financial.html.report.line">
+        <field name="name">Non-operational result</field>
+        <field name="code">CH_80</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_rai"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '8'), ('account_id.code', '&lt;', '85')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_85" model="account.financial.html.report.line">
+        <field name="name">Extraordinary, non-recurring or prior-period result</field>
+        <field name="code">CH_85</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_rai"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '85'), ('account_id.code', '&lt;', '89')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_89" model="account.financial.html.report.line">
+        <field name="name">Direct Taxes</field>
+        <field name="code">CH_89</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="98"/>
+        <field name="parent_id" ref=""/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="groupby">account_id</field>
+        <field name="domain" eval="[('account_id.code', '&gt;=', '89'), ('account_id.code', '&lt;', '9')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_R" model="account.financial.html.report.line">
+        <field name="name">Annual (net) profit or loss</field>
+        <field name="code">CH_R</field>
+        <field name="level" eval="0"/>
+        <field name="sequence" eval="99"/>
+        <field name="financial_report_id" ref="account_financial_report_l10n_ch_cdr"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_RAI + CH_89</field>
+    </record>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cp200_employees_salary_group_insurance" model="hr.salary.rule">
+        <field name="category_id" ref="l10n_be_hr_contract_salary_group_insurance.hr_salary_rule_category_group_insurance"/>
+        <field name="name">Group Insurance (Employer)</field>
+        <field name="code">GROUPINSURANCE</field>
+        <field name="sequence">503</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.l10n_be_group_insurance_rate</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result_rate = 8.86
+result = contract.l10n_be_group_insurance_amount</field>
+        <field name="partner_id" ref="l10n_be_hr_payroll.res_partner_onss"/>
+        <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary"/>
+        <field name="appears_on_payslip" eval="False"/>
+    </record>
+</odoo>

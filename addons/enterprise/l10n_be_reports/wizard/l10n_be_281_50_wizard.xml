@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_be_281_50_form_wizard" model="ir.ui.view">
+        <field name="name">l10n_be_reports.281_50_wizard</field>
+        <field name="model">l10n_be_reports.281_50_wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create 281.50 Form">
+                <div class="alert alert-info" role="status">
+                    Form 281.50 is generated only for partners with accounting entries on accounts with the tag "281.50".
+                </div>
+                <group>
+                    <field name="reference_year" placeholder="e.g. 2018"/>
+                    <field name="is_test" groups="base.group_no_one"/>
+                    <field name="type_sending"/>
+                    <field name="type_treatment"/>
+                </group>
+                <footer>
+                    <button name="action_generate_281_50_form_pdf" string="Create PDF" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_generate_281_50_form_xml" string="Create XML" type="object" class="btn-primary" data-hotkey="w"/>
+                    <button name="action_generate_281_50_form" string="Create Both" type="object" data-hotkey="x"/>
+                    <button string="Close" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

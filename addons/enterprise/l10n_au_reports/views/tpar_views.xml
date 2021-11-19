@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="action_account_report_l10n_au_tpar" model="ir.actions.client">
+            <field name="name">Taxable Payments Annual Reports (TPAR)</field>
+            <field name="tag">account_report</field>
+            <field name="context" eval="{'model': 'l10n.au.tax.report'}" />
+        </record>
+
+        <menuitem id="menu_action_account_report_l10n_au_tpar" name="Taxable Payments Annual Reports (TPAR)" action="action_account_report_l10n_au_tpar" parent="l10n_au.account_reports_au_statements_menu"/>
+
+        <template id="line_caret_options" inherit_id="account_reports.line_caret_options">
+            <xpath expr="//li[@id='res.partner.carret']/a[last()]" position="after">
+                <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_invoices" class="dropdown-item">Open Invoices</a>
+            </xpath>
+        </template>
+</odoo>

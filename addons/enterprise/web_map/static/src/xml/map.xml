@@ -1,0 +1,188 @@
+<?xml version ="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="web_map.MapRenderer" owl="1">
+        <div class="o_map_view row no-gutters">
+            <t t-if="props.routingError">
+                <t t-call="web_map.MapRenderer.RountingUnavailable"/>
+            </t>
+            <t t-elif="props.routing and !props.mapBoxToken">
+                <t t-call="web_map.MapRenderer.NoMapToken"/>
+            </t>
+            <t t-if="props.fetchingCoordinates">
+                <t t-call="web_map.MapRenderer.FetchingCoordinates"/>
+            </t>
+            <div class="o_map_container col-md-12 col-lg-10" t-ref="mapContainer"/>
+            <t t-call="web_map.MapRenderer.PinListContainer"/>
+        </div>
+    </t>
+
+    <t t-name="web_map.MapRenderer.FetchingCoordinates" owl="1">
+        <div class="alert alert-info col-md-12 col-lg-10 pr-5 pl-5 mb-0 text-center o-map-alert"
+            role="status">
+            <i class="fa fa-spin fa-circle-o-notch"/> Locating new addresses...
+        </div>
+    </t>
+
+    <t t-name="web_map.MapRenderer.NoMapToken" owl="1">
+        <div class="alert alert-info alert-dismissible col-md-12 col-lg-10 pr-5 pl-5 mb-0 text-center o-map-alert"
+             role="status">
+            To get routing on your map, you first need to setup your Mapbox token.
+            <a href="/web#action=base_setup.action_general_configuration" class="ml8">
+                <i class="fa fa-arrow-right"/>
+                Set up token
+            </a>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span>×</span>
+            </button>
+        </div>
+    </t>
+
+    <t t-name="web_map.MapRenderer.PinListContainer" owl="1">
+        <div class="o_pin_list_container d-none d-lg-block col-2">
+            <div t-if="!props.hideTitle" class="o_pin_list_header">
+                <header>
+                    <i class="fa fa-list"/>
+                    <span t-esc="props.panelTitle"/>
+                </header>
+            </div>
+            <t t-if="props.groupBy">
+                <t t-foreach="props.recordGroups" t-as="groupId" t-key="groupId">
+                    <div class="o_pin_list_group">
+                        <t t-set="group" t-value="props.recordGroups[groupId]"/>
+                        <div class="o_pin_list_group_header" t-on-click="_toggleGroup(groupId)">
+                            <i t-attf-class="fa fa-caret-{{ state.closedGroupIds.includes(groupId) ? 'right' : 'down' }}"/>
+                            <span t-att-style="'color:' + _getGroupColor(groupId)"
+                            t-raw="props.numbering ? _pinNoCircleSVG : _pinCircleSVG"/>
+                            <t t-if="group.name" t-esc="group.name"/>
+                            <t t-else="">Undefined</t>
+                        </div>
+                        <t t-if="!state.closedGroupIds.includes(groupId)">
+                            <t t-call="web_map.MapRenderer.PinList">
+                                <t t-set="records" t-value="group.records"/>
+                            </t>
+                        </t>
+                    </div>
+                </t>
+            </t>
+            <t t-else="">
+                <t t-call="web_map.MapRenderer.PinList">
+                    <t t-set="records" t-value="props.records"/>
+                </t>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="web_map.MapRenderer.PinList" owl="1">
+        <ol t-if="props.numbering" class="o_pin_list_details">
+            <t t-call="web_map.MapRenderer.PinListItems"/>
+        </ol>
+        <ul t-else="" class="o_pin_list_details">
+            <t t-call="web_map.MapRenderer.PinListItems"/>
+        </ul>
+    </t>
+
+    <t t-name="web_map.MapRenderer.PinListItems" owl="1">
+        <t t-foreach="records" t-as="record" t-key="record.id">
+            <t t-set="latitude" t-value="record.partner and record.partner.partner_latitude"/>
+            <t t-set="longitude" t-value="record.partner and record.partner.partner_longitude"/>
+            <li
+                t-att-class="{o_pin_located: latitude and longitude}"
+                t-att-title="(!latitude or !longitude) and 'Could not locate' or record.display_name"
+            >
+                <div t-if="latitude and longitude" class="d-flex">
+                    <a href="" class="o_pin_display_name" t-on-click.prevent="_centerAndOpenPin(record)">
+                        <t t-if="props.numbering">
+                            <t t-if="props.numbering" t-esc="record_index+1"/>.
+                        </t>
+                        <t t-esc="record.display_name"/>
+                    </a>
+                </div>
+                <div t-else="" class="text-muted d-flex">
+                    <span class="o_pin_display_name">
+                        <t t-if="props.numbering">
+                            <t t-esc="record_index+1"/>.
+                        </t>
+                        <t t-esc="record.display_name"/>
+                    </span>
+                    <span class="ml-auto" t-if="record.partner and record.partner.fetchingCoordinate">
+                        <i class="fa fa-spin fa-circle-o-notch"/>
+                    </span>
+                </div>
+            </li>
+        </t>
+    </t>
+
+    <t t-name="web_map.MapRenderer.RountingUnavailable" owl="1">
+        <div class="alert alert-warning alert-dismissible col-md-12 col-lg-10 pr-5 pl-5 mb-0 text-center o-map-alert"
+             role="status">
+            <strong>Unsuccessful routing request: </strong>
+            <t t-raw="props.routingError"/>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span>×</span>
+            </button>
+        </div>
+    </t>
+
+    <t t-name="web_map.marker" owl="1">
+        <div t-att-style="color and ('color:' + color)">
+            <t t-raw="pinSVG"/>
+            <t t-if="numbering" t-call="web_map.markerNumber"/>
+            <t t-elif="isMulti" t-call="web_map.markerBadge"/>
+        </div>
+    </t>
+
+    <t t-name="web_map.markerBadge" owl="1">
+        <span class="badge badge-danger badge-pill border-0 o_map_marker_badge">
+            <t t-esc="count"/>
+        </span>
+    </t>
+
+    <t t-name="web_map.markerNumber" owl="1">
+        <p class="o_number_icon">
+            <t t-esc="number"/>
+            <t t-if="count gt 1">
+                <t t-call="web_map.markerBadge"/>
+            </t>
+        </p>
+    </t>
+
+    <t t-name="web_map.markerPopup" owl="1">
+        <div>
+            <table class="o_map_popup_table">
+                <thead>
+                    <tr>
+                        <th colspan="2"></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="fields" t-as="field">
+                        <td class="contentName">
+                            <t t-esc="field.string"/>
+                        </td>
+                        <td class="space"></td>
+                        <td class="contentString">
+                            <t t-esc="field.value"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="center mt8">
+                <button class="btn btn-primary o_open" t-if="hasFormView">
+                    open
+                </button>
+                <div class="divider"/>
+                <a class="btn btn-primary" style="color:white"
+                   t-att-href="url" target="_blank">navigate to</a>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="MapView.buttons">
+        <div>
+            <a class ="btn btn-primary" style="color:white"
+               t-att-href="widget" target="_blank">View in Google Maps</a>
+        </div>
+    </t>
+</templates>

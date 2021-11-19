@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="hr_contract.group_hr_contract_manager" model="res.groups">
+          <field name="implied_ids" eval="[(4, ref('sign.group_sign_manager'))]"/>
+        </record>
+
+        <data noupdate="1">
+
+        <record id="ir_rule_sign_request_item_group_sign_user" model="ir.rule">
+            <field name="name">sign.request.item: group_sign_user: See all request item</field>
+            <field name="model_id" ref="sign.model_sign_request_item"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('sign.group_sign_user'))]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+    <t t-name="Planning.event.popover" t-extend="CalendarView.event.popover">
+        <t t-jquery='small[t-if="widget.eventTime.duration"]' t-operation="replace">
+            <small t-if="widget.allocated_hours">
+                <b t-esc="_.str.sprintf('(%s)', widget.allocated_hours)"/>
+            </small>
+            <small t-if="widget.allocated_percentage">
+                <b t-esc="_.str.sprintf('(%s %s)', widget.allocated_percentage, '%')"/>
+            </small>
+            <small t-if="widget.eventTime.duration and !(widget.allocated_hours or widget.allocated_percentage)">
+                <b t-esc="_.str.sprintf('(%s)', widget.eventTime.duration)"/>
+            </small>
+        </t>
+    </t>
+
+</templates>

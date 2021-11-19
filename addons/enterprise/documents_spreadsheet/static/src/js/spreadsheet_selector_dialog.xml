@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+    <div t-name="documents_spreadsheet.SpreadsheetSelectorDialog" class="o_spreadsheet_selector_dialog">
+        <select id="spreadsheet" name="spreadsheet" class="o_input">
+            <option class="o_new" value=''>New Spreadsheet</option>
+            <option t-foreach="widget.spreadsheets" t-as="spreadsheet" t-att-value="spreadsheet.id">
+                <t t-esc="spreadsheet.name"/>
+            </option>
+        </select>
+        <div t-if="widget.threshold !== undefined" class="o_threshold_list">
+          Insert the first <input id="threshold" t-att-max="widget.maxThreshold" type="number" class="o_input" t-att-value="widget.threshold"/> records of the list.
+        </div>
+    </div>
+
+</templates>

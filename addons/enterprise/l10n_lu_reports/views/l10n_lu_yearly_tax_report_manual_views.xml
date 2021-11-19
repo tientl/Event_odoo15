@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_l10n_lu_yearly_tax_report_manual" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.view</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <form create="false">
+                <notebook>
+                    <page string="General Information">
+                        <group col="3">
+                            <label for="avg_nb_employees" colspan="2"/>
+                            <field name="avg_nb_employees" nolabel="1"/>
+                            <label for="avg_nb_employees_with_salary" colspan="2"/>
+                            <field name="avg_nb_employees_with_salary" nolabel="1"/>
+                            <label for="avg_nb_employees_with_no_salary" colspan="2"/>
+                            <field name="avg_nb_employees_with_no_salary" nolabel="1"/>
+                            <label for="phone_number" colspan="2"/>
+                            <field name="phone_number" nolabel="1"/>
+                            <label for="books_records_documents" colspan="2"/>
+                            <field name="books_records_documents" nolabel="1"/>
+                            <label for="submitted_rcs" colspan="2"/>
+                            <field name="submitted_rcs" nolabel="1"/>
+                        </group>
+                    </page>
+                    <page string="Sales and Receipts">
+                        <group col="6" string="Total Sales / Receipts (472)">
+                            <label for="report_section_472_rest" string="Sales / Receipts (472): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_472_rest" string="472 " colspan="1" class="oe_right"/>
+                            <field name="report_section_472_rest" nolabel="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_001" string="Supply of inhouse manufactured goods" colspan="4"/>
+                            <label for="report_section_001" string="001" colspan="1" class="oe_right"/>
+                            <field name="report_section_001" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_002" string="Supply of goods not manufactured inhouse" colspan="4"/>
+                            <label for="report_section_002" string="002" colspan="1" class="oe_right"/>
+                            <field name="report_section_002" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_003" string="Net profit margin (special arrangement: Art. 56ter-1 and 56ter-2)" colspan="4"/>
+                            <label for="report_section_003" string="003" colspan="1" class="oe_right"/>
+                            <field name="report_section_003" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_004" string="Supply of services" colspan="4"/>
+                            <label for="report_section_004" string="004" colspan="1" class="oe_right"/>
+                            <field name="report_section_004" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_005" string="Disposal of tangible and intangible capital assets for ancillary transactions" colspan="4"/>
+                            <label for="report_section_005" string="005" colspan="1" class="oe_right"/>
+                            <field name="report_section_005" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_206" string="Custom: " colspan="2"/>
+                            <label for="report_section_206" string="206" colspan="1" class="oe_right"/>
+                            <field name="report_section_206" colspan="1" nolabel="1"/>
+                            <label for="report_section_206" string="007" colspan="1" class="oe_right"/>
+                            <field name="report_section_007" colspan="1" nolabel="1"/>
+                        </group>
+                    </page>
+                    <page string="Other assimilated supplies">
+                        <group col="6" string="Application of goods for non-business use and for business purposes (455)">
+                            <label for="report_section_455_rest" string="Application of goods for non-business use and for business purposes (455): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_455_rest" string="455" colspan="1" class="oe_right"/>
+                            <field name="report_section_455_rest" nolabel="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_008" string="Application of goods for private use or for that of the staff (008)" colspan="4"/>
+                            <label for="report_section_008" string="008" colspan="1" class="oe_right"/>
+                            <field name="report_section_008" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_009" string="Application for the purpose of business of goods produced in the course of the business (009)" colspan="4"/>
+                            <label for="report_section_009" string="009" colspan="1" class="oe_right"/>
+                            <field name="report_section_009" nolabel="1" class="oe_inline"/>
+                        </group>
+                        <separator/>
+                        <group col="6" string="Non-business use of goods and supply of services free of charge (456)">
+                            <label for="report_section_456_rest" string="Non-business use of goods and supply of services free of charge (456): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_456_rest" string="456" colspan="1" class="oe_right"/>
+                            <field name="report_section_456_rest" nolabel="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_010" string="Use of goods considered business assets for purposes other than those of the business (010)" colspan="4"/>
+                            <label for="report_section_010" string="010" colspan="1" class="oe_right"/>
+                            <field name="report_section_010" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_011" string="Supply of services carried out free of charge for purposes other than those of the business (011)" colspan="4"/>
+                            <label for="report_section_011" string="011" colspan="1" class="oe_right"/>
+                            <field name="report_section_011" nolabel="1" class="oe_inline"/>
+                        </group>
+                    </page>
+                    <page string="Intra-Community">
+                        <group col="6" string="Intra-Community supply (457)">
+                            <label for="report_section_457_rest" string="Intra-Community supply (457): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_457_rest" string="457" colspan="1" class="oe_right"/>
+                            <field name="report_section_457_rest" nolabel="1" colspan="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_013" string="IC supply of goods to persons identified for VAT purposes in another Member State (MS) (013)" colspan="4"/>
+                            <label for="report_section_013" string="013" colspan="1" class="oe_right"/>
+                            <field name="report_section_013" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_202" string="IC supply of new means of transport (Art. 43(1)(e)) to persons not identified for VAT purposes who are established or reside in an other MS (202)" colspan="4"/>
+                            <label for="report_section_202" string="202" colspan="1" class="oe_right"/>
+                            <field name="report_section_202" nolabel="1" class="oe_inline"/>
+                        </group>
+                    </page>
+                    <page string="Total input tax">
+                        <group col="6" string="Invoiced by other taxable persons for goods or services supplied (458)">
+                            <label for="report_section_458_rest" string="Invoiced by other taxable persons for goods or services supplied (458): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_458_rest" string="458" colspan="1" class="oe_right"/>
+                            <field name="report_section_458_rest" nolabel="1" colspan="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_077" string="VAT on stock entries" colspan="4"/>
+                            <label for="report_section_077" string="077" colspan="1" class="oe_right"/>
+                            <field name="report_section_077" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_081" string="VAT on capital expenditures" colspan="4"/>
+                            <label for="report_section_081" string="081" colspan="1" class="oe_right"/>
+                            <field name="report_section_081" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_085" string="VAT on operational expenditures" colspan="4"/>
+                            <label for="report_section_085" string="085" colspan="1" class="oe_right"/>
+                            <field name="report_section_085" nolabel="1" class="oe_inline"/>
+                        </group>
+                        <separator/>
+                        <group col="6" string="Due in respect of intra-Community acquisitions of goods (459)">
+                            <label for="report_section_459_rest" string="Due in respect of Intra-Community acquistions of goods (459): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_459_rest" string="459" colspan="1" class="oe_right"/>
+                            <field name="report_section_459_rest" nolabel="1" colspan="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_078" string="VAT on stock entries" colspan="4"/>
+                            <label for="report_section_078" string="078" colspan="1" class="oe_right"/>
+                            <field name="report_section_078" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_082" string="VAT on capital expenditures" colspan="4"/>
+                            <label for="report_section_082" string="082" colspan="1" class="oe_right"/>
+                            <field name="report_section_082" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_086" string="VAT on operational expenditures" colspan="4"/>
+                            <label for="report_section_086" string="086" colspan="1" class="oe_right"/>
+                            <field name="report_section_086" nolabel="1" class="oe_inline"/>
+                        </group>
+                        <separator/>
+                        <group col="6" string="Due or paid in respect of importation of goods (460)">
+                            <label for="report_section_460_rest" string="Due or paid in respect of mportation of goods (460): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_460_rest" string="460" colspan="1" class="oe_right"/>
+                            <field name="report_section_460_rest" nolabel="1" colspan="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_079" string="VAT on stock entries" colspan="4"/>
+                            <label for="report_section_079" string="079" colspan="1" class="oe_right"/>
+                            <field name="report_section_079" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_083" string="VAT on capital expenditures" colspan="4"/>
+                            <label for="report_section_083" string="083" colspan="1" class="oe_right"/>
+                            <field name="report_section_083" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_087" string="VAT on operational expenditures" colspan="4"/>
+                            <label for="report_section_087" string="087" colspan="1" class="oe_right"/>
+                            <field name="report_section_087" nolabel="1" class="oe_inline"/>
+                        </group>
+                        <separator/>
+                        <group col="6" string="Due under the reverse charge (461)">
+                            <label for="report_section_461_rest" string="Due under the reverse charge (461): amount still to be allocated" colspan="4"/>
+                            <label for="report_section_461_rest" string="461" colspan="1" class="oe_right"/>
+                            <field name="report_section_461_rest" nolabel="1" colspan="1" class="oe_inline"/>
+                            <separator string="Repartition fields for the annual tax report" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_404" string="VAT on stock entries" colspan="4"/>
+                            <label for="report_section_404" string="404" colspan="1" class="oe_right"/>
+                            <field name="report_section_404" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_405" string="VAT on capital expenditures" colspan="4"/>
+                            <label for="report_section_405" string="405" colspan="1" class="oe_right"/>
+                            <field name="report_section_405" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_406" string="VAT on operational expenditures" colspan="4"/>
+                            <label for="report_section_406" string="406" colspan="1" class="oe_right"/>
+                            <field name="report_section_406" nolabel="1" class="oe_inline"/>
+                        </group>
+                    </page>
+                    <page string="Accountant and Lessor">
+                        <group col="6" string="Appendix F. Names and addresses to be specified">
+                            <separator string="Accountant (A9) details" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_397" string="a) Name" colspan="1"/>
+                            <label for="report_section_397" string="397" colspan="1" class="oe_right"/>
+                            <field name="report_section_397" nolabel="1" class="oe_inline" colspan="4"/>
+                            <label for="report_section_398" string="b) Address" colspan="1"/>
+                            <label for="report_section_398" string="398" colspan="1" class="oe_right"/>
+                            <field name="report_section_398" nolabel="1" class="oe_inline" colspan="4"/>
+                            <label for="report_section_399" string="" colspan="1"/>
+                            <label for="report_section_399" string="399" colspan="1" class="oe_right"/>
+                            <field name="report_section_399" nolabel="1" class="oe_inline" colspan="4"/>
+                            <separator string="Lessor (A18a) details" colspan="6" style="font-size:14px"/>
+                            <label for="report_section_400" string="a) Name" colspan="1"/>
+                            <label for="report_section_400" string="400" colspan="1" class="oe_right"/>
+                            <field name="report_section_400" nolabel="1" class="oe_inline" colspan="4"/>
+                            <label for="report_section_401" string="b) Address" colspan="1"/>
+                            <label for="report_section_401" string="401" colspan="1" class="oe_right"/>
+                            <field name="report_section_401" nolabel="1" class="oe_inline" colspan="4"/>
+                            <label for="report_section_402" string="" colspan="1"/>
+                            <label for="report_section_402" string="402" colspan="1" class="oe_right"/>
+                            <field name="report_section_402" nolabel="1" class="oe_inline" colspan="4"/>
+                        </group>
+                    </page>
+                </notebook>
+               </form>
+            </field>
+        </record>
+
+        <record id="view_l10n_lu_yearly_tax_report_manual_export" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.export.view</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="inherit_id" ref="view_l10n_lu_yearly_tax_report_manual"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <footer name="footer">
+                        <button name="print_xml" string="EXPORT XML" type="object" class="oe_highlight"/>
+                    </footer>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="l10n_lu_yearly_tax_report_manual_view_tree" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.view.tree</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="arch" type="xml">
+                <tree string="Reports" create="false" delete="false">
+                    <field name="year"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_l10n_lu_yearly_tax_report_manual" model="ir.actions.act_window">
+            <field name="name">Annual Tax Report</field>
+            <field name="res_model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="l10n_lu_yearly_tax_report_manual_view_tree"/>
+        </record>
+        <menuitem id="menu_action_l10n_lu_yearly_tax_report_manual" name="Annual Tax Report - Data" action="action_l10n_lu_yearly_tax_report_manual" parent="l10n_lu.account_reports_lu_statements_menu"/>
+    </data>
+</odoo>

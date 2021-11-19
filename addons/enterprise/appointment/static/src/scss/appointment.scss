@@ -1,0 +1,179 @@
+.o_appointment_attendee_form input::placeholder {
+    color: darkgrey;
+}
+
+.o_appointment_index {
+    .o_half_screen_height {
+        min-height: 200px !important;
+    }
+    .o_appointment_appointments_list {
+        header {
+            a {
+                transition: all .25s ease-in-out;
+                @include hover-focus {
+                    transform: scale(1.05);
+                }
+            }
+        }
+        &.opt_appointments_list_cards_bg {
+            @if (color('body') == $o-portal-default-body-bg) {
+                @extend .bg-200;
+            }
+        }
+        .appointments_list_columns {
+            header {
+                height: 200px;
+            }
+        }
+        .o_appointment_unpublished {
+            bottom: 0;
+            padding: $card-spacer-y $card-spacer-x;
+        }
+        .card-title {
+            color: $body-color;
+        }
+    }
+}
+
+.o_appointment_selection {
+    select {
+        appearance: none;
+    }
+    select::-ms-expand {
+        display: none;
+    }
+}
+
+.modal-open {
+    > .modal-backdrop {
+        z-index: $zindex-dropdown - 1;
+    }
+}
+
+.o_appointment_days {
+    font-size: 16px;
+    height: 40px;
+    .o_weekend {
+        background-color: gray('200');
+    }
+    .o_day{
+        border: 2px solid theme-color('primary');
+        border-radius: 0.5rem;
+        cursor: pointer;
+        &.dropdown{
+            padding: 0px;
+        }
+        .o_slots_dropdown{
+             padding: 8px;
+        }
+    }
+    .o_day:hover, .o_slot_selected {
+        color: white;
+        background-color: theme-color('primary');
+    }
+    .o_mute_day {
+        opacity: 0.5
+    }
+    .o_today{
+        position: relative;
+        div {
+            border-bottom: 3px solid #f0ad4e;
+        }
+    }
+}
+
+.o_appointment_month {
+    .table {
+        border-collapse: separate;
+        border-spacing: unset;
+    }
+
+    .table th, .table td {
+        width: 3em;
+    }
+}
+
+.o_appointment {
+    .o_appointment_availabilities {
+        min-height: 31em;
+        .o_slots_list {
+            a:hover {
+                color: white!important;
+            }
+        }
+    }
+    /* Progress Wizard */
+    ul.wizard {
+        padding: 0;
+        margin-top: 20px;
+        list-style: none outside none;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.065);
+        -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.065);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.065);
+    }
+
+    ul.wizard li {
+        border: 1px solid #d4d4d4;
+        border-right-width: 0;
+        position: relative;
+        float: left;
+        padding: 0 10px 0 20px;
+        margin: 0;
+        line-height: 38px;
+        background: #fbfbfb;
+    }
+
+    ul.wizard li .chevron {
+        position: absolute;
+        top: 0;
+        right: -10px;
+        z-index: 1;
+        display: block;
+        border: 20px solid transparent;
+        border-right: 0;
+        border-left: 10px solid #d4d4d4;
+    }
+
+    ul.wizard li .chevron:before {
+        position: absolute;
+        top: -20px;
+        right: 1px;
+        display: block;
+        border: 20px solid transparent;
+        border-right: 0;
+        border-left: 10px solid #fbfbfb;
+        content: "";
+    }
+
+    ul.wizard li.text-success {
+        background: #f3f4f5;
+    }
+
+    ul.wizard li.text-success .chevron:before {
+        border-left: 10px solid #f5f5f5;
+    }
+
+    ul.wizard li.text-primary {
+        background: #f1f6fc;
+    }
+
+    ul.wizard li.text-primary .chevron:before {
+        border-left: 10px solid #f1f6fc;
+    }
+
+    ul.wizard li:first-child {
+        padding-left: 15px;
+        border-radius: 4px 0 0 4px;
+    }
+
+    ul.wizard li:last-child {
+        border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
+    }
+    ul.wizard li:last-child .chevron {
+        display: none;
+    }
+}

@@ -1,0 +1,375 @@
+.o-spreadsheet {
+    .fa {
+        font-family: FontAwesome;
+    }
+    .o-selection input {
+        display: initial;
+    }
+}
+
+.o_documents_content {
+    .o_document_spreadsheet {
+        cursor: zoom-in;
+    }
+
+    .o_spreadsheet_resize {
+        object-fit: cover;
+        object-position: left top;
+    }
+}
+
+
+.o_spreadsheet_selector_dialog {
+    option.o_new {
+        font-style: italic;
+    }
+}
+.o_spreadsheet_action {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+        .o_spreadsheet_container {
+            flex: 1 1 auto;
+            overflow: auto;
+            .o-spreadsheet {
+                height: 100%;
+
+                .o_spreadsheet_pivot_side_panel, .o_spreadsheet_filter_editor_side_panel, .o_spreadsheet_global_filters_side_panel, .o-listing-details-side-panel, .o-listing-all-side-panel {
+                    .o_side_panel_section {
+                        background-color: #fff;
+                        padding: 16px;
+
+                        .o_side_panel_title {
+                            font-weight: bold;
+                            margin-bottom: 5px;
+                        }
+
+                        .o_field_matching_title {
+                            margin-bottom: 0px;
+                        }
+
+                        .o_field_selector, .o_field_many2manytags, .o_field_many2one {
+                            width: 100%;
+
+                            &,
+                            *,
+                            *:before,
+                            *:after {
+                                box-sizing: border-box;
+                            }
+                        }
+                        .o_pivot_last_update {
+                            padding-top: 5px;
+                            color: darkgrey;
+                        }
+                    }
+
+                    .o_side_panel_select{
+                        background-color: #fff;
+                        border-bottom: 1px solid #ccc;
+                        padding: 16px;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: #f1f3f4;
+                        }
+                    }
+                }
+
+                // Align spreadsheet menus and toolbar with the breadcrumb in Odoo
+                .o-spreadsheet-topbar {
+
+                    .o_topbar_filter_icon {
+                        padding-right: 6px;
+                        margin-top: 2px;
+                        font-size: 20px;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: #ebebeb;
+                        }
+                    }
+                }
+
+                .o_filter_component {
+                    display: flex;
+                }
+
+            }
+        }
+}
+
+
+.o_spreadsheet_action .o_control_panel {
+    a.o_spreadsheet_favorite {
+        margin: 0px 5px;
+        @include o-hover-text-color($gray-400, $o-main-favorite-color);
+        &:hover:before {
+            content: "\f005";
+        }
+
+        &.favorite_button_enabled {
+            @include o-hover-text-color($o-main-favorite-color, $gray-400);
+            &:hover:before {
+                content: "\f006";
+            }
+        }
+    }
+
+    .o_spreadsheet_name {
+        display: inline-block;
+        max-width: 95%;
+
+        input {
+            max-width: 100%;
+            text-overflow: clip;
+            overflow: hidden;
+            border: none;
+            padding: 0px 5px 0px 2px;
+            color: $o-brand-secondary;
+
+            &:focus {
+                outline: 1px solid #ccc;
+                outline-offset: -1px;
+                color: #000;
+            }
+
+            &.o-spreadsheet-untitled {
+                font-style: italic;
+            }
+
+            &.o-spreadsheet-untitled:focus {
+                font-style: normal;
+            }
+
+            &:disabled {
+                background-color: inherit;
+            }
+        }
+    }
+
+    .o_spreadsheet_status {
+        display: inline-block;
+        font-size: small;
+        padding-right: 10px;
+        padding-top: 4px;
+    }
+
+    .o_cp_top_right {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+.o_control_panel {
+    &.o_spreadsheet_cp {
+        padding-bottom: 0px;
+    }
+}
+
+.o-sidePanel .o-sidePanelButtons .o-sidePanelButton {
+    color: #666;
+
+    &.o_global_filter_save {
+        color: #008784;
+        border-color: #008784;
+    }
+}
+
+.o_spreadsheet_global_filters_side_panel, .o_spreadsheet_filter_editor_side_panel {
+    input {
+        outline: none;
+        width: 100%;
+    }
+
+    .o_pivot_field_matching {
+        padding: 8px 0px;
+    }
+
+    .pivot_filter_section {
+        display: flex;
+        flex-direction: row;
+
+        .o_pivot_model_technical_name {
+            font-size: 0.9rem;
+        }
+
+        .pivot_filter {
+            flex-grow: 1;
+
+            .pivot_filter_input {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 1;
+
+                > div {
+                    width: 100%;
+                }
+
+                .o_side_panel_filter_icon {
+                    width: 15px;
+                    margin-left: 0.5rem;
+                    padding: 0;
+                    cursor: pointer;
+                    &:hover {
+                        color:#666666 !important
+                    }
+                }
+            }
+        }
+
+    }
+
+    .o_add_filter {
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    .o-sidePanelButtons {
+        display: flex;
+        flex-direction: row;
+
+        .o-sidePanelButton {
+            flex-grow: 1;
+        }
+    }
+
+    .date_filter_values {
+        display: flex;
+        flex-direction: row;
+
+        select:not(:first-child) {
+            margin-left: 10px;
+        }
+    }
+}
+
+.o_spreadsheet_filter_editor_side_panel {
+    .o_global_filter_delete {
+        float: left;
+    }
+}
+
+$margin-right: 15px;
+
+.o-spreadsheet-templates-dialog {
+    max-height: 90vh;
+    overflow: auto;
+
+    .o_searchview {
+        height: 24px;
+        width: 50%;
+        margin-left: auto;
+        margin-right: $margin-right;
+    }
+
+    .o-pager {
+        height: 30px;
+        display: flex;
+
+        nav {
+            margin: auto $margin-right auto auto;
+        }
+    }
+
+    .o-templates-container {
+        display: flex;
+        flex-flow: row wrap;
+
+        .o-template {
+            flex: 0 1 150px;
+            margin: $margin-right;
+
+            img {
+                height: 150px;
+                border: 1px solid #ced4da;
+                width: 100%;
+
+                &:focus {
+                    outline: none;
+                }
+
+                &.o-template-selected {
+                    border-color: $o-brand-primary;
+                    box-shadow: 0 0 0 1px $o-brand-primary;
+                }
+            }
+
+            &.o-blank-template {
+                img {
+                    padding: 1.5rem;
+                }
+            }
+        }
+    }
+}
+
+.o_missing_values_dialog {
+    > div.custom-control {
+        margin-bottom: 8px;
+    }
+
+    .o_pivot_table_dialog {
+        width: 100%;
+        border-collapse: collapse;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        td, th {
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            padding: 0.3rem;
+            white-space: nowrap;
+
+            &:hover {
+                filter: brightness(0.9);
+            }
+        }
+
+        td {
+            text-align: right;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            color: black;
+        }
+
+        .o_missing_value {
+            color: #46646d;
+            background: #e7f2f6;
+        }
+    }
+}
+
+/* Document share page, for some reason uses backend assets */
+article.spreadsheet_fade {
+    cursor: default;
+    opacity: 50%;
+}
+
+.o_spreadsheet_selector_dialog {
+
+    .o_threshold_list {
+        padding-top: 10px;
+
+        .o_input {
+            display: inline;
+            padding-left: 5px;
+            width: fit-content;
+        }
+    }
+}
+
+.o_image {
+    &[data-mimetype='application/o-spreadsheet'] {
+        background-image: url('/documents_spreadsheet/static/img/spreadsheet.svg');
+    }
+}

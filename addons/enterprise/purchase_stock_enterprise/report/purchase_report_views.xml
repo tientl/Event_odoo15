@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="purchase_report_view_dashboard" model="ir.ui.view">
+            <field name="name">purchase.report.view.dashboard.inherit</field>
+            <field name="model">purchase.report</field>
+            <field name="inherit_id" ref="purchase_enterprise.purchase_report_view_dashboard"/>
+            <field name="arch" type="xml">
+                <xpath expr="//aggregate[@name='avg_days_to_purchase']" position="after">
+                    <aggregate name="avg_receipt_delay" string="Average Receipt Delay" field="avg_receipt_delay"
+                        value_label="days" group_operator="avg"  clickable="False"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

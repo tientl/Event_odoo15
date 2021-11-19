@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="helpdesk_team_view_form_inherit_website_helpdesk_livechat" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.inherit.website.livechat.helpdesk</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='im_livechat']" position="replace">
+                <div id='im_livechat' attrs="{'invisible': [('use_website_helpdesk_livechat', '=', False)]}">
+                    <div class="mt16">
+                        <button name="%(im_livechat.im_livechat_channel_action)d" type="action" string="View Channels" icon="fa-arrow-right" class="btn-link"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="helpdesk_team_canned_response_menu"
+        action="im_livechat.im_livechat_canned_response_action"
+        sequence="25" parent="helpdesk.helpdesk_menu_config"/>
+
+</odoo>

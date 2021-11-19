@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+
+        <record id="mod303_boe_wizard" model="ir.ui.view">
+            <field name="name">l10n_es_reports.aeat.boe.mod303.export.wizard.form</field>
+            <field name="model">l10n_es_reports.aeat.boe.mod303.export.wizard</field>
+            <field name="inherit_id" ref="l10n_es_reports.mod303_boe_wizard"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='previous_report_number']" position="after">
+                    <field name="using_sii"/>
+                    <field name="exempted_from_mod_390" attrs="{'invisible': [('exempted_from_mod_390_available', '=', False)]}"/>
+                    <field name="exempted_from_mod_390_available" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

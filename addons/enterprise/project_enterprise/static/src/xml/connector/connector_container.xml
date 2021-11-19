@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t t-name="connector_container" owl="1">
+        <div class="o_connector_container"
+             t-on-mouseover.stop="_onMouseOver"
+             t-on-mouseout.stop="_onMouseOut">
+            <t t-foreach="connectors"
+               t-as="connector"
+               t-key="connector_value.id">
+                <Connector t-props="connector_value"
+                           t-on-remove-button-click="_onConnectorRemoveButtonClick"
+                           t-on-reschedule-later-click="_onConnectorRescheduleLaterButtonClick"
+                           t-on-reschedule-sooner-click="_onConnectorRescheduleSoonerButtonClick"/>
+            </t>
+            <Connector t-props="newConnector" t-if="!!newConnector.source &amp;&amp; !!newConnector.target"/>
+        </div>
+    </t>
+</templates>

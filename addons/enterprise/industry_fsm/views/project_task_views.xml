@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+    	Task Views in Project and FSM app
+	-->
+
+    <record id="view_task_form2_inherit" model="ir.ui.view">
+        <field name="name">view.task.form2.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="timesheet_grid.project_task_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_timer_start'][hasclass('btn-primary')]" position='after'>
+                <field name="is_fsm" invisible="1"/>
+                <field name="fsm_done" invisible="1"/>
+                <field name="display_timesheet_timer" invisible="1"/>
+                <field name="display_enabled_conditions_count" invisible="1"/>
+                <field name="display_satisfied_conditions_count" invisible="1"/>
+                <field name="display_mark_as_done_primary" invisible="1"/>
+                <field name="display_mark_as_done_secondary" invisible="1"/>
+                <button class="btn-primary" name="action_fsm_validate" type="object" string="Mark as done"
+                        attrs="{'invisible': [('display_mark_as_done_primary', '=', False)]}" data-hotkey="v"/>
+                <button class="btn-secondary" name="action_fsm_validate" type="object" string="Mark as done"
+                        attrs="{'invisible': [('display_mark_as_done_secondary', '=', False)]}" data-hotkey="v"/>
+            </xpath>
+            <!-- FIXME: refactor this as in project_sharing_views.xml -->
+            <xpath expr="//field[@name='tag_ids']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="replace">
+                <field name="date_deadline" attrs="{'invisible': [('is_fsm', '=', True)]}"/>
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+            </xpath>
+            <xpath expr="//page[@name='extra_info']" position="attributes">
+                <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="d-sm-inline d-md-none oe_stat_button" name="action_view_timesheets" type="object" icon="fa-clock-o" help="Time recorded on this task" attrs="{'invisible': ['|', '|', ('is_fsm', '=', False), ('allow_timesheets', '=', False), ('display_timesheet_timer', '=', False)]}">
+                    <div class="o_stat_info">
+                        <div>Time</div>
+                        <span class="o_stat_value">
+                            <field name="total_hours_spent" widget="float_time" nolabel="1" class="mr-1" />
+                        </span>
+                    </div>
+                </button>
+            </xpath>
+            <field name="is_fsm" string="is FSM ?" invisible="1"/>
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'always_reload': True}</attribute>
+                <attribute name="context">{'show_address': is_fsm, 'res_partner_search_mode': 'customer'}</attribute>
+                <attribute name="attrs">{'required': [('is_fsm', '=', True)]}</attribute>
+            </field>
+            <field name="partner_id" position="after">
+                <field name="has_complete_partner_address" invisible="1"/>
+                <label class="oe_read_only" for="has_complete_partner_address" invisible="1"/>
+                <div class="oe_read_only">
+                    <button
+                        name="action_fsm_navigate" type="object" class="btn btn-link pl-0 pt-0 pb-2"
+                        icon="fa-arrow-right" string="Navigate To" colspan="2"
+                        attrs="{'invisible': ['|', ('has_complete_partner_address', '=', False), ('is_fsm', '=', False)]}"/>
+                </div>
+            </field>
+            <field name="project_id" position="attributes">
+                <attribute name="context">{
+                    'default_is_fsm': context.get('fsm_mode'),
+                }
+                </attribute>
+                <attribute name="domain">[
+                    ('active', '=', True),
+                    ('company_id', '=', company_id),
+                    ('is_fsm', '=?', context.get('fsm_mode'))
+                ]</attribute>
+            </field>
+            <field name="partner_phone" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('partner_id', '=', False), ('is_fsm', '=', False)]}
+                </attribute>
+            </field>
+        </field>
+    </record>
+
+    <!--
+    	Project Views (in project app)
+	-->
+
+    <record id="quick_create_task_form_fsm" model="ir.ui.view">
+        <field name="name">project.task.form.quick_create</field>
+        <field name="model">project.task</field>
+        <field name="priority">1000</field>
+        <field name="inherit_id" ref="project.quick_create_task_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="placeholder">e.g. Boiler replacement</attribute>
+            </field>
+            <field name="user_ids" position="attributes">
+                <attribute name="widget">many2many_avatar_user</attribute>
+            </field>
+            <field name="user_ids" position="before">
+                <field name="project_id" invisible="1"/>
+                <field name="is_fsm" invisible="1"/>
+                <field name="partner_id" attrs="{'required': [('is_fsm', '=', True)], 'invisible': [('is_fsm', '=', False)]}" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer'}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="project_view_form_inherit" model="ir.ui.view">
+        <field name="name">project.view.form.inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath  expr="//div[@id='rating_settings']" position="before">
+                <div class="col-lg-6 o_setting_box" groups="base.group_no_one">
+                    <div class="o_setting_left_pane">
+                        <field name="is_fsm"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="is_fsm"/>
+                        <div class="text-muted" id="allow_billable_setting">
+                            Manage tasks in the Field Service module
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

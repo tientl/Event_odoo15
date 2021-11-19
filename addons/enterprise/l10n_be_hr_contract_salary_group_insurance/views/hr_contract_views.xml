@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_view_form" model="ir.ui.view">
+        <field name="name">hr.contract.view.form.inherit.group.insurance</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract_salary.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='yearly_advantages']" position="inside">
+                <label for="l10n_be_group_insurance_rate" attrs="{'invisible': [('wage_type', '=', 'hourly')]}"/>
+                <div class="o_row">
+                    <field name="l10n_be_group_insurance_rate" attrs="{'invisible': [('wage_type', '=', 'hourly')]}"/>
+                    <span attrs="{'invisible': [('wage_type', '=', 'hourly')]}">%</span>
+                </div>
+                <field name="l10n_be_group_insurance_amount" invisible="1"/>
+                <field name="l10n_be_group_insurance_cost" invisible="1"/>
+            </xpath>
+            <div name="div_wage_with_holidays" position="attributes">
+                <attribute name="attrs">{'invisible': [('holidays', '=', 0.0), ('l10n_be_group_insurance_rate', '=', 0.0)]}</attribute>
+            </div>
+            <label name="label_wage_with_holidays" position="attributes">
+                <attribute name="attrs">{'invisible': [('holidays', '=', 0.0), ('l10n_be_group_insurance_rate', '=', 0.0)]}</attribute>
+            </label>
+            <xpath expr="//group[@name='yearly_advantages']" position="before">
+                <group string="Ambulatory Insurance" attrs="{'invisible': ['|', ('wage_type', '=', 'hourly'), ('country_code', '!=', 'BE')]}">
+                    <field name="l10n_be_has_ambulatory_insurance"/>
+                    <field name="l10n_be_ambulatory_insured_spouse" string="Insured Spouse"/>
+                    <field name="l10n_be_ambulatory_insured_adults" string="# Insured Children &gt;= 19"/>
+                    <field name="l10n_be_ambulatory_insured_children" string="# Insured Children &lt; 19"/>
+                    <label for="l10n_be_ambulatory_insurance_amount" attrs="{'invisible': ('l10n_be_has_ambulatory_insurance', '=', False)}">Insurance Amount</label>
+                    <div class="o_row" attrs="{'invisible': ('l10n_be_has_ambulatory_insurance', '=', False)}">
+                        <field name="l10n_be_ambulatory_insurance_amount" nolabel="1"/>
+                        <span>€ / month</span>
+                    </div>
+                    <field name="l10n_be_ambulatory_amount_per_child" string="Amount per Child" invisible="1"/>
+                    <field name="l10n_be_ambulatory_amount_per_adult" string="Amount per Adult" invisible="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

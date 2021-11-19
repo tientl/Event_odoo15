@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<div t-name="DocumentsViews.buttons">
+    <button type="button" class="btn btn-primary o_documents_kanban_upload" disabled="true">
+        Upload
+    </button>
+    <button type="button" class="btn btn-secondary o_documents_kanban_request" disabled="true">
+        Request
+    </button>
+    <button type="button" class="btn btn-secondary o_documents_kanban_url" disabled="true">
+        Add a Link
+    </button>
+    <button type="button" class="btn btn-secondary o_documents_kanban_share_domain" title="Share this domain" disabled="true" groups="documents.group_documents_user">
+        Share
+    </button>
+</div>
+
+<div t-name="documents.ControlPanelButtonsMobile" class="dropdown">
+    <a role="button" class="btn btn-primary dropdown-toggle" href="#"
+        data-toggle="dropdown" aria-expanded="false">Action</a>
+    <div class="dropdown-menu" role="menu"/>
+</div>
+
+<span t-name="documents.dragIcon" class="o_documents_drag_icon">
+    <t t-esc="dragIconContent"/>
+</span>
+
+<div t-name="documents.ChatterContainer" class="o_document_chatter_container">
+    <div class="o_documents_chatter_placeholder"/>
+</div>
+
+<div t-name="documents.uploadText" class="o_documents_upload_text text-center text-white">
+    <i class="d-block fa fa-upload fa-9x mb-4"/>
+    <span>Drop files here to upload</span>
+</div>
+
+<span t-name="documents.lockIcon" t-att-title="tooltip" class="o_documents_locked fa fa-lock"/>
+
+<div t-name="documents.HelperMailLine">
+    <p class="font-weight-normal">Or send emails to 
+        <a t-attf-href="mailto:{{aliasName}}">
+            <t t-esc="aliasName"/>
+        </a>
+    </p>
+    <p class="font-weight-normal"><em>Tip: configure your scanner to send all documents to this address.</em></p>
+</div>
+
+</templates>
+

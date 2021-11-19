@@ -1,0 +1,68 @@
+.o_planning_gantt {
+    .o_gantt_pill {
+        &:not(.decoration-danger) {
+            &:not(.decoration-warning) {
+                &.decoration-info::before {
+                    // Removes the "triangle" if .decoration-info is the only .decoration-* class set
+                    content: none !important;
+                }
+            }
+        }
+        &.o_gantt_color_0 {
+            &.decoration-info {
+                background-image: repeating-linear-gradient(-45deg, #71959e 0 10px, #83a3aa 10px 20px);
+            }
+        }
+    }
+
+    .o_gantt_row_group {
+        .o_planning_gantt_employee_progress .o_gantt_text_hoverable {
+            &.o_gantt_group_success {
+                background-image: linear-gradient(#add4bd, #b8dec3);
+            }
+            &.o_gantt_group_danger {
+                background-image: linear-gradient(#e3b2bd, #eebcc3);
+            }
+        }
+    }
+
+    .o_gantt_row {
+        &:hover{
+            .o_gantt_group_hours {
+                display: initial;
+            }
+        }
+    }
+
+    .o_planning_gantt_employee_progress {
+        .o_gantt_progressbar, .o_gantt_text_hoverable {
+            right: 0;
+        }
+        .o_gantt_progressbar {
+            &.o_gantt_group_success {
+                background-color: rgba($green, 0.3);
+            }
+            &.o_gantt_group_danger {
+                background-color: rgba($red, 0.3);
+            }
+        }
+        .o_gantt_text_hoverable {
+            z-index: 1;
+            &.o_gantt_group_success {
+                background-color: #bfe5c7;
+            }
+            &.o_gantt_group_danger {
+                background-color: #f5c2c7;
+            }
+            &.o_gantt_group_none {
+                background-color: $white;
+            }
+        }
+        .o_gantt_group_hours {
+            display: none;
+        }
+        .o_field_many2one_avatar {
+            position: relative;
+        }
+    }
+}

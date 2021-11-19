@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="calendar_appointment_0" model="calendar.appointment.type">
+        <field name="name">Schedule a Demo</field>
+        <field name="location">215 Vine St. Scranton Pennsylvania 18503</field>
+        <field name="max_schedule_days">45</field>
+        <field name="message_intro" type="xml">
+            <p>Get a <strong>customized demo</strong> and an <strong>analysis of your needs</strong>.</p>
+        </field>
+        <field name="message_confirmation" type="xml">
+            <p style="text-align:center;">We thank you for your interest in our products!<br/>
+               Please make sure to arrive <strong>10 minutes</strong> before your appointment.</p>
+        </field>
+        <field name="reminder_ids" eval="[(6, 0, [ref('calendar.alarm_notif_1')])]"/>
+        <field name="employee_ids" eval="[(6, 0, [ref('hr.employee_admin')])]"/>
+    </record>
+
+    <record id="calendar_appointment_slot_1" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_0"/>
+        <field name="weekday">5</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">16</field>
+    </record>
+
+    <record id="calendar_appointment_slot_2" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_0"/>
+        <field name="weekday">3</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">16</field>
+    </record>
+
+    <record id="calendar_appointment_slot_3" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_0"/>
+        <field name="weekday">1</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">14</field>
+    </record>
+
+    <record id="calendar_appointment_slot_4" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_0"/>
+        <field name="weekday">1</field>
+        <field name="start_hour">15.5</field>
+        <field name="end_hour">16.5</field>
+    </record>
+
+    <record id="calendar_appointment_1" model="calendar.appointment.type">
+        <field name="name">Doctor Appointment</field>
+        <field name="location">42 Doctor Street, Syringue 4242</field>
+        <field name="appointment_duration">0.5</field>
+        <field name="max_schedule_days">45</field>
+        <field name="reminder_ids" eval="[(6, 0, [ref('calendar_alarm_data_1h_sms')])]"/>
+        <field name="employee_ids" eval="[(6, 0, [ref('hr.employee_admin'), ref('hr.employee_qdp')])]"/>
+        <field name="assign_method">chosen</field>
+    </record>
+
+    <record id="calendar_appointment_1_slot_1" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_1"/>
+        <field name="weekday">5</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">16</field>
+    </record>
+
+    <record id="calendar_appointment_1_slot_2" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_1"/>
+        <field name="weekday">3</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">16</field>
+    </record>
+
+    <record id="calendar_appointment_1_slot_3" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_1"/>
+        <field name="weekday">1</field>
+        <field name="start_hour">9</field>
+        <field name="end_hour">14</field>
+    </record>
+
+    <record id="calendar_appointment_1_slot_4" model="calendar.appointment.slot">
+        <field name="appointment_type_id" ref="calendar_appointment_1"/>
+        <field name="weekday">1</field>
+        <field name="start_hour">15.5</field>
+        <field name="end_hour">16.5</field>
+    </record>
+
+    <record id="calendar_appointment_1_question_1" model="calendar.appointment.question">
+        <field name="appointment_type_id" ref="calendar_appointment_1"/>
+        <field name="name">Symptoms</field>
+    </record>
+</odoo>

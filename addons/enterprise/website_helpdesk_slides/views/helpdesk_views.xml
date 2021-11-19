@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="helpdesk_team_view_form_inherit_website_helpdesk_slides" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.inherit.website.slides.helpdesk</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="model">helpdesk.team</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='use_website_helpdesk_slides']" position="replace">
+                <div attrs="{'invisible': [('use_website_helpdesk_slides', '=', False)]}" class="mt16">
+                    <b>Course</b>
+                    <field name="elearning_id" class="ml-2" context="{'default_name': name}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
