@@ -28,10 +28,6 @@ class pos_session(models.Model):
 
     def _check_session_timing(self):
         self.ensure_one()
-        date_today = datetime.utcnow()
-        session_start = Datetime.from_string(self.start_at)
-        if not date_today - timedelta(hours=24) <= session_start:
-            raise UserError(_("This session has been opened another day. To comply with the French law, you should close sessions on a daily basis. Please close session %s and open a new one.", self.name))
         return True
 
     def open_frontend_cb(self):
@@ -64,7 +60,7 @@ class pos_order(models.Model):
                                  ('l10n_fr_secure_sequence_number', '=', int(secure_seq_number) - 1)])
         if prev_order and len(prev_order) != 1:
             raise UserError(
-               _('An error occured when computing the inalterability. Impossible to get the unique previous posted point of sale order.'))
+               _('An error occurred when computing the inalterability. Impossible to get the unique previous posted point of sale order.'))
 
         #build and return the hash
         return self._compute_hash(prev_order.l10n_fr_hash if prev_order else u'')

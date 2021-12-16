@@ -57,7 +57,12 @@ function factory(dependencies) {
          * Send the attachment for the browser to download.
          */
         download() {
-            this.env.services.navigate(`/web/content/ir.attachment/${this.id}/datas`, { download: true });
+            const downloadLink = document.createElement('a');
+            downloadLink.setAttribute('href', `/web/content/ir.attachment/${this.id}/datas?download=true`);
+            // Adding 'download' attribute into a link prevents open a new tab or change the current location of the window.
+            // This avoids interrupting the activity in the page such as rtc call.
+            downloadLink.setAttribute('download','');
+            downloadLink.click();
         }
 
         /**
@@ -109,7 +114,12 @@ function factory(dependencies) {
                 return `/web/image/${this.id}?signature=${this.checksum}`;
             }
             if (this.isPdf) {
-                return `/web/static/lib/pdfjs/web/viewer.html?file=/web/content/${this.id}`;
+                const pdf_lib = `/web/static/lib/pdfjs/web/viewer.html?file=`
+                if (!this.accessToken && this.originThread && this.originThread.model === 'mail.channel') {
+                    return `${pdf_lib}/mail/channel/${this.originThread.id}/attachment/${this.id}`;
+                }
+                const accessToken = this.accessToken ? `?access_token%3D${this.accessToken}` : '';
+                return `${pdf_lib}/web/content/${this.id}${accessToken}`;
             }
             if (this.isUrlYoutube) {
                 const urlArr = this.url.split('/');
@@ -123,7 +133,11 @@ function factory(dependencies) {
                 }
                 return `https://www.youtube.com/embed/${token}`;
             }
-            return `/web/content/${this.id}`;
+            if (!this.accessToken && this.originThread && this.originThread.model === 'mail.channel') {
+                return `/mail/channel/${this.originThread.id}/attachment/${this.id}`;
+            }
+            const accessToken = this.accessToken ? `?access_token=${this.accessToken}` : '';
+            return `/web/content/${this.id}${accessToken}`;
         }
 
         /**
