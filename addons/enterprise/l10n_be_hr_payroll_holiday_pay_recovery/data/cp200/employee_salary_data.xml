@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="cp200_employees_salary_holiday_pay_recovery_n" model="hr.salary.rule">
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="name">Holiday Pay Recovery (Year N)</field>
+            <field name="code">HolPayRecN</field>
+            <field name="sequence">14</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">
+employee = contract.employee_id
+is_next_year = contract.first_contract_date.year + 1 == payslip.date_from.year if contract.first_contract_date else False 
+
+to_recover = employee.l10n_be_holiday_pay_to_recover_n
+recovered = employee.l10n_be_holiday_pay_recovered_n
+already_done = not float_compare(to_recover, recovered, precision_digits=2)
+hours_per_week = employee.resource_calendar_id.hours_per_week
+holidays = worked_days.LEAVE120 and worked_days.LEAVE120.amount
+
+result = is_next_year and to_recover and not already_done and hours_per_week and holidays</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = compute_holiday_pay_recovery_n(payslip, categories, worked_days, inputs)</field>
+            <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary"/>
+        </record>
+
+        <record id="cp200_employees_salary_holiday_pay_recovery_n1" model="hr.salary.rule">
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="name">Holiday Pay Recovery (Year N-1)</field>
+            <field name="code">HolPayRecN1</field>
+            <field name="sequence">14</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">
+employee = contract.employee_id
+is_next_year = contract.first_contract_date.year == payslip.date_from.year if contract.first_contract_date else False 
+
+to_recover = employee.l10n_be_holiday_pay_to_recover_n1
+recovered = employee.l10n_be_holiday_pay_recovered_n1
+already_done = not float_compare(to_recover, recovered, precision_digits=2)
+hours_per_week = employee.resource_calendar_id.hours_per_week
+holidays = worked_days.LEAVE120 and worked_days.LEAVE120.amount
+
+result = is_next_year and to_recover and not already_done and hours_per_week and holidays</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = compute_holiday_pay_recovery_n1(payslip, categories, worked_days, inputs)</field>
+            <field name="struct_id" ref="l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary"/>
+        </record>
+    </data>
+</odoo>

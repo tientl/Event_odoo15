@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<odoo>
+    <data>
+        <template id="daily_sales_book_subtemplate">
+    <DocumentoConsumoFolios t-att-ID="id">
+        <Caratula version="1.0">
+            <RutEmisor t-esc="format_vat(object.company_id.vat)"/>
+            <RutEnvia t-esc="rut_sends"/>
+            <FchResol t-esc="object.company_id.l10n_cl_dte_resolution_date"/>
+            <NroResol t-esc="object.company_id.l10n_cl_dte_resolution_number"/>
+            <FchInicio t-esc="object.date"/>
+            <FchFinal t-esc="object.date"/>
+            <SecEnvio t-esc="object.send_sequence"/>
+            <TmstFirmaEnv t-esc="timestamp"/>
+        </Caratula>
+        <t t-foreach="items" t-as="item">
+            <Resumen>
+                <TipoDocumento t-esc="item['document_type']"/>
+                <MntNeto t-esc="item['subtotal_amount_taxable']"/>
+                <MntIva t-esc="item['vat_amount']" t-if="item.get('vat_amount', False)"/>
+                <TasaIVA t-esc="item['vat_percent']" t-if="item.get('vat_percent', False)"/>
+                <MntExento t-esc="item['subtotal_amount_exempt']"/>
+                <MntTotal t-esc="item['total_amount']"/>
+                <FoliosEmitidos t-esc="item['total_documents']"/>
+                <FoliosAnulados t-esc="item['documents_canceled']"/>
+                <FoliosUtilizados t-esc="item['documents_used']"/>
+            <t t-foreach="item['used_ranges']" t-as="used_range">
+                <RangoUtilizados>
+                    <Inicial t-esc="used_range[0]"/>
+                    <Final t-esc="used_range[1]"/>
+                </RangoUtilizados>
+            </t>
+            <t t-foreach="item['cancelled_ranges']" t-as="cancelled_range">
+                <RangoAnulados>
+                    <Inicial t-esc="cancelled_range[0]"/>
+                    <Final t-esc="cancelled_range[1]"/>
+                </RangoAnulados>
+            </t>
+            </Resumen>
+        </t>
+    </DocumentoConsumoFolios>
+        </template>
+
+        <template id="dss_template">
+<ConsumoFolios xmlns="http://www.sii.cl/SiiDte" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sii.cl/SiiDte ConsumoFolio_v10.xsd" version="1.0">
+    <t t-call="l10n_cl_edi_boletas.daily_sales_book_subtemplate"/>
+</ConsumoFolios>
+        </template>
+    </data>
+</odoo>
+
+

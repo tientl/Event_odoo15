@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_sharing_project_task_inherit_view_kanban" model="ir.ui.view">
+        <field name="name">project.sharing.project.task.view.kanban.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.project_sharing_project_task_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='child_text']" position="after">
+                <field name="is_fsm"/>
+                <field name="planned_date_begin"/>
+                <field name="fsm_done" />
+            </xpath>
+            <xpath expr="//t[@t-if='record.partner_id.value']" position="inside">
+                <t t-if="record.is_fsm.raw_value and record.partner_city.value"> • <field name="partner_city" /></t>
+            </xpath>
+            <div name="date_deadline" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('is_fsm', '=', True), ('is_closed', '=', True)]}</attribute>
+            </div>
+            <div name="date_deadline" position="after">
+                <!-- [XBO] TODO: remove me in master -->
+                <t t-if="record.planned_date_begin.raw_value">
+                    <t t-if="('fsm_task_kanban_whole_date' in context) || context.fsm_task_kanban_whole_date">
+                        <t t-if="record.is_fsm.raw_value" t-set="deadline_class" t-value="" />
+                        <t t-if="record.is_fsm.raw_value and !record.fsm_done.raw_value and record.planned_date_begin.raw_value and moment(record.planned_date_begin.raw_value.toISOString()).startOf('day') lt moment().startOf('day')"
+                            t-set="deadline_class" t-value="'oe_kanban_text_red'" />
+                        <t t-elif="record.is_fsm.raw_value and !record.fsm_done.raw_value and record.planned_date_begin.raw_value and moment(record.planned_date_begin.raw_value.toISOString()).startOf('day') lt moment().endOf('day')"
+                            t-set="deadline_class" t-value="'text-warning font-weight-bold'" />
+                        <t t-if="record.fsm_done.raw_value" t-value="'font-weight-bold'"></t>
+                        <t t-set="date_format" t-value="'MM/DD/YY'"/>
+                    </t>
+                    <t t-if="'fsm_task_kanban_whole_date' in context &amp;&amp; !context.fsm_task_kanban_whole_date">
+                        <t t-set="deadline_class"></t>
+                        <t t-if="!record.fsm_done.raw_value and record.planned_date_begin.raw_value and moment(record.planned_date_begin.raw_value.toISOString()) lt moment()"
+                            t-set="deadline_class" t-value="'oe_kanban_text_red'" />
+                        <t t-set="date_format" t-value="'HH:mm A'"/>
+                    </t>
+                    <span name="date" title="Start Date" t-attf-class="d-none #{deadline_class || ''}"><t t-esc="moment(record.planned_date_begin.raw_value.toISOString()).format(date_format)"/></span>
+                </t>
+                <field name="planned_date_begin" />
+            </div>
+            <xpath expr="//field[@name='kanban_state']" position="attributes">
+                <attribute name="invisible">context.get('fsm_mode', False)</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_sharing_quick_create_task_form_inherit" model="ir.ui.view">
+        <field name="name">project.sharing.form.quick_create.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.project_sharing_quick_create_task_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="is_fsm" invisible="1"/>
+                <field name="company_id" invisible="1" />
+                <field name="partner_id" attrs="{'required': [('is_fsm', '=', True)], 'invisible': [('is_fsm', '=', False)]}" options="{'no_open': True, 'no_create': True, 'no_edit': True}" context="{'res_partner_search_mode': 'customer'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_sharing_inherit_project_task_view_form" model="ir.ui.view">
+        <field name="name">project.sharing.project.task.view.form.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.project_sharing_project_task_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_deadline']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('is_closed', '=', True), ('is_fsm', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="after">
+                <field name="is_fsm" invisible="1"/>
+                <label for="planned_date_begin" string="Planned Date" attrs="{'invisible': [('is_fsm', '=', False)]}"/>
+                <div class="w-100" attrs="{'invisible': [('is_fsm', '=', False)]}">
+                    <div class="o_row">
+                        <field name="planned_date_begin" widget="daterange" options='{"related_end_date": "planned_date_end"}'/>
+                        <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                        <i class="fa fa-long-arrow-right mx-2 oe_read_only" aria-label="Arrow icon" title="Arrow" attrs="{'invisible': [('planned_date_begin', '=', False), ('planned_date_end', '=', False)]}"/>
+                        <field name="planned_date_end" widget="daterange" options='{"related_start_date": "planned_date_begin"}'/>
+                    </div>
+                </div>
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">{'required': [('is_fsm', '=', True)]}</attribute>
+            </field>
+            <!-- [XBO] TODO: remove me in master -->
+            <field name="partner_id" position="after">
+                <field name="partner_phone" widget="phone" invisible="1"/>
+                <field name="has_complete_partner_address" invisible="1"/>
+                <label class="oe_read_only" for="has_complete_partner_address" invisible="1"/>
+                <div class="oe_read_only" invisible="1">
+                    <button
+                        name="action_fsm_navigate" type="object" class="btn btn-link pl-0 pt-0 pb-2"
+                        icon="fa-arrow-right" string="Navigate To" colspan="2"
+                        invisible="1"/>
+                </div>
+            </field>
+        </field>
+    </record>
+
+</odoo>

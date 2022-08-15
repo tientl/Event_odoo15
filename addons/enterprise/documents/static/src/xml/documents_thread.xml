@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+    <t t-name="DocumentsDocumentViewer" t-extend="DocumentViewer">
+        <t t-jquery=".o_document_viewer_content_call" t-operation="attributes">
+            <attribute name="t-call" value="DocumentViewer.ContentWithPdfSplit"/>
+        </t>
+    </t>
+
+    <t t-name="DocumentViewer.ContentWithPdfSplit" t-extend="DocumentViewer.Content">
+        <t t-jquery=".o_download_btn" t-operation="before">
+            <a t-if="!widget.openPdfManager and widget.activeAttachment.fileType === 'application/pdf'" href="#" class="o_documents_pdf_manager_button o_documents_split_pdf_area o_document_viewer_topbar_button btn" title="Split PDF">
+                <i class="fa fa-fw fa-scissors" role="img" aria-label="Split PDF"/>
+                <span class="d-none d-md-inline ml-2">Split PDF</span>
+            </a>
+        </t>
+    </t>
+
+</templates>

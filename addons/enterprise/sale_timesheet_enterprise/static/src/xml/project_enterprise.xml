@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="project_enterprise.ProjectRightPanel" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-call='project_enterprise.MilestoneSection']" position="before">
+            <t t-call="sale_timesheet_enterprise.SoldSection"/>
+            <t t-call="sale_timesheet_enterprise.TotalSoldSection"/>
+            <t t-call="sale_timesheet_enterprise.ProfitabilitySection"/>
+        </xpath>
+    </t>
+
+    <t t-name="sale_timesheet_enterprise.SoldSection" t-inherit="sale_timesheet.SoldSection" t-inherit-mode="primary" owl="1">
+        <xpath expr="//div[hasclass('o_rightpanel_title')]" position="before">
+            <span t-on-click="_onClickSection"><i t-attf-class="fa {{section.sold.closed ? 'fa-caret-right' : 'fa-caret-down'}}"></i></span>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_header')]" position="attributes">
+            <attribute name="t-on-click">_onClickSection</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_data')]" position="attributes">
+            <attribute name="t-attf-class" separator=" " add="{{section.sold.closed ? 'o_rightpanel_hidden' : ''}}"/>
+        </xpath>
+    </t>
+
+    <t t-name="sale_timesheet_enterprise.TotalSoldSection" t-inherit="sale_timesheet.TotalSoldSection" t-inherit-mode="primary" owl="1">
+        <xpath expr="//div[hasclass('o_rightpanel_title')]" position="before">
+            <span t-on-click="_onClickSection"><i t-attf-class="fa {{section.total_sold.closed ? 'fa-caret-right' : 'fa-caret-down'}}"></i></span>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_header')]" position="attributes">
+            <attribute name="t-on-click">_onClickSection</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_data')]" position="attributes">
+            <attribute name="t-attf-class" separator=" " add="{{section.total_sold.closed ? 'o_rightpanel_hidden' : ''}}"/>
+        </xpath>
+    </t>
+
+    <t t-name="sale_timesheet_enterprise.ProfitabilitySection" t-inherit="sale_timesheet.ProfitabilitySection" t-inherit-mode="primary" owl="1">
+        <xpath expr="//div[hasclass('o_rightpanel_title')]" position="before">
+            <span t-on-click="_onClickSection"><i t-attf-class="fa {{section.profitability.closed ? 'fa-caret-right' : 'fa-caret-down'}}"></i></span>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_header')]" position="attributes">
+            <attribute name="t-on-click">_onClickSection</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_data')]" position="attributes">
+            <attribute name="t-attf-class" separator=" " add="{{section.profitability.closed ? 'o_rightpanel_hidden' : ''}}"/>
+        </xpath>
+    </t>
+
+</templates>

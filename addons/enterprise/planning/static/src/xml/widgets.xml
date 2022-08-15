@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<templates>
+    <t t-name="planning.Many2OneAvatarPlannedHours">
+        <t t-if="expected_to_work">
+            <span t-attf-class="position-absolute o_gantt_progressbar {{ is_overplanned ? 'o_gantt_group_danger' : 'o_gantt_group_success' }}"
+                t-att-style="'width: ' + width + '%;'">
+                &amp;nbsp;
+            </span>
+            <span t-attf-class="position-absolute o_gantt_text_hoverable {{ width ? (is_overplanned ? 'o_gantt_group_danger' : 'o_gantt_group_success') : 'o_gantt_group_none' }}">
+                <span class="o_gantt_group_hours px-1"><t t-esc="planned_hours"/>h&amp;nbsp;/&amp;nbsp;<t t-esc="work_hours"/>h</span>
+            </span>
+        </t>
+        <t t-else="">
+            <span class="position-absolute o_gantt_text_hoverable o_gantt_group_none">
+                <span class="o_gantt_group_hours px-1" t-att-title="no_work_hours_title">
+                    <i class="fa fa-exclamation-triangle"></i>
+                </span>
+            </span>
+        </t>
+    </t>
+</templates>

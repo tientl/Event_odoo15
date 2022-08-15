@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-inherit="stock_barcode.GroupedLineComponent" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_barcode_line')]" position="attributes">
+            <attribute name="t-attf-class">
+                {{isComplete ? 'o_line_completed' : ''}}
+                {{env.model.lineIsFaulty(line) ? 'o_faulty' : ''}}
+                {{isSelected ? 'o_selected o_highlight' : ''}}
+                {{(line.colorLine or line.colorLine === 0) ? 'o_colored_markup' : ''}}
+            </attribute>
+            <attribute name="t-att-style">(line.colorLine or line.colorLine === 0) ? 'border-color: hsla(' + line.colorLine + ', 80%, 50%, 0.6);' : ''</attribute>
+        </xpath>
+        <xpath expr="//div[@name='quantity']" position="after">
+            <div t-if="env.model.params.model == 'stock.picking.batch'">
+                <i class="fa fa-fw fa-truck"/>
+                <span class="o_picking_label" t-esc="line.picking_id.name"/>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override action contexts to allow group_expand to apply for project_id and task_id -->
+    <record id="planning.planning_action_my_calendar" model="ir.actions.act_window">
+        <field name="context">{
+            'search_default_my_shifts': 1, 'search_default_open_shifts': 1,
+            'planning_expand_employee': 1, 'planning_expand_role': 1, 'planning_expand_sale_line_id': 1,
+            'planning_expand_project': 1, 'planning_expand_task': 1,
+        }</field>
+    </record>
+
+    <record id="planning.planning_action_schedule_by_resource" model="ir.actions.act_window">
+        <field name="context">{
+            'search_default_group_by_employee': 1, 'planning_expand_employee': 1, 'planning_expand_role': 1,
+            'planning_expand_sale_line_id': 1, 'planning_expand_project': 1, 'planning_expand_task': 1,
+        }</field>
+    </record>
+
+    <record id="planning.planning_action_schedule_by_role" model="ir.actions.act_window">
+        <field name="context">{
+            'search_default_group_by_role': 1, 'search_default_group_by_employee': 2, 'planning_groupby_role': True,
+            'planning_expand_sale_line_id': 1, 'planning_expand_project': 1, 'planning_expand_task': 1,
+        }</field>
+    </record>
+
+    <record id="sale_planning.sale_planning_action_schedule_by_sale_order" model="ir.actions.act_window">
+        <field name="context">{
+            'search_default_group_by_sale_order_line': 1, 'planning_groupby_sale_order': True,
+            'planning_expand_employee': 1, 'planning_expand_role': 1, 'planning_expand_sale_line_id': 1,
+            'planning_expand_project': 1, 'planning_expand_task': 1
+        }</field>
+    </record>
+</odoo>

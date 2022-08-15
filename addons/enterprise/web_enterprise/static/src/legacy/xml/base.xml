@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+<t t-extend="res_config_edition">
+    <t t-jquery=".user-heading h3" t-operation="replace">
+        <h3>
+            Odoo <t t-esc="widget.server_version"/> (Enterprise Edition)
+        </h3>
+    </t>
+    <t t-jquery="#license" t-operation="replace">
+        <a id="license" target="_blank" href="https://github.com/odoo/enterprise/blob/13.0/LICENSE" style="text-decoration: underline;">Odoo Enterprise Edition License V1.0</a>
+    </t>
+    <t t-jquery=".user-heading h3" t-operation="after">
+        <t t-set="expiration_date" t-value="widget.expiration_date ? moment(widget.expiration_date).format('LL') : null"/>
+        <t t-if="expiration_date">
+            <h5>Database expiration: <t t-esc="expiration_date"/></h5>
+        </t>
+    </t>
+</t>
+
+</templates>

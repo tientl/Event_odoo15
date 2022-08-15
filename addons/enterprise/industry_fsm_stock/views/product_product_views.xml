@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_product_product_kanban_material" model="ir.ui.view">
+        <field name="name">stock.product.template.kanban.material</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="industry_fsm_sale.view_product_product_kanban_material"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="tracking"/>
+                <field name="serial_missing"/>
+                <field name="quantity_decreasable"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_record_top')]" position="after">
+                <div class="o_kanban_record_bottom" attrs="{'invisible': ['|', ('tracking', '=', 'none'), ('fsm_quantity', '=', 0)]}">
+                    <div class="oe_kanban_bottom_left"/>
+                    <div class="oe_kanban_bottom_right">
+                        <button class="btn" type="object" name="action_assign_serial">
+                            <i t-att-class="record.serial_missing.raw_value and 'fa fa-list text-danger' or 'fa fa-list text-success'" title="Serial"></i>
+                        </button>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

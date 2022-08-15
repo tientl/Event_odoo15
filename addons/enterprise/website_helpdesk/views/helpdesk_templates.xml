@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="0">
+    <template id="not_published_any_team" name="Helpdesk Team">
+        <t t-call="website.layout">
+            <div class="oe_structure" id="oe_structure_website_helpdesk_not_published_any_team_1"/>
+            <div id="wrap" class="container h-100">
+                <div class="container mt16">
+                    <div class="navbar navbar-expand-md navbar-light bg-light">
+                        <div class="navbar-brand">Helpdesk</div>
+                    </div>
+                </div>
+                <p class="pl-4">There is no public Helpdesk team to show.</p>
+                <div class="oe_structure"/>
+            </div>
+            <div class="oe_structure" id="oe_structure_website_helpdesk_not_published_any_team_2"/>
+        </t>
+    </template>
+
+    <!-- Page : default team -->
+    <template id="team" name="Helpdesk Team">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Helpdesk Team</t>
+            <div class="container mt16">
+                <t t-set="many_teams" t-value="len(teams)>1"/>
+                <div t-if="many_teams" class="navbar navbar-expand-md navbar-light bg-light pb-0">
+                    <div class="navbar-brand">Helpdesk</div>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#o-helpdesk-teams-navbar-collapse">
+                        <span class="navbar-toggler-icon"/>
+                    </button>
+                    <div class="collapse navbar-collapse" id="o-helpdesk-teams-navbar-collapse">
+                        <t t-if="many_teams">
+                            <ul class="navbar-nav nav-tabs team_menu">
+                                <t t-foreach="teams" t-as="tteam">
+                                    <t t-set="active" t-value="'active' if team == tteam else ''"/>
+                                    <li class="nav-item">
+                                            <a t-attf-href="/helpdesk/#{slug(tteam)}" t-attf-class="nav-link #{active}">
+                                            <span t-field="tteam.name"/>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div id="wrap" class="container mt-4">
+                <div class="row mb16">
+                    <div class="oe_structure" id="oe_structure_website_helpdesk_team_1"/>
+                    <div class="col-md-9">
+                        <h2 class="o_page_header mt0 d-none" id="team-page"/>
+                    </div>
+                    <div class="col-md-9 pl-4">
+                        <!-- placeholder -->
+                        <div id="website_helpdesk_form"/>
+                    </div>
+                    <div class="col-md-3" id="right-column">
+                        <div class="oe_structure" id="oe_structure_website_helpdesk_team_2"/>
+                        <div class="row justify-content-end mb-5" id="website_published_button" groups="helpdesk.group_helpdesk_manager">
+                            <t t-call="website.publish_management">
+                                <t t-set="object" t-value="team"/>
+                                <t t-set="publish_edit" t-value="True"/>
+                                <t t-set="action" t-value="'helpdesk.helpdesk_team_action'"/>
+                                <t t-set="menu" t-value="env.ref('helpdesk.menu_helpdesk_root').id"/>
+                            </t>
+                        </div>
+                        <t t-if="team.use_website_helpdesk_form">
+                                <a class="mb-5" id="submit-ticket" t-attf-href="/my/tickets">
+                                    <button t-attf-class="btn btn-primary #{'col-md-10' if multi_type else 'col-md-12'} mb-2">View my Tickets</button>
+                                </a>
+                        </t>
+                        <div class="oe_structure" id="oe_structure_website_helpdesk_links">
+                            <t t-if="team.portal_show_rating">
+                                    <a t-attf-href="/helpdesk/rating/#{team.id}">
+                                        <button t-attf-class="btn btn-primary #{'col-md-10' if multi_type else 'col-md-12'} mt-2 mb-2">Our team's ratings</button>
+                                    </a>
+                            </t>
+                        </div>
+
+                        <t t-if="not is_html_empty(team.description)">
+                            <div class="card bg-secondary mt-2" id="about_team">
+                                <h6 class="card-header"><b>About our team</b></h6>
+                            <div class="card-body">
+                                <span t-field="team.description"/>
+                            </div>
+                            </div>
+                        </t>
+                        <div class="oe_structure" id="oe_structure_website_helpdesk_team_3"/>
+                    </div>
+                </div>
+                <div class="oe_structure" id="oe_structure_website_helpdesk_team_4"/>
+            </div>
+        </t>
+    </template>
+
+</data>
+</odoo>

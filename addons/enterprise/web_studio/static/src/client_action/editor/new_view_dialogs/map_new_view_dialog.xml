@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+<t t-name="web_studio.MapNewViewFieldsSelector" owl="1" >
+  <div>
+      <div class="form-text text-muted">Select the contact field to use to get the coordinates of your records.</div>
+      <div class="o_web_studio_select mt-4">
+          <label for="res_partner">Contact Field</label>
+          <select name="res_partner" class="o_input" t-model="fieldsChoice.res_partner">
+              <option t-foreach="partnerFields" t-as="field" t-att-value="field.name">
+                  <t t-esc="field.string"/><span t-if="env.debug"> (<t t-esc="field.name"/>)</span>
+              </option>
+          </select>
+      </div>
+  </div>
+</t>
+</templates>

@@ -1,0 +1,137 @@
+table > tbody.o_grid_section > tr {
+    > .o_grid_current.o_cell_highlighted:not(.o_grid_total) {
+        background-color: rgba(0, 160, 157, 0.17);
+    }
+
+    > th {
+        width: 30rem !important;
+
+        div {
+            width: 100%;
+        }
+
+        div > :first-child {
+            width: 20rem;
+        }
+
+        @include media-breakpoint-up(md) {
+            .o-timer-play-button {
+                opacity: 0;
+            }
+        }
+    }
+
+    &:hover .o-timer-play-button {
+        opacity: 1;
+    }
+}
+
+.timesheet-timer {
+    padding-right: 16px;
+    padding-left: 16px;
+    background-color: white;
+    border-bottom: 1px solid #cccccc;
+
+    button.btn_start_timer {
+        @include button-variant($o-brand-odoo, $o-brand-odoo);
+        text-transform: uppercase;
+    }
+    .input_timer {
+        width: 100px;
+        text-align: center;
+    }
+    .timer_m2o {
+        width: 100%;
+        .o_field_many2one {
+            width: 100%;
+        }
+    }
+    .input_description {
+        flex-grow: 2;
+    }
+    .input_m2o {
+        flex-grow: 2;
+    }
+}
+.o_grid_view {
+    .o_standalone_avatar_employee {
+        display: inline-flex;
+    }
+
+    button.btn_timer_line {
+        border: 1px solid $o-brand-primary;
+        border-radius:0.12em;
+        background-color: rgba($o-brand-primary, .05);
+        color: $o-brand-primary;
+        text-align:center;
+        width: 25px;
+        height: 23px;
+        &.primary-green {
+            border: 1px solid $o-enterprise-primary-color;
+            background-color: $o-enterprise-primary-color;
+            color: white;
+        }
+    }
+    .o_grid_timer_header {
+        padding-left: 32px;
+        width: 23px !important;
+        @include media-breakpoint-up(md) {
+            width: 2% !important;
+        }
+    }
+}
+
+.o_kanban_timer_start {
+    // The play and stop button will appear on the mouse hover
+    margin-top: 1px;
+    &:hover {
+        > .o_kanban_timer_toggle {
+            display: inline-block;
+        }
+        > .o_time_duration {
+            display: none;
+        }
+    }
+
+    .o_kanban_timer_toggle {
+        display: none;
+
+        > button {
+            @include size(33px, 23px);
+            text-align: center;
+            &[aria-pressed="true"] {
+                background-color: $danger;
+                margin: 0 9px 0 10px;
+            }
+            &[aria-pressed="false"] {
+                background-color: $o-enterprise-primary-color;
+            }
+            > i.o-timer-play-button, > i.o-timer-stop-button , &:hover > i.o-timer-play-button, &:hover > i.o-timer-stop-button {
+                color: white !important;
+                font-size: 1.2em;
+            }
+        }
+    }
+    .o_time_duration > span {
+        margin-top: 2.3px;
+    }
+}
+
+.o_grid_section_subtext {
+    font-size: 0.9rem;
+    color: $o-main-color-muted;
+    z-index: 100; /* the element needs to be hoverable to display the title attribute. */
+    &:before {
+        content: "\00a0\00a0";
+    }
+}
+
+.o_grid_section_subtext_not_enough_hours {
+    color: rgb(220, 105, 101) !important;
+    opacity: 0.8;
+}
+
+.o_grid_section_subtext_overtime {
+    color: green !important;
+    opacity: 0.8;
+}

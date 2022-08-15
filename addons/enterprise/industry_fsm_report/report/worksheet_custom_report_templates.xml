@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <template id="worksheet_custom_page">
+                <div class="page">
+                    <div class="d-flex flex-wrap">
+                        <div class="d-flex flex-wrap pt-3 col-6 flex-column align-items-start">
+                            <t t-foreach="doc.user_ids" t-as="user">
+                                <div class="pr-2 align-top"><strong>Worker: </strong></div>
+                                <div class="align-top" t-esc="user" t-options='{
+                                    "widget": "contact",
+                                    "fields": ["name", "address", "phone", "email"]
+                                    }'/>
+                            </t>
+                        </div>
+                        <div t-attf-class="{{'d-flex pl-3 col-6' if doc.user_ids else ''}} flex-wrap py-3 pr-3 flex-column align-items-start">
+                            <t t-if="doc.partner_id">
+                                <div class="pr-2 align-top"><strong>Customer: </strong></div>
+                                <div class="align-top"><t t-esc="doc.partner_id" t-options='{
+                                                            "widget": "contact",
+                                                            "fields": ["name", "address", "phone", "email"]
+                                                            }'/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div name="worksheet_task_timesheet">
+                        <t t-set='is_uom_day' t-value='doc.timesheet_ids._is_timesheet_encode_uom_day()'/>
+                        <t t-if="doc.allow_timesheets and doc.timesheet_ids">
+                            <h2>Timesheets</h2>
+                            <div class="table-responsive-sm">
+                            <table class="table table-sm o_main_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Date</th>
+                                        <th class="text-left">Worker</th>
+                                        <th class="text-left">Description</th>
+                                        <th t-if="is_uom_day" class="text-right">Days Spent</th>
+                                        <th t-else="" class="text-right">Hours Spent</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sale_tbody">
+                                    <t t-foreach="doc.timesheet_ids" t-as="line">
+                                        <tr>
+                                            <td>
+                                                <span t-field="line.date"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.employee_id.name"/>
+                                            </td>
+                                            <td class="text-left">
+                                                <span t-field="line.display_name"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <t t-if="is_uom_day">
+                                                    <span t-esc="line._convert_hours_to_days(line.unit_amount)" t-options='{"widget": "timesheet_uom"}'/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="line.unit_amount" t-options="{'widget': 'float_time'}"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <div class="row justify-content-end">
+                                <div t-attf-class="#{'col-auto' if report_type != 'html' else 'col-sm-2'}">
+                                    <table class="table table-sm">
+                                        <tr class="border-black o_total">
+                                            <td colspan="3"><strong>Total</strong></td>
+                                            <td class="text-right">
+                                                <t t-if="is_uom_day">
+                                                    <t t-esc="line._convert_hours_to_days(doc.effective_hours)"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="doc.effective_hours" t-options='{"widget": "float_time"}'/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        </t>
+                    </div>
+
+                    <div name="worksheet_map" t-if="doc.worksheet_template_id.report_view_id and worksheet_map.get(doc.id)" style="page-break-inside: avoid">
+                        <t t-set="worksheet" t-value="worksheet_map.get(doc.id)"/>
+                        <h2>Worksheet</h2>
+                        <t t-call="#{doc.worksheet_template_id.report_view_id.id}"/>
+                        <br/>
+                    </div>
+                    <div t-if="doc.worksheet_signature">
+
+                        <div t-if="report_type == html" class="ribbon" style="
+                            position: absolute;
+                            right: 0px; top: 0px;
+                            z-index: 1;
+                            overflow: hidden;
+                            width: 75px; height: 75px;
+                            text-align: right;">
+                            <span style="
+                                font-size: 10px;
+                                color: #fff;
+                                text-transform: uppercase;
+                                text-align: center;
+                                font-weight: bold; line-height: 20px;
+                                transform: rotate(45deg);
+                                width: 100px; height: auto; display: block;
+                                background: green;
+                                position: absolute;
+                                top: 19px; right: -21px; left: auto;
+                                padding: 0;">
+                                Signed
+                            </span>
+                        </div>
+
+                        <div t-attf-class="#{'col-12 col-lg-3' if report_type != 'html' else 'col-sm-7 col-md-4'} ml-auto text-right" style="page-break-inside: avoid">
+                            <h5>Signature</h5>
+                            <img t-att-src="image_data_uri(doc.worksheet_signature)" style="max-height: 6rem; max-width: 100%; color:black;"/><br/>
+                            <span t-field="doc.worksheet_signed_by"/>
+                        </div>
+                    </div>
+                </div>
+        </template>
+
+        <template id="worksheet_custom">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <t t-call="industry_fsm_report.worksheet_custom_page" t-lang="doc.partner_id.lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

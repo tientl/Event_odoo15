@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="helpdesk_ticket_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.form.inherit.crm</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="groups_id" eval="[(4, ref('crm.group_use_lead'))]"/> 
+        <field name="arch" type="xml">
+            <button name="assign_ticket_to_self" position="after">
+                <button name="%(crm_helpdesk.helpdesk_ticket_to_lead_action)d"
+                    string="Convert to Lead" type="action"
+                    attrs="{'invisible': [('active', '=', False)]}"/>
+            </button>
+        </field>
+    </record>
+
+</odoo>

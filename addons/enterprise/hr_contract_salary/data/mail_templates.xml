@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_contract_salary_email_template">
+        <div>
+            <t t-foreach="mapped_data" t-as="section">
+                <h2><t t-esc="section"/></h2>
+                <t t-foreach="mapped_data[section]" t-as="subsection">
+                    <h3><t t-esc="subsection"/></h3>
+                    <ul>
+                        <t t-foreach="mapped_data[section][subsection]" t-as="value">
+                            <li><t t-esc="value[0]"></t>: <t t-esc="value[1]"/></li>
+                        </t>
+                    </ul>
+                </t>
+            </t>
+        </div>
+    </template>
+</odoo>

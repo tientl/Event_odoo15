@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    	<record id="view_bank_statement_coda_form" model="ir.ui.view">
+            <field name="name">account.bank.statement.coda.form</field>
+            <field name="model">account.bank.statement</field>
+            <field name="inherit_id" ref="account.view_bank_statement_form"/>
+            <field name="arch" type="xml">
+            	<page name="statement_line_ids" position="after">
+            		<page string="CODA Notes" name="coda_note" groups="base.group_no_one">
+                    	<field name="coda_note" class="text-monospace"/>
+                	</page>
+                </page>
+            </field>
+        </record>
+
+        <record id="view_bank_statement_line_coda_form_inherit" model="ir.ui.view">
+            <field name="name">account.bank.statement.line.coda.form</field>
+            <field name="model">account.bank.statement.line</field>
+            <field name="inherit_id" ref="account.view_bank_statement_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group/field[@name='narration']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[last()]" position="after">
+                    <separator string="Notes"/>
+                    <field name="narration" class="text-monospace"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="account_bank_statement_import_coda" model="ir.ui.view">
+            <field name="name">Upload Bank Statements CODA</field>
+            <field name="model">account.bank.statement.import</field>
+            <field name="inherit_id" ref="account_bank_statement_import.account_bank_statement_import_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//ul[@id='statement_format']" position="inside">
+                    <li>Belgium Coded Statement of Account (CODA) <span class="ml-4"><field name="split_transactions"/>Split collective payments</span></li>
+                </xpath>
+            </field>
+        </record>
+
+</odoo>

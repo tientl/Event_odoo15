@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+  <t t-name="web_studio.HomeMenuCustomizer" owl="1">
+    <div class="o_web_studio_home_studio_menu">
+      <Dropdown>
+        <t t-set-slot="toggler">
+          Customizations
+        </t>
+        <DropdownItem class="o_web_studio_change_background" t-on-dropdown-item-selected.stop="">
+          <FileInput
+            action="'/web/binary/upload_attachment'"
+            t-on-uploaded="bgImageUploaded"
+            model="'res.company'" id="company.currentCompany.id"
+          >
+            Change Background
+          </FileInput>
+        </DropdownItem>
+        <DropdownItem t-if="menus.getMenu('root').backgroundImage"
+          class="o_web_studio_reset_default_background"
+          t-on-click="_resetBgImage">
+          Reset Default Background
+        </DropdownItem>
+        <DropdownItem class="o_web_studio_import" t-on-click="_import">
+          Import
+        </DropdownItem>
+        <DropdownItem class="o_web_studio_export" t-on-click="_export">
+          Export
+        </DropdownItem>
+      </Dropdown>
+    </div>
+  </t>
+
+</templates>

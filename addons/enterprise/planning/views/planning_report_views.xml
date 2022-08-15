@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="planning_slot_report_view_pivot" model="ir.ui.view">
+        <field name="name">planning.slot.report.pivot</field>
+        <field name="model">planning.slot</field>
+        <field name="arch" type="xml">
+            <pivot string="Planning Analysis" sample="1">
+                <field name="start_datetime" interval="month" type="row"/>
+                <field name="resource_id" type="col"/>
+                <field name="allocated_hours" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="planning_slot_report_view_graph" model="ir.ui.view">
+        <field name="name">planning.slot.report.graph</field>
+        <field name="model">planning.slot</field>
+        <field name="arch" type="xml">
+            <graph string="Planning Analysis" sample="1">
+                <field name="start_datetime"/>
+                <field name="allocated_hours" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="planning_slot_report_view_form_in_gantt" model="ir.ui.view">
+        <field name="name">planning.slot.report.form.gantt</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="planning_view_form_in_gantt"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//footer" position="replace">
+                <footer>
+                    <button string="Discard" special="cancel" data-hotkey="z" class="btn-secondary" close="1" fullscreen="True" groups="planning.group_planning_manager"/>
+                </footer>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="planning_slot_report_view_gantt" model="ir.ui.view">
+        <field name="name">planning.slot.report.gantt</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="planning_view_gantt"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//gantt" position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="edit">0</attribute>
+                <attribute name="form_view_id">%(planning_slot_report_view_form_in_gantt)d</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="planning_report_action_analysis" model="ir.actions.act_window">
+        <field name="name">Planning Analysis</field>
+        <field name="res_model">planning.slot</field>
+        <field name="view_mode">pivot,graph,gantt,list,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No data yet!
+            </p><p>
+                Create shifts to get statistics.
+            </p>
+        </field>
+    </record>
+
+    <record id="planning_slot_report_action_view_pivot" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="planning_slot_report_view_pivot"/>
+        <field name="act_window_id" ref="planning_report_action_analysis"/>
+    </record>
+    <record id="planning_slot_report_action_view_graph" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="planning_slot_report_view_graph"/>
+        <field name="act_window_id" ref="planning_report_action_analysis"/>
+    </record>
+    <record id="planning_slot_report_action_view_gantt" model="ir.actions.act_window.view">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">gantt</field>
+        <field name="view_id" ref="planning_slot_report_view_gantt"/>
+        <field name="act_window_id" ref="planning_report_action_analysis"/>
+    </record>
+
+    <!-- Filter for graph view -->
+    <record id="planning_filter_by_employee" model="ir.filters">
+        <field name="name">Hours per Resource</field>
+        <field name="model_id">planning.slot</field>
+        <field name="user_id" eval="False"/>
+        <field name="is_default" eval="True"/>
+        <field name="context">{
+            'pivot_measures': ['allocated_hours'],
+            'pivot_column_groupby': ['start_datetime:month'],
+            'pivot_row_groupby': ['resource_id'],
+            'graph_measures': ['allocated_hours'],
+            'graph_column_groupby': ['start_datetime:month'],
+            'graph_row_groupby': ['resource_id']
+        }</field>
+        <field name="action_id" ref="planning_report_action_analysis"/>
+    </record>
+
+    <menuitem
+        id="planning_menu_reporting"
+        name="Reporting"
+        parent="planning_menu_root"
+        sequence="40"
+        groups="planning.group_planning_manager"/>
+
+    <menuitem
+        id="planning_menu_planning_analysis"
+        name="Planning Analysis"
+        action="planning_report_action_analysis"
+        sequence="10" parent="planning_menu_reporting"
+        groups="planning.group_planning_manager"/>
+
+</odoo>

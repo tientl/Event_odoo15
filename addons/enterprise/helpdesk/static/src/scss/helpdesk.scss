@@ -1,0 +1,178 @@
+@include media-breakpoint-up(md) {
+    .o_kanban_view.o_kanban_dashboard.o_helpdesk_kanban {
+        $helpdesk-record-width: 420px;
+
+        .o_kanban_group:not(.o_column_folded) {
+            width: $helpdesk-record-width + 2*$o-kanban-group-padding;
+        }
+        .o_kanban_group.o_column_folded {
+            height: $helpdesk-record-width;
+        }
+        .o_kanban_record {
+            width: $helpdesk-record-width;
+            min-height: 250px;
+        }
+    }
+}
+
+.o_helpdesk_dashboard {
+    $sale-table-spacing: 10px;
+
+    border-bottom: 1px solid #CED4DA;
+    background-color: $o-view-background-color;
+
+    .o_welcome_message {
+        width: 100%;
+        @include o-position-absolute($left: 0, $top: 0);
+        display: flex;
+        justify-content: center;
+
+        .o_welcome_image {
+            padding: 20px;
+        }
+        .o_welcome_content > a {
+            color: white;
+            display: inline-block;
+        }
+    }
+
+    .o_dashboard_action {
+        cursor: pointer;
+    }
+
+    .ribbon {
+        &::before, &::after {
+            display: none;
+        }
+
+        span {
+            background-color: $o-brand-odoo;
+            padding: 5px;
+            font-size: medium;
+            z-index: unset;
+            height:auto;
+        }
+    }
+    
+    .ribbon-top-right {
+        margin-top: -$o-kanban-dashboard-vpadding;
+
+        span {
+            left: 0px;
+            right: 30px;
+        }
+    }
+
+    > .o_demo {
+        opacity: 0.07;
+    }
+
+    > div {
+        display: inline-block;
+        vertical-align: top;
+        @include media-breakpoint-up(md) {
+            width: 50%;
+        }
+        @include media-breakpoint-up(lg) {
+            display: inline-block;
+            float: none;
+        }
+
+        > table {
+            margin-bottom: 0;
+            border-spacing: $sale-table-spacing 0px;
+            border-collapse: separate;
+            white-space: initial;
+            > tbody > tr > td {
+                vertical-align: middle;
+                text-align: center;
+                border-top: 1px solid $o-view-background-color;
+                width: 25%;
+
+                height: 33px;
+
+                span {
+                    display: inline;
+                }
+
+                a:hover {
+                    text-decoration: none;
+                }
+
+                &.o_demo{
+                    cursor: default;
+                    a {
+                        cursor: default;
+                    }
+                }
+
+                &.o_main {
+                    background-color: $o-brand-primary;
+                    &:hover {
+                        background-color: darken($o-brand-primary, 10%);
+                    }
+                    a {
+                        color: white;
+                    }
+                    &.o_demo{
+                        &:hover {
+                            background-color: $o-brand-primary;
+                        }
+                    }
+                }
+                &.o_warning {
+                    background-color: orange;
+                    &:hover {
+                        background-color: darken(orange, 10%);
+                    }
+                    a {
+                        color: white;
+                    }
+                    &.o_demo{
+                        &:hover {
+                            background-color: orange;
+                        }
+                    }
+                }
+                &.o_secondary {
+                    background-color: $o-brand-lightsecondary;
+                    &:hover {
+                        background-color: darken($o-brand-lightsecondary, 10%);
+                    }
+                    a {
+                        color: black;
+                    }
+                    &.o_demo{
+                        &:hover {
+                            background-color: $o-brand-lightsecondary;
+                        }
+                    }
+                }
+                &.o_highlight, .o_highlight {
+                    font-size: 20px;
+                }
+                &.o_text {
+                    text-align: left;
+                }
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .o_kanban_view.o_kanban_dashboard.o_helpdesk_kanban {
+        padding-top: 200px;
+    }
+    .o_helpdesk_dashboard {
+        position: fixed;
+        border: 8px solid #f9f9f9;
+        z-index: 10;
+        width: 100%;
+    }
+}
+
+@include media-breakpoint-down(lg) {
+    .o_kanban_view.o_kanban_dashboard.o_helpdesk_kanban {
+        padding-top: 200px;
+    }
+}

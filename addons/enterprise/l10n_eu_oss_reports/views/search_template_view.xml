@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="search_template_tax_report_choser_oss" inherit_id="account_reports.search_template_tax_report_choser">
+            <xpath expr="//t[@t-else='']" position="before">
+                <t t-elif="options['tax_report'] == 'generic_oss_no_import'">
+                    OSS Sales
+                </t>
+                <t t-elif="options['tax_report'] == 'generic_oss_import'">
+                    OSS Imports
+                </t>
+            </xpath>
+            <xpath expr="//div[@role='separator']" position="before">
+                <div role="separator" class="dropdown-divider" t-if="options['available_oss_reports']"/>
+                <a role="menuitem"
+                   class="dropdown-item js_account_reports_one_choice_filter"
+                   data-filter="tax_report"
+                   data-id="generic_oss_no_import"
+                   t-if="'generic_oss_no_import' in options['available_oss_reports']"
+                   groups="account.group_account_readonly"
+                >
+                    OSS Sales
+                </a>
+                <a role="menuitem"
+                   class="dropdown-item js_account_reports_one_choice_filter"
+                   data-filter="tax_report"
+                   data-id="generic_oss_import"
+                   t-if="'generic_oss_import' in options['available_oss_reports']"
+                   groups="account.group_account_readonly"
+                >
+                    OSS Imports
+                </a>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

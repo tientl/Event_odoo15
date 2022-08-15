@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="project_enterprise._ControlPanel" t-inherit="web_enterprise._ControlPanel" t-inherit-mode="extension" owl="1">
+        <xpath expr="//ol[hasclass('breadcrumb')]" position="inside">
+            <t t-call="project.ProjectControlPanelContent">
+                <t t-set="showProjectUpdate" t-value="show_project_update"/>
+                <t t-set="isProjectUser" t-value="is_project_user"/>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="project_enterprise.ProjectRightPanel" owl="1">
+        <div class="o_rightpanel">
+            <t t-call="project.StatButtonsSection"/>
+            <t t-call="project_enterprise.MilestoneSection"/>
+        </div>
+    </t>
+
+    <t t-name="project_enterprise.MilestoneSection" t-inherit="project.MilestoneSection" t-inherit-mode="primary" owl="1">
+        <xpath expr="//div[hasclass('o_rightpanel_title')]" position="before">
+            <span t-on-click="_onClickSection"><i t-attf-class="fa {{section.milestone.closed ? 'fa-caret-right' : 'fa-caret-down'}}"></i></span>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_header')]" position="attributes">
+            <attribute name="t-on-click">_onClickSection</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_rightpanel_data')]" position="attributes">
+            <attribute name="t-attf-class" separator=" " add="{{section.milestone.closed ? 'o_rightpanel_hidden' : ''}}"/>
+        </xpath>
+    </t>
+
+</templates>

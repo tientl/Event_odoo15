@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="report_281_50_pdf">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <div class="page">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-12">
+                                            <p class="text-center font-weight-bold">
+                                                FICHE N° 281.50 (commissions, courtage, etc) - ANNEE <span t-esc="data['V0002']"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-12" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                1. N° ..................
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-6 border-right border-dark" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                2. Nom (ou dénomination) et adresse du débiteur des revenus:
+                                            </p>
+                                            <br/>
+                                            <p class="text-left border border-dark" style="padding-left: 2%">
+                                                <span t-esc="data['V0014']"/> <!-- Company name -->
+                                                <br/>
+                                                <span t-esc="data['V0015']"/> <!-- Company Address -->
+                                                <br/>
+                                                <span t-esc="data['V0016']"/> <span t-esc="data['V0017']"/> <!-- Company ZIP & City -->
+                                            </p>
+                                            <br/>
+                                            <p class="text-left">
+                                                N° d'entreprise: <span t-esc="data['A1005']"/>
+                                            </p>
+                                        </div>
+                                        <div class="col-6" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                Nom, prénom (ou dénomination) et adresse du bénéficiaire des revenus:
+                                            </p>
+                                            <br/>
+                                            <p class="text-left border border-dark" style="padding-left: 2%">
+                                                <span t-esc="data['F2013']"/> <!-- Partner name -->
+                                                <br/>
+                                                <span t-esc="data['F2015']"/> <!-- Partner Address -->
+                                                <br/>
+                                                <span t-esc="data['F2016']"/> <span t-esc="data['F2017']"/> <!-- Partner ZIP & City -->
+                                            </p>
+                                            <br/>
+                                            <p class="text-left">
+                                                N° d'entreprise ou n° national:
+                                                <t t-if="data['F50_2030'] == '1'">
+                                                    <span t-esc="data['F2011']"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="data['F50_2110']"/>
+                                                </t>
+                                            </p>
+                                            <p class="text-left" t-if="data['F50_2030'] == '1'">
+                                                Profession exercée:
+                                                <span t-esc="data['F50_2107']"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-8 border-right border-dark" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                3. Nature
+                                            </p>
+                                        </div>
+                                        <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-center">
+                                                Montant
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-8 border-right border-dark" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                a) Commissions, courtages, ristournes commerciales, etc:
+                                                <br/>
+                                                b) Honoraires ou vacations:
+                                                <br/>
+                                                c) Avantages de toute nature (nature: ................)
+                                                <br/>
+                                                d) Frais exposés pour compte du bénéficiaire:
+                                                <br/>
+                                                e) Total (voir aussi la rubriques f et g ci-après):
+                                            </p>
+                                        </div>
+                                        <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-right">
+                                                <span t-esc="data['F50_2060']"/>
+                                                <br/>
+                                                <span t-esc="data['F50_2061']"/>
+                                                <br/>
+                                                <span t-esc="data['F50_2062']"/>
+                                                <br/>
+                                                <span t-esc="data['F50_2063']"/>
+                                                <br/>
+                                                <span t-esc="data['F50_2064']"/>
+                                                <br/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-8" style="padding-top: 1%; padding-bottom: 1%;">
+                                            f) Mentionner ici, le cas échéant, le montant compris à la rubrique e ci-avant se rapporte à des
+                                            indemnités versées à:
+                                            <br/>
+                                            - des sportifs pour leurs prestations sportives:
+                                            <br/>
+                                            - des formateurs, entraîneurs et accompagnateurs pour leur activité au profit de sportifs:
+                                        </div>
+                                        <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-right">
+                                                <br/><br/>
+                                                <span t-esc="data['F50_2066']"/>
+                                                <br/><br/>
+                                                <span t-esc="data['F50_2067']"/>
+                                                <br/><br/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark border-bottom-0">
+                                        <div class="col-8" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                g) Si le montant indiqué à la rubrique e ci-avant ne coïncide pas avec le montant réellement payé en
+                                                <span t-esc="data['V0002']"/>,
+                                                inscrivez ci-contre le montant réellement payé en
+                                                <span t-esc="data['V0002']"/>
+                                                (y compris, les sommes qui ont un rapport avec d'autres périodes imposables):
+                                            </p>
+                                        </div>
+                                        <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-right">
+                                                <span t-esc="data['F50_2065']"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row border border-dark">
+                                        <div class="col-12" style="padding-top: 1%; padding-bottom: 1%;">
+                                            <p class="text-left">
+                                                4. Commentaire: <span t-esc="data['F50_2099']"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,178 @@
+
+////// ======  Dashboard Kanban View ==========
+////// ========================================
+
+.o_documents_drag_icon {
+    padding: 0px 3px;
+    color: white;
+    font-weight: bold;
+    background-color: $o-brand-primary;
+    border: 1px solid $o-brand-primary;
+    border-radius: 3px;
+    @include o-position-absolute($top: 0, $right: 0);
+    z-index: -9999;
+}
+
+.o_documents_kanban {
+    align-items: flex-start;
+
+    .o_documents_kanban_view.o_kanban_view {
+        overflow: auto;
+        transition: background 0.3s;
+        height: 100%;
+
+        .o_kanban_record.o_kanban_attachment {
+            &.oe_file_request {
+                border-style: dashed;
+                background-color: #fff0;
+            }
+
+            .o_kanban_image, .o_kanban_image_wrapper {
+                height: 100%;
+            }
+
+            .o_kanban_image .o_kanban_image_wrapper {
+                background-color: $gray-200;
+                border-right: 1px solid gray('400');
+            }
+
+            .o_request_image .o_kanban_image_wrapper {
+                background-color: #f1f1f1;
+                opacity: 0.5;
+
+                &:hover {
+                    background-color: $gray-200;
+                }
+            }
+
+            .oe_kanban_previewer {
+                cursor: zoom-in;
+            }
+
+            .o_kanban_details {
+                padding-left: $o-kanban-attachement-image-size + $o-kanban-inside-hgutter;
+                height: 100%;
+
+                .o_documents_lock {
+                    color: gray('700');
+                }
+
+                .o_kanban_details_wrapper {
+                    height: 100%;
+
+                    .o_field_many2manytags {
+                        margin-top: 5px;
+                        white-space: normal;
+                    }
+                }
+            }
+
+            .o_kanban_record_title {
+                width: calc(100% - 15px);
+                margin-bottom: 0;
+            }
+
+            .o_record_selector {
+                @include o-hover-text-color($gray-400, $gray-800 );
+                @include o-position-absolute($o-kanban-inside-vgutter - 4px , $o-kanban-inside-hgutter - 4px);
+                padding: $o-dms-p-tiny;
+                font-size: 16px;
+            }
+
+            .fa-star-o {
+                @include o-hover-text-color($gray-400, $o-main-favorite-color);
+                &:hover:before {
+                    content: "\f005";
+                }
+            }
+
+            .fa-star {
+                @include o-hover-text-color($o-main-favorite-color, $gray-400);
+                &:hover:before {
+                    content: "\f006";
+                }
+            }
+        }
+
+        .o_record_selected {
+            opacity: 1;
+            border-color: $o-brand-primary;
+            box-shadow: 0 0 0 1px $o-brand-primary;
+
+            .o_record_selector{
+                @include o-hover-opacity(0.8, 1);
+
+                &:before{
+                    color: $o-brand-primary;
+                    content:"\f058";
+                }
+            }
+        }
+
+        &.o_documents_drop_over {
+            background: $gray-700;
+
+            &:after {
+                content: "";
+                @include o-position-absolute(4px, 6px, 8px, 6px);
+                border: 2px dashed white;
+            }
+
+            .o_kanban_record {
+                opacity: 0.2;
+                filter: blur(1px);
+            }
+
+            .o_view_nocontent {
+                display: none;
+            }
+        }
+    }
+
+    .o_documents_upload_text {
+        @include o-position-absolute($top: 45%, $left: 45%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+
+        span {
+            font-size: 20px;
+        }
+    }
+}
+
+
+////// ==========  Share modal ==============
+////// ======================================
+
+.o_url_group {
+    .o_field_copy {
+        padding: $input-btn-padding-y-lg $input-btn-padding-x-lg;
+        color: $text-muted;
+        text-align: left;
+        font-style: italic;
+        border-color: $gray-500;
+
+        .o_clipboard_button {
+            box-shadow: 1px 0 0 1px $o-brand-primary;
+            border-radius: inherit; // To always get the container border radius;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+}
+
+
+////// ==========-  Animations ==============
+////// ======================================
+
+@keyframes o_documents_preview_in {
+   0% {
+       opacity: 0;
+       transform: scaleX(0.50) scaleY(0.50);
+   }
+
+   100% {
+       opacity: 1;
+       transform: scaleX(1.00) scaleY(1.00);
+   }
+}

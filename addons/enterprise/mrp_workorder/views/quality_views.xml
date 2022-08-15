@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="quality_point_view_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">quality.point.view.form.inherit.mrp</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="quality.quality_point_view_form"/>
+        <field name="arch" type="xml">
+            <field name="test_type_id" position="after">
+                <field name="component_ids" invisible="1"/>
+                <field name="bom_product_ids" invisible="1"/>
+                <field name="component_id" attrs="{'required': [('test_type', 'in', ('register_byproducts', 'register_consumed_materials'))], 'invisible': ['|', '|', ('is_workorder_step', '=', False), ('operation_id', '=', False), ('test_type', 'not in', ('register_byproducts', 'register_consumed_materials'))]}" domain="[('id', 'in', component_ids), '|', ('company_id', '=', company_id), ('company_id', '=', False)]"/>
+                <field name="test_report_type" widget="selection" attrs="{'invisible': [('test_type','!=','print_label')]}"/>
+            </field>
+            <field name="picking_type_ids" position="after">
+                <field string="Work Order Operation" name="operation_id" attrs="{'invisible': [('is_workorder_step', '=', False)]}" groups="mrp.group_mrp_routings" options="{'no_create': True}"/>
+                <field name="is_workorder_step" invisible="1"/>
+            </field>
+            <field name="user_id" position="after">
+                <field name="worksheet" widget="radio" attrs="{'invisible': ['|', ('is_workorder_step', '=', False), ('operation_id', '=', False)]}"/>
+                <field name="worksheet_page" attrs="{'invisible': ['|', '|', ('is_workorder_step', '=', False), ('operation_id', '=', False), ('worksheet', '!=', 'scroll')]}"/>
+            </field>
+            <field name="product_category_ids" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [
+                        ('is_workorder_step', '=', True),
+                        ('operation_id', '!=', False)
+                    ]}
+                </attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="step_view_form" model="ir.ui.view">
+        <field name="name">quality.point.view.form.inherit.mrp</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="mrp_workorder.quality_point_view_form_inherit_mrp"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="picking_type_ids" position="replace">
+                <field name="picking_type_ids" widget="many2many_tags" domain="[('code', '=', 'mrp_operation'), ('company_id', '=', company_id)]"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="quality_alert_view_tree" model="ir.ui.view">
+        <field name="name">quality.alert.view.tree.inherit.mrp.workorder</field>
+        <field name="model">quality.alert</field>
+        <field name="inherit_id" ref="quality.quality_alert_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="workcenter_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="quality_point_view_tree" model="ir.ui.view">
+        <field name="name">quality.point.view.tree.inherit.mrp.workorder</field>
+        <field name="model">quality.point</field>
+        <field name="inherit_id" ref="quality.quality_point_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="picking_type_ids" position="after">
+                <field name="operation_id" optional="hide" string="Work Order Operation"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="quality_alert_view_search_inherit_mrp_workorder" model="ir.ui.view">
+            <field name="name">quality.alert.view.search.inherit.mrp.workorder</field>
+            <field name="model">quality.alert</field>
+            <field name="inherit_id" ref="quality.quality_alert_view_search"/>
+            <field name="arch" type="xml">
+                <field name="tag_ids" position="before">
+                    <field name="workcenter_id" string="Work Center"/>
+                </field>
+            </field>
+    </record>
+</odoo>

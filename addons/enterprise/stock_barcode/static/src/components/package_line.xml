@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <div t-name="stock_barcode.PackageLineComponent" owl="1"
+        class="o_barcode_line list-group-item d-flex flex-row flex-nowrap py-3"
+        t-attf-class="{{isSelected ? 'o_selected o_highlight' : ''}}" t-on-click="select">
+        <div class="o_barcode_line_details flex-grow-1 flex-column flex-nowrap">
+            <div>
+                <i class="fa fa-fw fa-archive"/>
+                <t t-esc="line.package_id.name"/>
+                <i class="fa fa-long-arrow-right mx-1"/>
+                <t t-esc="line.result_package_id.name"/>
+            </div>
+            <div name="quantity">
+                <i class="fa fa-fw fa-cube"/>
+                <span class="o_barcode_scanner_qty text-monospace badge">
+                    <span class="d-inline-block text-left" t-esc="qtyDone"/>
+                    <span t-if="line.reservedPackage">/ 1</span>
+                </span>
+            </div>
+            <div t-if="line.owner_id">
+                <i class="fa fa-fw fa-user-o"/>
+                <t t-esc="line.owner_id.display_name"/>
+            </div>
+        </div>
+        <button t-on-click="openPackage" class="o_line_button o_package_content btn btn-secondary ml-2 ml-sm-4">
+            <i class="fa fa-2x fa-dropbox"/>
+        </button>
+    </div>
+
+</templates>

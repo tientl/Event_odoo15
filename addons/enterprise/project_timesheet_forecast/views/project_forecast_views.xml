@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_forecast_view_form_inherit_project_timesheet_forecast" model="ir.ui.view">
+        <field name="name">planning.slot.form.inherit.timesheet</field>
+        <field name="inherit_id" ref="project_forecast.planning_slot_view_form"/>
+        <field name="model">planning.slot</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='task_id']" position="attributes">
+                <attribute name="widget">task_with_hours</attribute>
+            </xpath>
+            <xpath expr="//field[@name='allocated_hours']" position="after">
+                <field name="company_id" position="move"/>
+                <field name="allow_timesheets" invisible="1"/>
+                <field name="allocation_type" invisible="1"/>
+                <field name="timesheet_ids" invisible="1"/>
+                <field name="can_open_timesheets" invisible="1"/>
+                <field name="encode_uom_in_days" invisible="1"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Clickable -->
+                <button type="object" name="action_open_timesheets" icon="fa-clock-o"
+                    attrs="{'invisible': ['|', '|', '|', '|', ('can_open_timesheets', '=', False), ('project_id', '=', False), ('task_id', '=',  False), ('allow_timesheets', '=', False), ('employee_id', '=', False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="effective_hours" widget="timesheet_uom"/>
+                            <span attrs="{'invisible': [('encode_uom_in_days', '=', True)]}"> Hours</span>
+                            <span attrs="{'invisible': [('encode_uom_in_days', '=', False)]}"> Days</span>
+                        </span>
+                        <span class="o_stat_text">Recorded</span>
+                    </div>
+                </button>
+                <!-- Non Clickable -->
+                <button icon="fa-clock-o" disabled="1" class="o_debounce_disabled"
+                    attrs="{'invisible': ['|', '|', '|', '|', ('can_open_timesheets', '=', True), ('project_id', '=', False), ('task_id', '=',  False), ('allow_timesheets', '=', False), ('employee_id', '=', False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="effective_hours" widget="timesheet_uom"/>
+                            <span attrs="{'invisible': [('encode_uom_in_days', '=', True)]}"> Hours</span>
+                            <span attrs="{'invisible': [('encode_uom_in_days', '=', False)]}"> Days</span>
+                        </span>
+                        <span class="o_stat_text">Recorded</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_forecast_view_tree_inherit_project_timesheet_forecast" model="ir.ui.view">
+        <field name="name">planning.slot.tree.inherit.timesheet</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="project_forecast.planning_slot_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='task_id']" position="attributes">
+                <attribute name="widget">task_with_hours</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="planning_slot_report_view_pivot_inherit_project_timesheet_forecast" model="ir.ui.view">
+        <field name="name">planning.slot.pivot.inherit.timesheet</field>
+        <field name="inherit_id" ref="planning.planning_slot_report_view_pivot"/>
+        <field name="model">planning.slot</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allocated_hours']" position="after">
+                <field name="effective_hours" type="measure"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="planning_view_gantt" model="ir.ui.view">
+       <field name="name">planning.slot.gantt.inherit.timesheet</field>
+        <field name="inherit_id" ref="project_forecast.planning_view_gantt"/>
+        <field name="model">planning.slot</field>
+        <field name="arch" type="xml">
+            <gantt position="attributes">
+                <attribute name="js_class">forecast_timesheet</attribute>
+            </gantt>
+            <xpath expr="//field[@name='allocated_percentage']" position="after">
+                <field name="effective_hours"/>
+                <field name="task_id"/>
+            </xpath>
+            <xpath expr="//div[@id='allocated_hours']" position="after">
+                <div t-if="task_id" id="effective_hours">
+                    <strong>Effective Hours — </strong><t t-esc="effectiveHoursFormatted"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!--  Update the menu entry to display the gantt view by role  -->
+    <!--  Without this, displaying by role does not render the progress bars  -->
+    <record id="project_timesheet_action_schedule_by_role" model="ir.actions.act_window">
+        <field name="name">Schedule by Role</field>
+        <field name="res_model">planning.slot</field>
+        <field name="view_mode">gantt,calendar,tree,form,kanban</field>
+        <field name="context">{
+            'search_default_group_by_role': 1, 'search_default_group_by_resource': 2, 'planning_groupby_role': True,
+            'planning_expand_resource': 1, 'planning_expand_role': 1, 'planning_expand_project': 1, 'planning_expand_task': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No shifts found. Let's create one!
+            </p><p>
+                Shifts are periods allocated to your employees for a specific role. Together, they constitute your employees' planning.
+            </p>
+        </field>
+    </record>
+
+        <record id="planning_menu_schedule_by_role" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">gantt</field>
+            <field name="view_id" ref="planning_view_gantt"/>
+            <field name="act_window_id" ref="project_timesheet_action_schedule_by_role"/>
+        </record>
+
+    <menuitem
+            id="planning.planning_menu_schedule_by_role"
+            name="By Role"
+            sequence="20"
+            parent="planning.planning_menu_schedule"
+            action="project_timesheet_action_schedule_by_role"/>
+
+</odoo>

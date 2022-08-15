@@ -1,0 +1,79 @@
+<odoo>
+
+<!-- Material kanban -->
+<record id="view_product_product_kanban_material" model="ir.ui.view">
+    <field name="name">view.product.template.kanban.material</field>
+    <field name="model">product.product</field>
+    <field name="priority">999</field>
+    <field name="arch" type="xml">
+        <kanban edit="0" class="o_kanban_mobile o_fsm_material_kanban" js_class="fsm_product_kanban">
+            <field name="id"/>
+            <field name="name"/>
+            <field name="product_template_attribute_value_ids"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="o_kanban_record o_fsm_industry_product d-flex" style="min-height: 100px;align-items:center;">
+                        <div class="o_kanban_image">
+                            <img t-att-src="kanban_image('product.product', 'image_128', record.id.raw_value)" alt="Product" class="o_image_64_contain"/>
+                        </div>
+                        <div class="o_dropdown_kanban dropdown" t-if="!selection_mode" groups="sales_team.group_sale_manager">
+                            <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                <span class="fa fa-ellipsis-v"/>
+                            </a>
+                            <div class="dropdown-menu" role="menu">
+                                <a class="dropdown-item" role="menuitem" type="edit">Edit</a>
+                            </div>
+                        </div>
+                        <div class="oe_kanban_details p-2 d-flex">
+                            <div class="o_kanban_record_top w-100 " style="justify-content: space-between;">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <div>
+                                            <strong><span t-esc="record.name.value"/></strong>
+                                        </div>
+                                    </strong>
+                                    <div class="o_kanban_tags_section">
+                                        <field name="product_template_attribute_value_ids" groups="product.group_product_variant" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    </div>
+                                    <ul>
+                                        <li><strong>Price: <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}"></field></strong></li>
+                                        <field name="currency_id" invisible="True"/>
+                                    </ul>
+                                </div>
+                                <field name="fsm_quantity" widget="fsm_product_quantity"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+    <record id="product_search_form_view_inherit_fsm_sale" model="ir.ui.view">
+        <field name="name">product.product.search.fsm.sale</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <search string="Product">
+                <field name="name" string="Product" filter_domain="['|', '|', ('default_code', 'ilike', self), ('name', 'ilike', self), ('barcode', 'ilike', self)]"/>
+                <field name="categ_id" filter_domain="[('categ_id', 'child_of', raw_value)]"/>
+                <field name="product_template_attribute_value_ids" groups="product.group_product_variant"/>
+                <field name="product_tmpl_id" string="Product Template"/>
+                <filter string="Added Products" name="fsm_quantity" domain="[('fsm_quantity', '>', 0)]"/>
+                <separator/>
+                <filter string="Favorites" name="favorites" domain="[('priority','=','1')]"/>
+                <separator/>
+                <filter string="Services" name="services" domain="[('type','=','service')]"/>
+                <filter string="Products" name="consumable" domain="[('type', 'in', ['consu', 'product'])]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Product Type" name="type" context="{'group_by':'type'}"/>
+                    <filter string="Product Category" name="categ_id" context="{'group_by':'categ_id'}"/>
+                </group>
+                <searchpanel>
+                    <field name="categ_id" icon="fa-th-list" string="Product Category" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+</odoo>

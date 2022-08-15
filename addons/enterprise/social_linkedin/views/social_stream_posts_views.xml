@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="social_stream_post_view_kanban" model="ir.ui.view">
+        <field name="name">social.stream.post.view.kanban.inherit.linkedin</field>
+        <field name="model">social.stream.post</field>
+        <field name="inherit_id" ref="social.social_stream_post_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stream_id']" position="after">
+                <field name="linkedin_post_urn"/>
+                <field name="linkedin_author_urn"/>
+                <field name="linkedin_likes_count"/>
+                <field name="linkedin_comments_count"/>
+                <field name="linkedin_author_image_url"/>
+            </xpath>
+            <xpath expr="//span[hasclass('o_social_stream_post_author_image')]" position="inside">
+                <img t-if="record.linkedin_author_image_url.raw_value" t-att-src="record.linkedin_author_image_url.raw_value" alt="Author Image"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_social_stream_post_message')]" position="inside">
+                <div class="o_social_stream_post_linkedin_stats px-2 d-flex justify-content-around"
+                    t-if="record.media_type.raw_value === 'linkedin'">
+                    <div t-attf-class="o_social_linkedin_likes o_social_subtle_btn_disabled pl-2 pr-3"
+                        t-att-data-post-id="record.id.raw_value"
+                        t-att-data-post-urn="record.linkedin_post_urn.raw_value">
+                        <i class="fa fa-thumbs-up" title="Likes"/>
+                        <b class="o_social_kanban_likes_count" t-esc="record.linkedin_likes_count.raw_value !== 0 ? record.linkedin_likes_count.raw_value : ''"/>
+                    </div>
+                    <div class="o_social_linkedin_comments o_social_comments o_social_subtle_btn px-3"
+                        data-media-type="linkedin"
+                        t-att-data-post-id="record.id.raw_value"
+                        t-att-data-post-urn="record.linkedin_post_urn.raw_value"
+                        t-att-data-post-message="record.message.raw_value"
+                        t-att-data-post-images="record.stream_post_image_urls.raw_value"
+                        t-att-data-post-link="record.post_link.raw_value"
+                        t-att-data-author-name="record.author_name.raw_value"
+                        t-att-data-author-link="record.author_link.raw_value"
+                        t-att-data-author-image="record.linkedin_author_image_url.raw_value"
+                        t-att-data-published-date="record.published_date.value"
+                        t-att-data-formatted-published-date="record.formatted_published_date.value"
+                        t-att-data-link-url="record.link_url.raw_value"
+                        t-att-data-link-image="record.link_image_url.raw_value"
+                        t-att-data-link-title="record.link_title.raw_value"
+                        t-att-data-link-description="record.link_description.raw_value"
+                        t-att-data-likes-count="record.linkedin_likes_count.raw_value">
+                        <i class="fa fa-comments" title="Comments"></i>
+                        <b t-esc="record.linkedin_comments_count.value !== '0' ? record.linkedin_comments_count.value : ''"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</data>
+</odoo>

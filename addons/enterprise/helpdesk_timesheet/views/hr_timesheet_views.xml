@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_timesheet_line_tree_helpdesk" model="ir.ui.view">
+        <field name="name">account.analytic.line.tree.helpdesk</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+        <field name="mode">primary</field>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <field name="project_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="task_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="project_id" position="before">
+                <field name="helpdesk_ticket_id" string="Ticket" optional="show" readonly="1"/>
+            </field>
+        </field>
+    </record>
+    <record id="timesheet_view_form_helpdesk" model="ir.ui.view">
+        <field name="name">account.analytic.line.form.helpdesk</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="timesheet_grid.timesheet_view_form"/>
+        <field name="mode">primary</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <field name="task_id" position="replace"/>
+            <field name="project_id" position="after">
+                <field name="helpdesk_ticket_id" string="Ticket"/>
+            </field>
+        </field>
+    </record>
+    <record id="view_kanban_account_analytic_line_helpdesk" model="ir.ui.view">
+        <field name="name">account.analytic.line.kanban.helpdesk</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.view_kanban_account_analytic_line"/>
+        <field name="mode">primary</field>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <field name="task_id" position="after">
+                <field name="helpdesk_ticket_id"/>
+            </field>
+            <xpath expr="//span[@t-esc='record.task_id.value']" position="replace">
+                <span t-esc="record.helpdesk_ticket_id.value" t-att-title="record.helpdesk_ticket_id.value"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_timesheet_line_search_helpdesk" model="ir.ui.view">
+        <field name="name">account.analytic.search</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+        <field name="mode">primary</field>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <field name="project_id" position="before">
+                <field name="helpdesk_ticket_id" string="Ticket"/>
+            </field>
+            <field name="task_id" position="replace"/>
+            <filter name="my_project" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </filter>
+            <filter name="groupby_task" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </filter>
+            <filter name="groupby_project" position="before">
+                <filter string="Ticket" name="groupby_ticket" context="{'group_by': 'helpdesk_ticket_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="act_hr_timesheet_line_helpdesk" model="ir.actions.act_window">
+        <field name="name">Timesheets</field>
+        <field name="res_model">account.analytic.line</field>
+        <field name="view_mode">tree,form,grid,kanban,pivot,graph</field>
+        <field name="search_view_id" ref="hr_timesheet_line_search_helpdesk"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a new activity
+            </p><p>
+                Track your working hours by projects every day and invoice this time to your customers.
+            </p>
+        </field>
+    </record>
+    <record id="act_hr_timesheet_line_helpdesk_tree" model="ir.actions.act_window.view">
+        <field name="view_mode">tree</field>
+        <field name="sequence" eval="4"/>
+        <field name="view_id" ref="hr_timesheet_line_tree_helpdesk"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+    <record id="act_hr_timesheet_line_helpdesk_form" model="ir.actions.act_window.view">
+        <field name="view_mode">form</field>
+        <field name="sequence" eval="10"/>
+        <field name="view_id" ref="timesheet_view_form_helpdesk"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+     <record id="act_hr_timesheet_line_helpdesk_grid" model="ir.actions.act_window.view">
+        <field name="sequence" eval="16"/>
+        <field name="view_mode">grid</field>
+        <field name="view_id" ref="timesheet_grid.timesheet_view_grid_by_employee_readonly"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+    <record id="act_hr_timesheet_line_helpdesk_kanban" model="ir.actions.act_window.view">
+        <field name="view_mode">kanban</field>
+        <field name="sequence" eval="20"/>
+        <field name="view_id" ref="view_kanban_account_analytic_line_helpdesk"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+    <record id="act_hr_timesheet_line_helpdesk_pivot" model="ir.actions.act_window.view">
+        <field name="view_mode">pivot</field>
+        <field name="sequence" eval="25"/>
+        <field name="view_id" ref="hr_timesheet.view_my_timesheet_line_pivot"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+    <record id="act_hr_timesheet_line_helpdesk_graph" model="ir.actions.act_window.view">
+        <field name="view_mode">graph</field>
+        <field name="sequence" eval="30"/>
+        <field name="view_id" ref="hr_timesheet.view_hr_timesheet_line_graph_my"/>
+        <field name="act_window_id" ref="act_hr_timesheet_line_helpdesk"/>
+    </record>
+</odoo>

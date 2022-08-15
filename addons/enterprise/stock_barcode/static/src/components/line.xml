@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stock_barcode.LineComponent" owl="1">
+        <div t-name="LineComponent" owl="1" t-on-click="select"
+            class="o_barcode_line list-group-item d-flex flex-row flex-nowrap"
+            t-att-data-barcode="line.product_id.barcode" t-attf-class="
+                {{isComplete ? 'o_line_completed' : ''}}
+                {{env.model.lineIsFaulty(line) ? 'o_faulty' : ''}}
+                {{isSelected ? 'o_selected o_highlight' : ''}}
+            ">
+            <div class="o_barcode_line_details flex-grow-1 flex-column flex-nowrap">
+                <!-- Hides product's name if it's a subline, as it is already on the parent line. -->
+                <t t-if="!props.subline">
+                    <t t-if="line.product_id.default_code">
+                        <div class="o_barcode_line_title">
+                            <i class="fa fa-fw fa-tags"/>
+                            <span class="o_barcode_product_ref">
+                                <b>[<t t-esc="line.product_id.default_code"/>]</b>
+                            </span>
+                        </div>
+                        <div>
+                            <i class="fa fa-fw"/>
+                            <span class="product-label" t-esc="line.product_id.display_name"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="o_barcode_line_title pb-1">
+                            <i class="fa fa-fw fa-tags"/>
+                            <span class="product-label" t-esc="line.product_id.display_name"/>
+                        </div>
+                    </t>
+                </t>
+                <div name="quantity">
+                    <i class="fa fa-fw fa-cube" t-attf-class="{{nextExpected === 'quantity' ? 'o_next_expected' : ''}}"/>
+                    <span t-attf-class="o_barcode_scanner_qty text-monospace badge #{' '}">
+                        <span class="qty-done d-inline-block text-left" t-esc="env.model.IsNotSet(line) ? '?' : qtyDone"/>
+                        <span t-if="qtyDemand" t-esc="'/ ' + qtyDemand"/>
+                    </span>
+                    <span t-if="props.displayUOM" t-esc="line.product_uom_id.name"/>
+                </div>
+                <div t-if="line.package_id || line.result_package_id" name="package">
+                    <i class="fa fa-fw fa-archive"/>
+                    <span t-if="line.package_id" class="package" t-esc="line.package_id.name"/>
+                    <i t-if="displayResultPackage" class="fa fa-long-arrow-right mx-1"/>
+                    <span t-if="line.result_package_id" class="result-package" t-esc="line.result_package_id.name"/>
+                    <span t-if="line.result_package_id &amp;&amp; line.result_package_id.package_type_id"
+                        class="font-italic text-muted">
+                        (<t t-esc="line.result_package_id.package_type_id.name"/>)
+                    </span>
+                </div>
+                <div t-if="line.owner_id">
+                    <i class="fa fa-fw fa-user-o"/>
+                    <t t-esc="line.owner_id.display_name"/>
+                </div>
+                <div t-if="isTracked and requireLotNumber" name="lot">
+                    <i class="fa fa-fw fa-barcode" t-attf-class="{{nextExpected === 'lot' ? 'o_next_expected' : ''}}"/>
+                    <span class="o_line_lot_name" t-esc="lotName"/>
+                </div>
+            </div>
+            <div class="o_line_buttons">
+                <button t-on-click="edit" class="o_line_button o_edit btn btn-secondary ml-2 ml-sm-4">
+                    <i class="fa fa-2x fa-pencil"/>
+                </button>
+                <button t-if="env.model.displaySetButton" t-on-click="setOnHandQuantity"
+                    class="o_line_button o_set btn ml-2 ml-sm-4"
+                    t-attf-class="{{quantityIsSet &amp;&amp; qtyDone != qtyDemand ? 'o_difference' : ''}}">
+                    <i t-if="quantityIsSet" class="fa fa-2x"
+                        t-attf-class="{{qtyDone == qtyDemand ? 'fa-check' : 'fa-times'}}"/>
+                </button>
+                <span t-attf-class="{{env.model.incrementButtonsDisplayStyle}}">
+                    <button t-if="env.model.getDisplayDecrementBtn(line)" name="decrementButton" t-on-click="addQuantity(-1)"
+                        class="o_line_button o_remove_unit btn btn-primary ml-2 ml-sm-4"
+                        t-attf-disabled="{{qtyDone &lt;= 0 || qtyDone == '?'}}">-1</button>
+                    <button t-if="env.model.getDisplayIncrementBtn(line)" name="incrementButton"
+                        t-on-click="addQuantity(incrementQty)" t-esc="'+' + incrementQty"
+                        class="o_line_button o_add_quantity btn btn-primary ml-2 ml-sm-4"/>
+                </span>
+            </div>
+        </div>
+    </t>
+
+</templates>

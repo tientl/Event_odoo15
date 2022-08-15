@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="appraisal_ask_feedback_view_form" model="ir.ui.view">
+            <field name="name">appraisal.ask.feedback.view.form</field>
+            <field name="model">appraisal.ask.feedback</field>
+            <field name="arch" type="xml">
+                <form string="Ask Feedback">
+                    <field name="appraisal_id" invisible="1" />
+                    <group col="1">
+                        <group col="2">
+                            <field name="render_model" invisible="1"/>
+                            <field name="survey_template_id"/>
+                            <field name="employee_ids"
+                                widget="many2many_tags"
+                                placeholder="Add employees..."
+                                context="{'force_email':True, 'show_email':True, 'no_create_edit': True}"/>
+                        </group>
+                        <group col="2">
+                            <field name="subject" placeholder="Subject..."/>
+                        </group>
+                        <field name="user_body" placeholder="Optional message" options="{'style-inline': true}"/>
+                        <group>
+                            <group>
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </group>
+                            <group>
+                                <field name="deadline"/>
+                            </group>
+                        </group>
+                    </group>
+
+                    <footer>
+                        <button string="Send" name="action_send" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

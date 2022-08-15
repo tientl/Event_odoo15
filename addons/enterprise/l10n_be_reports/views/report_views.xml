@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="line_caret_options" inherit_id="account_reports.line_caret_options" primary="True">
+        <xpath expr="//li[@id='res.partner.carret']/a[last()]" position="after">
+            <a role="menuitem"
+               tabindex="-1"
+               t-att-data-id="line['id']"
+               t-att-data-model="line.get('model', 'res.partner')"
+               data-object="res.partner"
+               action="l10n_be_open_invoices"
+               class="dropdown-item">
+                Audit
+            </a>
+        </xpath>
+    </template>
+</odoo>

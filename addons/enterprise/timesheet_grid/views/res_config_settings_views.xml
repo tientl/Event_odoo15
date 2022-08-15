@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.timesheet.grid</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="2"/>
+        <field name="inherit_id" ref="hr_timesheet.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='time_encoding_setting_container']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('module_project_timesheet_synchro', '=', False), ('is_encode_uom_days', '=', True)]}">
+                    <div class="o_setting_right_pane">
+                        <strong>Time Rounding</strong>
+                        <div class="text-muted">
+                             Rounding applied when tracking your time using the timer
+                        </div>
+                        <div class="mt16">
+                            <div class="o_row w-30">
+                                <span class="o_light_label"><label class="font-weight-bold" for="timesheet_min_duration"/><field name="timesheet_min_duration" class="col-lg-2 text-center"/> minutes</span>
+                            </div>
+                            <div class="o_row">
+                                <span class="o_light_label"><label class="font-weight-bold" for="timesheet_rounding"/><field name="timesheet_rounding" class="col-lg-2 text-center"/> minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='reminder_user_allow']" position="inside">
+                <div class="content-group" attrs="{'invisible': [('reminder_user_allow', '=', False)]}">
+                    <div class="row mt16" id="user_mail_alias_domain">
+                        <span class="ml16">
+                            <label for="reminder_user_interval" string="Frequency"/>
+                            <field name="reminder_user_delay" class="col-lg-2 text-center"/> days
+                            <field name="reminder_user_interval" class="oe_inline ml-2 pr-2"/>
+                        </span>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='reminder_manager_allow']" position="inside">
+                <div class="content-group" attrs="{'invisible': [('reminder_manager_allow', '=', False)]}">
+                    <div class="row mt16" id="manager_mail_alias_domain">
+                        <span class="ml16">
+                            <label for="reminder_manager_interval" string="Frequency"/>
+                            <field name="reminder_manager_delay" class="col-lg-2 text-center"/> days
+                            <field name="reminder_manager_interval" class="oe_inline ml-2 pr-2"/>
+                        </span>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

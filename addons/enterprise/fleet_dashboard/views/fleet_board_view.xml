@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fleet_costs_report_view_dashboard" model="ir.ui.view">
+        <field name="name">fleet.vehicle.cost.view.dashboard</field>
+        <field name="model">fleet.vehicle.cost.report</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+           <dashboard sample="1">
+                <view type="graph" ref="fleet.fleet_costs_report_view_graph"/>
+                <group>
+                    <group>
+                        <group>
+                            <aggregate name="service_cost" string="Total Service Cost" field="cost" group_operator="sum" domain="[('cost_type', '=', 'service')]" widget="monetary"/>
+                            <aggregate name="contract_cost" string="Total Contract Cost" field="cost" group_operator="sum" domain="[('cost_type', '=', 'contract')]" widget="monetary"/>
+                            <aggregate name="total_cost" string="Total Cost" field="cost" group_operator="sum" widget="monetary"/>
+                        </group>
+                    </group>
+                    <group col="1">
+                        <widget name="pie_chart" title="Cost Per Type" attrs="{'groupby': 'cost_type', 'measure': 'cost'}" />
+                    </group>
+                </group>
+                <view type="pivot" ref="fleet.fleet_costs_report_view_pivot"/>
+           </dashboard>
+        </field>
+    </record>
+
+    <record id="fleet.fleet_costs_reporting_action" model="ir.actions.act_window">
+        <field name="view_mode">dashboard,graph,pivot</field>
+    </record>
+</odoo>

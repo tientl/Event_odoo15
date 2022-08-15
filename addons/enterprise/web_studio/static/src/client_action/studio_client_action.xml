@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+<t t-name="web_studio.StudioClientAction" owl="1">
+  <div class="o_studio">
+      <StudioNavbar/>
+
+      <StudioHomeMenu apps="homeMenuProps.apps" t-if="studio.mode === studio.MODES.HOME_MENU"/>
+      <ComponentAdapter Component="AppCreatorWrapper" t-if="studio.mode === studio.MODES.APP_CREATOR"
+        t-on-new-app-created="onNewAppCreated"/>
+      <Editor t-if="studio.mode === studio.MODES.EDITOR"/>
+  </div>
+</t>
+
+</templates>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo><data>
+    <record id="stock_quant_barcode" model="ir.ui.view">
+        <field name="name">stock.quant.barcode</field>
+        <field name="model">stock.quant</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form class="o_barcode_line_form">
+                <div class="row mt-5 mb-4">
+                    <field name="quantity" invisible="1"/>
+                    <field name="product_uom_id" invisible="1"/>
+                    <div class="col-12 my-2 d-flex align-items-baseline">
+                        <i class="fa fa-fw fa-lg fa-tags mr-3" title="Product"/>
+                        <field name="product_id" placeholder="Product"
+                            attrs="{'readonly': [('id', '!=', False)]}"
+                            context="{'default_detailed_type': 'product'}"
+                            domain="[('type', 'in', ['product'])]"
+                            required="1"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 my-2 d-flex align-items-baseline">
+                        <i class="fa fa-fw fa-lg fa-cube mr-3" title="Counted Quantity"/>
+                        <field name="inventory_quantity" class="w-50 w-md-100 text-right" options="{'type': 'number'}" placeholder="Counted Quantity"/>
+                        <widget name="set_reserved_qty_button"
+                            field_to_set="inventory_quantity" quantity="quantity"/>
+                    </div>
+                </div>
+                <div class="row justify-content-center justify-content-md-start">
+                    <div class="col-10 col-md-8 my-2 ml-md-5 align-items-baseline"
+                        attrs="{'invisible': [('tracking', '=', 'serial')]}">
+                        <widget name="digipad" quantity_field="inventory_quantity"/>
+                    </div>
+                </div>
+                <div class="row" groups="stock.group_stock_multi_locations">
+                    <div class="col-12 col-md-6 my-2 d-flex align-items-baseline">
+                        <i class="fa fa-fw fa-lg fa-map-marker mr-3" title="Location"/>
+                        <field name="location_id" placeholder="Location"
+                            options="{'no_create': True}" force_save="1"
+                            attrs="{'readonly': [('id', '!=', False)]}"/>
+                    </div>
+                </div>
+                <div class="row" groups="stock.group_production_lot"
+                    attrs="{'invisible': ['&amp;', ('id', '!=', False), ('lot_id', '=', False)]}">
+                    <div class="col-12 col-md-6 my-2 d-flex align-items-baseline" attrs="{'invisible': ['|',('tracking', '=','none'), ('product_id','=', False)]}">
+                        <i class="fa fa-fw fa-lg fa-barcode mr-3" title="Serial/Lot Number"/>
+                        <field name="lot_id"
+                            attrs="{
+                                'required': [('tracking', '!=', 'none')],
+                                'readonly': [('id', '!=', False)]}"
+                            context="{'default_company_id': company_id, 'default_product_id': product_id}"
+                            placeholder="Serial/Lot Number"/>
+                    </div>
+                </div>
+                <div class="row" groups="stock.group_tracking_lot"
+                    attrs="{'invisible': ['&amp;', ('id', '!=', False), ('package_id', '=', False)]}">
+                    <div class="col-12 col-md-6 my-2 d-flex align-items-baseline">
+                        <i class="fa fa-fw fa-lg fa-archive mr-3" title="Package"/>
+                        <field name="package_id" placeholder="Package"
+                            attrs="{'readonly': [('id', '!=', False)]}"
+                            domain="[('location_id', '=', location_id)]"/>
+                    </div>
+                </div>
+                <div class="row" groups="stock.group_tracking_owner">
+                    <div class="col-12 col-md-6 my-2 d-flex align-items-baseline">
+                        <i class="fa fa-fw fa-lg fa-user-o mr-3" title="Owner"/>
+                        <field name="owner_id" placeholder="Owner" attrs="{'readonly': [('id', '!=', False)]}"/>
+                    </div>
+                </div>
+
+                <group>
+                    <field name="company_id" invisible="1"/>
+                    <field name="tracking" invisible="1"/>
+                    <field name="user_id" invisible="1"/>
+                    <field name="inventory_date" invisible="1"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</data></odoo>

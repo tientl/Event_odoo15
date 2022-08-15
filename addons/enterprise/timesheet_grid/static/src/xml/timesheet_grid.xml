@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    
+    <t t-name="timesheet_grid.GroupedGridBody" t-inherit="web_grid.GroupedGridBody" t-inherit-mode="extension" owl="1">
+        <xpath expr="//th" position="replace">
+            <th>
+                <t t-if="grid.__label">
+                    <t t-if="showEmployeeAvatar">
+                        <TimesheetM2OAvatarEmployeeAdapter Component="widgetComponents.TimesheetM2OAvatarEmployee" value="grid.__label" workingHoursData="props.workingHoursData[grid.__label[0]]" timeBoundariesContext="props.timeBoundariesContext" rowIndex="grid_index" rangeContext="props.range" />
+                    </t>
+                    <t t-else="" t-esc="grid.__label[1]"/>
+                </t>
+                <t t-else="">Undefined</t>
+            </th>
+        </xpath>
+    </t>
+
+    <t t-name="timesheet_grid.GridRenderer" t-inherit="web_grid.GridRenderer" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_view_nocontent')]" position="before">
+            <t t-if="showTimer">
+                <TimerHeaderComponent projectId="stateTimer.projectId" taskId="stateTimer.taskId"
+                addTimeMode="stateTimer.addTimeMode" stepTimer="props.stepTimer" projectWarning="stateTimer.projectWarning"
+                timer="stateTimer.startSeconds" description="stateTimer.description"
+                timerRunning="stateTimer.timerRunning" timerReadOnly="stateTimer.readOnly"
+                projectName="stateTimer.projectName" taskName="stateTimer.taskName"
+                t-on-timer-started="_onTimerStarted" t-on-timer-stopped="_stop_timer"
+                t-on-timer-unlink="_onTimerUnlink" t-on-timer-edit-project="_onSetProject"
+                t-on-timer-edit-task="_onSetTask" t-on-new-timer-value="_onNewTimerValue"
+                t-on-new-description="_onNewDescription" t-ref="timerHeader"/>
+            </t>
+        </xpath>
+    </t>
+
+    <div t-name="timesheet_grid.timer_header" class="d-flex align-items-center timesheet-timer py-2" owl="1">
+        <t t-if="_timerIsRunning">
+            <button class="my-2 mr-2 btn btn-primary btn_stop_timer" t-on-click="_onClickStopTimer()" t-ref="stopButton">
+                Stop
+            </button>
+            <div class="p-2 input_timer">
+                <input class="o_field_float o_field_number o_field_widget o_input input_manual_time" t-att-class="{'o_field_invalid': state.errorManualTimeInput === true}" type="text" t-att-value="timeInput"
+                t-on-keydown="_onKeydown" t-on-input="_onInputTimer" t-on-focusout="_onFocusoutTimer" t-ref="manualTimerInput"
+                t-if="_manualTimeInput"/>
+                <span class="px-auto font-weight-bold" id="display_timer" t-else="" t-on-click="_onClickManualTime">
+                    <t t-esc="_timerString"/>
+                </span>
+            </div>
+            <div class="p-2 input_description">
+                <span t-if="_timerReadOnly" t-esc="props.description" class="input_description_timer"/>
+                <input t-else="" class="o_field_float o_field_number o_field_widget o_input input_description_timer" type="text" t-att-value="props.description" t-ref="inputDescription"
+                    placeholder="Describe your activity..." t-on-change="_onInputDescription" t-on-keydown="_onKeydown"/>
+            </div>
+            <div t-if="_timerReadOnly" class="p-2 input_m2o d-flex flex-row justify-content-around">
+                <div class="px-2">
+                    <span t-esc="props.projectName"/>
+                </div>
+                <div class="px-2">
+                    <span t-esc="props.taskName"/>
+                </div>
+            </div>
+            <div t-else="" class="p-md-2 input_m2o">
+                <TimerHeaderM2OAdapter Component="TimerHeaderM2O" widgetArgs="[props.projectId, props.taskId, props.projectWarning]"/>
+            </div>
+            <div class="pl-md-2 py-2">
+                <button class="btn btn-muted px-0 stop-timer fa fa-times" t-on-click="_onUnlinkTimer" title="Press Esc to discard"/>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="my-2 pr-2" id="start">
+                <button class="btn btn_start_timer" t-on-click="_onClickStartTimer()" t-ref="startButton"><i class="fa fa-play"></i> Start</button>
+            </div>
+            <div class="p-2">
+                <span t-if="timerMode"><span class="text-muted">use a hot key to</span> add <t t-esc="props.stepTimer"/> min</span>
+                <t t-elif="isMobile"><span class="text-muted"> or use a </span><span>hot key</span></t>
+                <t t-else=""><span class="text-muted">press </span><span>Enter</span><span class="text-muted"> or use a </span><span>hot key</span></t>
+            </div>
+        </t>
+    </div>
+
+    <t t-name="timesheet_grid.Table" t-inherit="web_grid.Table" t-inherit-mode="extension" owl="1">
+        <xpath expr="//th" position="before">
+            <th t-if="showTimerButton" class="o_grid_timer_header "/>
+        </xpath>
+        <xpath expr="//tfoot/tr/td" position="before">
+            <td t-if="showTimerButton" class="o_grid_timer_header"/>
+        </xpath>
+    </t>
+
+    <t t-name="timesheet_grid.UnGroupedGridBody" t-inherit="web_grid.UnGroupedGridBody" t-inherit-mode="extension" owl="1">
+        <xpath expr="//th" position="before">
+            <th t-if="showTimerButton" class="o_grid_timer_header"/>
+        </xpath>
+    </t>
+
+    <t t-name="timesheet_grid.GridRows" t-inherit="web_grid.GridRows" t-inherit-mode="extension" owl="1">
+        <xpath expr="//th" position="before">
+            <th t-if="showTimerButton" class="o_grid_timer_header">
+                <t t-set="timesheet" t-value="grid.rows[rowlabel_index].timesheet" />
+                <t t-set="pathrow" t-value="path.concat([rowlabel_index]).join('.')"/>
+                <TimerStartComponent path="pathrow" index="rowlabel_index" runningIndex="stateTimer.indexRunning"
+                    addTimeMode="stateTimer.addTimeMode" t-on-timer-started-from-line="_onClickStartTimerFromLine"/>
+            </th>
+        </xpath>
+        <xpath expr="//div[@t-att-title='label']/t[@t-if='label']" position="replace">
+            <t t-if="label">
+                <t t-if="showEmployeeAvatar">
+                    <t t-set="employee" t-value="grid.rows[rowlabel_index].values.employee_id" />
+                    <TimesheetM2OAvatarEmployeeAdapter Component="widgetComponents.TimesheetM2OAvatarEmployee" value="employee" workingHoursData="props.workingHoursData[employee[0]]" timeBoundariesContext="props.timeBoundariesContext" rowIndex="rowlabel_index" rangeContext="props.range"/>
+                </t>
+                <t t-else="" t-esc="label"/>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="timesheet_grid.AddLineRow" t-inherit="web_grid.AddLineRow" t-inherit-mode="extension" owl="1">
+        <xpath expr="//tr[@class='o_grid_add_line_row']/th[2]/div" position="attributes">
+            <attribute name="class"></attribute>
+            <attribute name="t-attf-class">{{showEmployeeAvatar ? '' : 'ml-3'}}</attribute>
+        </xpath>
+    </t>
+
+    <span t-name="timesheet_grid.start_timer" class="d-inline-flex" owl="1">
+        <button type="button" t-on-click="_onClickTimer()" class="btn_timer_line" t-att-class="iconClass">
+            <span t-esc="letter"/>
+        </button>
+    </span>
+
+    <t t-name="timesheet_grid.Cell" t-inherit="web_grid.Cell" t-inherit-mode="extension" owl="1">
+        <xpath expr="//td" position="replace">
+            <t t-set="timesheet" t-value="grid.rows[rowIndex].timesheet" />
+            <td t-att-class="{
+                o_grid_current: cell.is_current,
+                o_grid_unavailable: cell.is_unavailable,
+                o_cell_highlighted: timesheet and timesheet.timer_start
+                }">
+                <t t-set="cellPath" t-value="path.concat([rowIndex, cell_index]).join('.')"/>
+                <t t-set="cellReadOnly" t-value="!props.editableCells || cell.readonly"/>
+                <div t-att-class="_getCellClassMap(cell)" t-attf-data-path="cellPath">
+                    <t t-if="cell.size or !cellReadOnly">
+                        <i class="fa fa-search-plus o_grid_cell_information" t-on-click="_onClickCellInformation(cellPath)"
+                            title="See all the records aggregated in this cell">
+                        </i >
+                    </t>
+                    <t t-call="web_grid.CellValue"/>
+                </div>
+            </td>
+        </xpath>
+    </t>
+
+</templates>

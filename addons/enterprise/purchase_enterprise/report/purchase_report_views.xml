@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="purchase_report_view_dashboard" model="ir.ui.view">
+            <field name="name">purchase.report.view.dashboard</field>
+            <field name="model">purchase.report</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <dashboard sample="1">
+                    <view type="graph" ref="purchase.view_purchase_order_graph"/>
+                    <group>
+                        <group>
+                            <aggregate name="price_subtotal_confirmed_orders" string="Total Purchased" field="price_total" help="Total, Tax Included" widget="monetary"/>
+                            <aggregate name="price_subtotal_all_orders" string="Untaxed Total" field="untaxed_total" widget="monetary"/>
+                            <aggregate name="purchase_orders" string="Orders" field="order_id"/>
+                            <formula name="typetotal" string="Average Order" value="record.price_subtotal_confirmed_orders / record.purchase_orders" widget="monetary"/>
+                            <aggregate name="avg_days_to_purchase" string="Average Days to Purchase" field="avg_days_to_purchase" group_operator="avg" value_label="days"
+                                domain="[('date_approve', '!=', False)]" domain_label="purchase orders"  clickable="False"/>
+                        </group>
+                    </group>
+                    <view type="pivot" ref="purchase.view_purchase_order_pivot"/>
+                </dashboard>
+            </field>
+        </record>
+
+        <record id="purchase_report_action_dashboard" model="ir.actions.act_window">
+            <field name="name">Dashboard</field>
+            <field name="res_model">purchase.report</field>
+            <field name="view_mode">dashboard,pivot,graph</field>
+            <field name="search_view_id" ref="purchase.view_purchase_order_search"/>
+            <field name="context" eval="{
+                'search_default_orders': 1,
+                'search_default_filter_date_approve': 1}"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No data yet!
+                </p><p>
+                    Create a new purchase order
+                </p>
+            </field>
+        </record>
+
+        <!-- Add dashboard to purchase reporting -->
+        <record id="purchase.action_purchase_order_report_all" model="ir.actions.act_window">
+            <field name="view_mode">graph,pivot,dashboard</field>
+        </record>
+
+        <!-- Dashboard reporting view -->
+        <menuitem id="purchase_report_menu_dashboard" name="Dashboard" action="purchase_report_action_dashboard" parent="purchase.purchase_report_main" sequence="0"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,100 @@
+.o_planning_link {
+    text-align: right;
+}
+.o_planning_calendar_container {
+
+    #calendar_employee {
+        flex-direction: column;
+        max-width: 100%;
+        height: auto;
+    }
+    .fc-content {
+        font-weight: bold !important;
+    }
+    .fc-list-table td {
+        // This one is needed for the vertical-align.
+        border-width: 1px 0 0;
+        vertical-align: middle;
+        padding: 8px 14px;
+    }
+    .fc-widget-header {
+        background: $o-brand-odoo !important;
+        color: white;
+    }
+    .fc-day-grid-event {
+        margin: 5px 2px 0;
+        padding: 5px 10px;
+    }
+
+    .fc-day-grid-event .fc-content {
+        white-space: normal;
+    }
+    @include media-breakpoint-up(sm) {
+        .fc-day-grid-event .fc-content {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    .fc-more-cell {
+        color: #3aadaa;
+        vertical-align: middle;
+    }
+
+    .o_planning_toast {
+        position: absolute;
+        top: 5em;
+        right: 1em;
+    }
+}
+
+.o_planning_calendar_open_shifts {
+
+    margin-top: 2rem;
+
+    .close {
+        outline: none !important;
+    }
+
+}
+
+.fc-event:hover {
+    cursor: pointer;
+}
+
+@media print {
+    @page { size: A4 landscape; }
+
+    html,
+    body {
+        height: unset;
+    }
+
+    body.o_connected_user {
+        padding-top: 0 !important;
+    }
+    .fc table {
+        border-collapse: separate!important;
+        border-width: 1px;
+    }
+    .fc-content-skeleton td {
+        padding-bottom: 1em;
+        height: 1em !important;
+    }
+    .fc-time-grid .fc-content-skeleton {
+         position: relative !important;
+    }
+    div.fc-content {
+        tex-align: center !important;
+    }
+
+    header,
+    #footer,
+    .o_main_navbar {
+        display: none;
+    }
+
+    .fc-today {
+        background-color: unset !important;
+    }
+}

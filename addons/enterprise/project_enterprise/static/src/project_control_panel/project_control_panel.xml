@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="project_enterprise.Breadcrumbs" t-inherit="web_enterprise.Breadcrumbs" t-inherit-mode="primary" owl="1">
+        <xpath expr="//ol" position="inside">
+            <t t-call="project.ProjectControlPanelContent"/>
+        </xpath>
+    </t>
+
+    <t t-name="project_enterprise.ProjectControlPanel" t-inherit="web_enterprise.ControlPanel" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-call='web.ControlPanel']" position="replace">
+            <t t-call="project.ProjectControlPanel"/>
+        </xpath>
+        <xpath expr="//t[@t-call='web_enterprise.Breadcrumbs']" position="replace">
+            <t t-call="project_enterprise.Breadcrumbs"/>
+        </xpath>
+    </t>
+
+</templates>

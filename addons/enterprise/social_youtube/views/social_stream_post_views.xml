@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="social_stream_post_view_kanban" model="ir.ui.view">
+        <field name="name">social.stream.post.view.kanban.inherit.twitter</field>
+        <field name="model">social.stream.post</field>
+        <field name="inherit_id" ref="social.social_stream_post_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stream_id']" position="after">
+                <field name="youtube_video_id"/>
+                <field name="youtube_comments_count"/>
+                <field name="youtube_likes_count"/>
+                <field name="youtube_dislikes_count"/>
+                <field name="youtube_views_count"/>
+                <field name="youtube_video_duration"/>
+            </xpath>
+            <xpath expr="//span[hasclass('o_social_stream_post_author_image')]" position="inside">
+                <img t-if="record.youtube_video_id.raw_value" t-attf-src="/web/image/social.account/#{record.account_id.raw_value}/image" alt="Author Image"/>
+            </xpath>
+            <xpath expr="//div[@name='o_social_stream_post_message_body']" position="attributes">
+                <attribute name="attrs">{'invisible': [('media_type', '==', 'youtube')]}</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_social_stream_post_message')]" position="inside">
+                <div class="py-2" t-if="record.media_type.raw_value === 'youtube'">
+                    <div class="font-weight-bold px-2"><field name="link_title"/></div>
+                    <img t-att-src="record.link_image_url.raw_value" alt="YouTube Thumbnail"
+                        class="w-100 py-2 o_social_youtube_thumbnail"/>
+                    <div class="px-2">
+                        <field name="message"/>
+                    </div>
+                </div>
+
+                <div class="o_social_stream_post_youtube_stats d-flex justify-content-around px-2" t-if="record.media_type.raw_value === 'youtube'">
+                    <div class="d-flex justify-content-around">
+                        <div class="o_social_subtle_btn_disabled pl-2">
+                            <i class="fa fa-thumbs-up" title="Likes"/>
+                            <b class="o_social_kanban_likes_count" t-esc="record.youtube_likes_count.raw_value"/>
+                        </div>
+                        <div class="o_social_subtle_btn_disabled pl-2">
+                            <i class="fa fa-thumbs-down" title="Dislikes"/>
+                            <b class="o_social_kanban_likes_count" t-esc="record.youtube_dislikes_count.raw_value"/>
+                        </div>
+
+                        <div class="o_social_youtube_comments o_social_comments o_social_subtle_btn pl-3"
+                            t-att-data-stream-id="record.stream_id.raw_value"
+                            t-att-data-post-id="record.id.raw_value"
+                            t-att-data-youtube-account-id="record.account_id.raw_value"
+                            t-att-data-youtube-video-id="record.youtube_video_id.raw_value"
+                            data-media-type="youtube"
+                            t-att-data-post-message="record.message.raw_value"
+                            t-att-data-post-images="record.stream_post_image_urls.raw_value"
+                            t-att-data-post-link="record.post_link.raw_value"
+                            t-att-data-author-name="record.author_name.raw_value"
+                            t-att-data-author-link="record.author_link.raw_value"
+                            t-att-data-published-date="record.published_date.value"
+                            t-att-data-formatted-published-date="record.formatted_published_date.value"
+                            t-att-data-link-url="record.link_url.raw_value"
+                            t-att-data-link-image="record.link_image_url.raw_value"
+                            t-att-data-link-title="record.link_title.raw_value"
+                            t-att-data-link-description="record.link_description.raw_value"
+                            t-att-data-youtube-likes-count="record.youtube_likes_count.raw_value"
+                            t-att-data-youtube-dislikes-count="record.youtube_dislikes_count.raw_value"
+                            t-att-data-youtube-comments-count="record.youtube_comments_count.raw_value"
+                            t-att-data-youtube-views-count="record.youtube_views_count.raw_value"
+                            t-att-data-youtube-video-duration="record.youtube_video_duration.raw_value">
+                            <i class="fa fa-comments" title="Comments"/>
+                            <b t-esc="record.youtube_comments_count.value"/>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow-1 text-right text-muted">
+                        <div class="o_social_subtle_btn_disabled pr-2 d-inline-block" t-if="record.youtube_video_duration.raw_value">
+                            <field name="youtube_video_duration" class="oe_inline font-weight-bold" widget="float_time"/>
+                        </div>
+                        <div class="o_social_subtle_btn_disabled pr-2 d-inline-block">
+                            <i class="fa fa-eye" title="Views"/>
+                            <b t-esc="record.youtube_views_count.value"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</data>
+</odoo>

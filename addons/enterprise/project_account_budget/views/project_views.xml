@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_form_view_inherited" model="ir.ui.view">
+        <field name="name">project.project.view.inherited</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_analytic_account_entries']" position="before">
+                <button class="oe_stat_button" type="object" name="action_view_budget_lines" icon="fa-usd" attrs="{'invisible': [('analytic_account_id', '=', False)]}">
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_text">Budget</span>
+                        <span class="o_stat_value">
+                            <field name="total_planned_amount" widget='monetary'/>
+                        </span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

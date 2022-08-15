@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+
+    <t t-name="accountReports.footnote_dialog">
+        <form role="form">
+            <textarea name="note" rows='4' class="js_account_reports_footnote_note" t-att-data-line="id" placeholder="Insert foot note here"><t t-esc="text"/></textarea>
+        </form>
+    </t>
+
+    <t t-name="accountReports.buttons">
+        <t t-foreach="buttons" t-as="button">
+            <button t-if="button.sequence == 1" type="button" class="btn btn-primary" t-att-action="button.action"><t t-esc="button.name"/></button>
+            <button t-else="" type="button" class="btn btn-secondary" t-att-action="button.action"><t t-esc="button.name"/></button>
+        </t>
+    </t>
+
+    <div t-name='paymentDateForm'>
+        <form role="form">
+            <label for="expectedDate">Expected Payment Date</label>
+            <div class='o_account_reports_payment_date_picker' />
+            <input type="hidden" id='target_id' t-att-value='target_id' />
+        </form>
+    </div>
+
+    <div t-name='m2mWidgetTable' class="o_form_view">
+        <table class="o_group o_inner_group">
+            <tr t-foreach="fields" t-as="field">
+                <td class="o_td_label"><label class="o_form_label" t-esc="fields[field].label"/></td>
+                <td t-att-id="field + '_field'" style="min-width:200px;"/>
+            </tr>
+        </table>
+    </div>
+
+    <t t-name="accountReports.FinancialReportInfosTemplate">
+        <table>
+            <tr>
+                <td><strong>Name: </strong></td>
+                <td style="text-align:right;"><t t-out="name"/></td>
+            </tr>
+            <tr>
+                <td><strong>Code: </strong></td>
+                <td style="text-align:right;"><t t-out="code"/></td>
+            </tr>
+            <tr>
+                <td><strong>Formula: </strong></td>
+                <td style="text-align:right;">
+                    <t t-foreach="formula" t-as="token">
+                        <t t-if="token.type === 'internal'">
+                            <span class="js_popup_formula" t-out="token.code"/>
+                        </t>
+                        <t t-elif="token.type === 'external'">
+                            <button class="btn btn-sm btn-secondary js_popup_open_report"
+                                    t-att-data-id="token.id" t-att-data-target="token.target"
+                                    t-out="token.code"/>
+                        </t>
+                        <t t-else=""><t t-out="token.text"/></t>
+                    </t>
+                </td>
+            </tr>
+            <tr t-if="formula_with_values != formula_balance">
+               <td> = </td>
+                <td style="text-align:right;"><t t-out="formula_with_values"/></td>
+            </tr>
+            <tr>
+               <td> = </td>
+                <td style="text-align:right;"><t t-out="formula_balance"/></td>
+            </tr>
+            <tr t-if="domain">
+                <td><strong>Domain: </strong></td>
+                <td style="text-align:right;"><t t-out="domain"/></td>
+            </tr>
+            <tr t-if="control_domain">
+                <td><strong>Control Domain: </strong></td>
+                <td style="text-align:right;"><t t-out="control_domain"/></td>
+            </tr>
+            <tr t-if="display_button">
+               <td style="text-align:center;"
+                   colspan="2">
+                   <button t-att-data-id="id"
+                           class="btn btn-sm btn-secondary js_view_entries">View Journal Entries</button>
+               </td>
+            </tr>
+            <tr t-if="control_domain">
+               <td style="text-align:center;"
+                   colspan="2">
+                   <button t-att-data-id="id"
+                           class="btn btn-sm btn-secondary float-left js_view_coa">Accounts</button>
+                   <button t-att-data-id="id"
+                           class="btn btn-sm btn-secondary float-right js_view_line_computation">Report Line Computation</button>
+               </td>
+            </tr>
+        </table>
+    </t>
+
+    <t t-name="accountReports.CarryOverInfoTemplate">
+        <table>
+            <tr>
+                <td><t t-esc="description1"/></td>
+            </tr>
+            <tr>
+                <td><t t-esc="description2"/></td>
+            </tr>
+            <tr><td/></tr>
+            <tr>
+                <td><t t-esc="description3"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <t t-esc="balance"/>
+                    <button t-if="debug" t-att-data-id="id"
+                        class="btn btn-sm btn-secondary js_view_carryover_lines">View Carryover Lines</button>
+                </td>
+            </tr>
+        </table>
+    </t>
+</templates>

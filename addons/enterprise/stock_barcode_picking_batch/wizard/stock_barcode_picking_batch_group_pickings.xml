@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_batch_picking_confirmation" model="ir.ui.view">
+        <field name="name">stock_barcode_picking_batch.group.pickings.confirmation</field>
+        <field name="model">stock_barcode_picking_batch.group.pickings</field>
+        <field name="arch" type="xml">
+            <form string="Batch Picking creation">
+                <p>
+                    Several <field name="picking_type_name"/>
+                    <span attrs="{'invisible': [('partner_id', '=', False)]}">
+                        for contact <field name="partner_id" options="{'no_open': True}"/>
+                    </span>
+                    should already be done or are scheduled on a date earlier than <field name="picking_id"/>.
+                </p>
+                <footer>
+                    <button string="Start a New Batch" name="action_generate_new_batch_picking" type="object" class="oe_highlight" data-hotkey="q"/>
+                    <button name="action_open_picking" type="object" data-hotkey="w">
+                        Process <field name="picking_id" options="{'no_open': True}"/>
+                    </button>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

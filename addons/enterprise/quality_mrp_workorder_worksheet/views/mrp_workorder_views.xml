@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_workorder_view_form_tablet_inherit_quality_control_worksheet" model="ir.ui.view">
+        <field name="name">mrp.workorder.view.form.inherit.quality.worksheet.tablet</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='do_measure']" position="after">
+                <button name="action_worksheet_check" type="object" class="btn-primary" string="Validate" attrs="{'invisible': [('test_type', '!=', 'worksheet')]}" barcode_trigger="next"/>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="after">
+                <div attrs="{'invisible': [('test_type', '!=', 'worksheet')]}" class="o_row mb8">
+                    <button name="action_fill_sheet" type="object" class="btn-primary" icon="fa-pencil" string="Fill in Worksheet"/>
+                </div>   
+            </xpath>
+        </field>
+    </record>
+</odoo>

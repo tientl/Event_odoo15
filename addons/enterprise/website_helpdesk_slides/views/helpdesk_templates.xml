@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="website_helpdesk_slides.slides_page" name="Top 10 Posts">
+        <p t-if="slides">
+            <p class="question-block" t-foreach="slides" t-as="slide" >
+                <div class="media">
+                    <a t-attf-href="/slides/slide/#{slug(slide)}">
+                        <img class="mr-3 oe_slides_apart_small" t-att-src="website.image_url(slide, 'image_128')" alt="Slide image"/>
+                    </a>
+                    <div class="media-body">
+                        <a t-attf-href="/slides/slide/#{slug(slide)}"><h5 class="mt-0" t-esc="slide.name"/></a>
+                        <small class="text-muted">
+                            <t t-esc="slide.total_views"/> Views . <timeago class="timeago" t-att-datetime="slide.create_date"></timeago>
+                        </small>
+                    </div>
+                </div>
+            </p>
+        </p>
+        <p t-if="slides_limit &gt; 7">
+            <a t-attf-href="/slides/#{ slug(channel) }?search=#{search}">Click here to view more result...</a>
+        </p>
+    </template>
+
+    <template id="website_helpdesk_slides_team_page" inherit_id="website_helpdesk.team">
+        <xpath expr="//div[@id='oe_structure_website_helpdesk_links']" position="inside">
+            <t t-if="channel and team.use_website_helpdesk_slides">
+                <a t-attf-href="#{team.elearning_url}">
+                    <button t-attf-class="btn btn-primary #{'col-md-10' if multi_type else 'col-md-12'} mt-2 mb-2">View our Courses</button>
+                </a>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

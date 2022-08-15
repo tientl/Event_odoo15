@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<data>
+
+    <template id="web_studio.compiled_assets_studio" name="Web Studio Bundle" groups="base.group_system">
+        <t t-call-assets="web_studio.studio_assets"/>
+    </template>
+
+    <!-- Reports -->
+    <template id="web_studio.report_layout" inherit_id="web.report_layout">
+        <xpath expr="//head" position="inside">
+            <t t-if="studio" t-call-assets="web_studio.report_assets"/>
+        </xpath>
+    </template>
+
+</data>
+
+</odoo>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+     <t t-name="ClientLine" t-inherit="point_of_sale.ClientLine" t-inherit-mode="extension" owl="1">
+        <xpath expr="//td[hasclass('client-line-email')]" position="after">
+            <td t-if="env.pos.config.module_pos_loyalty">
+                <t t-esc='props.partner.loyalty_points or 0' />
+                <span t-if="highlight"><br/></span>
+            </td>
+        </xpath>
+    </t>
+
+    <t t-name="ClientListScreen" t-inherit="point_of_sale.ClientListScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//th[hasclass('client-line-email')]" position="after">
+            <th t-if="env.pos.config.module_pos_loyalty">Points</th>
+        </xpath>
+    </t>
+
+    <t t-name="OrderSummary" t-inherit="point_of_sale.OrderSummary" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('summary')]//div[hasclass('line')]" position="before">
+            <PointsCounter t-if="env.pos.loyalty" />
+        </xpath>
+    </t>
+
+    <t t-name="ClientDetailsEdit" t-inherit="point_of_sale.ClientDetailsEdit" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('client-details-left')]" position="inside">
+            <div class="client-detail" t-if="env.pos.config.module_pos_loyalty">
+                <span class="label">Loyalty</span>
+                <input class="detail client-loyalty" name="loyalty_points"
+                       t-on-change="captureChange" t-att-value="props.partner.loyalty_points || ''"
+                       placeholder="0"
+                       t-att-readonly="isNotManager"/>
+            </div>
+        </xpath>
+    </t>
+
+ </templates>
