@@ -1537,7 +1537,7 @@ class AccountMove(models.Model):
 
             domain = [
                 ('account_id', 'in', pay_term_lines.account_id.ids),
-                ('move_id.state', '=', 'posted'),
+                ('parent_state', '=', 'posted'),
                 ('partner_id', '=', move.commercial_partner_id.id),
                 ('reconciled', '=', False),
                 '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
@@ -2283,7 +2283,9 @@ class AccountMove(models.Model):
         explicitly empty the 'name' field of the move; but we discourage that practice.
         """
         if not self._context.get('force_delete') and not self.filtered(lambda move: move.name != '/')._is_end_of_seq_chain():
-            raise UserError(_("You cannot delete this entry, as it has already consumed a sequence number and is not the last one in the chain. Probably you should revert it instead."))
+            raise UserError(_(
+                "You cannot delete this entry, as it has already consumed a sequence number and is not the last one in the chain. You should probably revert it instead."
+            ))
 
     def unlink(self):
         self.line_ids.unlink()
@@ -2606,10 +2608,6 @@ class AccountMove(models.Model):
             # invoice_repartition_line => refund_repartition_line
             mapping = {}
 
-            # Do nothing if the move is not a credit note.
-            if move_vals['move_type'] not in ('out_refund', 'in_refund'):
-                return mapping
-
             for line_command in move_vals.get('line_ids', []):
                 line_vals = line_command[2]  # (0, 0, {...})
 
@@ -2629,7 +2627,18 @@ class AccountMove(models.Model):
 
         move_vals = self.with_context(include_business_fields=True).copy_data(default=default_values)[0]
 
-        tax_repartition_lines_mapping = compute_tax_repartition_lines_mapping(move_vals)
+        is_refund = False
+        if move_vals['move_type'] in ('out_refund', 'in_refund'):
+            is_refund = True
+        elif move_vals['move_type'] == 'entry':
+            base_lines = self.line_ids.filtered(lambda line: line.tax_ids)
+            tax_type = set(base_lines.tax_ids.mapped('type_tax_use'))
+            if tax_type == {'sale'} and sum(base_lines.mapped('debit')) == 0:
+                is_refund = True
+            elif tax_type == {'purchase'} and sum(base_lines.mapped('credit')) == 0:
+                is_refund = True
+
+        tax_repartition_lines_mapping = compute_tax_repartition_lines_mapping(move_vals) if is_refund else {}
 
         for line_command in move_vals.get('line_ids', []):
             line_vals = line_command[2]  # (0, 0, {...})
@@ -2648,7 +2657,7 @@ class AccountMove(models.Model):
                 'credit': balance < 0.0 and -balance or 0.0,
             })
 
-            if move_vals['move_type'] not in ('out_refund', 'in_refund'):
+            if not is_refund:
                 continue
 
             # ==== Map tax repartition lines ====
@@ -3153,7 +3162,7 @@ class AccountMove(models.Model):
                                  ('secure_sequence_number', '=', int(secure_seq_number) - 1)])
         if prev_move and len(prev_move) != 1:
             raise UserError(
-               _('An error occured when computing the inalterability. Impossible to get the unique previous posted journal entry.'))
+               _('An error occurred when computing the inalterability. Impossible to get the unique previous posted journal entry.'))
 
         #build and return the hash
         return self._compute_hash(prev_move.inalterable_hash if prev_move else u'')
@@ -3531,7 +3540,7 @@ class AccountMoveLine(models.Model):
         comodel_name='account.tax',
         string="Originator Group of Taxes",
         index=True,
-        help="The group of taxes generator of this tax line",
+        help="The group of taxes that generated this tax line",
     )
     tax_line_id = fields.Many2one('account.tax', string='Originator Tax', ondelete='restrict', store=True,
         compute='_compute_tax_line_id', help="Indicates that this journal item is a tax line")
@@ -5452,7 +5461,7 @@ class AccountMoveLine(models.Model):
 
         state = context.get('state')
         if state and state.lower() != 'all':
-            domain += [('move_id.state', '=', state)]
+            domain += [('parent_state', '=', state)]
 
         if context.get('company_id'):
             domain += [('company_id', '=', context['company_id'])]
@@ -5487,7 +5496,7 @@ class AccountMoveLine(models.Model):
         tables = ''
         if domain:
             domain.append(('display_type', 'not in', ('line_section', 'line_note')))
-            domain.append(('move_id.state', '!=', 'cancel'))
+            domain.append(('parent_state', '!=', 'cancel'))
 
             query = self._where_calc(domain)
 

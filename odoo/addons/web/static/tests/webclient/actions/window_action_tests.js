@@ -1329,6 +1329,26 @@ QUnit.module("ActionManager", (hooks) => {
         }
     );
 
+    QUnit.test(
+        "form views are restored with the correct id in its url when coming back in breadcrumbs",
+        async function (assert) {
+            assert.expect(3);
+            const webClient = await createWebClient({ serverData });
+            await doAction(webClient, 3);
+            // open a record in form view
+            await testUtils.dom.click($(webClient.el).find(".o_list_view .o_data_row:first"));
+            await legacyExtraNextTick();
+            assert.strictEqual(webClient.env.services.router.current.hash.id, 1);
+            // do some other action
+            await doAction(webClient, 4);
+            assert.notOk(webClient.env.services.router.current.hash.id);
+            // go back to form view
+            await testUtils.dom.clickLast($(webClient.el).find(".o_control_panel .breadcrumb a"));
+            await legacyExtraNextTick();
+            assert.strictEqual(webClient.env.services.router.current.hash.id, 1);
+        }
+    );
+
     QUnit.test("honor group_by specified in actions context", async function (assert) {
         assert.expect(5);
         serverData.actions[3].context = "{'group_by': 'bar'}";
@@ -2382,5 +2402,48 @@ QUnit.module("ActionManager", (hooks) => {
         assert.containsOnce(webClient, ".o_kanban_view");
 
         assert.verifySteps(["/web/dataset/search_read"]);
+    });
+
+    QUnit.test("pushState also changes the title of the tab", async (assert) => {
+        assert.expect(3);
+
+        const webClient = await createWebClient({ serverData });
+        await doAction(webClient, 3); // list view
+        const titleService = webClient.env.services.title;
+        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Partners"}');
+        await click(webClient.el.querySelector(".o_data_row"));
+        await legacyExtraNextTick();
+        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"First record"}');
+        await click(webClient.el.querySelector(".o_pager_next"));
+        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Second record"}');
+    });
+
+    QUnit.test("action part of title is updated when an action is mounted", async (assert) => {
+        // use a PivotView because we need a view converted to wowl
+        // those two lines can be removed once the list view is converted to wowl
+        serverData.actions[3].views.unshift([false, "pivot"]);
+        serverData.views["partner,false,pivot"] = "<pivot/>";
+        serviceRegistry.add("user", makeFakeUserService());
+
+        const webClient = await createWebClient({ serverData });
+        await doAction(webClient, 3);
+        const titleService = webClient.env.services.title;
+        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Partners"}');
+    });
+
+    QUnit.test("action group_by of type string", async function (assert) {
+        assert.expect(2);
+        serverData.views["partner,false,pivot"] = `<pivot/>`;
+        registry.category("services").add("user", makeFakeUserService());
+        const webClient = await createWebClient({ serverData });
+        await doAction(webClient, {
+            name: "Partner",
+            res_model: "partner",
+            type: "ir.actions.act_window",
+            views: [[3, "pivot"]],
+            context: { group_by: "foo" },
+        });
+        assert.containsOnce(webClient, ".o_pivot_view");
+        assert.containsN(webClient, ".o_pivot_view tbody th", 6);
     });
 });

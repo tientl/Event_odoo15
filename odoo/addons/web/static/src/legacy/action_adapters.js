@@ -37,7 +37,6 @@ class ActionAdapter extends ComponentAdapter {
                 this.__widget = this.widget;
                 if (!this.wowlEnv.inDialog) {
                     this.pushState(query);
-                    this.title.setParts({ action: this.widget.getTitle() });
                 }
                 this.wowlEnv.bus.on("ACTION_MANAGER:UPDATE", this, () => {
                     this.env.bus.trigger("close_dialogs");
@@ -48,7 +47,6 @@ class ActionAdapter extends ComponentAdapter {
                     this.trigger("controller-title-updated", this.__widget.getTitle());
                     return originalUpdateControlPanel(newProps);
                 };
-                this.trigger("controller-title-updated", this.__widget.getTitle());
                 core.bus.trigger("DOM_updated");
 
                 return () => {
@@ -75,6 +73,12 @@ class ActionAdapter extends ComponentAdapter {
         if (this.tempQuery) {
             Object.assign(this.tempQuery, query);
             return;
+        }
+        if (this.widget) {
+            const actionTitle = this.widget.getTitle();
+            if (actionTitle) {
+                this.trigger("controller-title-updated", actionTitle);
+            }
         }
         this.router.pushState(query);
     }

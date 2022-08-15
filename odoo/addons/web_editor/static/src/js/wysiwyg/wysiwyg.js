@@ -82,11 +82,15 @@ const Wysiwyg = Widget.extend({
         const commands = this._getCommands();
 
         let editorCollaborationOptions;
-        if (options.collaborationChannel) {
+        if (
+            options.collaborationChannel &&
+            // Hack: check if mail module is installed.
+            this.getSession()['notification_type']
+        ) {
             editorCollaborationOptions = this.setupCollaboration(options.collaborationChannel);
         }
 
-        const getYoutubeVideoElement =  (url) => {
+        const getYoutubeVideoElement = (url) => {
             const videoWidget = new weWidgets.VideoWidget(this, undefined, {});
             const src = videoWidget._createVideoNode(url).$video.attr('src');
             return videoWidget.getWrappedIframe(src)[0];
@@ -117,8 +121,8 @@ const Wysiwyg = Widget.extend({
             },
             filterMutationRecords: (records) => {
                 return records.filter((record) => {
-                    return !(record.target.classList && record.target.classList.contains('o_header_standard'))
-                })
+                    return !(record.target.classList && record.target.classList.contains('o_header_standard'));
+                });
             },
             noScrollSelector: 'body, .note-editable, .o_content, #wrapwrap',
             commands: commands,
@@ -161,16 +165,22 @@ const Wysiwyg = Widget.extend({
                         }, 0);
                     }
                 }
-                if ($field.data('oe-type') === "monetary") {
-                    $field.attr('contenteditable', false);
-                    $field.find('.oe_currency_value').attr('contenteditable', true);
-                }
-                if ($field.data('oe-type') === "image") {
-                    $field.attr('contenteditable', false);
-                    $field.find('img').attr('contenteditable', true);
-                }
-                if ($field.is('[data-oe-many2one-id]')) {
-                    $field.attr('contenteditable', false);
+                if ($field.attr('contenteditable') !== 'false') {
+                    if ($field.data('oe-type') === "monetary") {
+                        $field.attr('contenteditable', false);
+                        const $currencyValue = $field.find('.oe_currency_value');
+                        $currencyValue.attr('contenteditable', true);
+                        $currencyValue.one('mouseup touchend', (e) => {
+                            $currencyValue.selectContent();
+                        });
+                    }
+                    if ($field.data('oe-type') === "image") {
+                        $field.attr('contenteditable', false);
+                        $field.find('img').attr('contenteditable', true);
+                    }
+                    if ($field.is('[data-oe-many2one-id]')) {
+                        $field.attr('contenteditable', false);
+                    }
                 }
                 self.odooEditor.observerActive();
             }
@@ -192,16 +202,6 @@ const Wysiwyg = Widget.extend({
             }
 
             self.openMediaDialog(params);
-        });
-        this.$editable.on('dblclick', this.customizableLinksSelector, function (ev) {
-            if (!this.getAttribute('data-oe-model') && self.toolbar.$el.is(':visible')) {
-                self.showTooltip = false;
-                self.toggleLinkTools({
-                    forceOpen: true,
-                    link: this,
-                    noFocusUrl: $(ev.target).data('popover-widget-initialized'),
-                });
-            }
         });
 
         if (options.snippets) {
@@ -235,7 +235,7 @@ const Wysiwyg = Widget.extend({
         // Ensure the Toolbar always have the correct layout in note.
         this._updateEditorUI();
 
-        this.$root.on('mousedown', (ev) => {
+        this.$root.on('click', (ev) => {
             const $target = $(ev.target);
 
             // Keep popover open if clicked inside it, but not on a button
@@ -243,7 +243,11 @@ const Wysiwyg = Widget.extend({
                 ev.preventDefault();
             }
 
-            if ($target.is(this.customizableLinksSelector) && $target.is('a') && !$target.attr('data-oe-model') && !$target.find('> [data-oe-model]').length) {
+            if ($target.is(this.customizableLinksSelector)
+                    && $target.is('a')
+                    && !$target.attr('data-oe-model')
+                    && !$target.find('> [data-oe-model]').length
+                    && !$target[0].closest('.o_extra_menu_items')) {
                 this.linkPopover = $target.data('popover-widget-initialized');
                 if (!this.linkPopover) {
                     // TODO this code is ugly maybe the mutex should be in the
@@ -265,7 +269,7 @@ const Wysiwyg = Widget.extend({
                     this.toggleLinkTools({
                         forceOpen: true,
                         link: $target[0],
-                        noFocusUrl: true,
+                        noFocusUrl: ev.detail === 1,
                     });
                 }
             }
@@ -392,10 +396,9 @@ const Wysiwyg = Widget.extend({
                             this.ptp.removeClient(fromClientId);
                             this.odooEditor.multiselectionRemove(fromClientId);
                             break;
-                        case 'rtc_data_channel_open':
+                        case 'rtc_data_channel_open': {
                             fromClientId = notificationPayload.connectionClientId;
-                            const remoteStartTime = await this.ptp.requestClient(fromClientId, 'get_start_time', undefined, { transport: 'rtc' });
-                            this.ptp.clientsInfos[fromClientId].startTime = remoteStartTime;
+                            this.ptp.clientsInfos[fromClientId].startTime = await this.ptp.requestClient(fromClientId, 'get_start_time', undefined, { transport: 'rtc' });
                             this.ptp.requestClient(fromClientId, 'get_client_name', undefined, { transport: 'rtc' }).then((clientName) => {
                                 this.ptp.clientsInfos[fromClientId].clientName = clientName;
                             });
@@ -411,6 +414,7 @@ const Wysiwyg = Widget.extend({
                                 }
                             }
                             break;
+                        }
                         case 'oe_history_step':
                             // Avoid race condition where the step is received
                             // before the history has synced at least once.
@@ -418,7 +422,7 @@ const Wysiwyg = Widget.extend({
                                 this.odooEditor.onExternalHistorySteps([notificationPayload]);
                             }
                             break;
-                        case 'oe_history_set_selection':
+                        case 'oe_history_set_selection': {
                             const client = this.ptp.clientsInfos[fromClientId];
                             if (!client) {
                                 return;
@@ -427,6 +431,7 @@ const Wysiwyg = Widget.extend({
                             selection.clientName = client.clientName;
                             this.odooEditor.onExternalMultiselectionUpdate(selection);
                             break;
+                        }
                     }
                 }
             });
@@ -610,7 +615,7 @@ const Wysiwyg = Widget.extend({
      * Get the value of the editable element.
      *
      * @param {object} [options]
-     * @param {jQueryElement} [options.$layout]
+     * @param {jQuery} [options.$layout]
      * @returns {String}
      */
     getValue: function (options) {
@@ -635,8 +640,8 @@ const Wysiwyg = Widget.extend({
      *      - resolve with true if the content was dirty
      */
     save: function () {
-        var isDirty = this.isDirty();
-        var html = this.getValue();
+        const isDirty = this.isDirty();
+        const html = this.getValue();
         if (this.$editable.is('textarea')) {
             this.$editable.val(html);
         } else {
@@ -750,13 +755,12 @@ const Wysiwyg = Widget.extend({
     },
     /**
      * @param {String} value
-     * @param {Object} options
-     * @param {Boolean} [options.notifyChange]
      * @returns {String}
      */
     setValue: function (value) {
         this.$editable.html(value);
         this.odooEditor.sanitize();
+        this.odooEditor.historyStep(true);
     },
     /**
      * Undo one step of change in the editor.
@@ -776,7 +780,7 @@ const Wysiwyg = Widget.extend({
      * Set cursor to the editor latest position before blur or to the last editable node, ready to type.
      */
     focus: function () {
-        if (!this.odooEditor.historyResetLatestComputedSelection()) {
+        if (this.odooEditor && !this.odooEditor.historyResetLatestComputedSelection()) {
             // If the editor don't have an history step to focus to,
             // We place the cursor after the end of the editor exiting content.
             const range = document.createRange();
@@ -899,6 +903,7 @@ const Wysiwyg = Widget.extend({
                 if (!this.linkTools || ![options.link, ...wysiwygUtils.ancestors(options.link)].includes(this.linkTools.$link[0])) {
                     this.linkTools = new weWidgets.LinkTools(this, {wysiwyg: this, noFocusUrl: options.noFocusUrl}, this.odooEditor.editable, {}, $btn, options.link || this.lastMediaClicked);
                 }
+                this.linkTools.noFocusUrl = options.noFocusUrl;
                 const _onMousedown = ev => {
                     if (
                         !ev.target.closest('.oe-toolbar') &&
@@ -1024,6 +1029,7 @@ const Wysiwyg = Widget.extend({
             }
         });
     },
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -1425,7 +1431,9 @@ const Wysiwyg = Widget.extend({
                 if (!this.showTooltip || $target.attr('title') !== undefined) {
                     return;
                 }
+                this.odooEditor.observerUnactive();
                 $target.tooltip({title: _t('Double-click to edit'), trigger: 'manual', container: 'body'}).tooltip('show');
+                this.odooEditor.observerActive();
                 setTimeout(() => $target.tooltip('dispose'), 800);
             }, 400);
         }
@@ -1808,7 +1816,7 @@ const Wysiwyg = Widget.extend({
             this.start();
         });
     },
-
+    // TODO unused => remove or reuse as it should be
     _attachTooltips: function () {
         $(document.body)
             .tooltip({
@@ -1858,12 +1866,17 @@ const Wysiwyg = Widget.extend({
             return Promise.resolve();
         }
 
+        // remove ZeroWidthSpace from odoo field value
+        // ZeroWidthSpace may be present from OdooEditor edition process
+        let escapedHtml = this._getEscapedElement($el).prop('outerHTML');
+        escapedHtml = escapedHtml.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
         return this._rpc({
             model: 'ir.ui.view',
             method: 'save',
             args: [
                 viewID,
-                this._getEscapedElement($el).prop('outerHTML'),
+                escapedHtml,
                 !$el.data('oe-expression') && $el.data('oe-xpath') || null, // Note: hacky way to get the oe-xpath only if not a t-field
             ],
             context: context,

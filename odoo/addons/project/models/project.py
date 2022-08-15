@@ -918,7 +918,7 @@ class Task(models.Model):
         help="Sum of the time planned of all the sub-tasks linked to this task. Usually less than or equal to the initially planned time of this task.")
     # Tracking of this field is done in the write function
     user_ids = fields.Many2many('res.users', relation='project_task_user_rel', column1='task_id', column2='user_id',
-        string='Assignees', default=lambda self: self.env.user)
+        string='Assignees', default=lambda self: self.env.user, context={'active_test': False})
     # User names displayed in project sharing views
     portal_user_names = fields.Char(compute='_compute_portal_user_names', compute_sudo=True, search='_search_portal_user_names')
     # Second Many2many containing the actual personal stage for the current user
@@ -1635,6 +1635,7 @@ class Task(models.Model):
         # The sudo is required for a portal user as the record creation
         # requires the read access on other models, as mail.template
         # in order to compute the field tracking
+        was_in_sudo = self.env.su
         if is_portal_user:
             ctx = {
                 key: value for key, value in self.env.context.items()
@@ -1646,7 +1647,9 @@ class Task(models.Model):
         tasks = super(Task, self).create(vals_list)
         tasks._populate_missing_personal_stages()
         self._task_message_auto_subscribe_notify({task: task.user_ids - self.env.user for task in tasks})
-        if is_portal_user:
+
+        # in case we were already in sudo, we don't check the rights.
+        if is_portal_user and not was_in_sudo:
             # since we use sudo to create tasks, we need to check
             # if the portal user could really create the tasks based on the ir rule.
             tasks.with_user(self.env.user).check_access_rule('create')
@@ -2134,6 +2137,11 @@ class Task(models.Model):
 
     def _rating_get_parent_field_name(self):
         return 'project_id'
+
+    def rating_get_rated_partner_id(self):
+        """ Overwrite since we have user_ids and not user_id """
+        tasks_with_one_user = self.filtered(lambda task: len(task.user_ids) == 1 and task.user_ids.partner_id)
+        return tasks_with_one_user.user_ids.partner_id or self.env['res.partner']
 
     # ---------------------------------------------------
     # Privacy

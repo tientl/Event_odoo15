@@ -440,4 +440,68 @@ QUnit.module("ActionManager", (hooks) => {
         await doAction(webClient, 1);
         assert.verifySteps(["ViewAdapter"]);
     });
+
+    QUnit.test("correctly transports legacy Props for doAction", async (assert) => {
+        assert.expect(4);
+
+        let ID = 0;
+        const MyAction = AbstractAction.extend({
+            init() {
+                this._super(...arguments);
+                this.ID = ID++;
+                assert.step(`id: ${this.ID} props: ${JSON.stringify(arguments[2])}`);
+            },
+            async start() {
+                const res = await this._super(...arguments);
+                const link = document.createElement("a");
+                link.setAttribute("id", `client_${this.ID}`);
+                link.addEventListener("click", () => {
+                    this.do_action("testClientAction", {
+                        clear_breadcrumbs: true,
+                        props: { chain: "never break" },
+                    });
+                });
+
+                this.el.appendChild(link);
+                return res;
+            },
+        });
+        core.action_registry.add("testClientAction", MyAction);
+        registerCleanup(() => delete core.action_registry.map.testClientAction);
+
+        const webClient = await createWebClient({ serverData });
+        await doAction(webClient, "testClientAction");
+        assert.verifySteps(['id: 0 props: {"breadcrumbs":[]}']);
+
+        await click(document.getElementById("client_0"));
+        assert.verifySteps(['id: 1 props: {"chain":"never break","breadcrumbs":[]}']);
+    });
+
+    QUnit.test("breadcrumbs are correct in stacked legacy client actions", async function (assert) {
+        const ClientAction = AbstractAction.extend({
+            hasControlPanel: true,
+            async start() {
+                this.$el.addClass("client_action");
+                return this._super(...arguments);
+            },
+            getTitle() {
+                return "Blabla";
+            },
+        });
+        core.action_registry.add("clientAction", ClientAction);
+        registerCleanup(() => delete core.action_registry.map.clientAction);
+
+        const webClient = await createWebClient({ serverData });
+
+        await doAction(webClient, 3);
+        assert.containsOnce(webClient, ".o_list_view");
+        assert.strictEqual($(webClient.el).find(".breadcrumb-item").text(), "Partners");
+
+        await doAction(webClient, {
+            type: "ir.actions.client",
+            tag: "clientAction",
+        });
+        assert.containsOnce(webClient, ".client_action");
+        assert.strictEqual($(webClient.el).find(".breadcrumb-item").text(), "PartnersBlabla");
+    });
 });
