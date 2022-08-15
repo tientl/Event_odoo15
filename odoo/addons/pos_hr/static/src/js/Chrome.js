@@ -17,9 +17,6 @@ odoo.define('pos_hr.chrome', function (require) {
             showCashMoveButton() {
                 return super.showCashMoveButton() && this.env.pos.get('cashier').role == 'manager';
             }
-            shouldShowCashControl() {
-                return super.shouldShowCashControl() && this.env.pos.hasLoggedIn;
-            }
         };
 
     Registries.Component.extend(Chrome, PosHrChrome);

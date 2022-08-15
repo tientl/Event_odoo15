@@ -291,17 +291,12 @@ class MassMailing(models.Model):
     @api.depends('mailing_model_id')
     def _compute_mailing_model_real(self):
         for mailing in self:
-            mailing.mailing_model_real = (mailing.mailing_model_id.model != 'mailing.list') and mailing.mailing_model_id.model or 'mailing.contact'
+            mailing.mailing_model_real = (mailing.mailing_model_name != 'mailing.list') and mailing.mailing_model_name or 'mailing.contact'
 
-    @api.depends('mailing_model_id')
+    @api.depends('mailing_model_real')
     def _compute_reply_to_mode(self):
-        """ For main models not really using chatter to gather answers (contacts
-        and mailing contacts), set reply-to as email-based. Otherwise answers
-        by default go on the original discussion thread (business document). Note
-        that mailing_model being mailing.list means contacting mailing.contact
-        (see mailing_model_name versus mailing_model_real). """
         for mailing in self:
-            if mailing.mailing_model_id.model in ['res.partner', 'mailing.list']:
+            if mailing.mailing_model_real in ['res.partner', 'mailing.contact']:
                 mailing.reply_to_mode = 'new'
             else:
                 mailing.reply_to_mode = 'update'
@@ -314,10 +309,10 @@ class MassMailing(models.Model):
             elif mailing.reply_to_mode == 'update':
                 mailing.reply_to = False
 
-    @api.depends('mailing_model_id', 'contact_list_ids', 'mailing_type')
+    @api.depends('mailing_model_name', 'contact_list_ids')
     def _compute_mailing_domain(self):
         for mailing in self:
-            if not mailing.mailing_model_id:
+            if not mailing.mailing_model_name:
                 mailing.mailing_domain = ''
             else:
                 mailing.mailing_domain = repr(mailing._get_default_mailing_domain())

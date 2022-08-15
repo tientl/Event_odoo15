@@ -77,5 +77,5 @@ class HRLeave(models.Model):
 
     def action_refuse(self):
         res = super().action_refuse()
-        self.sudo().overtime_id.unlink()
+        self.overtime_id.sudo().unlink()
         return res

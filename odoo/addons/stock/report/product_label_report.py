@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
-
 from odoo import _, models
 from odoo.exceptions import UserError
 
@@ -13,20 +11,10 @@ class ReportProductLabel(models.AbstractModel):
 
     def _get_report_values(self, docids, data):
         if data.get('active_model') == 'product.template':
-            Product = self.env['product.template']
+            data['quantity'] = {self.env['product.template'].browse(int(p)): q for p, q in data.get('quantity_by_product').items()}
         elif data.get('active_model') == 'product.product':
-            Product = self.env['product.product']
+            data['quantity'] = {self.env['product.product'].browse(int(p)): q for p, q in data.get('quantity_by_product').items()}
         else:
             raise UserError(_('Product model not defined, Please contact your administrator.'))
-
-        quantity_by_product = defaultdict(list)
-        for p, q in data.get('quantity_by_product').items():
-            product = Product.browse(int(p))
-            quantity_by_product[product].append((product.barcode, q))
-        if data.get('custom_barcodes'):
-            # we expect custom barcodes to be: {product: [(barcode, qty_of_barcode)]}
-            for product, barcodes_qtys in data.get('custom_barcodes').items():
-                quantity_by_product[Product.browse(int(product))] += (barcodes_qtys)
-        data['quantity'] = quantity_by_product
 
         return data

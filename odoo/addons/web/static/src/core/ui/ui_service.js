@@ -51,13 +51,7 @@ export const uiService = {
             }
         }
         function unblock() {
-            blockCount--;
-            if (blockCount < 0) {
-                console.warn(
-                    "Unblock ui was called more times than block, you should only unblock the UI if you have previously blocked it."
-                );
-                blockCount = 0;
-            }
+            blockCount = Math.max(0, blockCount - 1);
             if (blockCount === 0) {
                 bus.trigger("UNBLOCK");
             }

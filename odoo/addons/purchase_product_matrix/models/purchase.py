@@ -115,9 +115,8 @@ class PurchaseOrder(models.Model):
 
                 # Recompute prices for new/modified lines:
                 for line in self.order_line.filtered(lambda line: line.product_id.id in product_ids):
-                    line._product_id_change()
+                    res = line._product_id_change() or res
                     line._onchange_quantity()
-                    res = line.onchange_product_id_warning() or res
                 return res
 
     def _get_matrix(self, product_template):

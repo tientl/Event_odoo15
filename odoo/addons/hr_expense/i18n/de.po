@@ -7,15 +7,14 @@
 # Felix Schubert <felix.schubert@go-erp.com>, 2021
 # Ahmed Aly <ahmed.aly@datenpol.at>, 2021
 # Friederike Fasterling-Nesselbosch, 2021
-# Raymond Vetter, 2021
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0\n"
+"Project-Id-Version: Odoo Server saas~14.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 13:18+0000\n"
+"POT-Creation-Date: 2021-09-14 10:28+0000\n"
 "PO-Revision-Date: 2021-09-14 12:22+0000\n"
-"Last-Translator: Raymond Vetter, 2021\n"
+"Last-Translator: Friederike Fasterling-Nesselbosch, 2021\n"
 "Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -464,8 +463,9 @@ msgid ""
 "Conversion between Units of Measure can only occur if they belong to the "
 "same category. The conversion will be made based on the ratios."
 msgstr ""
-"Umwandlungen von Maßeinheiten können nur innerhalb derselben Kategorie "
-"erfolgen. Die Konversion erfolgt basierend auf dem Umwandlungsfaktor."
+"Eine Umrechnung zwischen Mengeneinheit ist nur möglich, wenn beide Einheiten"
+" einer Kategorie angehören. Die Umrechnung erfolgt dann auf der Basis der "
+"definierten Relationen."
 
 #. module: hr_expense
 #: model_terms:ir.ui.view,arch_db:hr_expense.hr_expense_view_expenses_analysis_tree
@@ -1169,7 +1169,7 @@ msgstr "Neuer Spesenbericht"
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense__activity_calendar_event_id
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense_sheet__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Nächstes Aktivitätskalenderereignis"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense__activity_date_deadline
@@ -1206,6 +1206,16 @@ msgid "No Home Address found for the employee %s, please configure one."
 msgstr ""
 "Keine Privatanschrift für den Beschäftigten %s gefunden. Bitte legen Sie "
 "eine an."
+
+#. module: hr_expense
+#: code:addons/hr_expense/models/hr_expense.py:0
+#, python-format
+msgid ""
+"No Outstanding Payments Account found for the %s journal, please configure "
+"one."
+msgstr ""
+"Kein Konto für ausstehende Zahlungen für das Journal %s gefunden, bitte "
+"konfigurieren Sie eines."
 
 #. module: hr_expense
 #: code:addons/hr_expense/models/hr_expense.py:0
@@ -1366,12 +1376,6 @@ msgstr "Teillieferung"
 #: model:ir.model.fields.selection,name:hr_expense.selection__hr_expense_sheet__payment_state__partial
 msgid "Partially Paid"
 msgstr "Teilzahlung"
-
-#. module: hr_expense
-#: code:addons/hr_expense/models/account_move.py:0
-#, python-format
-msgid "Payment Cancelled"
-msgstr "Zahlung storniert"
 
 #. module: hr_expense
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense_sheet__payment_state
@@ -1638,8 +1642,8 @@ msgid ""
 "Selected Unit of Measure for expense %(expense)s does not belong to the same"
 " category as the Unit of Measure of product %(product)s."
 msgstr ""
-"Die gewählte Maßeinheit für die Ausgabe %(expense)s gehört nicht zur "
-"gleichen Kategorie wie die Maßeinheit des Produkts %(product)s."
+"Die gewählte Mengeneinheit für die Ausgabe %(expense)s gehört nicht zur "
+"gleichen Kategorie wie die Mengeneinheit des Produkts %(product)s."
 
 #. module: hr_expense
 #: model_terms:ir.ui.view,arch_db:hr_expense.res_config_settings_view_form
@@ -1910,7 +1914,7 @@ msgstr "Preis pro Einheit"
 #. module: hr_expense
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense__product_uom_id
 msgid "Unit of Measure"
-msgstr "Maßeinheit"
+msgstr "Mengeneinheit"
 
 #. module: hr_expense
 #: model:product.product,uom_name:hr_expense.accomodation_expense_product
@@ -2181,3 +2185,9 @@ msgstr "In Freigabe"
 #: model_terms:ir.ui.view,arch_db:hr_expense.res_config_settings_view_form
 msgid "use OCR to fill data from a picture of the bill"
 msgstr "OCR zum Ausfüllen von Daten aus einem Foto der Rechnung verwenden"
+
+#. module: hr_expense
+#: code:addons/hr_expense/models/account_move.py:0
+#, python-format
+msgid "Payment Cancelled"
+msgstr "Zahlung storniert"

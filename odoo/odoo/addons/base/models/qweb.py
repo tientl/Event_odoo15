@@ -295,6 +295,7 @@ class QWeb(object):
         globals_dict['Mapping'] = Mapping
         globals_dict['Markup'] = Markup
         globals_dict['escape'] = escape
+        globals_dict['type'] = type
         globals_dict['compile_options'] = options
         globals_dict.update(self._available_objects)
         return globals_dict
@@ -409,7 +410,7 @@ class QWeb(object):
             code += f'.format({", ".join(values)})'
         return code
 
-    def _compile_expr_tokens(self, tokens, allowed_keys, argument_names=None, raise_on_missing=False):
+    def _compile_expr_tokens(self, tokens, allowed_keys, raise_on_missing=False):
         """ Transform the list of token coming into a python instruction in
             textual form by adding the namepaces for the dynamic values.
 
@@ -435,10 +436,6 @@ class QWeb(object):
         index = 0
         open_bracket_index = -1
         bracket_depth = 0
-
-        argument_name = '_arg_%s__'
-        argument_names = argument_names or []
-
         while index < len(tokens):
             t = tokens[index]
             if t.exact_type in [token.LPAR, token.LSQB, token.LBRACE]:
@@ -452,7 +449,7 @@ class QWeb(object):
                     while i < len(tokens):
                         t = tokens[i]
                         if t.exact_type == token.NAME:
-                            argument_names.append(t.string)
+                            allowed_keys.append(t.string)
                         elif t.exact_type == token.COMMA:
                             pass
                         elif t.exact_type == token.COLON:
@@ -469,7 +466,7 @@ class QWeb(object):
                         if t.exact_type == token.NAME:
                             if t.string == 'in':
                                 break
-                            argument_names.append(t.string)
+                            allowed_keys.append(t.string)
                         elif t.exact_type in [token.COMMA, token.LPAR, token.RPAR]:
                             pass
                         else:
@@ -498,12 +495,7 @@ class QWeb(object):
             elif t.exact_type in [token.RPAR, token.RSQB, token.RBRACE]:
                 bracket_depth -= 1
                 if bracket_depth == 0:
-                    code = self._compile_expr_tokens(
-                        tokens[open_bracket_index + 1:index],
-                        list(allowed_keys),
-                        list(argument_names),
-                        raise_on_missing,
-                    )
+                    code = self._compile_expr_tokens(tokens[open_bracket_index + 1:index], list(allowed_keys), raise_on_missing)
                     code = tokens[open_bracket_index].string + code + t.string
                     tokens[open_bracket_index:index + 1] = [tokenize.TokenInfo(token.QWEB, code, tokens[open_bracket_index].start, t.end, '')]
                     index = open_bracket_index
@@ -534,9 +526,7 @@ class QWeb(object):
                     index += 1
                     while index < len(tokens):
                         t = tokens[index]
-                        if t.exact_type == token.NAME and t.string in argument_names:
-                            code.append(argument_name % t.string)
-                        if t.exact_type in [token.COMMA, token.COLON]:
+                        if t.exact_type in [token.COMMA, token.NAME, token.COLON]:
                             code.append(t.string)
                         if t.exact_type == token.COLON:
                             break
@@ -545,8 +535,6 @@ class QWeb(object):
                         pos = (t.end[0], 0)
                     else:
                         pos = t.end
-                elif string in argument_names:
-                    code.append(argument_name % t.string)
                 elif string in allowed_keys:
                     code.append(string)
                 elif index + 1 < len(tokens) and tokens[index + 1].exact_type == token.EQUAL: # function kw
@@ -1060,7 +1048,7 @@ class QWeb(object):
                 {t_foreach} = {self._compile_expr(expr_foreach)} or []
                 if isinstance({t_foreach}, Sized):
                     values[{repr(expr_as + '_size')}] = {size} = len({t_foreach})
-                elif ({t_foreach}).__class__ == int:
+                elif type({t_foreach}) == int:
                     values[{repr(expr_as + '_size')}] = {size} = {t_foreach}
                     {t_foreach} = range({size})
                 else:

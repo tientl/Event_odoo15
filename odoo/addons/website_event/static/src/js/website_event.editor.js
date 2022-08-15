@@ -165,6 +165,7 @@ var EventCreateDialog = Dialog.extend({
             locale: {
                 direction: textDirection,
                 format: time.getLangDatetimeFormat().replace(':ss', ''),
+                separator: ' 🠖 ',
                 applyLabel: _t('Apply'),
                 cancelLabel: _t('Cancel'),
                 weekLabel: 'W',

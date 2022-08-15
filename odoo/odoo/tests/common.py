@@ -870,7 +870,7 @@ class ChromeBrowser():
             port_file = pathlib.Path(self.user_data_dir, 'DevToolsActivePort')
             for _ in range(100):
                 time.sleep(0.1)
-                if port_file.is_file() and port_file.stat().st_size > 5:
+                if port_file.is_file():
                     with port_file.open('r', encoding='utf-8') as f:
                         self.devtools_port = int(f.readline())
                     break

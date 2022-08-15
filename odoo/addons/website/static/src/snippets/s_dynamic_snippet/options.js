@@ -18,8 +18,6 @@ const dynamicSnippetOptions = options.Class.extend({
         // name of the model of the currently selected filter, used to fetch templates
         this.currentModelName = undefined;
         this.dynamicFilterTemplates = {};
-        // Indicates that some current options are a default selection.
-        this.isOptionDefault = {};
     },
     /**
      *
@@ -61,20 +59,6 @@ const dynamicSnippetOptions = options.Class.extend({
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
-
-    /**
-     * See from updateUI in s_website_form
-     * 
-     * @override
-     */
-    async updateUI() {
-        if (this.rerender) {
-            this.rerender = false;
-            await this._rerenderXML();
-            return;
-        }
-        await this._super(...arguments);
-    },
 
     /**
      * @override
@@ -186,7 +170,6 @@ const dynamicSnippetOptions = options.Class.extend({
                 const selectedFilterId = this.$target.get(0).dataset['filterId'];
                 if (!this.dynamicFilters[selectedFilterId]) {
                     this.$target.get(0).dataset['filterId'] = dynamicFilters[0].id;
-                    this.isOptionDefault['filterId'] = true;
                 }
             }
         }
@@ -223,7 +206,6 @@ const dynamicSnippetOptions = options.Class.extend({
             const selectedTemplateId = this.$target.get(0).dataset['templateKey'];
             if (!this.dynamicFilterTemplates[selectedTemplateId]) {
                 this.$target.get(0).dataset['templateKey'] = dynamicFilterTemplates[0].key;
-                this.isOptionDefault['templateKey'] = true;
                 setTimeout(() => {
                     this._templateUpdated(dynamicFilterTemplates[0].key, selectedTemplateId);
                     this._refreshPublicWidgets();
@@ -266,7 +248,7 @@ const dynamicSnippetOptions = options.Class.extend({
     _filterUpdated: function (filter) {
         if (filter && this.currentModelName !== filter.model_name) {
             this.currentModelName = filter.model_name;
-            this.rerender = true;
+            this._rerenderXML();
         }
     },
     /**
@@ -299,13 +281,8 @@ const dynamicSnippetOptions = options.Class.extend({
      * @private
      */
     _setOptionValue: function (optionName, value) {
-        const selectedTemplateId = this.$target.get(0).dataset['templateKey'];
-        if (this.$target.get(0).dataset[optionName] === undefined || this.isOptionDefault[optionName]) {
+        if (this.$target.get(0).dataset[optionName] === undefined) {
             this.$target.get(0).dataset[optionName] = value;
-            this.isOptionDefault[optionName] = false;
-        }
-        if (optionName === 'templateKey') {
-            this._templateUpdated(value, selectedTemplateId);
         }
     },
 });

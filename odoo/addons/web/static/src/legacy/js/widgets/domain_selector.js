@@ -377,11 +377,10 @@ var DomainTree = DomainNode.extend({
      */
     _renderChildrenTo: function ($to) {
         var $div = $("<div/>");
-        const children = this.children;
-        return Promise.all(_.map(children, (function (child) {
+        return Promise.all(_.map(this.children, (function (child) {
             return child.appendTo($div);
         }).bind(this))).then((function () {
-            _.each(children, function (child) {
+            _.each(this.children, function (child) {
                 child.$el.appendTo($to); // Forced to do it this way so that the
                                          // children are not misordered
             });
@@ -470,12 +469,6 @@ var DomainSelector = DomainTree.extend({
         domain_changed: "_onDomainChange",
     }),
 
-    init(parent, model, domain) {
-        this._super(...arguments);
-        this.rawDomain = domain;
-        this._redrawId = 0;
-    },
-
     start: function () {
         var self = this;
         return this._super.apply(this, arguments).then(function () {
@@ -548,7 +541,7 @@ var DomainSelector = DomainTree.extend({
         // Display technical domain if in debug mode
         this.$debugInput = this.$(".o_domain_debug_input");
         if (this.$debugInput.length) {
-            this.$debugInput.val(this.rawDomain);
+            this.$debugInput.val(Domain.prototype.arrayToString(this.getDomain()));
             dom.autoresize(this.$debugInput);
         }
 
@@ -564,13 +557,9 @@ var DomainSelector = DomainTree.extend({
      * @returns {Promise}
      */
     _redraw: function (domain) {
-        const _redrawId = ++this._redrawId;
         var oldChildren = this.children.slice();
         this._initialize(domain || this.getDomain());
         return this._renderChildrenTo($("<div/>")).then((function () {
-            if (_redrawId !== this._redrawId) {
-                return;
-            }
             _.each(oldChildren, function (child) { child.destroy(); });
             this.renderElement();
             this._postRender();
@@ -600,19 +589,14 @@ var DomainSelector = DomainTree.extend({
         // is syntax-valid a "domain_changed" event is triggered to notify the
         // parent, but the widget isn't redrawn.
         // If the domain is not valid, a warning is shown to the user.
-        const rawDomain = e.currentTarget.value;
+        var domain;
         try {
-            Domain.prototype.stringToArray(rawDomain);
+            domain = Domain.prototype.stringToArray(e.currentTarget.value);
         } catch (err) { // If there is a syntax error, just ignore the change
             this.displayNotification({ title: _t("Syntax error"), message: _t("Domain not properly formed"), type: 'danger' });
             return;
         }
-        this.trigger_up("domain_changed", {
-            child: this,
-            noRedraw: true,
-            domain: rawDomain,
-            debug: true,
-        });
+        this.trigger_up("domain_changed", { child: this, noRedraw: true, domain, debug: true });
     },
     /**
      * Called when a (child's) domain has changed -> redraw the entire tree
@@ -623,7 +607,6 @@ var DomainSelector = DomainTree.extend({
     _onDomainChange: function (e) {
         // Add the current domain to the payload if not already there
         e.data.domain = e.data.domain || this.getDomain();
-        this.rawDomain = Domain.prototype.arrayToString(e.data.domain);
         // If a subdomain notifies that it underwent some modifications, the
         // DomainSelector catches the message and performs a full re-rendering.
         if (!e.data.noRedraw) {

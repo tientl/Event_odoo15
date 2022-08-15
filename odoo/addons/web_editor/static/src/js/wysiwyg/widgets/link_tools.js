@@ -4,6 +4,8 @@ odoo.define('wysiwyg.widgets.LinkTools', function (require) {
 const Link = require('wysiwyg.widgets.Link');
 const {ColorPaletteWidget} = require('web_editor.ColorPalette');
 const {ColorpickerWidget} = require('web.Colorpicker');
+const OdooEditorLib = require('@web_editor/../lib/odoo-editor/src/OdooEditor');
+const dom = require('web.dom');
 const {
     computeColorClasses,
     getCSSVariableValue,
@@ -11,6 +13,8 @@ const {
     getNumericAndUnit,
     isColorGradient,
 } = require('web_editor.utils');
+
+const setSelection = OdooEditorLib.setSelection;
 
 /**
  * Allows to customize link content and style.
@@ -33,13 +37,8 @@ const LinkTools = Link.extend({
             $(node).wrap('<a href="#"/>');
             node = node.parentElement;
         }
-        this._link = node || this.getOrCreateLink(editable);
-        this._observer = new MutationObserver(() =>{
-            this._setLinkContent = false;
-            this._observer.disconnect();
-        });
-        this._observer.observe(this._link, {subtree: true, childList: true, characterData: true});
-        this._super(parent, options, editable, data, $button, this._link);
+        const link = node || this.getOrCreateLink(editable);
+        this._super(parent, options, editable, data, $button, link);
         // Keep track of each selected custom color and colorpicker.
         this.customColors = {};
         this.colorpickers = {};
@@ -52,7 +51,11 @@ const LinkTools = Link.extend({
         this.options.wysiwyg.odooEditor.observerUnactive();
         this.$link.addClass('oe_edited_link');
         this.$button.addClass('active');
-        return this._super(...arguments);
+        return this._super(...arguments).then(() => {
+            if (!this.options.noFocusUrl) {
+                dom.scrollTo(this.$(':visible:last')[0], {duration: 0});
+            }
+        });
     },
     destroy: function () {
         if (!this.el) {
@@ -67,28 +70,7 @@ const LinkTools = Link.extend({
         this.options.wysiwyg.odooEditor.observerActive();
         this.applyLinkToDom(this._getData());
         this.options.wysiwyg.odooEditor.historyStep();
-        this._observer.disconnect();
         this._super(...arguments);
-    },
-
-    applyLinkToDom() {
-        this._observer.disconnect();
-        this.options.wysiwyg.odooEditor.observerActive();
-        this._super(...arguments);
-        this.options.wysiwyg.odooEditor.observerUnactive();
-        this._observer.observe(this._link, {subtree: true, childList: true, characterData: true});
-    },
-
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
-    /**
-     * @override
-     */
-    focusUrl() {
-        this.el.scrollIntoView();
-        this._super();
     },
 
     //--------------------------------------------------------------------------

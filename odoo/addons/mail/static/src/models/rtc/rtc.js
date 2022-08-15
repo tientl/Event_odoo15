@@ -384,7 +384,7 @@ function factory(dependencies) {
          * @param {String} [param2.state] current state of the connection
          */
         _addLogEntry(token, entry, { error, step, state } = {}) {
-            if (!this.modelManager.isDebug) {
+            if (!this.env.isDebug()) {
                 return;
             }
             if (!(token in this.logs)) {

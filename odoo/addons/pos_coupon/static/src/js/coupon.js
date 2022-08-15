@@ -1048,6 +1048,7 @@ odoo.define('pos_coupon.pos', function (require) {
                 this.is_program_reward = json.is_program_reward;
                 this.program_id = json.program_id;
                 this.coupon_id = json.coupon_id;
+                this.tax_ids = json.tax_ids[0][2];
             }
             _orderline_super.init_from_JSON.apply(this, [json]);
         },

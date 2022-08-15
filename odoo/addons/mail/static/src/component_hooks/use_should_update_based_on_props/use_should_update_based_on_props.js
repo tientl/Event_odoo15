@@ -2,7 +2,6 @@
 'use strict';
 
 const { Component } = owl;
-const { onPatched } = owl.hooks;
 
 /**
  * Compares `a` and `b` up to the given `propsCompareDepth`.
@@ -56,11 +55,7 @@ function isEqual(a, b, propsCompareDepth) {
  */
 export function useShouldUpdateBasedOnProps({ propsCompareDepth = {} } = {}) {
     const component = Component.current;
-    let forceRender = false;
     component.shouldUpdate = nextProps => {
-        if (forceRender) {
-            return true;
-        }
         const allNewProps = Object.assign({}, nextProps);
         const defaultProps = component.constructor.defaultProps;
         for (const key in defaultProps) {
@@ -68,8 +63,6 @@ export function useShouldUpdateBasedOnProps({ propsCompareDepth = {} } = {}) {
                 allNewProps[key] = defaultProps[key];
             }
         }
-        forceRender = !isEqual(component.props, allNewProps, propsCompareDepth);
-        return forceRender;
+        return !isEqual(component.props, allNewProps, propsCompareDepth);
     };
-    onPatched(() => forceRender = false);
 }

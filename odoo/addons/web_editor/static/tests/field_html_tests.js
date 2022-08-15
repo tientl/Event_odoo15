@@ -17,12 +17,11 @@ const { legacyExtraNextTick, patchWithCleanup } = require("@web/../tests/helpers
 
 var _t = core._t;
 
-let _formResolveTestPromise;
-FormController.include({
-    _setEditMode: async function () {
-        await this._super.apply(this, arguments);
-        if (_formResolveTestPromise) {
-            _formResolveTestPromise();
+FieldHtml.include({
+    _onLoadWysiwyg: function () {
+        this._super.apply(this, arguments);
+        if (FieldHtml._resolveTestPromise) {
+            FieldHtml._resolveTestPromise();
         }
     }
 });
@@ -181,7 +180,7 @@ QUnit.module('web_editor', {}, function () {
             assert.strictEqual($field.attr('style'), 'height: 100px',
                 "should have applied the style correctly");
 
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             $field = form.$('.oe_form_field[name="body"]');
@@ -205,7 +204,7 @@ QUnit.module('web_editor', {}, function () {
                 res_id: 6,
             });
             // check that there is no error on clicking Edit
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             assert.containsOnce(form, '.o_form_editable');
@@ -234,7 +233,7 @@ QUnit.module('web_editor', {}, function () {
                 }
             }, true);
 
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             await testUtils.dom.click(form.$('.o_form_button_save'));
@@ -453,7 +452,7 @@ QUnit.module('web_editor', {}, function () {
                 '<p><a href="https://www.external.com" target="_blank">External website</a></p>',
                 "should have rendered a div with correct content in readonly");
 
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             $field = form.$('.oe_form_field[name="body"]');
@@ -502,7 +501,7 @@ QUnit.module('web_editor', {}, function () {
                 '<p><a href="' + window.location.href.replace(/&/g, "&amp;") + '/test">This website</a></p>',
                 "should have rendered a div with correct content in readonly");
 
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             $field = form.$('.oe_form_field[name="body"]');
@@ -551,7 +550,7 @@ QUnit.module('web_editor', {}, function () {
             assert.strictEqual($field.children('.o_readonly').html(), '<p>New external link</p>',
                 "should have rendered a div with correct content in readonly");
 
-            const promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            const promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             $field = form.$('.oe_form_field[name="body"]');
@@ -601,7 +600,7 @@ QUnit.module('web_editor', {}, function () {
             assert.strictEqual($field.children('.o_readonly').html(), '<p>New internal link</p>',
                 "should have rendered a div with correct content in readonly");
 
-            let promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            let promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
             $field = form.$('.oe_form_field[name="body"]');
@@ -632,7 +631,7 @@ QUnit.module('web_editor', {}, function () {
                 '<p><a href="' + window.location.href.replace(/&/g, "&amp;") + '/test">New internal link</a></p>',
                 "the link should be created with the right format");
 
-            promise = new Promise((resolve) => _formResolveTestPromise = resolve);
+            promise = new Promise((resolve) => FieldHtml._resolveTestPromise = resolve);
             await testUtils.form.clickEdit(form);
             await promise;
 

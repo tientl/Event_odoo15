@@ -100,7 +100,7 @@ class EmbeddedSlide(models.Model):
 
 
 class SlideTag(models.Model):
-    """ Tag to search slides across channels. """
+    """ Tag to search slides accross channels. """
     _name = 'slide.tag'
     _description = 'Slide Tag'
 

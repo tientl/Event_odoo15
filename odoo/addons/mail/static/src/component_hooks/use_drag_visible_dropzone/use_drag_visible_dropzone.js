@@ -62,11 +62,7 @@ export function useDragVisibleDropZone() {
      * @param {DragEvent} ev
      */
     function _onDragenterListener(ev) {
-        if (
-            dragCount === 0 &&
-            ev.dataTransfer &&
-            ev.dataTransfer.types.includes('Files')
-        ) {
+        if (dragCount === 0) {
             isVisible.value = true;
         }
         dragCount++;

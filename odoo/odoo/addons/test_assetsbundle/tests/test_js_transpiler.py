@@ -209,20 +209,20 @@ export default function sayHelloDefault() {
         expected_result = """odoo.define('@test_assetsbundle/functions', async function (require) {
 'use strict';
 let __exports = {};
-__exports.sayHello = sayHello; function sayHello() {
+const sayHello = __exports.sayHello = function sayHello() {
   console.log("Hello");
 }
 
-__exports.sayHelloWorld = sayHelloWorld; function sayHelloWorld() {
+const sayHelloWorld = __exports.sayHelloWorld = function sayHelloWorld() {
   console.log("Hello world");
 }
 
-__exports.sayAsyncHello = sayAsyncHello; async function sayAsyncHello() {
+const sayAsyncHello = __exports.sayAsyncHello = async function sayAsyncHello() {
   console.log("Hello Async");
 }
 
 
-__exports[Symbol.for("default")] = sayHelloDefault; function sayHelloDefault() {
+const sayHelloDefault = __exports[Symbol.for("default")] = function sayHelloDefault() {
   console.log("Hello Default");
 }
 

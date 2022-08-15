@@ -21,8 +21,7 @@ odoo.define('mass_mailing.mass_mailing_tour', function (require) {
         content: _t("Let's try the Email Marketing app."),
         edition: 'community',
     }, {
-        trigger: '.o_list_button_add',
-        extra_trigger: '.o_mass_mailing_mailing_tree',
+        trigger: '.o-kanban-button-new',
         content: Markup(_t("Start by creating your first <b>Mailing</b>.")),
         position: 'bottom',
     }, {

@@ -41,8 +41,7 @@ class BarcodeRule(models.Model):
         ('measure', 'Measure'),
         ('identifier', 'Numeric Identifier'),
         ('alpha', 'Alpha-Numeric Name'),
-    ], string="GS1 Content Type",
-        help="The GS1 content type defines what kind of data the rule will process the barcode as:\
+    ], string="GS1 Content Type", help="The GS1 content type defines to what this rule data will be handle:\
         * Date: the barcode will be converted into a Odoo datetime;\
         * Measure: the barcode's value is related to a specific UoM;\
         * Numeric Identifier: fixed length barcode following a specific encoding;\

@@ -87,10 +87,8 @@ const LinkPopoverWidget = Widget.extend({
                 tooltip.hide();
             }
         })
-        .on('inserted.bs.popover.link_popover', () => {
-            this.$target.data('bs.popover').tip.classList.add('o_edit_menu_popover');
-        })
-        .popover('show');
+        .popover('show')
+        .data('bs.popover').tip.classList.add('o_edit_menu_popover');
 
 
         this.popover = this.$target.data('bs.popover');

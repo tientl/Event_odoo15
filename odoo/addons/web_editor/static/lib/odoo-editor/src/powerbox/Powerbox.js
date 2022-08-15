@@ -161,6 +161,7 @@ export class Powerbox {
     open(openOptions) {
         this.options.onActivate && this.options.onActivate();
         this._currentOpenOptions = openOptions;
+        console.log('op', openOptions);
 
         const openOnKeyupTarget =
             this._currentOpenOptions.openOnKeyupTarget || this.options.editable;

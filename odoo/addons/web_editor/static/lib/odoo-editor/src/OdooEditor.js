@@ -115,8 +115,6 @@ const CLIPBOARD_WHITELISTS = {
         'img-thumbnail',
         'rounded',
         'rounded-circle',
-        'table',
-        'table-bordered',
         /^padding-/,
         /^shadow/,
         // Odoo colors
@@ -177,7 +175,6 @@ export class OdooEditor extends EventTarget {
         this.document = options.document || document;
 
         this.isMobile = matchMedia('(max-width: 767px)').matches;
-        this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
         // Keyboard type detection, happens only at the first keydown event.
         this.keyboardType = KEYBOARD_TYPES.UNKNOWN;
@@ -1338,8 +1335,7 @@ export class OdooEditor extends EventTarget {
             const el = closestElement(joinWith);
             const { zws } = fillEmpty(el);
             if (zws) {
-                // ZWS selection in OdooEditor is not working in current version of firefox (since v93.0)
-                setSelection(zws, 0, zws, this.isFirefox ? 0 : nodeSize(zws));
+                setSelection(zws, 0, zws, nodeSize(zws));
             }
         }
     }
@@ -2817,7 +2813,7 @@ export class OdooEditor extends EventTarget {
         if (cursorDestination) {
             setSelection(...startPos(cursorDestination), ...endPos(cursorDestination), true);
         } else if (direction === DIRECTIONS.RIGHT) {
-            this.execCommand('addRowBelow');
+            this._addRowBelow();
             this._onTabulationInTable(ev);
         }
     }
@@ -2889,7 +2885,7 @@ export class OdooEditor extends EventTarget {
         }
     }
     _pluginAdd(Plugin) {
-        this._plugins.push(new Plugin({ editor: this }));
+        this._plugins.push(new Plugin(this));
     }
     _pluginCall(method, args) {
         for (const plugin of this._plugins) {

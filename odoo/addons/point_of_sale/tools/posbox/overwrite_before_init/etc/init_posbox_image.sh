@@ -10,6 +10,7 @@ __base="$(basename ${__file} .sh)"
 
 # Recommends: antiword, graphviz, ghostscript, python-gevent, poppler-utils
 export DEBIAN_FRONTEND=noninteractive
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # set locale to en_US
 echo "set locale to en_US"

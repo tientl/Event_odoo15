@@ -212,6 +212,10 @@ var CalendarPopover = Widget.extend(WidgetAdapterMixin, StandaloneFieldManagerMi
                     if (fieldWidget.attrs.class) {
                         fieldClass += ' ' + fieldWidget.attrs.class;
                     }
+                    if (fieldWidget.attrs.modifiers) {
+                        const fieldModifier = record.evalModifiers(fieldWidget.attrs.modifiers);
+                        fieldClass += fieldModifier.invisible ? ' o_invisible_modifier' : '';
+                    }
                 }
 
                 var $field = $('<li>', {class: fieldClass});

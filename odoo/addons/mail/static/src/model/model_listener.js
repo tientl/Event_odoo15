@@ -30,42 +30,9 @@ export class Listener {
         this.isPartOfUpdateCycle = isPartOfUpdateCycle;
         this.name = name;
         this.onChange = onChange;
-        /**
-         * Set of localIds that have been accessed on model manager between the
-         * last call to `startListening` and `stopListening` with this listener
-         * as parameter.
-         * Each localId has its own way to know the listeners that are observing
-         * it (to be able to notify them if it changes). This set holds the
-         * inverse of that information, which is useful to be able to remove
-         * this listener (when the need arises) from those localIds without
-         * having to verify the presence of this listener on each possible
-         * localId one by one.
-         */
+        // Set of last observed elements, for debugging purposes.
         this.lastObservedLocalIds = new Set();
-        /**
-         * Map between localIds and a set of fields on those localIds that have
-         * been accessed on model manager between the last call to
-         * `startListening` and `stopListening` with this listener as parameter.
-         * Each field of each localId has its own way to know the listeners that
-         * are observing it (to be able to notify them if it changes). This map
-         * holds the inverse of that information, which is useful to be able to
-         * remove this listener (when the need arises) from those fields without
-         * having to verify the presence of this listener on each possible field
-         * one by one.
-         */
-        this.lastObservedFieldsByLocalId = new Map();
-        /**
-         * Set of Model that have been accessed with `all()` on model manager
-         * between the last call to `startListening` and `stopListening` with
-         * this listener as parameter.
-         * Each Model has its own way to know the listeners that are observing
-         * it (to be able to notify them if it changes). This set holds the
-         * inverse of that information, which is useful to be able to remove
-         * this listener (when the need arises) from those Model without having
-         * to verify the presence of this listener on each possible Model one by
-         * one.
-         */
-        this.lastObservedAllByModel = new Set();
+        this.lastObservedFields = new Set();
     }
 
     /**

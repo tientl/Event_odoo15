@@ -31,10 +31,7 @@ export class LoadingIndicator extends Component {
     requestCall(rpcId) {
         if (this.state.count === 0) {
             this.state.show = true;
-            this.blockUITimer = browser.setTimeout(() => {
-                this.shouldUnblock = true;
-                this.uiService.block();
-            }, 3000);
+            this.blockUITimer = browser.setTimeout(this.uiService.block, 3000);
         }
         this.rpcIds.add(rpcId);
         this.state.count++;
@@ -44,12 +41,8 @@ export class LoadingIndicator extends Component {
         this.rpcIds.delete(rpcId);
         this.state.count = this.rpcIds.size;
         if (this.state.count === 0) {
-            if (this.shouldUnblock) {
-                this.uiService.unblock();
-                this.shouldUnblock = false;
-            } else {
-                browser.clearTimeout(this.blockUITimer);
-            }
+            clearTimeout(this.blockUITimer);
+            this.uiService.unblock();
             this.state.show = false;
         }
     }

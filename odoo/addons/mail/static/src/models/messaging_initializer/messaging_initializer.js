@@ -260,6 +260,7 @@ function factory(dependencies) {
                 categoryChannel: insertAndReplace({
                     autocompleteMethod: 'channel',
                     commandAddTitleText: this.env._t("Add or join a channel"),
+                    counterComputeMethod: 'needaction',
                     hasAddCommand: true,
                     hasViewCommand: true,
                     isServerOpen: is_discuss_sidebar_category_channel_open,
@@ -272,6 +273,7 @@ function factory(dependencies) {
                 categoryChat: insertAndReplace({
                     autocompleteMethod: 'chat',
                     commandAddTitleText: this.env._t("Start a conversation"),
+                    counterComputeMethod: 'unread',
                     hasAddCommand: true,
                     isServerOpen: is_discuss_sidebar_category_chat_open,
                     name: this.env._t("Direct Messages"),

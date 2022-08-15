@@ -97,20 +97,11 @@ const DynamicSnippetProducts = DynamicSnippetCarousel.extend({
             var animation = wSaleUtils.animateClone($navButton, $(ev.currentTarget).parents('.card'), 25, 40);
             Promise.all([fetch, animation]).then(function (values) {
                 wSaleUtils.updateCartNavBar(data);
-                if (self.add2cartRerender) {
-                     self._render();
-                }
+                self._render();
             });
         });
     },
-    /**
-     * @override 
-     * @private
-     */
-    _renderContent() {
-        this._super(...arguments);
-        this.add2cartRerender = !!this.el.querySelector('[data-add2cart-rerender="True"]');
-    },
+
     /**
      * Remove product from recently viewed products.
      * @private
