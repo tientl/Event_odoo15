@@ -5,6 +5,8 @@ const DocumentsInspector = require('documents.DocumentsInspector');
 const DocumentViewer = require('documents.DocumentViewer');
 const { computeMultiSelection } = require('documents.utils');
 
+// ensure the component is registered beforehand.
+require('@mail/components/chatter_container/chatter_container');
 const { getMessagingComponent } = require('@mail/utils/messaging_component');
 
 const { _t, qweb } = require('web.core');
@@ -338,7 +340,7 @@ const DocumentsControllerMixin = Object.assign({}, fileUploadMixin, {
             folders: this.searchModel.get('folders'),
             recordIds: this._selectedRecordIds,
             state,
-            tags: this.searchModel.get('tags'),
+            tags: this.searchModel.get('tags') || [],
             viewType: this.viewType,
             shareAliases: shareAliases,
         });
@@ -818,7 +820,7 @@ const DocumentsControllerMixin = Object.assign({}, fileUploadMixin, {
      * @param {callback} ev.data.callback
      */
     _onGetSearchPanelTags(ev) {
-         ev.data.callback(this.searchModel.get('tags'));
+         ev.data.callback(this.searchModel.get('tags') || []);
     },
     /**
      * @private

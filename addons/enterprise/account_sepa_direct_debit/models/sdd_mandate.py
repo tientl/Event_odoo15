@@ -41,7 +41,7 @@ class SDDMandate(models.Model):
     partner_bank_id = fields.Many2one(string='IBAN', readonly=True, states={'draft':[('readonly',False)]}, comodel_name='res.partner.bank', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", help="Account of the customer to collect payments from.")
     start_date = fields.Date(string="Start Date", required=True, readonly=True, states={'draft':[('readonly',False)]}, help="Date from which the mandate can be used (inclusive).")
     end_date = fields.Date(string="End Date", states={'closed':[('readonly',True)]}, help="Date until which the mandate can be used. It will automatically be closed after this date.")
-    payment_journal_id = fields.Many2one(string='Journal', comodel_name='account.journal', required=True, domain="[('id', '=', suitable_journal_ids)]", help='Journal to use to receive SEPA Direct Debit payments from this mandate.')
+    payment_journal_id = fields.Many2one(string='Journal', comodel_name='account.journal', required=True, domain="[('id', 'in', suitable_journal_ids)]", help='Journal to use to receive SEPA Direct Debit payments from this mandate.')
     sdd_scheme = fields.Selection(string="SDD Scheme", selection=[('CORE', 'CORE'), ('B2B', 'B2B')],
         required=True, default='CORE', help='The B2B scheme is an optional scheme,\noffered exclusively to business payers.\n'
         'Some banks/businesses might not accept B2B SDD.',)

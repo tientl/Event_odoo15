@@ -122,11 +122,13 @@ class L10nBe274XX(models.Model):
                     sheet.error_message = str(err)
 
     def _get_valid_payslips(self):
+        warrant_structure = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_structure_warrant')
         domain = [
             ('state', 'in', ['paid', 'done']),
             ('company_id', '=', self.company_id.id),
             ('date_from', '>=', self.date_start),
-            ('date_to', '<=', self.date_end)
+            ('date_to', '<=', self.date_end),
+            ('struct_id', '!=', warrant_structure.id),
         ]
         if self.env.context.get('wizard_274xx_force_employee_ids'):
             domain += expression.AND([domain, [('employee_id', 'in', self.env.context['wizard_274xx_force_employee_ids'])]])
@@ -140,25 +142,24 @@ class L10nBe274XX(models.Model):
 
     @api.depends('date_start', 'date_end', 'company_id')
     def _compute_line_ids(self):
-        structure_termination = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_termination_fees')
-        structure_holidays_n = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_departure_n_holidays')
-        structure_holidays_n1 = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_departure_n1_holidays')
-        invalid_structures = structure_termination + structure_holidays_n1 + structure_holidays_n
+        monthly_pay = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary')
 
         for sheet in self:
             mapped_pp = defaultdict(lambda: 0)
             mapped_taxable_amount = defaultdict(lambda: 0)
             payslips = self._get_valid_payslips()
 
-            line_values = payslips._get_line_values(['GROSS', 'PPTOTAL'], compute_sum=True)
+            line_values = payslips._get_line_values([
+                'GROSS', 'PPTOTAL',
+                'DOUBLE.DECEMBER.GROSS', 'DOUBLE.DECEMBER.P.P'], compute_sum=True)
 
             payslips = payslips.filtered(lambda p: line_values['PPTOTAL'][p.id]['total'])
 
             # Total
-            sheet.taxable_amount = line_values['GROSS']['sum']['total']
-            sheet.pp_amount = line_values['PPTOTAL']['sum']['total']
+            sheet.taxable_amount = line_values['GROSS']['sum']['total'] + line_values['DOUBLE.DECEMBER.GROSS']['sum']['total']
+            sheet.pp_amount = line_values['PPTOTAL']['sum']['total'] + line_values['DOUBLE.DECEMBER.P.P']['sum']['total']
             # Valid payslips for exemption
-            payslips = payslips.filtered(lambda p: p.contract_id.rd_percentage and p.struct_id not in invalid_structures)
+            payslips = payslips.filtered(lambda p: p.contract_id.rd_percentage and p.struct_id == monthly_pay)
             # 32 : Civil Engineers / Doctors
             payslips_32 = payslips.filtered(lambda p: p.employee_id.certificate in ['doctor', 'civil_engineer'])
             sheet.taxable_amount_32 = sum(line_values['GROSS'][p.id]['total'] for p in payslips_32)
@@ -254,7 +255,7 @@ class L10nBe274XX(models.Model):
             raise UserError(_('There is no valid payslip to declare.'))
 
         year_period_code = {
-            2018: '6',
+            2022: '6',
             2019: '7',
             2020: '8',
             2021: '9',
@@ -332,23 +333,22 @@ class L10nBe274XX(models.Model):
             'district': district,
             'office': office,
         }
-        structure_termination = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_termination_fees')
-        structure_holidays_n = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_departure_n_holidays')
-        structure_holidays_n1 = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_departure_n1_holidays')
-        invalid_structures = structure_termination + structure_holidays_n1 + structure_holidays_n
+        monthly_pay = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary')
 
-        line_values = payslips._get_line_values(['GROSS', 'PPTOTAL'])
+        line_values = payslips._get_line_values([
+            'GROSS', 'PPTOTAL',
+            'DOUBLE.DECEMBER.GROSS', 'DOUBLE.DECEMBER.P.P'])
 
         for payslip in payslips:
-            pp_total = line_values['PPTOTAL'][payslip.id]['total']
+            pp_total = line_values['PPTOTAL'][payslip.id]['total'] + line_values['DOUBLE.DECEMBER.P.P'][payslip.id]['total']
             if pp_total:
                 pp_total_eurocent = pp_total
-                taxable_eurocent = line_values['GROSS'][payslip.id]['total']
+                taxable_eurocent = line_values['GROSS'][payslip.id]['total'] + line_values['DOUBLE.DECEMBER.GROSS'][payslip.id]['total']
                 declaration_10['prepayment'] += pp_total_eurocent
                 declaration_10['taxable_revenue'] += taxable_eurocent
                 result['positive_total'] += pp_total_eurocent
 
-            if payslip.struct_id not in invalid_structures and payslip.contract_id.rd_percentage:
+            if payslip.struct_id == monthly_pay and payslip.contract_id.rd_percentage:
                 employee = payslip.employee_id
                 deduction = - payslip.contract_id.rd_percentage / 100 * 0.8 * line_values['PPTOTAL'][payslip.id]['total']
                 if deduction:
@@ -377,7 +377,10 @@ class L10nBe274XX(models.Model):
             (- declaration_32['prepayment'] - declaration_33['prepayment']) / 4.0)
 
         result['positive_total'] = _to_eurocent(result['positive_total'])
-        result['negative_total'] = _to_eurocent(declaration_32['prepayment'] + declaration_33['prepayment'] + declaration_34['prepayment'])
+        result['negative_total'] = str(
+            int(_to_eurocent(declaration_32['prepayment'])) + \
+            int(_to_eurocent(declaration_33['prepayment'])) + \
+            int(_to_eurocent(declaration_34['prepayment'])))
 
         for declaration in [declaration_10, declaration_32, declaration_33, declaration_34]:
             declaration['prepayment'] = _to_eurocent(declaration['prepayment'])

@@ -75,7 +75,7 @@ class PurchaseOrder(models.Model):
                     if po.state in ['purchase', 'done']:
                         template.send_mail(po.id)
 
-                    auto_commit = not getattr(threading.currentThread(), 'testing', False)
+                    auto_commit = not getattr(threading.current_thread(), 'testing', False)
                     if auto_commit:
                         self.env.cr.commit()
                 except:

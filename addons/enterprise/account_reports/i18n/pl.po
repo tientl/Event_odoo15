@@ -7,7 +7,6 @@
 # Wojciech Warczakowski <w.warczakowski@gmail.com>, 2021
 # Mariusz, 2021
 # Piotr Strębski <strebski@gmail.com>, 2021
-# Martin Trigaux, 2021
 # Dariusz Żbikowski <darek@krokus.com.pl>, 2021
 # Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2021
 # Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2021
@@ -23,22 +22,35 @@
 # Grzegorz Krukar <grzegorzgk1@gmail.com>, 2021
 # Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2021
 # Paweł Wodyński <pw@myodoo.pl>, 2021
-# Maksym <ms@myodoo.pl>, 2021
-# Rafał Kozak <rafal.kozak@openglobe.pl>, 2021
+# Martin Trigaux, 2022
+# Rafał Kozak <rafal.kozak@openglobe.pl>, 2022
+# Maksym <ms@myodoo.pl>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Rafał Kozak <rafal.kozak@openglobe.pl>, 2021\n"
+"Last-Translator: Maksym <ms@myodoo.pl>, 2022\n"
 "Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: pl\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr ""
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -414,6 +426,11 @@ msgid "Account Display Representative Field"
 msgstr ""
 
 #. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "Raport dziennika"
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_payable__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__account_name
@@ -583,9 +600,14 @@ msgstr "Wiekowane należności"
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "Wszystko"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr ""
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
@@ -1133,6 +1155,7 @@ msgstr "Koszt przychodu"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "Kraj"
 
@@ -1716,6 +1739,11 @@ msgid "Goods"
 msgstr "Towary"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "Tabela"
+
+#. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
 msgid "Gross Profit"
 msgstr "Zysk brutto"
@@ -1795,6 +1823,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__id
 msgid "ID"
 msgstr "ID"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -2881,6 +2919,11 @@ msgid "Tax Declaration"
 msgstr "Deklaracja podatkowa"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr ""
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
 msgid "Tax ID"
 msgstr "NIP"
@@ -3401,7 +3444,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__res_company__account_tax_periodicity__monthly
 msgid "monthly"
-msgstr ""
+msgstr "miesięcznie"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:0

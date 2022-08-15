@@ -43,24 +43,21 @@
             </t>
         </xpath>
 
-        <xpath expr="//div[hasclass('orderlines')]" position="replace">
-            <div class="orderlines">
-                <t t-if="receipt.useBlackBoxSweden">
-                    <t t-set="all_lines" t-value="receipt.orderlines"/>
-                    <span class="pos-receipt-left-padding">Products:</span><br/>
-                    <t t-set="receipt.orderlines" t-value="getProductlines()"/>
-                    <t t-call="OrderLinesReceipt"/>
+        <xpath expr="//div[hasclass('orderlines')]" position="attributes">
+            <attribute name="t-if">!receipt.useBlackBoxSweden</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('orderlines')]" position="after">
+            <div class="orderlines" t-if="receipt.useBlackBoxSweden">
+                <t t-set="all_lines" t-value="receipt.orderlines"/>
+                <span class="pos-receipt-left-padding">Products:</span><br/>
+                <t t-set="receipt.orderlines" t-value="getProductlines()"/>
+                <t t-call="OrderLinesReceipt"/>
 
-                    <br/><span class="pos-receipt-left-padding">Services:</span><br/>
-                    <t t-set="receipt.orderlines" t-value="all_lines"/>
-                    <t t-set="receipt.orderlines" t-value="getServicelines()"/>
-                    <t t-call="OrderLinesReceipt"/>
-                    <t t-set="receipt.orderlines" t-value="all_lines"/>
-                </t>
-                <t t-else="">
-                    <t t-set="receipt.displayService" t-value="true"/>
-                    <t t-call="OrderLinesReceipt"/>
-                </t>
+                <br/><span class="pos-receipt-left-padding">Services:</span><br/>
+                <t t-set="receipt.orderlines" t-value="all_lines"/>
+                <t t-set="receipt.orderlines" t-value="getServicelines()"/>
+                <t t-call="OrderLinesReceipt"/>
+                <t t-set="receipt.orderlines" t-value="all_lines"/>
             </div>
         </xpath>
     </t>

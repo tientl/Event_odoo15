@@ -85,7 +85,7 @@ class WorksheetTemplate(models.Model):
         # context needed to avoid "manual" removal of related fields
         self.mapped('model_id').with_context(**{MODULE_UNINSTALL_FLAG: True}).unlink()
 
-        return super().unlink()
+        return super(WorksheetTemplate, self.exists()).unlink()
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -286,7 +286,7 @@ class WorksheetTemplate(models.Model):
         }
 
     def action_view_worksheets(self):
-        action = self.action_id.read()[0]
+        action = self.action_id.sudo().read()[0]
         # modify context to force no create/import button
         context = literal_eval(action.get('context', '{}'))
         context['create'] = 0
@@ -339,16 +339,16 @@ class WorksheetTemplate(models.Model):
                 elif field_info['type'] == 'boolean':
                     field_node.tag = 'i'
                     field_node.attrib[
-                        't-att-class'] = "'text-wrap col-8 fa ' + ('fa-check-square' if %s else 'fa-square-o')" % field_name
+                        't-att-class'] = "'col-lg-7 col-12 fa ' + ('fa-check-square' if %s else 'fa-square-o')" % field_name
                 else:
                     field_node.tag = 'div'
-                    field_node.attrib['class'] = 'text-wrap col-8'
+                    field_node.attrib['t-att-class'] = "'col-7' if report_type == 'pdf' else 'col-lg-7 col-12'"
                     field_node.attrib['t-field'] = field_name
                 # generate a description
-                description = etree.Element('div', {'class': 'col-4 font-weight-bold'})
+                description = etree.Element('div', {'t-att-class': "('col-5' if report_type == 'pdf' else 'col-lg-5 col-12') + ' font-weight-bold'"})
                 description.text = field_info['string']
                 # insert all that in a container
-                container = etree.Element('div', {'class': 'row mb-2', 'style': 'page-break-inside: avoid'})
+                container = etree.Element('div', {'class': 'row mb-3', 'style': 'page-break-inside: avoid'})
                 container.append(description)
                 container.append(field_node)
                 new_container_col.append(container)

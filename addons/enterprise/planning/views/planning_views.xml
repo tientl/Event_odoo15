@@ -39,7 +39,7 @@
                         attrs="{'invisible': ['|', ('state', '=', 'draft'), ('resource_type', '=', 'material')]}" groups="planning.group_planning_manager"/>
                     <button string="Reset to Draft" type="object" name="action_unpublish"
                         class="btn btn-secondary" close="1" groups="planning.group_planning_manager"
-                        attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        attrs="{'invisible': ['|', ('state', '=', 'draft'), ('resource_type', '=', 'material')]}"/>
                     <field name="state" widget="statusbar" groups="planning.group_planning_manager"/>
                 </header>
                 <field name="is_past" invisible="1"/>
@@ -52,10 +52,10 @@
                 <field name="resource_id" invisible="1"/>
                 <field name="resource_type" invisible="1"/>
                 <div role="alert" class="alert alert-warning mb-0 p-3 text-center" attrs="{'invisible': [('overlap_slot_count', '=', 0)]}">
-                    <button name="action_see_overlaping_slots" type="object" class="btn-link">
+                    <button name="action_see_overlaping_slots" type="object" class="btn-link" attrs="{'invisible': [('overlap_slot_count', '=', 0)]}">
                         <field name="overlap_slot_count"/> other shift(s)
                     </button>
-                    <span class="align-middle">for this resource at the same time.</span>
+                    <span class="align-middle" attrs="{'invisible': [('overlap_slot_count', '=', 0)]}">for this resource at the same time.</span>
                 </div>
 
                 <sheet string="Shift">
@@ -208,13 +208,13 @@
                 </group>
             </xpath>
             <xpath expr="//sheet" position="after">
-                <footer>
+                <footer class="d-flex flex-wrap">
                     <field name="publication_warning" invisible="1"/>
                     <field name="is_past" invisible="1"/>
                     <field name="confirm_delete" invisible="1"/>
                     <field name="is_unassign_deadline_passed" invisible="1"/>
-                    <button string="Save" special="save" data-hotkey="v" class="btn btn-primary" close="1" groups="planning.group_planning_manager" attrs="{'invisible': [('confirm_delete', '=', True)]}"/>
-                    <button string="Save" special="save" data-hotkey="v" class="btn btn-primary" close="1" groups="planning.group_planning_manager" attrs="{'invisible': [('confirm_delete', '=', False)]}" confirm="All subsequent shifts will be deleted. Are you sure you want to continue?" />
+                    <button string="Save" special="save" data-hotkey="v" class="btn btn-primary ml-1" close="1" groups="planning.group_planning_manager" attrs="{'invisible': [('confirm_delete', '=', True)]}"/>
+                    <button string="Save" special="save" data-hotkey="v" class="btn btn-primary ml-1" close="1" groups="planning.group_planning_manager" attrs="{'invisible': [('confirm_delete', '=', False)]}" confirm="All subsequent shifts will be deleted. Are you sure you want to continue?" />
                     <button string="Publish &amp; Send" type="object" name="action_send" class="btn btn-primary" close="1"
                         attrs="{'invisible': ['|', ('state', '=', 'published'), ('resource_type', '=', 'material')]}" groups="planning.group_planning_manager"/>
                     <button string="Send" type="object" name="action_send" class="btn btn-secondary" close="1"
@@ -222,10 +222,10 @@
                     <button string="Publish" type="object" name="action_publish" class="btn btn-primary" close="1"
                         groups="planning.group_planning_manager" attrs="{'invisible': ['|', ('state', '=', 'published'), ('resource_type', '=', 'material')]}"/>
                     <button string="Reset to Draft" type="object" name="action_unpublish" class="btn btn-secondary" close="1"
-                        groups="planning.group_planning_manager" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        groups="planning.group_planning_manager" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('resource_type', '=', 'material')]}"/>
                     <button string="Discard" special="cancel" data-hotkey="z" class="btn-secondary" close="1" fullscreen="True" groups="planning.group_planning_manager"/>
 
-                    <button name="action_self_assign" class="btn btn-primary float-right" type="object" string="I Take It" attrs="{'invisible': ['|', '|', '|', ('resource_type', '=', 'material'), ('employee_id', '!=', False), ('start_datetime', '=', False), ('end_datetime', '=', False)]}" close="1" data-hotkey="q"/>
+                    <button name="action_self_assign" class="btn btn-primary ml-md-auto" type="object" string="I Take It" attrs="{'invisible': ['|', '|', '|', ('resource_type', '=', 'material'), ('employee_id', '!=', False), ('start_datetime', '=', False), ('end_datetime', '=', False)]}" close="1" data-hotkey="q"/>
                     <button name="action_self_unassign" class="btn btn-secondary float-right" type="object" string="I Am Unavailable" attrs="{'invisible': ['|', '|', '|', ('is_assigned_to_me', '=', False), ('allow_self_unassign', '=', False), ('is_past', '=', True), ('is_unassign_deadline_passed', '=', True)]}" close="1" data-hotkey="w"/>
                     <button name="unlink" type="object" icon="fa-trash" class="btn-secondary float-right" close="1" attrs="{'invisible': [('id', '=', False)]}" groups="planning.group_planning_manager"/>
                 </footer>
@@ -317,7 +317,7 @@
                 scales="day,week,month,year"
                 precision="{'day': 'hour:full', 'week': 'day:full', 'month': 'day:full', 'year': 'day:full'}"
                 decoration-info="state == 'draft'"
-                decoration-warning="publication_warning and state == 'published'"
+                decoration-warning="publication_warning"
                 decoration-danger="overlap_slot_count > 0"
                 display_unavailability="1"
                 sample="1">
@@ -336,7 +336,7 @@
                         <div id="allocated_hours"><strong>Allocated Hours — </strong> <t t-esc="allocatedHoursFormatted"/> (<t t-esc="allocatedPercentageFormatted"/>%)</div>
                         <div><t t-esc="userTimezoneStartDate.format('l LT ')"/><i class="fa fa-long-arrow-right" title="Arrow"/><t t-esc="userTimezoneStopDate.format(' l LT')"/></div>
                         <p class="mt-2 mb-0" t-if="name"><t t-esc="name.slice(0, 200) + (name.length > 200?'…':'')" /></p>
-                        <p t-if="state == 'published' and publication_warning and !overlap_slot_count" class="text-warning mt-2 mb-0">
+                        <p t-if="publication_warning and !overlap_slot_count" class="text-warning mt-2 mb-0">
                             Some changes were made since this shift was published.
                         </p>
                         <p t-if="overlap_slot_count" class="text-danger mt-2 mb-0">

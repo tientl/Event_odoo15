@@ -20,6 +20,7 @@ class HrEmployee(models.Model):
     related_partner_id = fields.Many2one('res.partner', compute='_compute_related_partner', groups="hr.group_hr_user")
     appraisal_count = fields.Integer(compute='_compute_appraisal_count', store=True, groups="hr.group_hr_user")
     uncomplete_goals_count = fields.Integer(compute='_compute_uncomplete_goals_count')
+    # SGV todo - remove in master
     appraisal_child_ids = fields.Many2many('hr.employee', compute='_compute_appraisal_child_ids')
     appraisal_ids = fields.One2many('hr.appraisal', 'employee_id')
 
@@ -41,5 +42,4 @@ class HrEmployee(models.Model):
             employee.uncomplete_goals_count = result.get(employee.id, 0)
 
     def _compute_appraisal_child_ids(self):
-        for employee in self:
-            employee.appraisal_child_ids = self.env['hr.appraisal'].search([('manager_ids', '=', employee.id)]).employee_id
+        self.appraisal_child_ids = False

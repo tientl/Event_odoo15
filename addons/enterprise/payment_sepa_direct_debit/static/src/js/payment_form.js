@@ -103,6 +103,7 @@ odoo.define('payment_sepa_direct_debit.payment_form', require => {
                 || (this.sdd_signature_required && signerInput && !signerInput.reportValidity())
             ) {
                 this._enableButton(); // The submit button is disabled at this point, enable it
+                $('body').unblock(); // The page is blocked at this point, unblock it
                 return Promise.resolve(); // Let the browser request to fill out required fields
             }
 

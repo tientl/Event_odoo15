@@ -55,7 +55,7 @@ class SocialStreamFacebook(models.Model):
 
         result_posts = result.json().get('data')
         if not result_posts:
-            self.account_id.sudo().write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(result.json())
             return False
 
         facebook_post_ids = [post.get('id') for post in result_posts]

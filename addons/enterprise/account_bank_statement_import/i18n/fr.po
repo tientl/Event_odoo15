@@ -4,8 +4,9 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
-# Cécile Collart <cco@odoo.com>, 2021
-# Alexandra Jubert <aju@odoo.com>, 2021
+# Alexandra Jubert, 2021
+# Cécile Collart <cco@odoo.com>, 2022
+# Christophe Klopfert, 2022
 # 
 msgid ""
 msgstr ""
@@ -13,13 +14,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 11:00+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Alexandra Jubert <aju@odoo.com>, 2021\n"
+"Last-Translator: Christophe Klopfert, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_bank_statement_import
 #. openerp-web
@@ -45,7 +46,7 @@ msgstr "1 transaction a déjà été importée et a été ignorée."
 msgid "A bank account transactions can be imported only once !"
 msgstr ""
 "Les transactions d'un compte bancaire ne peuvent être importées qu'une seule"
-" fois!"
+" fois !"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__company_partner_id
@@ -180,9 +181,8 @@ msgid ""
 "Bank statements transactions will be posted on the suspense account until "
 "the final reconciliation allowing finding the right account."
 msgstr ""
-"Les mouvements bancaires seront comptabilisés sur le compte d'attente "
-"jusqu'au rapprochement définitif qui permettra de lettrer le mouvement sur "
-"le compte définitif."
+"Les opérations de relevés bancaires seront comptabilisées sur le compte "
+"d'attente jusqu'au lettrage final permettant de retrouver le bon compte."
 
 #. module: account_bank_statement_import
 #: model_terms:ir.ui.view,arch_db:account_bank_statement_import.account_bank_statement_import_journal_creation_view
@@ -331,7 +331,7 @@ msgstr "Alias d'email"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__entries_count
 msgid "Entries Count"
-msgstr ""
+msgstr "Nombre de pièces"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import__attachment_ids
@@ -559,6 +559,10 @@ msgid ""
 "Batch Deposit: Collect several customer checks at once generating and submitting a batch deposit to your bank. Module account_batch_payment is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your partner will have granted to you. Module account_sepa is necessary.\n"
 msgstr ""
+"Manuel : Soyez payé par n'importe quelle méthode en dehors d'Odoo.\n"
+"Acquéreurs de paiement : Chaque acquéreur de paiement a sa propre méthode de paiement. Demandez une transaction sur/vers une carte grâce à un jeton de paiement enregistré par le partenaire lors d'un achat ou d'un abonnement en ligne.\n"
+"Dépôt par lots : Collectez plusieurs chèques de clients en une seule fois en générant et en soumettant un dépôt par lots à votre banque. Le module account_batch_payment est nécessaire.\n"
+"Prélèvement SEPA : Soyez payé dans la zone SEPA grâce à un mandat que votre partenaire vous aura accordé. Le module account_sepa est nécessaire.\n"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__outbound_payment_method_line_ids
@@ -567,6 +571,9 @@ msgid ""
 "Check: Pay bills by check and print it from Odoo.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit Transfer file to your bank. Module account_sepa is necessary.\n"
 msgstr ""
+"Paiement manuel : payez par tout autre moyen externe à Odoo.\n"
+"Chèque : payez par chèque en l'imprimant depuis Odoo.\n"
+"Virement SEPA : payez en envoyant un fichier de virement SEPA à votre banque. Activez cette option dans les paramètres.\n"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__message_has_error
@@ -695,7 +702,7 @@ msgstr "Sélectionner des fichiers"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__selected_payment_method_codes
 msgid "Selected Payment Method Codes"
-msgstr ""
+msgstr "Codes des modes de paiement sélectionnés"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__edi_format_ids
@@ -711,6 +718,11 @@ msgid ""
 "\n"
 "Only PDF and XML files will be interpreted by Odoo"
 msgstr ""
+"Envoyer un email distinct pour chaque facture.\n"
+"\n"
+"Toute extension de fichier sera acceptée.\n"
+"\n"
+"Seuls les fichiers PDF et XML seront interprétés par Odoo."
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__sequence
@@ -720,7 +732,7 @@ msgstr "Séquence"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__sequence_override_regex
 msgid "Sequence Override Regex"
-msgstr ""
+msgstr "Regex d'override de la séquence "
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__check_next_number
@@ -749,6 +761,8 @@ msgid ""
 "Shorter name used for display. The journal entries of this journal will also"
 " be named using this prefix by default."
 msgstr ""
+"Nom abrégé utilisé pour l'affichage. Les pièces comptables de ce journal "
+"seront également nommées en utilisant ce préfixe par défaut."
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__show_on_dashboard
@@ -771,7 +785,7 @@ msgstr ""
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__suspense_account_id
 msgid "Suspense Account"
-msgstr ""
+msgstr "Compte d'attente"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__sequence_override_regex
@@ -786,6 +800,8 @@ msgstr ""
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__selected_payment_method_codes
 msgid "Technical field used to hide or show payment method options if needed."
 msgstr ""
+"Champ technique utilisé pour masquer ou afficher les options du mode de "
+"paiement si nécessaire."
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,help:account_bank_statement_import.field_account_bank_statement_import_journal_creation__country_code
@@ -804,8 +820,8 @@ msgid ""
 "this account."
 msgstr ""
 "Le compte du relevé que vous téléchargez n'est pas encore enregistré dans "
-"Odoo. Afin de procéder au téléchargement, vous devez créer un journal "
-"bancaire pour ce compte."
+"Odoo. Afin de procéder au téléchargement, vous devez créer un journal de "
+"banque pour ce compte."
 
 #. module: account_bank_statement_import
 #: code:addons/account_bank_statement_import/account_bank_statement_import.py:0
@@ -946,7 +962,7 @@ msgstr "Vous pouvez télécharger votre relevé bancaire en utilisant :"
 #: code:addons/account_bank_statement_import/account_bank_statement_import.py:0
 #, python-format
 msgid "You have to set a Default Account for the journal: %s"
-msgstr ""
+msgstr "Vous devez définir un compte par défaut pour le journal : %s"
 
 #. module: account_bank_statement_import
 #: model_terms:ir.ui.view,arch_db:account_bank_statement_import.journal_dashboard_view_inherit

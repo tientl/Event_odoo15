@@ -20,7 +20,7 @@ tour.register('sale_subscription_tour', {
     content: _t('Configure your subscription templates here'),
     position: 'bottom',},
 {
-    trigger: '.o_menu_entry_lvl_2[data-menu-xmlid="sale_subscription.menu_template_of_subscription"]',
+    trigger: '.dropdown-item[data-menu-xmlid="sale_subscription.menu_template_of_subscription"]',
     content: Markup(_t('Click here to create <b>your first subscription template</b>')),
     position: 'top',
 },
@@ -56,7 +56,7 @@ tour.register('sale_subscription_tour', {
     position: 'bottom',
 },
 {
-    trigger: '.o_menu_entry_lvl_2[data-menu-xmlid="sale_subscription.menu_sale_subscription_product"]',
+    trigger: '.dropdown-item[data-menu-xmlid="sale_subscription.menu_sale_subscription_product"]',
     content: _t('Create your first subscription product here'),
     position: 'top',
 },
@@ -71,12 +71,6 @@ tour.register('sale_subscription_tour', {
     content: Markup(_t('Choose a product name.<br/><i>(e.g. eLearning Access)</i>')),
     position: 'right',
     width: 200,
-},
-{
-    trigger: 'li.page_sales a',
-    extra_trigger: '.o_form_editable',
-    content: _t('Link your product to a subscription template in this tab'),
-    position: 'top',
 },
 {
     trigger: '.o_field_widget.field_sub_template_id',

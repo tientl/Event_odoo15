@@ -25,7 +25,7 @@ class TestEbay(TransactionCase):
         super(TestEbay, self).setUp()
 
     def test_synchronize_order(self):
-        """Test importing two basic orders."""
+        """Test importing two basic orders with three transactions."""
         with patch('odoo.addons.sale_ebay.models.product.ProductTemplate.ebay_execute',
                    new=self.fake_execute_data(EBAY_ANSWER_1)), patch('odoo.addons.sale_ebay.models.product.ProductTemplate._ebay_configured', new=lambda d: True):
             number_of_sos = []
@@ -33,13 +33,13 @@ class TestEbay(TransactionCase):
             # if an error happens during synchronisation, it will create a logging with name 'eBay'
             number_of_ebay_loggings = self.env['ir.logging'].search_count([('name', '=', 'eBay')])
 
-            # the test data contains two orders.
+            # the test data contains three orders (one order per transaction)
             # Orders are identified by an id, so provided the ids are not already in database
             # it should create matching ones within Odoo
             self.env['product.template'].synchronize_orders_from_last_sync()
 
             number_of_sos.append(self.env['sale.order'].search_count([]))
-            self.assertEqual(number_of_sos[1], number_of_sos[0] + 2)
+            self.assertEqual(number_of_sos[1], number_of_sos[0] + 3)
 
             # we do it a second time with the same answer;
             # it should not create any error, but it should not do anything new either

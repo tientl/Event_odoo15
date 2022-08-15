@@ -6,7 +6,7 @@ from odoo.tests import common
 from odoo import fields
 from datetime import timedelta
 
-class TestRentalCommon(common.SingleTransactionCase):
+class TestRentalCommon(common.TransactionCase):
 
     @classmethod
     def setUpClass(cls):
@@ -322,6 +322,48 @@ class TestRentalCommon(common.SingleTransactionCase):
         self.assertEqual(self.order_line_id2.reserved_lot_ids, self.order_line_id2.pickedup_lot_ids)
 
         return
+
+    def test_rental_lot_concurrent(self):
+        """The purpose of this test is to mimmic a concurrent picking of a rental product.
+        As the same lot is applied to the sol twice, its qty_delivered should be 1.
+        """
+        so = self.lots_rental_order
+        sol = self.order_line_id2
+        lot = self.lot_id2
+
+        sol.product_uom_qty = 1.0
+        so.action_confirm()
+
+        wizard_vals = so.open_pickup()
+        for _i in range(2):
+            wizard = self.env[wizard_vals['res_model']].with_context(wizard_vals['context']).create({
+                'rental_wizard_line_ids': [
+                    (0, 0, {
+                        'order_line_id': sol.id,
+                        'product_id': sol.product_id.id,
+                        'qty_delivered': 1.0,
+                        'pickedup_lot_ids':[[6, False, [lot.id]]],
+                    })
+                ]
+            })
+            wizard.apply()
+
+        self.assertEqual(sol.qty_delivered, len(sol.pickedup_lot_ids), "The quantity delivered should not exceed the number of picked up lots")
+
+        for _i in range(2):
+            wizard = self.env[wizard_vals['res_model']].with_context(wizard_vals['context']).create({
+                'rental_wizard_line_ids': [
+                    (0, 0, {
+                        'order_line_id': sol.id,
+                        'product_id': sol.product_id.id,
+                        'qty_returned': 1.0,
+                        'returned_lot_ids':[[6, False, [lot.id]]],
+                    })
+                ]
+            })
+            wizard.apply()
+
+        self.assertEqual(sol.qty_returned, len(sol.returned_lot_ids), "The quantity returned should not exceed the number of returned lots")
 
     def test_schedule_report(self):
         """Verify sql scheduling view consistency.

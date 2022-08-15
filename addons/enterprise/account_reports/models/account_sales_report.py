@@ -90,6 +90,7 @@ class ECSalesReport(models.AbstractModel):
     def _prepare_query(self, options):
         tables, where_clause, where_params = self._query_get(options)
         query = ' '.join([
+            'WITH', self._get_query_with(options),
             'SELECT', self._get_query_select(options),
             'FROM', tables, self._get_query_from(options),
             'WHERE', where_clause,
@@ -99,23 +100,21 @@ class ECSalesReport(models.AbstractModel):
         return query, where_params
 
     @api.model
-    def _query_get(self, options, domain=None):
-        tables, where_clause, where_params = super(ECSalesReport, self)._query_get(options, domain)
-        if options.get('selected_tag_ids'):
-            where_params += list(options['selected_tag_ids'][::-1])
-        return tables, where_clause, where_params
-
-    @api.model
-    def _get_options_domain(self, options):
-        domain = super(ECSalesReport, self)._get_options_domain(options)
-        if options.get('selected_tag_ids'):
-            domain.append(('tax_tag_ids.tax_report_line_ids', 'in', options['selected_tag_ids']))
-        return domain
+    def _get_query_with(self, options):
+        params = []
+        for tax_code, tax_report_line_ids in options['selected_tag_ids'].items():
+            for tax_report_line_id in tax_report_line_ids:
+                params += [tax_code, tax_report_line_id]
+        values = ', '.join(['(%s, %s)'] * int(len(params) / 2))
+        return self.env.cr.mogrify(
+            'tax_report_lines_additional_info (code, id) AS (VALUES %s)' % values,
+            params,
+        ).decode(self.env.cr.connection.encoding)
 
     @api.model
     def _get_query_select(self, options):
         res = '''p.vat AS vat,
-                 account_tax_report_line_tags_rel.account_tax_report_line_id AS tax_report_line_id,
+                 tax_report_lines_additional_info.code as tax_code,
                  SUM(-account_move_line.balance) AS amount,
                  (p.country_id = company_partner.country_id) AS same_country,
                  country.code AS partner_country_code'''
@@ -132,22 +131,24 @@ class ECSalesReport(models.AbstractModel):
                   JOIN account_account_tag_account_move_line_rel aml_tag ON account_move_line.id = aml_tag.account_move_line_id
                   JOIN account_account_tag tag ON tag.id = aml_tag.account_account_tag_id
                   JOIN account_tax_report_line_tags_rel ON account_tax_report_line_tags_rel.account_account_tag_id = tag.id
+                  JOIN tax_report_lines_additional_info ON tax_report_lines_additional_info.id = account_tax_report_line_tags_rel.account_tax_report_line_id
                   JOIN res_company company ON account_move_line.company_id = company.id
                   JOIN res_partner company_partner ON company_partner.id = company.partner_id
                   JOIN res_country country ON p.country_id = country.id'''
 
     @api.model
     def _get_query_group_by(self, options):
-        res = 'p.vat, tax_report_line_id, p.country_id, company_partner.country_id, country.code'
+        res = 'p.vat, tax_report_lines_additional_info.code, p.country_id, company_partner.country_id, country.code'
         if not options.get('get_file_data'):
             res = 'p.name, account_move_line.partner_id, ' + res
         return res
 
     @api.model
     def _get_query_order_by(self, options):
-        order_items = ['account_tax_report_line_tags_rel.account_tax_report_line_id = %s'] * len(options.get('selected_tag_ids',[]))
-        order_items.append(options.get('get_file_data') and 'vat' or 'partner_name')
-        return ", ".join(order_items)
+        params = [tax_code for tax_code in options['selected_tag_ids']][::-1]
+        order_items = ['tax_report_lines_additional_info.code= %s'] * len(params)
+        order_items.append('vat' if options.get('get_file_data') else 'partner_name')
+        return self.env.cr.mogrify(", ".join(order_items), params).decode(self.env.cr.connection.encoding)
 
     @api.model
     def _get_lines(self, options, line_id=None):
@@ -160,14 +161,14 @@ class ECSalesReport(models.AbstractModel):
 
     @api.model
     def _get_selected_tags(self, options):
-        selected_tag_ids = ()
+        selected_tags = {}
         if options.get('ec_sale_code', False):
             # if no codes are selected to filter on, show all codes
             show_all = not [x['id'] for x in options['ec_sale_code'] if x['selected']]
             for option_code in options['ec_sale_code']:
                 if option_code['selected'] or show_all:
-                    selected_tag_ids += tuple(option_code['tax_report_line_ids'])
-        return selected_tag_ids
+                    selected_tags[option_code['id']] = tuple(option_code['tax_report_line_ids'])
+        return selected_tags
 
     @api.model
     def _process_query_result(self, options, query_result):
@@ -188,9 +189,7 @@ class ECSalesReport(models.AbstractModel):
                 if row['same_country'] or row['partner_country_code'] not in ec_country_to_check:
                     options['unexpected_intrastat_tax_warning'] = True
 
-                for option_code in options['ec_sale_code']:
-                    if row['tax_report_line_id'] in option_code['tax_report_line_ids']:
-                        ec_sale_code = option_code['name']
+                ec_sale_code = self._get_ec_sale_code_options_data(options)[row['tax_code']]['name']
 
                 vat = row['vat'].replace(' ', '').upper()
                 columns = [

@@ -89,7 +89,7 @@ class PosConfig(models.Model):
         self.company_id._l10n_de_fiskaly_iap_rpc('/tss', {'tss_id': tss_id, 'db_uuid': db_uuid, 'tss': len(local_tss)})
         self._create_tss_v2(tss_id)
 
-    def open_session_cb(self):
+    def open_session_cb(self, check_coa=True):
         # Due to the new release of the Fiskaly api v2, we need to create the new TSS
         # Here we check if the TSS has been created under V2 otherwise we create it
         if self.is_company_country_germany and self.l10n_de_create_tss_flag and '|' not in self.l10n_de_fiskaly_tss_id:
@@ -100,7 +100,7 @@ class PosConfig(models.Model):
 
         # Since we cannot modify fields when there's an open session, we hope that the checks of the parent method
         # pass... If there's a v1 TSS, we can assume that the checks should pass
-        return super().open_session_cb()
+        return super().open_session_cb(check_coa)
 
     def _create_tss_v2(self, tss_id=None):
         # this method shall be deleted along with the override of open_session_cb in v16

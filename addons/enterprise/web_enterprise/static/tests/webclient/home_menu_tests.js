@@ -304,17 +304,19 @@ QUnit.module(
         });
 
         QUnit.test("search displays matches in parents", async function (assert) {
-            assert.expect(2);
+            assert.expect(4);
 
             const homeMenu = await createHomeMenu(homeMenuProps);
 
             const input = homeMenu.el.querySelector(".o_menu_search_input");
             input.focus();
 
+            assert.containsN(homeMenu, '.o_menuitem.o_app', 3);
             assert.containsN(homeMenu.el, ".o_menuitem", 3);
 
             await testUtils.fields.editInput(input, "Conf");
 
+            assert.containsN(homeMenu, '.o_menuitem.o_app', 0);
             assert.containsN(homeMenu.el, ".o_menuitem", 6);
 
             homeMenu.destroy();
@@ -698,19 +700,54 @@ QUnit.module(
             homeMenu.destroy();
         });
 
-        QUnit.test("The HomeMenu input takes the focus when you press a key only if no other element is the activeElement", async function (assert) {
+        QUnit.test("The HomeMenu input always takes the focus when you press a key", async function (assert) {
             const homeMenu = await createHomeMenu(homeMenuProps);
 
             homeMenu.env.services.ui.activateElement("");
             await testUtils.dom.triggerEvent(window, "keydown", { key: "a" });
             await nextTick();
             const input = homeMenu.el.querySelector(".o_menu_search_input");
-            assert.notEqual(document.activeElement, input);
-
-            homeMenu.env.services.ui.deactivateElement("");
-            await testUtils.dom.triggerEvent(window, "keydown", { key: "a" });
-            await nextTick();
             assert.strictEqual(document.activeElement, input);
+        });
+
+        QUnit.test('focus stay on search input (to avoid IME disabling issue) [REQUIRE FOCUS]', async function (assert) {
+            assert.expect(12);
+            const homeMenu = await createHomeMenu(homeMenuProps);
+
+            // auto-focus when attached
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+
+            // refocus after focus on non-interactive element
+            homeMenu.inputRef.el.blur();
+            assert.strictEqual(document.activeElement, document.body);
+            await testUtils.nextTick();
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+
+            // searching select first matching app without losing focus
+            assert.containsNone(homeMenu, '.o_focused');
+            await testUtils.fields.editInput(homeMenu.inputRef.el, 'a');
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+            assert.containsOnce(homeMenu, '.o_app.o_focused[data-menu-xmlid="app.2"]');
+
+            // switching between selected app do not lose focus
+            await testUtils.fields.triggerKeydown(homeMenu.el, 'TAB');
+            assert.containsOnce(homeMenu, '.o_app.o_focused[data-menu-xmlid="app.3"]');
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+            await testUtils.fields.triggerKeydown(homeMenu.el, 'left');
+            assert.containsOnce(homeMenu, '.o_app.o_focused[data-menu-xmlid="app.2"]');
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+
+            // clearing input with ESCAPE key should not lose focus
+            await testUtils.fields.triggerKeydown(homeMenu.el, 'ESCAPE');
+            assert.strictEqual(document.activeElement, homeMenu.inputRef.el);
+
+            // focusing on interactive element lose focus: this is still an issue
+            // but we can't steal focus from elements such as top-left user menu
+            homeMenu.el.querySelector('.o_app').focus()
+            await testUtils.nextTick();
+            assert.notEqual(document.activeElement, homeMenu.inputRef.el);
+
+            homeMenu.destroy();
         });
 
     }

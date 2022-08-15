@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields
+from odoo import api, models, fields
 
 
 class SaleOrder(models.Model):
@@ -9,16 +9,15 @@ class SaleOrder(models.Model):
 
     task_id = fields.Many2one('project.task', string="Task", help="Task from which quotation have been created")
 
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        if self.env.context.get('fsm_no_message_post'):
+            return False
+        return super().message_post(**kwargs)
+
+
 class SaleOrderLine(models.Model):
     _inherit = ['sale.order.line']
-
-    def _update_line_quantity(self, values):
-        # YTI TODO: This method should only be used to post
-        # a message on qty update, or to raise a ValidationError
-        # Should be split in master 
-        if self.env.context.get('fsm_no_message_post'):
-            return
-        super(SaleOrderLine, self)._update_line_quantity(values)
 
     def _timesheet_create_task_prepare_values(self, project):
         res = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)

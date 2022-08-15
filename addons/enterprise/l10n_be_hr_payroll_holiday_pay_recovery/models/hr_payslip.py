@@ -55,7 +55,8 @@ def compute_holiday_pay_recovery_n(payslip, categories, worked_days, inputs):
     hourly_amount_to_recover = employee.l10n_be_holiday_pay_to_recover_n / (number_of_days * 7.6)
     if not worked_days.LEAVE120 or not worked_days.LEAVE120.amount:
         return 0
-    holiday_amount = min(worked_days.LEAVE120.amount, hourly_amount_to_recover * worked_days.LEAVE120.number_of_hours)
+    leave120_amount = payslip.dict._get_worked_days_line_amount('LEAVE120')
+    holiday_amount = min(leave120_amount, hourly_amount_to_recover * worked_days.LEAVE120.number_of_hours)
     recovered_amount = employee.l10n_be_holiday_pay_recovered_n
     remaining_amount = employee.l10n_be_holiday_pay_to_recover_n - recovered_amount
     return - min(remaining_amount, holiday_amount)
@@ -66,7 +67,8 @@ def compute_holiday_pay_recovery_n1(payslip, categories, worked_days, inputs):
     hourly_amount_to_recover = employee.l10n_be_holiday_pay_to_recover_n1 / (number_of_days * 7.6)
     if not worked_days.LEAVE120 or not worked_days.LEAVE120.amount:
         return 0
-    holiday_amount = min(worked_days.LEAVE120.amount, hourly_amount_to_recover * worked_days.LEAVE120.number_of_hours)
+    leave120_amount = payslip.dict._get_worked_days_line_amount('LEAVE120')
+    holiday_amount = min(leave120_amount, hourly_amount_to_recover * worked_days.LEAVE120.number_of_hours)
     recovered_amount = employee.l10n_be_holiday_pay_recovered_n1
     remaining_amount = employee.l10n_be_holiday_pay_to_recover_n1 - recovered_amount
     return - min(remaining_amount, holiday_amount)

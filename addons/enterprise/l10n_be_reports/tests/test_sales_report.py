@@ -3,6 +3,7 @@
 
 from odoo.addons.account_reports.tests.account_sales_report_common import AccountSalesReportCommon
 from odoo.tests import tagged
+from odoo.tools.misc import NON_BREAKING_SPACE
 from freezegun import freeze_time
 
 
@@ -28,9 +29,9 @@ class BelgiumSalesReportTest(AccountSalesReportCommon):
 
     @freeze_time('2019-12-31')
     def test_ec_sales_report(self):
-        l_tax = self.env['account.tax'].search([('name', '=', '0% EU M.'), ('company_id', '=', self.company_data['company'].id)])[0]
-        t_tax = self.env['account.tax'].search([('name', '=', '0% EU T.'), ('company_id', '=', self.company_data['company'].id)])[0]
-        s_tax = self.env['account.tax'].search([('name', '=', '0% EU S.'), ('company_id', '=', self.company_data['company'].id)])[0]
+        l_tax = self.env['account.tax'].search([('name', '=', '0% EU M'), ('company_id', '=', self.company_data['company'].id)])[0]
+        t_tax = self.env['account.tax'].search([('name', '=', '0% EU T'), ('company_id', '=', self.company_data['company'].id)])[0]
+        s_tax = self.env['account.tax'].search([('name', '=', '0% EU S'), ('company_id', '=', self.company_data['company'].id)])[0]
         self._create_invoices([
             (self.partner_a, l_tax, 300),
             (self.partner_a, l_tax, 300),
@@ -48,11 +49,11 @@ class BelgiumSalesReportTest(AccountSalesReportCommon):
             #   Partner                country code,            VAT Number,              Tax         Amount
             [   0,                     1,                       2,                       3,          4],
             [
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'L (46L)',  '600.00 €'),
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'T (46T)',  '500.00 €'),
-                (self.partner_b.name,  self.partner_b.vat[:2],  self.partner_b.vat[2:],  'T (46T)',  '500.00 €'),
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'S (44)',   '700.00 €'),
-                (self.partner_b.name,  self.partner_b.vat[:2],  self.partner_b.vat[2:],  'S (44)',   '700.00 €'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'L (46L)', f'600.00{NON_BREAKING_SPACE}€'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'T (46T)', f'500.00{NON_BREAKING_SPACE}€'),
+                (self.partner_b.name, self.partner_b.vat[:2], self.partner_b.vat[2:], 'T (46T)', f'500.00{NON_BREAKING_SPACE}€'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'S (44)', f'700.00{NON_BREAKING_SPACE}€'),
+                (self.partner_b.name, self.partner_b.vat[:2], self.partner_b.vat[2:], 'S (44)', f'700.00{NON_BREAKING_SPACE}€'),
             ],
         )
 

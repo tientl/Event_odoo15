@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_intrastat_code_expiry_search" model="ir.ui.view">
+        <field name="name">account.intrastat.code.expiry.search</field>
+        <field name="inherit_id" ref="account_intrastat.view_intrastat_code_search"/>
+        <field name="model">account.intrastat.code</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='country_id']" position="after">
+                <filter string="Active" domain="[
+                    '|',
+                    ('expiry_date', '&gt;', context_today().strftime('%Y-%m-%d')),
+                    ('expiry_date', '=', None),
+                    '|',
+                    ('start_date', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                    ('start_date', '=', None)
+                ]" name="in_use"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="account_intrastat.action_report_intrastat_code_tree" model="ir.actions.act_window">
+        <field name="context">{'search_default_group_by_type': 1, 'search_default_in_use':1 }</field>
+    </record>
+
+    <record id="view_report_intrastat_code_expiry_tree" model="ir.ui.view">
+        <field name="name">account.intrastat.code.expiry.tree</field>
+        <field name="inherit_id" ref="account_intrastat.view_report_intrastat_code_tree"/>
+        <field name="model">account.intrastat.code</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="start_date" width="1" optional="hide"/>
+                <field name="expiry_date" width="1" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_report_intrastat_code_expiry_form" model="ir.ui.view">
+        <field name="name">account.intrastat.code.expiry.form</field>
+        <field name="inherit_id" ref="account_intrastat.view_report_intrastat_code_form"/>
+        <field name="model">account.intrastat.code</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="start_date" attrs="{'invisible':[('type', 'not in', ('transaction','commodity'))]}"/>
+                <field name="expiry_date" attrs="{'invisible':[('type', 'not in', ('transaction','commodity'))]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -65,6 +65,10 @@ class SignTemplate(models.Model):
         for template in self:
             template.responsible_count = len(template.sign_item_ids.mapped('responsible_id'))
 
+    def has_sign_requests(self):
+        self.ensure_one()
+        return bool(self.sudo().with_context(active_test=False).sign_request_ids)
+
     def _compute_signed_in_progress_template(self):
         sign_requests = self.env['sign.request'].read_group([('state', '!=', 'canceled')], ['state', 'template_id'], ['state', 'template_id'], lazy=False)
         signed_request_dict = defaultdict(int)
@@ -104,7 +108,7 @@ class SignTemplate(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_existing_signature(self):
-        if self.filtered(lambda template: template.sign_request_ids):
+        if self.filtered(lambda template: template.has_sign_requests()):
             raise UserError(_(
                 "You can't delete a template for which signature requests "
                 "exist but you can archive it instead."))
@@ -131,7 +135,7 @@ class SignTemplate(models.Model):
     @api.model
     def update_from_pdfviewer(self, template_id=None, duplicate=None, sign_items=None, name=None):
         template = self.browse(template_id)
-        if not duplicate and len(template.sign_request_ids) > 0:
+        if not duplicate and template.has_sign_requests():
             return False
 
         if duplicate:
@@ -190,7 +194,7 @@ class SignTemplate(models.Model):
     @api.model
     def rotate_pdf(self, template_id=None):
         template = self.browse(template_id)
-        if len(template.sign_request_ids) > 0:
+        if len(template) > 1 or template.has_sign_requests():
             return False
 
         template.datas = base64.b64encode(pdf.rotate_pdf(base64.b64decode(template.datas)))

@@ -21,6 +21,18 @@ class L10nARVatBook(models.AbstractModel):
     def _get_country_for_fiscal_position_filter(self, options):
         return self.env.ref('base.ar')
 
+    def _get_report_name(self):
+        name = super(L10nARVatBook, self)._get_report_name()
+        if self._context.get('journal_type') in ['sale', 'purchase']:
+            name = _("Sales VAT book") if self._context.get('journal_type') == 'sale' else _("Purchases VAT book")
+        return name
+
+    def _set_context(self, options):
+        ctx = super(L10nARVatBook, self)._set_context(options)
+        if options.get('journal_type'):
+            ctx['journal_type'] = options.get('journal_type')
+        return ctx
+
     def print_pdf(self, options):
         options.update({
             'journal_type': self.env.context.get('journal_type')
@@ -173,10 +185,10 @@ class L10nARVatBook(models.AbstractModel):
         for k, v in aliquots.items():
             lines += v
         aliquots_data = '\r\n'.join(lines).encode('ISO-8859-1')
-        vouchers_data = '\r\n'.join(self._get_REGINFO_CV_CBTE(options, aliquots)).encode('ISO-8859-1')
+        vouchers_data = '\r\n'.join(self._get_REGINFO_CV_CBTE(options, aliquots)).encode('ISO-8859-1', 'ignore')
         return vouchers_data, aliquots_data
 
-    def get_zip(self, options):
+    def _get_zip(self, options):
         txt_types = ['purchases', 'goods_import', 'used_goods'] if options.get('journal_type') == 'purchase' else ['sale']
         filenames = {
             'purchases': 'Compras',
@@ -230,7 +242,8 @@ class L10nARVatBook(models.AbstractModel):
         """ For a given partner turn the identification coda and identification number in the expected format for the
         txt files """
         # CUIT is mandatory for all except for final consummer
-        if partner.l10n_ar_afip_responsibility_type_id.code == '5':
+        if partner.l10n_ar_afip_responsibility_type_id.code == '5' or (
+                partner.l10n_ar_afip_responsibility_type_id.code == '10' and not partner.commercial_partner_id.is_company):
             doc_code = "{:0>2d}".format(int(partner.l10n_latam_identification_type_id.l10n_ar_afip_code))
             doc_number = partner.vat or ''
             # we clean the letters that are not supported
@@ -327,6 +340,11 @@ class L10nARVatBook(models.AbstractModel):
             mun_perc_amount = amounts['mun_perc_amount']
             intern_tax_amount = amounts['intern_tax_amount']
             perc_imp_nacionales_amount = amounts['profits_perc_amount'] + amounts['other_perc_amount']
+            if inv.move_type in ('out_refund', 'in_refund') and \
+                    inv.l10n_latam_document_type_id.code in inv._get_l10n_ar_codes_used_for_inv_and_ref():
+                amount_total = -inv.amount_total
+            else:
+                amount_total = inv.amount_total
 
             if vat_exempt_base_amount:
                 if inv.partner_id.l10n_ar_afip_responsibility_type_id.code == '10':  # free zone operation
@@ -364,7 +382,7 @@ class L10nARVatBook(models.AbstractModel):
                 doc_code,  # Field 6: Código de documento del comprador.
                 doc_number,  # Field 7: Número de Identificación del comprador
                 inv.commercial_partner_id.name.ljust(30, ' ')[:30],  # Field 8: Apellido y Nombre del comprador.
-                self._format_amount(inv.amount_total),  # Field 9: Importe Total de la Operación.
+                self._format_amount(amount_total),  # Field 9: Importe Total de la Operación.
                 self._format_amount(vat_untaxed_base_amount),  # Field 10: Importe total de conceptos que no integran el precio neto gravado
             ]
 

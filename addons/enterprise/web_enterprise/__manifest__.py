@@ -65,6 +65,10 @@ This module modifies the web addon to provide Enterprise design and responsivene
             'web_enterprise/static/src/webclient/**/*.scss',
             'web_enterprise/static/src/views/**/*.scss',
 
+            # Allows events to be added to the ListRenderer before it is extended.
+            # for more info, see: https://github.com/odoo/enterprise/pull/30169#pullrequestreview-1064657223
+            ('prepend', 'web_enterprise/static/src/legacy/js/views/list/list_renderer_mobile.js'),
+
             ('replace', 'web/static/src/legacy/js/fields/upgrade_fields.js', 'web_enterprise/static/src/legacy/js/apps.js'),
 
             'web_enterprise/static/src/search/**/*.js',

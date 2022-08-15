@@ -48,7 +48,7 @@ class SocialAccountYoutube(models.Model):
             ).json()
 
             if stats_response.get('error'):
-                account.write({'is_media_disconnected': True})
+                account._action_disconnect_accounts(stats_response)
             else:
                 stats = stats_response.get('items', [{}])[0].get('statistics', {})
                 account.write({
@@ -120,7 +120,7 @@ class SocialAccountYoutube(models.Model):
                 ).json()
 
             if token_refresh_response.get('error'):
-                account.sudo().write({'is_media_disconnected': True})
+                account._action_disconnect_accounts(token_refresh_response)
             else:
                 account.sudo().write({
                     'youtube_access_token': token_refresh_response['access_token'],

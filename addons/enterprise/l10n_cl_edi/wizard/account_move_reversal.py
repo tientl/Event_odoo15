@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class AccountMoveReversal(models.TransientModel):
@@ -25,6 +26,10 @@ class AccountMoveReversal(models.TransientModel):
                 record.l10n_cl_edi_reference_doc_code = '2' if record.l10n_cl_is_text_correction else '3'
 
     def reverse_moves(self):
+        if self.company_id.country_id.code != "CL":
+            return super().reverse_moves()
+        if self.move_type != 'entry' and not self.reason:
+            raise UserError(_('You need to provide a reason for the refund. '))
         return super(AccountMoveReversal, self.with_context(
             default_l10n_cl_edi_reference_doc_code=self.l10n_cl_edi_reference_doc_code,
             default_l10n_cl_original_text=self.l10n_cl_original_text,
@@ -37,7 +42,6 @@ class AccountMoveReversal(models.TransientModel):
             return res
         res.update({
             'move_type': self._get_reverse_move_type(move.move_type),
-            'l10n_latam_document_type_id': move._l10n_cl_get_reverse_doc_type().id,
             'invoice_origin': '%s %s' % (move.l10n_latam_document_type_id.doc_code_prefix,
                                          move.l10n_latam_document_number),
             'l10n_cl_reference_ids': [[0, 0, {

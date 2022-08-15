@@ -10,6 +10,7 @@ from odoo.tools import ustr
 
 import ast
 
+from freezegun import freeze_time
 
 
 @tagged('post_install', '-at_install')
@@ -183,6 +184,130 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Invisible Partner B line', 0.0),
                 ('Total of Invisible lines', 0.0),
             ])
+
+    @freeze_time("2016-06-06")
+    def test_balance_sheet_today_current_year_earnings(self):
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'date': '2016-02-02',
+            'invoice_line_ids': [(0, 0, {'product_id': self.product_a.id, 'price_unit': 110})]
+        })
+        invoice.action_post()
+
+        options = self._init_options(self.report, fields.Date.from_string('2016-06-01'), fields.Date.from_string('2016-06-06'))
+        options['date']['filter'] = 'today'
+        options.pop('multi_company', None)
+
+        headers, lines = self.report._get_table(options)
+        self.assertLinesValues(
+            lines,
+            #   Name                                            Balance
+            [   0,                                              1],
+            [
+                ('ASSETS',                                      110.0),
+                ('Current Assets',                              110.0),
+                ('Bank and Cash Accounts',                      0.0),
+                ('Receivables',                                 110.0),
+                ('Current Assets',                              0.0),
+                ('Prepayments',                                 0.0),
+                ('Total Current Assets',                        110.0),
+                ('Plus Fixed Assets',                           0.0),
+                ('Plus Non-current Assets',                     0.0),
+                ('Total ASSETS',                                110.0),
+
+                ('LIABILITIES',                                 0.0),
+                ('Current Liabilities',                         0.0),
+                ('Current Liabilities',                         0.0),
+                ('Payables',                                    0.0),
+                ('Total Current Liabilities',                   0.0),
+                ('Plus Non-current Liabilities',                0.0),
+                ('Total LIABILITIES',                           0.0),
+
+                ('EQUITY',                                      110.0),
+                ('Unallocated Earnings',                        110.0),
+                ('Current Year Unallocated Earnings',           110.0),
+                ('Current Year Earnings',                       110.0),
+                ('Current Year Allocated Earnings',             0.0),
+                ('Total Current Year Unallocated Earnings',     110.0),
+                ('Previous Years Unallocated Earnings',         0.0),
+                ('Total Unallocated Earnings',                  110.0),
+                ('Retained Earnings',                           0.0),
+                ('Total EQUITY',                                110.0),
+
+                ('LIABILITIES + EQUITY',                        110.0),
+            ],
+        )
+
+    @freeze_time("2016-05-05")
+    def test_balance_sheet_last_month_vs_custom_current_year_earnings(self):
+        """
+        Checks the balance sheet calls the right period of the P&L when using last_month date filter, or an equivalent custom filter
+        (this used to fail due to options regeneration made by the P&L's _get_options())"
+        """
+        to_invoice = [('15', '11'), ('15', '12'), ('16', '01'), ('16', '02'), ('16', '03'), ('16', '04')]
+        for year, month in to_invoice:
+            invoice = self.env['account.move'].create({
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_a.id,
+                'invoice_date': f'20{year}-{month}-01',
+                'invoice_line_ids': [(0, 0, {'product_id': self.product_a.id, 'price_unit': 1000})]
+            })
+            invoice.action_post()
+        expected_result =[
+                ('ASSETS',                                      6000.0),
+                ('Current Assets',                              6000.0),
+                ('Bank and Cash Accounts',                      0.0),
+                ('Receivables',                                 6000.0),
+                ('Current Assets',                              0.0),
+                ('Prepayments',                                 0.0),
+                ('Total Current Assets',                        6000.0),
+                ('Plus Fixed Assets',                           0.0),
+                ('Plus Non-current Assets',                     0.0),
+                ('Total ASSETS',                                6000.0),
+
+                ('LIABILITIES',                                 0.0),
+                ('Current Liabilities',                         0.0),
+                ('Current Liabilities',                         0.0),
+                ('Payables',                                    0.0),
+                ('Total Current Liabilities',                   0.0),
+                ('Plus Non-current Liabilities',                0.0),
+                ('Total LIABILITIES',                           0.0),
+
+                ('EQUITY',                                      6000.0),
+                ('Unallocated Earnings',                        6000.0),
+                ('Current Year Unallocated Earnings',           4000.0),
+                ('Current Year Earnings',                       4000.0),
+                ('Current Year Allocated Earnings',             0.0),
+                ('Total Current Year Unallocated Earnings',     4000.0),
+                ('Previous Years Unallocated Earnings',         2000.0),
+                ('Total Unallocated Earnings',                  6000.0),
+                ('Retained Earnings',                           0.0),
+                ('Total EQUITY',                                6000.0),
+                ('LIABILITIES + EQUITY',                        6000.0),
+
+            ]
+        options = self._init_options(self.report, fields.Date.from_string('2016-05-05'), fields.Date.from_string('2016-05-05'))
+        options.pop('multi_company', None)
+
+        # End of Last Month
+        options['date']['filter'] = 'last_month'
+        lines = self.report._get_table(options)[1]
+        self.assertLinesValues(
+            lines,
+            #   Name                                            Balance
+            [   0,                                              1],
+            expected_result,
+        )
+        # Custom
+        options['date']['filter'] = 'custom'
+        lines = self.report._get_table(options)[1]
+        self.assertLinesValues(
+            lines,
+            #   Name                                            Balance
+            [   0,                                              1],
+            expected_result,
+        )
 
     def test_financial_report_single_company(self):
         line_id = self._build_generic_id_from_financial_line('account_reports.account_financial_report_bank_view0')
@@ -487,3 +612,193 @@ class TestFinancialReport(TestAccountReportsCommon):
             report_line.control_domain = "[('account_id', '!=', False)]"
             lines = self.report._get_table(options)[1]
             check_missing_exceeding(lines, {line_id_current_assets, line_id_unaffected_earnings}, {line_id_unaffected_earnings})
+
+    def test_financial_report_sum_if_x_groupby(self):
+        account1 = self.env['account.account'].create({
+            'name': "test_financial_report_sum_if_x_groupby1",
+            'code': "42241",
+            'user_type_id': self.env.ref('account.data_account_type_fixed_assets').id,
+        })
+        account2 = self.env['account.account'].create({
+            'name': "test_financial_report_sum_if_x_groupby2",
+            'code': "42242",
+            'user_type_id': self.env.ref('account.data_account_type_fixed_assets').id,
+        })
+
+        move = self.env['account.move'].create({
+            'move_type': 'entry',
+            'date': '2019-01-01',
+            'line_ids': [
+                # pylint: disable=C0326
+                (0, 0, {'debit': 1000.0,    'credit': 0.0,          'account_id': account1.id}),
+                (0, 0, {'debit': 0.0,       'credit': 10000.0,      'account_id': account1.id}),
+
+                (0, 0, {'debit': 50000.0,   'credit': 0.0,          'account_id': account2.id}),
+                (0, 0, {'debit': 0.0,       'credit': 5000.0,       'account_id': account2.id}),
+
+                (0, 0, {'debit': 0.0,       'credit': 36000.0,      'account_id': self.company_data['default_account_revenue'].id}),
+            ],
+        })
+        move.action_post()
+
+        report = self.env["account.financial.html.report"].create({
+            'name': "test_financial_report_sum_if_x_groupby",
+            'unfold_all_filter': True,
+            'line_ids': [
+                (0, 0, {
+                    'name': "report_line_1",
+                    'code': 'TEST_L1',
+                    'level': 1,
+                    'domain': [('account_id', 'in', (account1 + account2).ids)],
+                    'groupby': 'account_id',
+                    'formulas': 'sum_if_pos_groupby',
+                }),
+                (0, 0, {
+                    'name': "report_line_2",
+                    'code': 'TEST_L2',
+                    'level': 1,
+                    'domain': [('account_id', 'in', (account1 + account2).ids)],
+                    'groupby': 'account_id',
+                    'formulas': '-sum_if_neg_groupby',
+                }),
+                (0, 0, {
+                    'name': "report_line_3",
+                    'code': 'TEST_L3',
+                    'level': 1,
+                    'domain': [('account_id', 'in', (account1 + account2).ids)],
+                    'groupby': 'account_id',
+                    'formulas': 'sum_if_pos',
+                }),
+                (0, 0, {
+                    'name': "report_line_4",
+                    'code': 'TEST_L4',
+                    'level': 1,
+                    'domain': [('account_id', 'in', (account1 + account2).ids)],
+                    'groupby': 'account_id',
+                    'formulas': '-sum_if_neg',
+                }),
+            ],
+        })
+        options = self._init_options(report, fields.Date.from_string('2019-01-01'), fields.Date.from_string('2019-01-01'))
+        options['unfold_all'] = True
+
+        self.assertLinesValues(
+            # pylint: disable=C0326
+            report._get_table(options)[1],
+            [   0,                          1],
+            [
+                ("report_line_1",           45000.0),
+                (account2.display_name,     45000.0),
+                ("Total report_line_1",     45000.0),
+                ("report_line_2",           9000.0),
+                (account1.display_name,     9000.0),
+                ("Total report_line_2",     9000.0),
+                ("report_line_3",           36000.0),
+                (account1.display_name,     -9000.0),
+                (account2.display_name,     45000.0),
+                ("Total report_line_3",     36000.0),
+                ("report_line_4",           0.0),
+            ],
+        )
+
+    def test_hide_if_zero_with_no_formulas(self):
+        """
+        Check if a report line stays displayed when hide_if_zero is True and no formulas
+        is set on the line but has some child which have balance != 0
+        We check also if the line is hidden when all its children have balance == 0
+        """
+        account1, account2 = self.env['account.account'].create([{
+            'name': "test_financial_report_1",
+            'code': "42241",
+            'user_type_id': self.env.ref('account.data_account_type_fixed_assets').id,
+        }, {
+            'name': "test_financial_report_2",
+            'code': "42242",
+            'user_type_id': self.env.ref('account.data_account_type_fixed_assets').id,
+        }])
+
+        moves = self.env['account.move'].create([
+            {
+                'move_type': 'entry',
+                'date': '2019-04-01',
+                'line_ids': [
+                    (0, 0, {'debit': 3.0, 'credit': 0.0, 'account_id': account1.id}),
+                    (0, 0, {'debit': 0.0, 'credit': 3.0, 'account_id': self.company_data['default_account_revenue'].id}),
+                ],
+            },
+            {
+                'move_type': 'entry',
+                'date': '2019-05-01',
+                'line_ids': [
+                    (0, 0, {'debit': 0.0, 'credit': 1.0, 'account_id': account2.id}),
+                    (0, 0, {'debit': 1.0, 'credit': 0.0, 'account_id': self.company_data['default_account_revenue'].id}),
+                ],
+            },
+            {
+                'move_type': 'entry',
+                'date': '2019-04-01',
+                'line_ids': [
+                    (0, 0, {'debit': 0.0, 'credit': 3.0, 'account_id': account2.id}),
+                    (0, 0, {'debit': 3.0, 'credit': 0.0, 'account_id': self.company_data['default_account_revenue'].id}),
+                ],
+            },
+        ])
+        moves.action_post()
+
+        report = self.env["account.financial.html.report"].create({
+            'name': "test_financial_report_sum",
+            'unfold_all_filter': True,
+            'line_ids': [
+                (0, 0, {
+                    'name': "Title",
+                    'code': 'TT',
+                    'level': 1,
+                    'hide_if_zero': True,
+                    'children_ids': [
+                        (0, 0, {
+                            'name': "report_line_1",
+                            'code': 'TEST_L1',
+                            'level': 2,
+                            'domain': [('account_id', '=', account1.id)],
+                            'groupby': 'account_id',
+                            'formulas': 'sum',
+                        }),
+                        (0, 0, {
+                            'name': "report_line_2",
+                            'code': 'TEST_L2',
+                            'level': 2,
+                            'domain': [('account_id', '=', account2.id)],
+                            'groupby': 'account_id',
+                            'formulas': 'sum',
+                        }),
+                    ]
+                }),
+            ],
+        })
+
+        options = self._init_options(report, fields.Date.from_string('2019-05-01'), fields.Date.from_string('2019-05-01'))
+        options = self._update_comparison_filter(options, report, 'previous_period', 2)
+        options['unfolded_lines'] = report.line_ids.ids
+
+        expected_values = [
+            # pylint: disable=C0326
+            ("Title",              '',      '',     ''),
+            ("report_line_1",     3.0,     3.0,    0.0),
+            ("report_line_2",    -4.0,    -3.0,    0.0),
+            ("Total Title",        '',      '',     ''),
+        ]
+
+        self.assertLinesValues(report._get_table(options)[1], [0, 1, 2, 3], expected_values)
+
+        move = self.env['account.move'].create({
+            'move_type': 'entry',
+            'date': '2019-05-01',
+            'line_ids': [
+                (0, 0, {'debit': 1.0, 'credit': 0.0, 'account_id': account1.id}),
+                (0, 0, {'debit': 0.0, 'credit': 1.0, 'account_id': self.company_data['default_account_revenue'].id}),
+            ],
+        })
+
+        move.action_post()
+
+        self.assertLinesValues(report._get_table(options)[1], [0, 1, 2, 3], [])

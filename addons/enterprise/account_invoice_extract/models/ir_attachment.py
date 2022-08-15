@@ -14,7 +14,7 @@ class IrAttachment(models.Model):
         self.ensure_one()
         super(IrAttachment, self).register_as_main_attachment(force=force)
 
-        if self.res_model == 'account.move' and self.env.company.extract_show_ocr_option_selection == 'auto_send':
+        if self.res_model == 'account.move':
             related_record = self.env[self.res_model].browse(self.res_id)
-            if related_record.is_invoice() and related_record.extract_state == "no_extract_requested":
+            if related_record._needs_auto_extract():
                 related_record.retry_ocr()

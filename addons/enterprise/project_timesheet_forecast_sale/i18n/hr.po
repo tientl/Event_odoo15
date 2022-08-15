@@ -3,18 +3,20 @@
 # 	* project_timesheet_forecast_sale
 # 
 # Translators:
-# Bole <bole@dajmi5.com>, 2019
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2019
-# Martin Trigaux, 2019
-# Vladimir Olujić <olujic.vladimir@storm.hr>, 2019
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Tina Milas, 2022
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Bole <bole@dajmi5.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.5+e\n"
+"Project-Id-Version: Odoo Server saas~14.5+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-23 11:39+0000\n"
-"PO-Revision-Date: 2019-08-26 09:37+0000\n"
-"Last-Translator: Vladimir Olujić <olujic.vladimir@storm.hr>, 2019\n"
+"POT-Creation-Date: 2021-09-14 11:01+0000\n"
+"PO-Revision-Date: 2021-09-14 12:42+0000\n"
+"Last-Translator: Bole <bole@dajmi5.com>, 2022\n"
 "Language-Team: Croatian (https://www.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,21 +31,37 @@ msgid "%s (%s remaining hours)"
 msgstr ""
 
 #. module: project_timesheet_forecast_sale
-#: code:addons/project_timesheet_forecast_sale/models/project_overview.py:0
-#, python-format
-msgid "After"
-msgstr "Nakon"
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_project_view_form
+msgid ""
+"<span class=\"o_stat_text\">\n"
+"                        Timesheets and Planning\n"
+"                    </span>"
+msgstr ""
 
 #. module: project_timesheet_forecast_sale
-#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.timesheet_plan_inherit
-msgid "Forecasts"
-msgstr "Predviđanja"
+#: model:ir.model,name:project_timesheet_forecast_sale.model_account_analytic_line
+msgid "Analytic Line"
+msgstr "Analitička stavka"
 
 #. module: project_timesheet_forecast_sale
-#: code:addons/project_timesheet_forecast_sale/models/project_overview.py:0
-#, python-format
-msgid "Planning"
-msgstr "Planiranje"
+#: model:planning.role,name:project_timesheet_forecast_sale.planning_role_consultant
+msgid "Consultant"
+msgstr "Konzultant"
+
+#. module: project_timesheet_forecast_sale
+#: model:ir.model.fields,field_description:project_timesheet_forecast_sale.field_project_project__display_planning_timesheet_analysis
+msgid "Display Planning Timesheet Analysis"
+msgstr ""
+
+#. module: project_timesheet_forecast_sale
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_update_default_description
+msgid "Hours"
+msgstr "Sati"
+
+#. module: project_timesheet_forecast_sale
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_update_default_description
+msgid "Planned"
+msgstr "Planirano"
 
 #. module: project_timesheet_forecast_sale
 #: model:ir.model,name:project_timesheet_forecast_sale.model_planning_slot
@@ -56,11 +74,35 @@ msgid "Project"
 msgstr "Projekt"
 
 #. module: project_timesheet_forecast_sale
-#: code:addons/project_timesheet_forecast_sale/models/project_overview.py:0
-#, python-format
+#: model:ir.model,name:project_timesheet_forecast_sale.model_project_update
+msgid "Project Update"
+msgstr ""
+
+#. module: project_timesheet_forecast_sale
+#: model:ir.model.fields,field_description:project_timesheet_forecast_sale.field_project_timesheet_forecast_report_analysis__sale_order_id
+msgid "Sale Order"
+msgstr "Prodajni nalog"
+
+#. module: project_timesheet_forecast_sale
+#: model:ir.model.fields,field_description:project_timesheet_forecast_sale.field_project_timesheet_forecast_report_analysis__sale_line_id
+msgid "Sale Order Line"
+msgstr "Vezana zaključnica"
+
+#. module: project_timesheet_forecast_sale
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_timesheet_forecast_sale_report_view_search
+msgid "Sales Order"
+msgstr "Prodajni nalog"
+
+#. module: project_timesheet_forecast_sale
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_timesheet_forecast_sale_report_view_search
+msgid "Sales Order Item"
+msgstr ""
+
+#. module: project_timesheet_forecast_sale
+#: model:ir.model.fields,help:project_timesheet_forecast_sale.field_planning_slot__order_line_id
 msgid ""
-"Remaining \n"
-" (Forecasts incl.)"
+"Sales Order Item to which the time spent on this task will be added, in "
+"order to be invoiced to your customer."
 msgstr ""
 
 #. module: project_timesheet_forecast_sale
@@ -70,12 +112,18 @@ msgid "Sales Order Line"
 msgstr "Stavka prodajnog naloga"
 
 #. module: project_timesheet_forecast_sale
-#: model:ir.model.fields,help:project_timesheet_forecast_sale.field_planning_slot__order_line_id
-msgid ""
-"Sales order item to which the task is linked. If an employee timesheets on a"
-" this task, and if this employee is not in the 'Employee/Sales Order Item "
-"Mapping' of the project, the timesheet entry will be linked to this sales "
-"order item."
+#: model:ir.model.fields,help:project_timesheet_forecast_sale.field_project_project__display_planning_timesheet_analysis
+msgid "Should we display the planning and timesheet analysis button?"
+msgstr ""
+
+#. module: project_timesheet_forecast_sale
+#: model:planning.role,name:project_timesheet_forecast_sale.planning_role_junior_architect
+msgid "Software Junior Architect"
+msgstr ""
+
+#. module: project_timesheet_forecast_sale
+#: model:planning.role,name:project_timesheet_forecast_sale.planning_role_senior_architect
+msgid "Software Senior Architect"
 msgstr ""
 
 #. module: project_timesheet_forecast_sale
@@ -84,25 +132,17 @@ msgid "Task"
 msgstr "Zadatak"
 
 #. module: project_timesheet_forecast_sale
-#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.timesheet_plan_inherit
-msgid "Timesheets"
-msgstr "Kontrolne kartice"
-
-#. module: project_timesheet_forecast_sale
-#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.timesheet_plan_inherit
-msgid "Timesheets and Forecasts"
+#: model:ir.model,name:project_timesheet_forecast_sale.model_project_timesheet_forecast_report_analysis
+msgid "Timesheet & Planning Statistics"
 msgstr ""
 
 #. module: project_timesheet_forecast_sale
-#: code:addons/project_timesheet_forecast_sale/models/project_overview.py:0
+#: code:addons/project_timesheet_forecast_sale/models/project.py:0
 #, python-format
-msgid "Total"
-msgstr "Ukupno"
+msgid "Timesheets and Planning"
+msgstr ""
 
 #. module: project_timesheet_forecast_sale
-#: code:addons/project_timesheet_forecast_sale/models/project_overview.py:0
-#, python-format
-msgid ""
-"What is still to deliver based on sold hours, hours already done and "
-"forecasted hours. Equals to sold hours - done hours - forecasted hours."
+#: model_terms:ir.ui.view,arch_db:project_timesheet_forecast_sale.project_timesheet_forecast_view_kanban_inherit_sale_timesheet
+msgid "Timesheets and Planning Analysis"
 msgstr ""

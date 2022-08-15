@@ -176,7 +176,23 @@ class TestCaseDocuments(TransactionCase):
             'create_model': 'link.to.record',
         })
         user_admin_doc = new_test_user(self.env, login='Test admin documents', groups='documents.group_documents_manager,base.group_partner_manager')
-        documents_to_link = [self.document_gif, self.document_txt]
+
+        # prepare documents that the user owns
+        Document = self.env['documents.document'].with_user(user_admin_doc)
+        document_gif = Document.create({
+            'datas': GIF,
+            'name': 'file.gif',
+            'mimetype': 'image/gif',
+            'folder_id': self.folder_b.id,
+        })
+        document_txt = Document.create({
+            'datas': TEXT,
+            'name': 'file.txt',
+            'mimetype': 'text/plain',
+            'folder_id': self.folder_b.id,
+        })
+        documents_to_link = [document_gif, document_txt]
+
         res_model = 'res.partner'
         record = {
             'res_model': res_model,
@@ -531,3 +547,15 @@ class TestCaseDocuments(TransactionCase):
         self.assertEqual(attachment_document.owner_id.id, self.doc_user.id, 'Should assign owner from share')
         self.assertEqual(attachment_document.partner_id.id, partner.id, 'Should assign partner from share')
         self.assertEqual(attachment_document.tag_ids.ids, [self.tag_b.id], 'Should assign tags from share')
+
+    def test_create_from_message_invalid_tags(self):
+        """
+        Create a new document from message with a deleted tag, it should keep only existing tags.
+        """
+        message = self.env['documents.document'].message_new({
+            'subject': 'Test',
+        }, {
+            'tag_ids': [(6, 0, [self.tag_b.id, -1])],
+            'folder_id': self.folder_a.id,
+        })
+        self.assertEqual(message.tag_ids.ids, [self.tag_b.id], "Should only keep the existing tag")

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
 
+from psycopg2 import OperationalError
+
 from odoo import _, _lt, models, fields
 from odoo.exceptions import UserError
 from odoo.tools import html_escape
@@ -9,24 +11,37 @@ from odoo.tools import html_escape
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_cl_daily_sales_book_id = fields.Many2one('l10n_cl.daily.sales.book')
+    l10n_cl_daily_sales_book_id = fields.Many2one('l10n_cl.daily.sales.book', copy=False)
 
     def _l10n_cl_edi_post_validation(self):
         if self.l10n_latam_document_type_id.code == '39':
             if self.line_ids.filtered(lambda x: x.tax_group_id.id in [
                     self.env.ref('l10n_cl.tax_group_ila').id, self.env.ref('l10n_cl.tax_group_retenciones').id]):
                 raise UserError(_('Receipts with withholding taxes are not allowed'))
-
-            daily_sales_book = self.env['l10n_cl.daily.sales.book'].search([
-                ('l10n_cl_dte_status', '!=', 'rejected'), ('date', '=', self.invoice_date)])
-            if daily_sales_book:
-                raise UserError(_('The Daily Sales Book for this ticket has already been sent. '
-                                  'Please select a different date for this ticket.'))
+            if any(self.invoice_line_ids.mapped('tax_ids.price_include')):
+                raise UserError(_('Tax included in price is not supported for boletas. '
+                                  'Please change the tax to not included in price.'))
         super()._l10n_cl_edi_post_validation()
+
+    def _l10n_cl_edi_validate_boletas(self):
+        # Override the method to allow create ticket.
+        return None
 
     def l10n_cl_send_dte_to_sii(self, retry_send=True):
         if not self.l10n_latam_document_type_id._is_doc_type_ticket():
             return super().l10n_cl_send_dte_to_sii(retry_send)
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(f'SELECT 1 FROM {self._table} WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
+        except OperationalError as e:
+            if e.pgcode == '55P03':
+                if not self.env.context.get('cron_skip_connection_errs'):
+                    raise UserError(_('This electronic document is being processed already.'))
+                return
+            raise e
+        # To avoid double send on double-click
+        if self.l10n_cl_dte_status != "not_sent":
+            return None
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         response = self._send_xml_to_sii_rest(
             self.company_id.l10n_cl_dte_service_provider,
@@ -59,11 +74,21 @@ class AccountMove(models.Model):
             return None
 
         self.l10n_cl_dte_status = self._analyze_sii_result_rest(response)
+        message_body = self._l10n_cl_get_verify_status_msg_rest(response)
         if self.l10n_cl_dte_status in ['accepted', 'objected']:
             self.l10n_cl_dte_partner_status = 'not_sent'
             if send_dte_to_partner:
                 self._l10n_cl_send_dte_to_partner()
-        self.message_post(body=self._l10n_cl_get_verify_status_msg_rest(response))
+            book = self.env['l10n_cl.daily.sales.book'].search(
+                [('date', '=', self.invoice_date),
+                 ('l10n_cl_dte_status', 'in', ['accepted', 'objected', 'to_resend'])],
+                limit=1)
+            if book:
+                message_body += "<br/>" +  html_escape(_("This boleta was added on the already sent salesbook for "))
+                message_body += "<a href=# data-oe-model=l10n_cl.daily.sales.book data-oe-id=%s> %s </a>. " % (book.id, book.display_name)
+                message_body += html_escape(_('It will be resent. '))
+                book.l10n_cl_dte_status = 'to_resend'
+        self.message_post(body=message_body)
 
     def _l10n_cl_get_verify_status_msg_rest(self, data):
         msg = _('Asking for DTE status with response:')

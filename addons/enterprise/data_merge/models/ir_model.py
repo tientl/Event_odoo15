@@ -3,7 +3,6 @@
 
 from odoo import fields, models, api, _
 
-
 class IrModel(models.Model):
     _inherit = 'ir.model'
 
@@ -64,6 +63,15 @@ class IrModel(models.Model):
 
             server_action = self.env['ir.actions.server'].sudo().create(server_action_values)
             model.write({'ref_merge_ir_act_server_id': server_action.id})
+            # Create xml_id for the server action so it doesn't count as customization in cloc
+            self.env['ir.model.data'].create({
+                'name': f'merge_action_{model.model.replace(".","_")}',
+                'module': 'data_merge',
+                'res_id': server_action.id,
+                'model': 'ir.actions.server',
+                # noupdate is set to true to avoid to delete record at module update
+                'noupdate': True,
+            })
 
     def action_merge_contextual_disable(self):
         self.ref_merge_ir_act_server_id.unlink()

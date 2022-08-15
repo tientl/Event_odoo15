@@ -95,8 +95,8 @@ var FollowupFormRenderer = FormRenderer.extend({
     renderSavedSummary: function (text) {
         this.$('.o_account_reports_summary_edit').hide();
         this.$('.o_account_reports_no_print .o_account_reports_summary').show();
-        var span_content = this.$('.o_account_report_summary_content');
-        var span_placeholder = this.$('.o_account_report_summary_placeholder');
+        var span_content = this.$('.o_form_sheet_bg .o_account_report_summary_content');
+        var span_placeholder = this.$('.o_form_sheet_bg .o_account_report_summary_placeholder');
         if(text)
         {
             span_placeholder.hide();

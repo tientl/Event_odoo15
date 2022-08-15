@@ -11,7 +11,9 @@ WSFE_ERRORS = {
     '10048': _lt('This error is usually given if the decimal precision of product prices is greater than currency precision. The alternatives are: a) use the lowest decimal precision for product price. b) raise the decimal precision of the currency in question.\n\nAfter updating the precisions you must change the quantities or prices on all invoice lines in order to recomputed the amounts, save and then reset'),
     '10015': _lt('* If you are making an invoice < 10.000 to an final consumer who has DNI as identification type you must provide the DNI number.\n * Another alternative is to set Sigd (Unidentified / daily global sale) Identification type in order to do not need to inform the Document number,\n * This also happens when you try to generate an invoice with amount greater than 1.000 to an Anonymous Final Consumer instead of one identified with DNI or CUIT.\n\nEdit the invoice and change the partner from "Final Consumer" to a customer with First and Last Name, document number with format 00xxxxxxxx0, where xxxxxxxx is a an eight-digit document number'),
     '10192': _lt('It is not a valid invoice under the Regime of Law No. 27,440, that is, you should made a FCE invoice instead of a conventional invoice. Choose a type of electronic credit invoice document (this documents containt the string MiPyME)'),
-    '10154': _lt('Is possible that you are making a CN/DN but you need to set it as "FCE: Is cancellation"'),
+    '10154': _lt('It is possible that you are making a CN/DN but you are setting a wrong value in the "FCE: Is cancellation" field. If the AFIP message indicates:'
+        '\n\t * "OK - Comprobante electrónico autorizado, NO rechazado por el Comprador" it means that the "FCE: Is cancellation" should NOT be set.'
+        '\n\t * "OK - Comprobante electrónico autorizado pero fue rechazado por el comprador" it means that the "FCE: Is cancellation" should be set.'),
     '10153': _lt('If the invoice is a a FCE, Debit Note or Credit Note it is mandatory to inform related invoices. You are probably doing an CN/DN and the "Source" field (in the Other Information Tab) is not defined or has a wrong value. You must indicate in that field the original invoice number without any prefix or suffix, eg "0001-00000001"'),
     '10181': _lt('As the message mentions, if you are making an CN/DN, it must be with the same currency as the original invoice.\n\nThe only exception is the exchange rate adjustments that need to be done in ARS but taking into account that the orginal invoice must already be accepted (or rejected by the customer).\n\nWe recommend you to verify if the customer has already accepted/rejected the original invoice'),
     '10184': _lt('You are probably wanting to cancel an invoice through an CN but the invoice has already been accepted for the client. Keep in mind that acceptance may have been "express" or "tacit" (that is , automatically accepted after 30 calendar days without the client having rejected it).'),
@@ -86,7 +88,12 @@ def _hint_msg(error_code, afipws):
     elif error_code == "17;;":
         return str(ERRORS["17"])
 
-    elif error_code == "11;13":
-        return str(ERRORS["11"]) + "\n" + str(ERRORS["13"])
+    res = []
+    # Observations can separate using ; multiple values can came at the same time, so we split the codes
+    # in order to show all the related help
+    for item in error_code.split(';'):
+        code = item.strip()
+        if ERRORS.get(code):
+            res.append(code + ' - ' + ERRORS.get(code))
 
-    return ""
+    return '\n* '.join(res)

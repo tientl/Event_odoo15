@@ -32,7 +32,7 @@
                             'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?' + keep_query(
                                 re=o.l10n_mx_edi_cfdi_supplier_rfc, rr=o.l10n_mx_edi_cfdi_customer_rfc,
                                 tt=0, id=o.l10n_mx_edi_cfdi_uuid)
-                                + '&amp;fe=%s' % quote_plus(cfdi_vals['sello'], 'utf-8', 'strict', '=/').replace('%2B', '+'))"/>
+                                + '&amp;fe=%s' % quote_plus(cfdi_vals['sello'][-8:], 'utf-8', 'strict', '=/').replace('%2B', '+'))"/>
                     </div>
                     <div class="complement-details col-9">
                         <div class="digital-stamp">
@@ -144,7 +144,7 @@
                             <td><span t-field="inv.invoice_date"/></td>
                             <td><span t-field="inv.name"/></td>
                             <td class="text-right"><span t-field="inv.amount_total"/></td>
-                            <td class="text-right"><span t-esc="inv.amount_total - inv.amount_residual" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                            <td class="text-right"><span t-esc="inv.amount_total - inv.amount_residual" t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/></td>
                             <td class="text-right"><span t-field="inv.amount_residual"/></td>
                         </tr>
                     </tbody>

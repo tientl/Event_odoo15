@@ -5,7 +5,7 @@ import ListController from "web.ListController";
 import SpreadsheetSelectorDialog from "documents_spreadsheet.SpreadsheetSelectorDialog";
 import spreadsheet from "./o_spreadsheet/o_spreadsheet_extended";
 import { _t } from "web.core";
-import { createEmptySpreadsheet } from "./o_spreadsheet/helpers/helpers";
+import { createEmptySpreadsheet, removeContextUserInfo } from "./o_spreadsheet/helpers/helpers";
 import { MAXIMUM_CELLS_TO_INSERT } from "./o_spreadsheet/constants";
 
 /**
@@ -72,7 +72,7 @@ ListController.include({
             model: data.model,
             domain: data.domain,
             orderBy: data.orderedBy,
-            context: data.context,
+            context: removeContextUserInfo(data.getContext()),
             columns,
         };
     },

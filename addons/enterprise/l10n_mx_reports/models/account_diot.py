@@ -39,10 +39,11 @@ class MxReportPartnerLedger(models.AbstractModel):
             {'name': _('Paid 0%'), 'class': 'number'},
             {'name': _('Exempt'), 'class': 'number'},
             {'name': _('Withheld'), 'class': 'number'},
+            {'name': _('Refunds'), 'class': 'number'},
         ]
 
     def _do_query_group_by_account(self, options, line_id):
-        select = ',\"account_move_line_account_tax_rel\".account_tax_id, SUM(\"account_move_line\".debit - \"account_move_line\".credit)'  # noqa
+        select = ',\"account_move_line_account_tax_rel\".account_tax_id tax_id, SUM(\"account_move_line\".debit) debit, SUM(\"account_move_line\".credit) credit'  # noqa
         sql = "SELECT \"account_move_line\".partner_id%s FROM %s WHERE %s%s AND \"account_move_line_account_tax_rel\".account_move_line_id = \"account_move_line\".id GROUP BY \"account_move_line\".partner_id, \"account_move_line_account_tax_rel\".account_tax_id"  # noqa
         journal_ids = []
         for company in self.env.companies.filtered('tax_cash_basis_journal_id'):
@@ -58,17 +59,16 @@ class MxReportPartnerLedger(models.AbstractModel):
             ('date', '>=', options['date']['date_from']),
             ('move_id.state', '=', 'posted'),
         ]
-        tables, where_clause, where_params = self.env[
-            'account.move.line']._query_get(domain)
+        tables, where_clause, where_params = self._query_get(options, domain=domain)
         tables += ',"account_move_line_account_tax_rel"'
         line_clause = line_id and\
             ' AND \"account_move_line\".partner_id = ' + str(line_id) or ''
         query = sql % (select, tables, where_clause, line_clause)
         self.env.cr.execute(query, where_params)
-        results = self.env.cr.fetchall()
+        results = self.env.cr.dictfetchall()
         result = {}
         for res in results:
-            result.setdefault(res[0], {}).setdefault(res[1], res[2])
+            result.setdefault(res['partner_id'], {}).setdefault(res['tax_id'], [res['debit'], res['credit']])
         return result
 
     def _group_by_partner_id(self, options, line_id):
@@ -100,11 +100,9 @@ class MxReportPartnerLedger(models.AbstractModel):
                 #  fetch the 81 first amls. The report only displays the first
                 # 80 amls. We will use the 81st to know if there are more than
                 # 80 in which case a link to the list view must be displayed.
-                partners[partner]['lines'] = self.env[
-                    'account.move.line'].search(domain, order='date', limit=81)
+                partners[partner]['lines'] = self.env['account.move.line'].search(domain, limit=81)
             else:
-                partners[partner]['lines'] = self.env[
-                    'account.move.line'].search(domain, order='date')
+                partners[partner]['lines'] = self.env['account.move.line'].search(domain)
 
             if partner.country_id.code == "MX" and not partner.vat and partners[partner]['lines']:
                 without_vat.append(partner.name)
@@ -150,33 +148,26 @@ class MxReportPartnerLedger(models.AbstractModel):
         sorted_partners = sorted(grouped_partners, key=lambda p: p.name or '')
         unfold_all = self._context.get('print_mode') and not options.get('unfolded_lines')
         tag_16 = self.env.ref('l10n_mx.tag_diot_16')
-        tag_non_cre = self.env.ref('l10n_mx.tag_diot_16_non_cre', raise_if_not_found=False) or self.env['account.account.tag']
-        tag_8 = self.env.ref('l10n_mx.tag_diot_8', raise_if_not_found=False) or self.env['account.account.tag']
-        tag_8_non_cre = self.env.ref('l10n_mx.tag_diot_8_non_cre', raise_if_not_found=False) or self.env['account.account.tag']
+        tag_16_non_cre = self.env.ref('l10n_mx.tag_diot_16_non_cre')
+        tag_8 = self.env.ref('l10n_mx.tag_diot_8')
+        tag_8_non_cre = self.env.ref('l10n_mx.tag_diot_8_non_cre')
         tag_imp = self.env.ref('l10n_mx.tag_diot_16_imp')
         tag_0 = self.env.ref('l10n_mx.tag_diot_0')
         tag_ret = self.env.ref('l10n_mx.tag_diot_ret')
         tag_exe = self.env.ref('l10n_mx.tag_diot_exento')
-        rep_line_obj =  self.env['account.tax.repartition.line'].with_context(active_test=False)
 
         purchase_tax_ids = self.env['account.tax'].with_context(active_test=False).search([('type_tax_use', '=', 'purchase')]).ids
         diot_common_domain = ['|', ('invoice_tax_id', 'in', purchase_tax_ids), ('refund_tax_id', 'in', purchase_tax_ids)]
 
         company = self.env.company.id
-        tax16 = rep_line_obj.search([('tag_ids', 'in', tag_16.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        taxnoncre = self.env['account.tax']
-        if tag_non_cre:
-            taxnoncre = rep_line_obj.search([('tag_ids', 'in', tag_non_cre.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        tax8 = self.env['account.tax']
-        if tag_8:
-            tax8 = rep_line_obj.search([('tag_ids', 'in', tag_8.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        tax8_noncre = self.env['account.tax']
-        if tag_8_non_cre:
-            tax8_noncre = rep_line_obj.search([('tag_ids', 'in', tag_8_non_cre.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        taximp = rep_line_obj.search([('tag_ids', 'in', tag_imp.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        tax0 = rep_line_obj.search([('tag_ids', 'in', tag_0.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        tax_ret = rep_line_obj.search([('tag_ids', 'in', tag_ret.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
-        tax_exe = rep_line_obj.search([('tag_ids', 'in', tag_exe.ids), ('company_id', '=', company)] + diot_common_domain).mapped('tax_id')
+        taxes_dict = {}
+        for tag in (tag_16, tag_16_non_cre, tag_8, tag_8_non_cre, tag_imp, tag_0, tag_exe, tag_ret):
+            taxes = self.env['account.tax.repartition.line']\
+                .with_context(active_test=False)\
+                .search([('tag_ids', 'in', tag.ids), ('company_id', '=', self.env.company.id)] + diot_common_domain)\
+                .mapped('tax_id')
+            taxes_dict.setdefault(tag, taxes)
+
         grouped_taxes = self.env['account.tax'].with_context(active_test=False).search([
             ('type_tax_use', '=', 'purchase'),
             ('company_id', '=', company),
@@ -208,37 +199,25 @@ class MxReportPartnerLedger(models.AbstractModel):
                 partner.l10n_mx_type_of_third or '', partner.l10n_mx_type_of_operation or '',
                 partner.vat or '', partner.country_id.code or '',
                 self.str_format(partner.l10n_mx_nationality, True)]
-            partner_data = grouped_partners[partner]
-            total_tax16 = total_taximp = total_tax8 = 0
-            total_tax0 = total_taxnoncre = total_tax8_noncre = 0
-            exempt = 0
-            withh = 0
-            for tax in tax16:
-                if tax in taxes_in_groups:
-                    diff = 16 - tax.amount
-                    withh += diff * partner_data.get(tax.id, 0) / 100
-                total_tax16 += partner_data.get(tax.id, 0)
-            p_columns.append(total_tax16)
-            for tax in taxnoncre.ids:
-                total_taxnoncre += partner_data.get(tax, 0)
-            p_columns.append(total_taxnoncre)
-            for tax in tax8.ids:
-                total_tax8 += partner_data.get(tax, 0)
-            p_columns.append(total_tax8)
-            for tax in tax8_noncre.ids:
-                total_tax8_noncre += partner_data.get(tax, 0)
-            p_columns.append(total_tax8_noncre)
-            for tax in taximp.ids:
-                total_taximp += partner_data.get(tax, 0)
-            p_columns.append(total_taximp)
-            total_tax0 += sum([partner_data.get(tax, 0) for tax in tax0.ids])
-            p_columns.append(total_tax0)
-            exempt += sum([partner_data.get(exem, 0)
-                           for exem in tax_exe.ids])
-            p_columns.append(exempt)
-            withh += sum([abs(partner_data.get(ret.id, 0) / (100 / ret.amount))
-                          for ret in tax_ret])
-            p_columns.append(withh)
+            partner_data = grouped_partners[partner]  # {<tax_id>: [<debit>, <credit>], ..., 'lines': <amls>}
+            total_withheld = total_credit = 0
+            for tag, taxes in taxes_dict.items():
+                total_partner_debit = 0
+                for tax in taxes:
+                    debit, credit = partner_data.get(tax.id, [0, 0])
+                    balance = debit - credit
+                    if tag == tag_16 and tax in taxes_in_groups:
+                        diff = 16 - tax.amount
+                        total_withheld += diff * balance / 100
+                    if tag == tag_ret:
+                        total_withheld += abs(balance / (100 / tax.amount))
+                        continue
+                    total_partner_debit += debit
+                    total_credit += credit
+                if tag != tag_ret:
+                    p_columns.append(total_partner_debit)
+            p_columns.append(total_withheld)
+            p_columns.append(total_credit)
             unfolded = 'partner_' + str(partner.id) in options.get('unfolded_lines') or unfold_all
             lines.append({
                 'id': 'partner_' + str(partner.id),
@@ -265,46 +244,23 @@ class MxReportPartnerLedger(models.AbstractModel):
                 name = name[:32] + "..." if len(name) > 35 else name
                 columns = ['', '', '', '']
                 columns.append('')
-                total_tax16 = total_taximp = total_tax8 = 0
-                total_tax0 = total_taxnoncre = total_tax8_noncre = 0
-                exempt = 0
-                withh = 0
-                for tax in tax16.filtered(lambda t: t in line.tax_ids):
-                    if tax in taxes_in_groups:
-                        diff = 16 - tax.amount
-                        withh += diff / 100 * (line.debit or line.credit * -1)
-                    total_tax16 += line.debit or line.credit * -1
-                columns.append(self.format_value(total_tax16))
-                total_taxnoncre += sum([
-                    line.debit or line.credit * -1
-                    for tax in taxnoncre.ids if tax in line.tax_ids.ids])
-                columns.append(self.format_value(total_taxnoncre))
-                total_tax8 += sum([
-                    line.debit or line.credit * -1
-                    for tax in tax8.ids if tax in line.tax_ids.ids])
-                columns.append(self.format_value(total_tax8))
-                total_tax8_noncre += sum([
-                    line.debit or line.credit * -1
-                    for tax in tax8_noncre.ids if tax in line.tax_ids.ids])
-                columns.append(self.format_value(total_tax8_noncre))
-                total_taximp += sum([
-                    line.debit or line.credit * -1
-                    for tax in taximp.ids if tax in line.tax_ids.ids])
-                columns.append(self.format_value(total_taximp))
-                total_tax0 += sum([
-                    line.debit or line.credit * -1
-                    for tax in tax0.ids if tax in line.tax_ids.ids])
-                columns.append(self.format_value(total_tax0))
-                exempt += sum([line.debit or line.credit * -1
-                               for exem in tax_exe.ids
-                               if exem in line.tax_ids.ids])
-                columns.append(self.format_value(exempt))
-                balance_multiplicator = -1 if line.move_id.is_outbound() else 1
-                withh += sum([
-                    (balance_multiplicator * line.balance) / (100 / ret.amount)
-                    for ret in tax_ret
-                    if ret.id in line.tax_ids.ids])
-                columns.append(self.format_value(withh))
+                balance_withheld = line_credit = 0
+                for tag, taxes in taxes_dict.items():
+                    line_debit = 0
+                    for tax in taxes.filtered(lambda t: t in line.tax_ids):
+                        balance = line.debit - line.credit
+                        if tag == tag_16 and tax in taxes_in_groups:
+                            diff = 16 - tax.amount
+                            balance_withheld += diff * balance / 100
+                        if tag == tag_ret:
+                            balance_withheld += abs(balance / (100 / tax.amount))
+                            continue
+                        line_debit += line.debit
+                        line_credit += line.credit
+                    if tag != tag_ret:
+                        columns.append(self.format_value(line_debit))
+                columns.append(self.format_value(balance_withheld))
+                columns.append(self.format_value(line_credit))
                 if line.payment_id:
                     caret_type = 'account.payment'
                 else:
@@ -426,18 +382,20 @@ class MxReportPartnerLedger(models.AbstractModel):
                     'id', '')])  # Count the operations
             for num in range(9, 26):
                 data[num] = '0'
-            data[26] = columns[0]['name']
-            data[27] = columns[1]['name']
-            data[28] = columns[2]['name'] if columns[0]['name'] == '04' else ''
-            data[29] = columns[2]['name'] if columns[0]['name'] != '04' else ''
-            data[30] = u''.join(line.get('name', '')).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''
-            data[31] = columns[3]['name'] if columns[0]['name'] != '04' else ''
-            data[32] = u''.join(columns[4]['name']).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''
-            data[33] = int(columns[5]['name']) if columns[5]['name'] else ''
-            data[39] = int(columns[9]['name']) if columns[9]['name'] else ''
-            data[44] = int(columns[10]['name']) if columns[10]['name'] else ''
-            data[45] = int(columns[11]['name']) if columns[11]['name'] else ''
-            data[46] = int(columns[12]['name']) if columns[12]['name'] else ''
+            data[26] = columns[0]['name']  # Supplier Type
+            data[27] = columns[1]['name']  # Operation Type
+            data[28] = columns[2]['name'] if columns[0]['name'] == '04' else ''  # Federal Taxpayer Registry Code
+            data[29] = columns[2]['name'] if columns[0]['name'] != '04' else ''  # Fiscal ID
+            data[30] = u''.join(line.get('name', '')).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''  # Name
+            data[31] = columns[3]['name'] if columns[0]['name'] != '04' else ''  # Country
+            data[32] = u''.join(columns[4]['name']).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''  # Nationality
+            data[33] = int(columns[5]['name']) if columns[5]['name'] else ''  # 16%
+            data[36] = int(columns[7]['name']) if columns[7]['name'] else ''  # 8%
+            data[39] = int(columns[9]['name']) if columns[9]['name'] else ''  # 16% - Importation
+            data[44] = int(columns[10]['name']) if columns[10]['name'] else ''  # 0%
+            data[45] = int(columns[11]['name']) if columns[11]['name'] else ''  # Exempt
+            data[46] = int(columns[12]['name']) if columns[12]['name'] else ''  # Withheld
+            data[47] = int(columns[13]['name']) if columns[13]['name'] else ''  # Refunds
             lines += '|%s|\n' % '|'.join(str(d) for d in data)
         return lines
 
@@ -451,20 +409,21 @@ class MxReportPartnerLedger(models.AbstractModel):
             if not sum([c.get('name', 0) for c in columns[5:]]):
                 continue
             data = [''] * 25
-            data[0] = columns[0]['name']
-            data[1] = columns[1]['name']
-            data[2] = columns[2]['name'] if columns[0]['name'] == '04' else ''
-            data[3] = columns[2]['name'] if columns[0]['name'] != '04' else ''
-            data[4] = u''.join(line.get('name', '')).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''
-            data[5] = columns[3]['name'] if columns[0]['name'] != '04' else ''
-            data[6] = u''.join(columns[4]['name']).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''
-            data[7] = int(columns[5]['name']) if columns[5]['name'] else ''
-            data[9] = int(columns[6]['name']) if columns[6]['name'] else ''
-            data[12] = int(columns[7]['name']) if columns[7]['name'] else ''
-            data[14] = int(columns[8]['name']) if columns[8]['name'] else ''
-            data[15] = int(columns[9]['name']) if columns[9]['name'] else ''
-            data[20] = int(columns[10]['name']) if columns[10]['name'] else ''
-            data[21] = int(columns[11]['name']) if columns[11]['name'] else ''
-            data[22] = int(columns[12]['name']) if columns[12]['name'] else ''
+            data[0] = columns[0]['name']  # Supplier Type
+            data[1] = columns[1]['name']  # Operation Type
+            data[2] = columns[2]['name'] if columns[0]['name'] == '04' else ''  # Tax Number
+            data[3] = columns[2]['name'] if columns[0]['name'] != '04' else ''  # Tax Number for Foreigners
+            data[4] = u''.join(line.get('name', '')).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''  # Name
+            data[5] = columns[3]['name'] if columns[0]['name'] != '04' else ''  # Country
+            data[6] = u''.join(columns[4]['name']).encode('utf-8').strip().decode('utf-8') if columns[0]['name'] != '04' else ''  # Nationality
+            data[7] = int(columns[5]['name']) if columns[5]['name'] else ''  # 16%
+            data[9] = int(columns[6]['name']) if columns[6]['name'] else ''  # 16% Non-Creditable
+            data[12] = int(columns[7]['name']) if columns[7]['name'] else ''  # 8%
+            data[14] = int(columns[8]['name']) if columns[8]['name'] else ''  # 8% Non-Creditable
+            data[15] = int(columns[9]['name']) if columns[9]['name'] else ''  # 16% - Importation
+            data[20] = int(columns[10]['name']) if columns[10]['name'] else ''  # 0%
+            data[21] = int(columns[11]['name']) if columns[11]['name'] else ''  # Exempt
+            data[22] = int(columns[12]['name']) if columns[12]['name'] else ''  # Withheld
+            data[23] = int(columns[13]['name']) if columns[13]['name'] else ''  # Refunds
             lines += '|'.join(str(d) for d in data) + '\n'
         return lines

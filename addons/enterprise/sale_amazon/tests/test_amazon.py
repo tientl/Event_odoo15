@@ -114,6 +114,7 @@ class TestAmazon(TestAmazonCommon):
             self.assertEqual(order.company_id.id, self.account.company_id.id)
             self.assertEqual(order.user_id.id, self.account.user_id.id)
             self.assertEqual(order.team_id.id, self.account.team_id.id)
+            self.assertEqual(order.warehouse_id.id, self.account.location_id.warehouse_id.id)
             self.assertEqual(order.amazon_channel, 'fbm')
 
             order_lines = self.env['sale.order.line'].search([('order_id', '=', order.id)])
@@ -365,7 +366,7 @@ class TestAmazon(TestAmazonCommon):
 
             # check order and validate picking
             order = self.env['sale.order'].search([('amazon_order_ref', '=', '123456789')])
-            self.assertNotEqual(order.state, 'canceled')
+            self.assertNotEqual(order.state, 'cancel')
             picking = self.env['stock.picking'].search([('sale_id', '=', order.id)])
             for ml in picking.move_line_ids:
                 ml.qty_done = ml.product_uom_qty
@@ -678,8 +679,8 @@ class TestAmazon(TestAmazonCommon):
 
     def test_get_amazon_offer_creation(self):
         """ Test the offer creation. """
-        offers_count = self.env['amazon.offer'].search_count([])
         marketplace = self.env['amazon.marketplace'].search([('api_ref', '=', 'ATVPDKIKX0DER')])
+        offers_count = self.env['amazon.offer'].search_count([])
         offer = self.account._get_offer('SKU', marketplace)
         self.assertEqual(self.env['amazon.offer'].search_count([]), offers_count + 1)
         self.assertEqual(offer.account_id.id, self.account.id)

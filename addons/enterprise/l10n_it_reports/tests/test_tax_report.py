@@ -13,14 +13,33 @@ class TestItalianTaxReport(AccountTestInvoicingCommon):
     @classmethod
     def setUpClass(cls, chart_template_ref='l10n_it.l10n_it_chart_template_generic'):
         super().setUpClass(chart_template_ref=chart_template_ref)
-        cls.company_data['company'].country_id = cls.env.ref('base.it')
+        company = cls.company_data["company"]
+        AccountTax = cls.env['account.tax']
+        company.update({
+            'vat': 'IT78926680725',
+            'l10n_it_codice_fiscale': '78926680725',
+            'l10n_it_tax_system': 'RF01',
+            'country_id': cls.env.ref('base.it').id,
+        })
 
-        cls.tax_4v = cls.env['account.tax'].search([('company_id', '=', cls.company_data['company'].id),
-                                                    ('name', '=', 'Iva al 4% (debito)')])
-        cls.tax_4a = cls.env['account.tax'].search([('company_id', '=', cls.company_data['company'].id),
-                                                    ('name', '=', 'Iva al 4% (credito)')])
-
+        cls.tax_4a = AccountTax.with_context(active_test=False).search([('description', '=', '4am'), ('company_id.id', '=', company.id)])
+        cls.tax_4a.active = True
+        cls.tax_4v = AccountTax.with_context(active_test=False).search([('description', '=', '4v'), ('company_id.id', '=', company.id)])
         cls.tax_4v.tax_group_id.property_tax_payable_account_id = cls.company_data['default_account_payable']
+        cls.tax_4v.active = True
+
+        cls.l10n_it_tax_report_partner = cls.env['res.partner'].create({
+            'name': 'Blue Interior',
+            'is_company': 1,
+            'street': 'Via Tenebrosa 66',
+            'city': 'Milan',
+            'zip': '00000',
+            'phone': '029310505',
+            'vat': '02730480965',
+            'country_id': cls.env.ref('base.it').id,
+            'email': 'blue.Interior24@example.it',
+            'website': 'http://www.blue-interior.it'
+        })
 
     def test_tax_report_carryover_vp14_credit_period(self):
         """
@@ -106,6 +125,42 @@ class TestItalianTaxReport(AccountTestInvoicingCommon):
             'VP7',
             0.0)
 
+    def test_tax_report_carryover_vp14_debit_valid_reset(self):
+        """
+        Test to have a value in line vp14 that would trigger a carryover, then another one added at the second period
+        to be out of bound.
+        In this case, we should see the carryover back to 0 after the second month.
+        """
+        report = self.env['account.generic.tax.report']
+        self._test_line_report_carryover(
+            '2015-05-10',
+            500,
+            self.tax_4v,
+            self._init_options(
+                report,
+                fields.Date.from_string('2015-05-01'),
+                fields.Date.from_string('2015-05-31')),
+            self._init_options(
+                report,
+                fields.Date.from_string('2015-06-01'),
+                fields.Date.from_string('2015-06-30')),
+            'VP7',
+            20.0)
+        self._test_line_report_carryover(
+            '2015-06-10',
+            500,
+            self.tax_4v,
+            self._init_options(
+                report,
+                fields.Date.from_string('2015-06-01'),
+                fields.Date.from_string('2015-06-30')),
+            self._init_options(
+                report,
+                fields.Date.from_string('2015-07-01'),
+                fields.Date.from_string('2015-07-30')),
+            'VP7',
+            0.0)
+
     def _test_line_report_carryover(self, invoice_date, invoice_amount, tax_line,
                                     first_month_options, second_month_options,
                                     target_line_code, target_line_value):
@@ -115,7 +170,7 @@ class TestItalianTaxReport(AccountTestInvoicingCommon):
 
         invoice = self.env['account.move'].create({
             'move_type': 'in_invoice',
-            'partner_id': self.ref("base.res_partner_12"),
+            'partner_id': self.l10n_it_tax_report_partner,
             'date': invoice_date,
             'invoice_date': invoice_date,
             'invoice_line_ids': [

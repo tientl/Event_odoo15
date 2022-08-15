@@ -8,27 +8,40 @@
 # Özlem Atalay <ozlema@eskayazilim.com.tr>, 2021
 # Ediz Duman <neps1192@gmail.com>, 2021
 # Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2021
-# Martin Trigaux, 2021
 # Murat Kaplan <muratk@projetgrup.com>, 2021
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2021
 # Ramiz Deniz Öner <deniz@denizoner.com>, 2021
 # Umur Akın <umura@projetgrup.com>, 2021
 # Nadir Gazioglu <nadirgazioglu@gmail.com>, 2021
-# abc Def <hdogan1974@gmail.com>, 2021
+# Martin Trigaux, 2022
+# abc Def <hdogan1974@gmail.com>, 2022
+# Melikşah Çelikten, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: abc Def <hdogan1974@gmail.com>, 2021\n"
+"Last-Translator: Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr ""
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -277,6 +290,8 @@ msgid ""
 "<span class=\"fa fa-home\"/>\n"
 "                Tax Unit:"
 msgstr ""
+"<span class=\"fa fa-home\"/>\n"
+"                Vergi Birimi:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -359,7 +374,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_sales_report_main_template
 msgid "<span>Some partners are missing a VAT number.</span>"
-msgstr ""
+msgstr "<span>Bazı iş ortaklarının vergi kimlik numarası eksik.</span>"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.template_tax_report
@@ -428,6 +443,11 @@ msgstr "Hesap Kodu"
 #: model:ir.model.fields,field_description:account_reports.field_res_company__account_display_representative_field
 msgid "Account Display Representative Field"
 msgstr ""
+
+#. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "Muhasebe Günlüğü Raporu"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
@@ -599,9 +619,14 @@ msgstr "Alacak Yaşlandırma"
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "Tümü"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr "Tüm Yevmiyeler"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
@@ -714,7 +739,7 @@ msgstr "%s itibariyle"
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_payable__period0
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__period0
 msgid "As of: "
-msgstr ""
+msgstr "İtibariyle:"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:0
@@ -796,13 +821,13 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__report_amount_currency
 msgid "Balance in foreign currency"
-msgstr ""
+msgstr "Döviz cinsinden bakiye"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
 #, python-format
 msgid "Balance of %s"
-msgstr ""
+msgstr "%s'in bakiyesi"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -828,12 +853,12 @@ msgstr "Hesaplanan KDV Hesabı"
 #: model:ir.actions.client,name:account_reports.action_account_report_bank_reconciliation_with_journal
 #, python-format
 msgid "Bank Reconciliation"
-msgstr "Banka Uzlaştırma"
+msgstr "Banka Denkleştirme"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_bank_reconciliation_report
 msgid "Bank Reconciliation Report"
-msgstr "Banka Uzlaştırma Raporu"
+msgstr "Banka Denkleştirme Raporu"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
@@ -1148,6 +1173,7 @@ msgstr "Gelir Maliyeti"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "Ülke"
 
@@ -1539,7 +1565,7 @@ msgid ""
 "promised he would pay)"
 msgstr ""
 "Beklenen ödeme tarihi, müşteri bildirimi aracılığıyla manuel olarak "
-"ayarlandığı şekliyle (ör. Müşterinin  telefonda  ödemeyi taahhüt ettiği "
+"ayarlandığı şekliyle (örn. Müşterinin  telefonda  ödemeyi taahhüt ettiği "
 "tarihi hatırlamak istiyorsanız)"
 
 #. module: account_reports
@@ -1734,6 +1760,11 @@ msgid "Goods"
 msgstr "Mallar"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "Tablo"
+
+#. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
 msgid "Gross Profit"
 msgstr "Brüt Kar"
@@ -1813,6 +1844,16 @@ msgstr "Vergi beyannamelerinin ne sıklıkta yapılması gerektiği"
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__id
 msgid "ID"
 msgstr "ID"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -2121,7 +2162,7 @@ msgstr "Yönetici"
 #: code:addons/account_reports/models/account_partner_ledger.py:0
 #, python-format
 msgid "Matching Number"
-msgstr "Uzlaştırma"
+msgstr "Denkleştirme"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_tax_unit__company_ids
@@ -2361,7 +2402,7 @@ msgstr "Only Billing Administrators are allowed to change lock dates!"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
 msgid "Only Show Unreconciled Entries"
-msgstr "Sadece Uzlaşmayan Kayıtları Göster"
+msgstr "Sadece Denkleşmeyen Kayıtları Göster"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_financial_year_op
@@ -2565,7 +2606,7 @@ msgstr "Avans Ödemeleri"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation_wizard__preview_data
 msgid "Preview Data"
-msgstr ""
+msgstr "Verileri Önizleme"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
@@ -2640,12 +2681,12 @@ msgstr "Alacaklar"
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_aged_receivable_report
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_partner_ledger_report
 msgid "Reconcile"
-msgstr "Uzlaştır"
+msgstr "Denkleştir"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_journal_dashboard_kanban_view
 msgid "Reconciliation Report"
-msgstr "Uzlaştırma Raporu"
+msgstr "Denkleştirme Raporu"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_partner_ledger.py:0
@@ -2897,6 +2938,11 @@ msgstr ""
 #, python-format
 msgid "Tax Declaration"
 msgstr "Vergi Bildirimi"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr ""
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
@@ -3240,7 +3286,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
 msgid "Unreconciled"
-msgstr "Uzlaştırılmamış"
+msgstr "Denkleştirilmemiş"
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__account_financial_html_report_line__special_date_changer__normal

@@ -11,7 +11,7 @@ class SaleOrder(models.Model):
         for so in self:
             if so.analytic_account_id:
                 for sub in so.order_line.mapped('subscription_id'):
-                    sub.analytic_account_id = so.analytic_account_id
+                    sub.sudo().analytic_account_id = so.analytic_account_id
         return res
 
 

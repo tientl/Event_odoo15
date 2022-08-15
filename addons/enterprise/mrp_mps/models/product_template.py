@@ -10,7 +10,8 @@ class ProductTemplate(models.Model):
 
     def _compute_schedule_count(self):
         for rec in self:
-            rec.schedule_count = self.env["mrp.production.schedule"].search_count([('product_id.product_tmpl_id', "=", self.id)])
+            rec.schedule_count = self.env['mrp.production.schedule'].search_count([
+                ('product_id.product_tmpl_id', '=', rec.id)])
 
     def action_open_mps_view(self):
         action = self.env["ir.actions.actions"]._for_xml_id("mrp_mps.action_mrp_mps")

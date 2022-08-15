@@ -11,8 +11,8 @@ from odoo.osv import expression
 from odoo.exceptions import AccessError
 
 TICKET_PRIORITY = [
-    ('0', 'All'),
-    ('1', 'Low priority'),
+    ('0', 'Low priority'),
+    ('1', 'Medium priority'),
     ('2', 'High priority'),
     ('3', 'Urgent'),
 ]
@@ -87,7 +87,7 @@ class HelpdeskSLAStatus(models.Model):
                 deadline = working_calendar.plan_days(time_days + 1, deadline, compute_leaves=True)
                 # We should also depend on ticket creation time, otherwise for 1 day SLA, all tickets
                 # created on monday will have their deadline filled with tuesday 8:00
-                create_dt = status.ticket_id.create_date
+                create_dt = working_calendar.plan_hours(0, status.ticket_id.create_date)
                 deadline = deadline.replace(hour=create_dt.hour, minute=create_dt.minute, second=create_dt.second, microsecond=create_dt.microsecond)
 
             sla_hours = status.sla_id.time % avg_hour
@@ -230,7 +230,7 @@ class HelpdeskTicket(models.Model):
         ('normal', 'Grey'),
         ('done', 'Green'),
         ('blocked', 'Red')], string='Kanban State',
-        default='normal', required=True)
+        copy=False, default='normal', required=True)
     kanban_state_label = fields.Char(compute='_compute_kanban_state_label', string='Column Status', tracking=True)
     legend_blocked = fields.Char(related='stage_id.legend_blocked', string='Kanban Blocked Explanation', readonly=True, related_sudo=False)
     legend_done = fields.Char(related='stage_id.legend_done', string='Kanban Valid Explanation', readonly=True, related_sudo=False)
@@ -321,9 +321,9 @@ class HelpdeskTicket(models.Model):
             self.env.cr.execute("""
                 SELECT ticket_id, COUNT(id) AS reached_late_count
                 FROM helpdesk_sla_status
-                WHERE ticket_id IN %s AND deadline < reached_datetime
+                WHERE ticket_id IN %s AND deadline < reached_datetime OR deadline < %s
                 GROUP BY ticket_id
-            """, (tuple(self.ids),))
+            """, (tuple(self.ids), fields.Datetime.now()))
             mapping = dict(self.env.cr.fetchall())
 
         for ticket in self:
@@ -366,7 +366,7 @@ class HelpdeskTicket(models.Model):
         datetime_now = fields.Datetime.now()
         if (value and operator in expression.NEGATIVE_TERM_OPERATORS) or (not value and operator not in expression.NEGATIVE_TERM_OPERATORS):  # is failed
             return [('sla_status_ids.reached_datetime', '>', datetime_now), ('sla_reached_late', '!=', False)]
-        return [('sla_status_ids.reached_datetime', '<', datetime_now), ('sla_reached_late', '=', False)]  # is success
+        return [('sla_status_ids.reached_datetime', '<', datetime_now), ('sla_fail', '=', False)]  # is success
 
     @api.depends('team_id')
     def _compute_user_and_stage_ids(self):
@@ -450,7 +450,7 @@ class HelpdeskTicket(models.Model):
 
     @api.model
     def _search_open_hours(self, operator, value):
-        dt = fields.Datetime.now() - relativedelta.relativedelta(hours=value)
+        dt = fields.Datetime.now() - relativedelta(hours=value)
 
         d1, d2 = False, False
         if operator in ['<', '<=', '>', '>=']:

@@ -72,7 +72,7 @@ class AccountDisallowedExpensesRate(models.Model):
     _description = "Disallowed Expenses Rate"
     _order = 'date_from desc'
 
-    rate = fields.Float(string='%', required=True)
+    rate = fields.Float(string='Disallowed %', required=True)
     date_from = fields.Date(string='Start Date', required=True)
     category_id = fields.Many2one('account.disallowed.expenses.category', string='Category', required=True, ondelete='cascade')
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)

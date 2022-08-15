@@ -5,6 +5,8 @@
 # Translators:
 # Martin Trigaux, 2021
 # Talal Albahra <talal.albahra@outlook.com>, 2021
+# Paul Andrawes, 2021
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Talal Albahra <talal.albahra@outlook.com>, 2021\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,38 +26,38 @@ msgstr ""
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "%s Goals"
-msgstr ""
+msgstr "%s الأهداف "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "1 Meeting"
-msgstr ""
+msgstr "اجتماع 1 "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__100
 msgid "100 %"
-msgstr ""
+msgstr "100 %"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__25
 msgid "25 %"
-msgstr ""
+msgstr "25 %"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__module_hr_appraisal_survey
 msgid "360 Feedback"
-msgstr ""
+msgstr "360 ملاحظة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__50
 msgid "50 %"
-msgstr ""
+msgstr "50 %"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__75
 msgid "75 %"
-msgstr ""
+msgstr "75 %"
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_confirm
@@ -77,6 +79,22 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        لقد تم تأكيد تقييم <t t-out=\"ctx.get('employee_to_name', 'employee')\">الموظف</t>.\n"
+"                        <br/><br/>\n"
+"                        يرجى جدولة تاريخ التقييم معاً.\n"
+"                        <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    عرض التقييم\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_request_from_employee
@@ -102,6 +120,26 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        عزيزي <t t-out=\"ctx.get('employee_to_name', 'employee')\">الموظف</t>،\n"
+"                        <br/>\n"
+"                        طلب <t t-out=\"ctx.get('author_name', '')\">أديسون أولسون</t> (<t t-out=\"ctx.get('author_mail', '')\">addison.olson28@example.com</t>) تقييماً.\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">التقييم السنوي.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; text-align: center;\">\n"
+"                                <a t-att-t-att-href=\"ctx.get('url')\" style=\" margin: auto; background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    عرض التقييم\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_request
@@ -130,6 +168,29 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        عزيزي <t t-out=\"ctx.get('employee_to_name', 'employee')\">الموظف</t>،\n"
+"                        <br/>\n"
+"                        لقد تم طلب تقييم من قِبَل <t t-out=\"ctx.get('author_name', '')\">أديسون أولسون</t>\n"
+"                        <br/>\n"
+"                        (<t t-out=\"ctx.get('author_mail', '')\">addison.olson28@example.com</t>).\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">التقييم السنوي.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; text-align: center;\">\n"
+"                                <a t-att-t-att-href=\"ctx.get('url')\" style=\" margin: auto; background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    عرض التقييم\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <br/>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_employee_base.py:0
@@ -141,22 +202,27 @@ msgid ""
 "                            Plan appraisals with your colleagues, collect and discuss feedback.\n"
 "                        </p>"
 msgstr ""
+"<p class=\"o_view_nocontent_smiling_face\">\n"
+"                            جدولة تقييم\n"
+"                        </p><p>\n"
+"                            قم بتخطيط التقييمات مع زملائك في العمل، واجمع وناقش الملاحظات.\n"
+"                        </p>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-info\">Ready</span>"
-msgstr ""
+msgstr "<span class=\"bg-info\">جاهز</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-secondary\">Canceled</span>"
-msgstr ""
+msgstr "<span class=\"bg-secondary\">مخفي</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-success\">Done</span>"
-msgstr ""
+msgstr "<span class=\"bg-success\">منتهي</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -164,6 +230,8 @@ msgid ""
 "<span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Employee</span>\n"
 "                                            <span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Visible to Employee</span>"
 msgstr ""
+"<span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">غير مرئي للموظف</span>\n"
+"                                            <span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">مرئي للموظف</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -171,6 +239,8 @@ msgid ""
 "<span class=\"o_form_label\">360 Feedback</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">360 ملاحظة </span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"القيم المحددة هنا خاصة بالشركة. \" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -178,6 +248,8 @@ msgid ""
 "<span class=\"o_form_label\">Appraisals Plans</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">خطط التقييمات</span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"القيم المسجلة هنا خاصة بالشركة فقط.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -185,6 +257,8 @@ msgid ""
 "<span class=\"o_form_label\">Feedback Templates</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">قوالب الملاحظات</span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"القيم المحددة هنا خاصة بالشركة فقط. \" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
@@ -194,16 +268,19 @@ msgid ""
 "                            Last Appraisal\n"
 "                        </span>"
 msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                            آخر تقييم\n"
+"                        </span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_text\">Goals</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">الأهداف</span> "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_value\">Prev. Appraisal</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_value\">التقييم السابق</span> "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -211,6 +288,8 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Manager</span>\n"
 "                                            <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Visible to Manager</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">غير مرئي للمدير</span>\n"
+"                                            <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">مرئي للمدير</span> "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -218,6 +297,8 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Employee</span>\n"
 "                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Visible to Employee</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">غير مرئي للموظف</span>\n"
+"                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">مرئي للموظف</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -225,28 +306,30 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False)]}\">Not Visible to Manager</span>\n"
 "                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False)]}\">Visible to Manager</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False)]}\">غير مرئي للمدير</span>\n"
+"                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False)]}\">مرئي للمدير</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<strong><span>Meeting: </span></strong>"
-msgstr ""
+msgstr "<strong><span>الاجتماع: </span></strong>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_report_view_gantt
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_view_gantt
 msgid "<strong>Date — </strong>"
-msgstr ""
+msgstr "<strong>التاريخ — </strong>"
 
 #. module: hr_appraisal
 #: model:res.groups,name:hr_appraisal.group_hr_appraisal_user
 msgid "Access all appraisals"
-msgstr ""
+msgstr "الوصول إلى كافة التقييمات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_needaction
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_needaction
 msgid "Action Needed"
-msgstr "إجراء مطلوب"
+msgstr "يتطلب اتخاذ إجراء "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__active
@@ -290,7 +373,7 @@ msgstr "مدير"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
 msgid "Application Settings"
-msgstr ""
+msgstr "إعدادات التطبيق "
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action
@@ -316,72 +399,72 @@ msgstr "تحليل التقييم"
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_note
 msgid "Appraisal Assessment Note"
-msgstr ""
+msgstr "ملاحظة اختبار التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__appraisal_child_ids
 msgid "Appraisal Child"
-msgstr ""
+msgstr "التقييم الفرعي "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_confirm_mail_template
 msgid "Appraisal Confirm Mail Template"
-msgstr ""
+msgstr "قالب البريد الإلكتروني لتأكيد التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__appraisal_count
 msgid "Appraisal Count"
-msgstr ""
+msgstr "عدد التقييمات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__date_close
 msgid "Appraisal Date"
-msgstr ""
+msgstr "تاريخ التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__employee_id
 msgid "Appraisal Employee"
-msgstr ""
+msgstr "الموظف الذي سيحصل على التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_employee_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_employee_feedback_template
 msgid "Appraisal Employee Feedback Template"
-msgstr ""
+msgstr "قالب ملاحظات تقييم الموظف "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal Form to Fill"
-msgstr "نموذج التقييم المُراد ملأه"
+msgstr "استمارة التقييم المُراد ملؤها "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_goal
 msgid "Appraisal Goal"
-msgstr ""
+msgstr "هدف التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_manager_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_manager_feedback_template
 msgid "Appraisal Manager Feedback Template"
-msgstr ""
+msgstr "قالب ملاحظات مدير التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__appraisal_plan_posted
 msgid "Appraisal Plan Posted"
-msgstr ""
+msgstr "تم نشر خطة التقييم "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal Request"
-msgstr ""
+msgstr "طلب التقييم "
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_request
 msgid "Appraisal Requested"
-msgstr ""
+msgstr "تم طلب التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_report__state__pending
@@ -397,32 +480,32 @@ msgstr "إحصائيات التقييم"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_department_view_form
 msgid "Appraisal Templates"
-msgstr ""
+msgstr "قوالب التقييم "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal of %s"
-msgstr ""
+msgstr "التقييم لـ %s "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Appraisal to Confirm and Send"
-msgstr ""
+msgstr "التقييم بانتظار التأكيد والإرسال "
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action_from_department
 msgid "Appraisal to start"
-msgstr "التقييم المراد البدء فيه"
+msgstr "التقييم بانتظار البدء "
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.ir_cron_scheduler_appraisal_ir_actions_server
 #: model:ir.cron,cron_name:hr_appraisal.ir_cron_scheduler_appraisal
 #: model:ir.cron,name:hr_appraisal.ir_cron_scheduler_appraisal
 msgid "Appraisal: Run employee appraisal"
-msgstr ""
+msgstr "التقييم:  إجراء تقييم للموظف "
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.open_view_hr_appraisal_tree
@@ -432,12 +515,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_departure_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Appraisals"
-msgstr "تقييمات"
+msgstr "التقييمات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__appraisals_to_process_count
 msgid "Appraisals to Process"
-msgstr "التقييمات المراد معالجتها"
+msgstr "التقييمات بانتظار المعالجة "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -448,18 +531,18 @@ msgstr "مؤرشف"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Ask to fill a survey to other employees"
-msgstr ""
+msgstr "طلب ملء استبيان للموظفين الآخرين "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Assessment"
-msgstr ""
+msgstr "التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__assessment_note_ids
 msgid "Assessment Note"
-msgstr ""
+msgstr "ملاحظة التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_attachment_count
@@ -470,23 +553,23 @@ msgstr "عدد المرفقات"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__author_id
 msgid "Author"
-msgstr "الناشر"
+msgstr "الكاتب "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__author_id
 msgid "Author of the message."
-msgstr "صاحب الرسالة."
+msgstr "كاتب الرسالة. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_plan
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_plan
 msgid "Automatically Generate Appraisals"
-msgstr ""
+msgstr "إنشاء التقييمات تلقائياً "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Automatically generate appraisals"
-msgstr ""
+msgstr "إنشاء التقييمات تلقائياً "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__avatar_1920
@@ -496,17 +579,17 @@ msgstr "الصورة الرمزية"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__avatar_128
 msgid "Avatar 128"
-msgstr ""
+msgstr "الصورة الرمزية 128 "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_employee_base
 msgid "Basic Employee"
-msgstr "الموظف الأساسي"
+msgstr "الموظف العادي "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_calendar_event
 msgid "Calendar Event"
-msgstr "حدث التقويم"
+msgstr "فعالية التقويم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__can_edit_body
@@ -516,28 +599,28 @@ msgstr "يمكن تحرير النص"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__can_see_employee_publish
 msgid "Can See Employee Publish"
-msgstr ""
+msgstr "يمكن رؤية منشورات الموظف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__can_see_manager_publish
 msgid "Can See Manager Publish"
-msgstr ""
+msgstr "يمكن رؤية منشورات المدير "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Cancel"
-msgstr "الغاء"
+msgstr "إلغاء "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_departure_wizard__cancel_appraisal
 msgid "Cancel Future Appraisals"
-msgstr ""
+msgstr "إلغاء التقييمات المستقبلية "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_departure_wizard__cancel_appraisal
 msgid "Cancel all appraisal after contract end date."
-msgstr ""
+msgstr "إلغاء كافة التقييمات بعد تاريخ انتهاء العقد "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__cancel
@@ -553,33 +636,33 @@ msgstr "اللون"
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_res_company
 msgid "Companies"
-msgstr "شركات"
+msgstr "الشركات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__company_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_note__company_id
 msgid "Company"
-msgstr "شركة"
+msgstr "الشركة "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
 msgid "Compose Email"
-msgstr "رسالة جديدة"
+msgstr "إنشاء رسالة جديدة "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_res_config_settings
 msgid "Config Settings"
-msgstr "ضبط الاعدادات"
+msgstr "تهيئة الإعدادات "
 
 #. module: hr_appraisal
 #: model:ir.ui.menu,name:hr_appraisal.menu_hr_appraisal_configuration
 msgid "Configuration"
-msgstr "إعدادات التكوين"
+msgstr "التهيئة "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Configure General Feedback Template"
-msgstr ""
+msgstr "تهيئة قالب الملاحظات العام "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -605,19 +688,19 @@ msgstr "تاريخ الإنشاء"
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_first_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_first_appraisal
 msgid "Create a first Appraisal after"
-msgstr ""
+msgstr "إنشاء أول تقييم بعد "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_next_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_next_appraisal
 msgid "Create a second Appraisal after"
-msgstr ""
+msgstr "إنشاء ثاني تقييم بعد "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_after_recruitment
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_after_recruitment
 msgid "Create an Appraisal after recruitment"
-msgstr ""
+msgstr "إنشاء تقييم بعد التوظيف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__create_uid
@@ -643,7 +726,7 @@ msgstr "تاريخ الإنشاء"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__custom_appraisal_templates
 msgid "Custom Appraisal Templates"
-msgstr ""
+msgstr "قوالب تقييم مخصصة "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
@@ -656,7 +739,7 @@ msgstr "التاريخ"
 msgid ""
 "Date of the appraisal, automatically updated when the appraisal is Done or "
 "Cancelled."
-msgstr ""
+msgstr "يتم تحديث تاريخ التقييم تلقائياً عند انتهاء التقييم أو إلغائه. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__deadline
@@ -706,7 +789,7 @@ msgstr "الوصف"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_report__display_name
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__display_name
 msgid "Display Name"
-msgstr "الاسم المعروض"
+msgstr "اسم العرض "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__done
@@ -714,7 +797,7 @@ msgstr "الاسم المعروض"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
 msgid "Done"
-msgstr "المنتهية"
+msgstr "منتهي "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_kanban
@@ -724,7 +807,7 @@ msgstr "القائمة المنسدلة"
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__email_from
 msgid "Email address of the sender"
-msgstr ""
+msgstr "بريد المرسل الإلكتروني "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_employee
@@ -746,24 +829,24 @@ msgstr "تقييم الموظف"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_autocomplete_ids
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__employee_autocomplete_ids
 msgid "Employee Autocomplete"
-msgstr ""
+msgstr "الإكمال التلقائي للموظف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback
 msgid "Employee Feedback"
-msgstr ""
+msgstr "ملاحظات الموظف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback_published
 msgid "Employee Feedback Published"
-msgstr ""
+msgstr "تم نشر ملاحظات الموظف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__employee_feedback_template
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Employee Feedback Template"
-msgstr ""
+msgstr "قالب ملاحظات الموظف "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_report__name
@@ -773,40 +856,40 @@ msgstr "اسم الموظف"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_user_id
 msgid "Employee User"
-msgstr ""
+msgstr "اسم المستخدم للموظف "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Employee's"
-msgstr ""
+msgstr "الخاص بالموظف "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Employee's Feedback"
-msgstr ""
+msgstr "ملاحظات الموظف "
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.action_hr_appraisal_note
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__assessment_note_ids
 #: model:ir.ui.menu,name:hr_appraisal.menu_hr_appraisal_note
 msgid "Evaluation Scale"
-msgstr ""
+msgstr "ميزان التقييم "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Exceeds expectations"
-msgstr ""
+msgstr "يفوق التوقعات "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
 msgid "Extended Filters..."
-msgstr "الفلاتر التفصيلية..."
+msgstr "عوامل التصفية التفصيلية... "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Feedback Templates"
-msgstr ""
+msgstr "قوالب الملاحظات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__model_object_field
@@ -817,7 +900,7 @@ msgstr "حقل"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Fill appraisal for <a href=\"#\" data-oe-model=\"%s\" data-oe-id=\"%s\">%s</a>"
-msgstr ""
+msgstr "ملء التقييم لـ <a href=\"#\" data-oe-model=\"%s\" data-oe-id=\"%s\">%s</a>"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__date_final_interview
@@ -832,7 +915,7 @@ msgstr "تاريخ المقابلة النهائية"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__assessment_note
 msgid "Final Rating"
-msgstr ""
+msgstr "التقييم النهائي "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__copyvalue
@@ -845,19 +928,19 @@ msgstr "تعبير العنصر النائب النهائي، ليتم نسخه 
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_follower_ids
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_follower_ids
 msgid "Followers"
-msgstr "المتابعون"
+msgstr "المتابعين "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_partner_ids
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "المتابعون (الشركاء)"
+msgstr "المتابعين (الشركاء) "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__activity_type_icon
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Font awesome icon e.g. fa-tasks"
+msgstr "أيقونة Font awesome مثال fa-tasks "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__email_from
@@ -883,33 +966,33 @@ msgstr "الأهداف"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
 msgid "Group By"
-msgstr "تجميع حسب"
+msgstr "التجميع حسب "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Group by..."
-msgstr "تجميع حسب..."
+msgstr "التجميع حسب... "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__has_message
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "يحتوي على رسالة "
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_confirm
 msgid "Hr Appraisal: Confirm Appraisal"
-msgstr ""
+msgstr "تقييم الموارد البشرية: تأكيد التقييم "
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid "Hr Appraisal: Request an Appraisal From Employee"
-msgstr ""
+msgstr "تقييم الموارد البشرية: اطلب تقييماً من موظف "
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request
 msgid "Hr Appraisal: Request an Appraisal from Manager"
-msgstr ""
+msgstr "تقييم الموارد البشرية: اطلب تقييماً من المدير "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__id
@@ -954,12 +1037,12 @@ msgstr "صورة"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__image_128
 msgid "Image 128"
-msgstr ""
+msgstr "صورة 128"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
 msgid "In progress Evaluations"
-msgstr "في مرحلة التقييم"
+msgstr "التقييمات الجارية "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_report__final_interview
@@ -969,12 +1052,12 @@ msgstr "المقابلة"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__is_appraisal_manager
 msgid "Is Appraisal Manager"
-msgstr ""
+msgstr "مدير التقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "محرر "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_is_follower
@@ -986,12 +1069,12 @@ msgstr "متابع"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__is_implicit_manager
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__is_implicit_manager
 msgid "Is Implicit Manager"
-msgstr ""
+msgstr "مدير صريح "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__is_manager
 msgid "Is Manager"
-msgstr ""
+msgstr "مدير "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__lang
@@ -1005,20 +1088,20 @@ msgstr "اللغة"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__last_appraisal_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_users__last_appraisal_id
 msgid "Last Appraisal"
-msgstr ""
+msgstr "آخر تقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__last_appraisal_date
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__last_appraisal_date
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_users__last_appraisal_date
 msgid "Last Appraisal Date"
-msgstr ""
+msgstr "تاريخ آخر تقييم "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Last Meeting"
-msgstr ""
+msgstr "آخر اجتماع "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal____last_update
@@ -1077,45 +1160,45 @@ msgstr "المدير"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Manager Assessment will show here"
-msgstr ""
+msgstr "سوف يظهر تقييم المدير هنا "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback
 msgid "Manager Feedback"
-msgstr ""
+msgstr "إدارة الملاحظات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback_published
 msgid "Manager Feedback Published"
-msgstr ""
+msgstr "تم نشر ملاحظات المدير "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__manager_feedback_template
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Manager Feedback Template"
-msgstr ""
+msgstr "قالب ملاحظات المدير "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_user_ids
 msgid "Manager Users"
-msgstr ""
+msgstr "حسابات مستخدم المدير "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Manager's Feedback"
-msgstr ""
+msgstr "ملاحظات المدير "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Mark as Done"
-msgstr "تعيين كمكتمل"
+msgstr "تعيين كمنتهي "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__meeting_count_display
 msgid "Meeting Count"
-msgstr ""
+msgstr "عدد الاجتماعات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__meeting_ids
@@ -1126,7 +1209,7 @@ msgstr "الاجتماعات"
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Meets expectations"
-msgstr ""
+msgstr "يستوفي التوقعات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_has_error
@@ -1144,13 +1227,13 @@ msgstr "الرسائل"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__my_activity_date_deadline
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "نهاية الوقت المعين للنشاط"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action_my
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "My Appraisals"
-msgstr ""
+msgstr "تقييماتي "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_search
@@ -1168,13 +1251,13 @@ msgstr "الاسم"
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Needs improvement"
-msgstr ""
+msgstr "بحاجة إلى التحسين "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_calendar_event_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "الفعالية التالية في تقويم الأنشطة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_date_deadline
@@ -1204,19 +1287,19 @@ msgstr "تاريخ التقييم القادم"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Next Meeting"
-msgstr ""
+msgstr "الاجتماع التالي "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "No Meeting"
-msgstr ""
+msgstr "لا يوجد اجتماع "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Note"
-msgstr "الملاحظات"
+msgstr "ملاحظات "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_needaction_counter
@@ -1228,7 +1311,7 @@ msgstr "عدد الإجراءات"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_has_error_counter
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_has_error_counter
 msgid "Number of errors"
-msgstr "عدد الاخطاء"
+msgstr "عدد الأخطاء "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__message_needaction_counter
@@ -1246,7 +1329,7 @@ msgstr "عدد الرسائل الحادث بها خطأ في التسليم"
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__message_unread_counter
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__message_unread_counter
 msgid "Number of unread messages"
-msgstr "عدد الرسائل الجديدة"
+msgstr "عدد الرسائل غير المقروءة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__lang
@@ -1256,55 +1339,59 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"لغة الترجمة الاختيارية (كود ISO) لاختيارها عند إرسال بريد إلكتروني. إذا لم "
+"يتم تعيينها، سوف تُستخدم النسخة باللغة الإنجليزية. عادة ما يكون ذلك تمثيلاً "
+"للعنصر النائب المسؤول عن التزويد باللغة المناسبة، مثال: {{ "
+"object.partner_id.lang }}. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__null_value
 msgid "Optional value to use if the target field is empty"
-msgstr "قيمة اختيارية للإستخدام إذا كان الحقل المطلوب خالي"
+msgstr "القيمة الاختيارية لاستخدامها إذا كان الحقل المطلوب فارغاً "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__parent_user_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_base__parent_user_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__parent_user_id
 msgid "Parent User"
-msgstr ""
+msgstr "المستخدم الرئيسي "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_search
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "People I Manage"
-msgstr ""
+msgstr "الأشخاص الذين أديرهم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__copyvalue
 msgid "Placeholder Expression"
-msgstr "تعبير العنصر النائب"
+msgstr "تعبير العنصر النائب "
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.open_view_hr_appraisal_tree
 msgid "Plan appraisals with your colleagues, collect and discuss feedback."
-msgstr ""
+msgstr "خطِّط للتقييمات مع زملائك في العمل، ثم قم بجمع ومناقشة الملاحظات. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__previous_appraisal_id
 msgid "Previous Appraisal"
-msgstr ""
+msgstr "التقييم السابق "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__previous_appraisal_date
 msgid "Previous Appraisal Date"
-msgstr ""
+msgstr "تاريخ التقييم السابق "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__note
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Private Note"
-msgstr ""
+msgstr "ملاحظة خاصة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__progression
 msgid "Progress"
-msgstr "مستوي التقدم"
+msgstr "التقدم "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_employee_public
@@ -1314,12 +1401,12 @@ msgstr "موظف في القطاع العام"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__recipient_ids
 msgid "Recipients"
-msgstr "المستلمون"
+msgstr "المستلمين "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__related_partner_id
 msgid "Related Partner"
-msgstr "الشريك المرتبط"
+msgstr "الشريك ذو الصلة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__employee_user_id
@@ -1332,7 +1419,7 @@ msgstr "اسم المستخدم المرتبط بالمورد لإدارة وص�
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "نموذج التكوين "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -1342,24 +1429,24 @@ msgstr "إعادة فتح"
 #. module: hr_appraisal
 #: model:ir.ui.menu,name:hr_appraisal.menu_hr_appraisal_report
 msgid "Reporting"
-msgstr "التقارير"
+msgstr "إعداد التقارير "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_public_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_users_view_form
 msgid "Request Appraisal"
-msgstr ""
+msgstr "طلب تقييم "
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.action_create_multi_appraisals
 msgid "Request Appraisals"
-msgstr ""
+msgstr "طلب تقييمات "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_request_appraisal
 msgid "Request an Appraisal"
-msgstr ""
+msgstr "طلب تقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_user_id
@@ -1370,7 +1457,7 @@ msgstr "المستخدم المسؤول"
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.open_view_hr_appraisal_tree
 msgid "Schedule an appraisal"
-msgstr ""
+msgstr "جدولة تقييم "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1383,13 +1470,13 @@ msgid ""
 "Select target field from the related document model.\n"
 "If it is a relationship field you will be able to select a target field at the destination of the relationship."
 msgstr ""
-"اختيار الحقل المستهدف من نمط المستند المتعلق به.\n"
-"إذا كان حقل علاقة يمكنك اختيار الحقل المستهدف من امتداد العلاقة."
+"اختيار الحقل المستهدف من نموذج المستند ذي الصلة.\n"
+"إذا كان حقل علاقة يمكنك اختيار الحقل المستهدف من امتداد العلاقة. "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Self Assessment will show here"
-msgstr ""
+msgstr "سوف يظهر التقييم الذاتي هنا "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
@@ -1399,12 +1486,12 @@ msgstr "إرسال"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Send by email"
-msgstr "إرسال بالبريد الإلكتروني"
+msgstr "إرسال عبر البريد الإلكتروني "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_note__sequence
 msgid "Sequence"
-msgstr "المسلسل"
+msgstr "التسلسل "
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_config_settings_action
@@ -1415,12 +1502,12 @@ msgstr "الإعدادات"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__show_employee_feedback_full
 msgid "Show Employee Feedback Full"
-msgstr ""
+msgstr "إظهار ملاحظات الموظف كاملة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__show_manager_feedback_full
 msgid "Show Manager Feedback Full"
-msgstr ""
+msgstr "إظهار ملاحظات المدير كاملة "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1452,7 +1539,7 @@ msgstr ""
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Strongly Exceed Expectations"
-msgstr ""
+msgstr "يفوق التوقعات بشكل كبير "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__sub_model_object_field
@@ -1477,22 +1564,30 @@ msgstr "الموضوع..."
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
+msgid "Such grouping is not allowed."
+msgstr "لا يسمح بالتجميع بهذه الطريقة. "
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
 msgid ""
 "Thanks to your Appraisal Plan, without any new manual Appraisal, the new "
 "Appraisal will be automatically created on %s."
 msgstr ""
+"بفضل خطة تقييمك دون أي تقييمات يدوية، سوف يتم إنشاء التقييم الجديد تلقائياً "
+"في %s."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__note
 msgid "The content of this note is not visible by the Employee."
-msgstr ""
+msgstr "محتوى هذه الملاحظة غير مرئي للموظف. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__last_appraisal_date
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee__last_appraisal_date
 #: model:ir.model.fields,help:hr_appraisal.field_res_users__last_appraisal_date
 msgid "The date of the last appraisal"
-msgstr ""
+msgstr "تاريخ آخر تقييم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee__next_appraisal_date
@@ -1500,12 +1595,13 @@ msgstr ""
 msgid ""
 "The date of the next appraisal is computed by the appraisal plan's dates "
 "(first appraisal + periodicity)."
-msgstr "تاريخ التقييم التالي يحسب بتاريخ خطة التقييم (أول تقييم + دورياً)"
+msgstr ""
+"يُحسب تاريخ التقييم التالي عن طريق تاريخ خطة التقييم (أول تقييم + الدورية). "
 
 #. module: hr_appraisal
 #: model:ir.model.constraint,message:hr_appraisal.constraint_res_company_positif_number_months
 msgid "The duration time must be bigger or equal to 1 month."
-msgstr ""
+msgstr "يجب أن تكون المدة أكبر من أو مساوية لشهر 1. "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1514,16 +1610,30 @@ msgid ""
 "The employee %s arrived %s months ago. An appraisal for %s is created. You "
 "can assess %s & determinate the date for '1to1' meeting before %s."
 msgstr ""
+"لقد وصل الموظف %s قبل %s شهور مضت. تم إنشاء تقييم لـ %s. بإمكانك تقييم %s "
+"وتحديد تاريخ الاجتماع الخاص بينهما قبل %s. "
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
+msgid "The employee feedback cannot be changed by managers."
+msgstr ""
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
+msgid "The manager feedback cannot be changed by an employee."
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__assessment_note
 msgid "This field is not visible to the Employee."
-msgstr ""
+msgstr "هذا الحقل غير مرئي للموظف. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__new
 msgid "To Confirm"
-msgstr ""
+msgstr "بانتظار التأكيد "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1539,7 +1649,7 @@ msgstr "للبدء"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Today Activities"
-msgstr "نشاطات اليوم"
+msgstr "أنشطة اليوم "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__activity_exception_decoration
@@ -1551,13 +1661,14 @@ msgstr "نوع النشاط الاستثنائي المسجل."
 #: code:addons/hr_appraisal/wizard/request_appraisal.py:0
 #, python-format
 msgid "Unable to post message, please configure the sender's email address."
-msgstr "تعذّر نشر الرسالة، برجاء إعداد البريد الإلكتروني الخاص بالمرسل."
+msgstr ""
+"تعذّر نشر الرسالة،  الرجاء تهيئة عنوان البريد الإلكتروني الخاص بالمرسل. "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__uncomplete_goals_count
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__uncomplete_goals_count
 msgid "Uncomplete Goals Count"
-msgstr ""
+msgstr "عدد الأهداف غير المكتملة "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -1570,13 +1681,13 @@ msgstr "غير منشور"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_unread
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_unread
 msgid "Unread Messages"
-msgstr "الرسائل الجديدة"
+msgstr "الرسائل غبر المقروءة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_unread_counter
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr "عدد الرسائل الجديدة"
+msgstr "عدد الرسائل غير المقروءة "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__manager_user_id
@@ -1586,17 +1697,17 @@ msgstr "المستخدم"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__user_body
 msgid "User Contents"
-msgstr ""
+msgstr "محتويات المستخدم "
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_res_users
 msgid "Users"
-msgstr "المستخدمون"
+msgstr "المستخدمين "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__waiting_feedback
 msgid "Waiting Feedback from Employee/Managers"
-msgstr ""
+msgstr "بانتظار الملاحظات من الموظف/المدراء "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__sub_model_object_field
@@ -1604,8 +1715,8 @@ msgid ""
 "When a relationship field is selected as first field, this field lets you "
 "select the target field within the destination document model (sub-model)."
 msgstr ""
-"عند اختيار حقل العلاقة كحقل أول، هذا الحقل يجعلك تختار الحقل المراد مع نمط "
-"المستند المستلم (نمط-فرعي)"
+"عند اختيار حقل العلاقة كحقل أول، يتيح لك هذا الحقل تحديد الحقل المراد مع "
+"نموذج المستند المستلم (نموذج-فرعي) "
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__sub_object
@@ -1613,8 +1724,8 @@ msgid ""
 "When a relationship field is selected as first field, this field shows the "
 "document model the relationship goes to."
 msgstr ""
-"عند اختيار حقل العلاقة كحقل أولي، يظهر هذا الحقل نمط المستند الذي ستنتقل "
-"إليه العلاقة."
+"عند اختيار حقل العلاقة كحقل أولي، يظهر هذا الحقل نموذج المستند الذي ستنتقل "
+"إليه العلاقة. "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1623,12 +1734,14 @@ msgid ""
 "You arrived %s months ago. Your appraisal is created you can assess yourself"
 " here. Your manager will determinate the date for your '1to1' meeting."
 msgstr ""
+"لقد وصلْتَ قبل %s شهور. لقم تم إنشاء تقييمك وبإمكانك تقييم نفسك هنا. سوف "
+"يحدد المدير تاريخ الاجتماع الخاص بينكما. "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "You cannot delete appraisal which is not in draft or canceled state"
-msgstr ""
+msgstr "لا يمكنك حذف تقييم ليس في حالة المسودة أو ملغي "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1638,6 +1751,8 @@ msgid ""
 "created. You can assess %s & determinate the date for '1to1' meeting before "
 "%s."
 msgstr ""
+"كان آخر تقييم لموظفك قبل %s شهور. تم إنشاء تقييم لـ %s. بإمكانك تقييم %s و "
+"تحديد تحديد تاريخ الاجتماع الخاص بينكما %s قبل. "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1647,6 +1762,8 @@ msgid ""
 "assess yourself here. Your manager will determinate the date for your '1to1'"
 " meeting."
 msgstr ""
+"كان آخر تقييم لك قبل %s شهور. تم إنشاء تقييمك ويمكنك تقييم نفسك هنا. سوف "
+"يقوم مديرك بتحديد تاريخ الاجتماع الخاص بينكما. "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -1656,22 +1773,22 @@ msgstr "مثل: محمد محمود"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
 msgid "e.g. Present yourself to your new team"
-msgstr ""
+msgstr "مثال: قدم نفسك لفريقك الجديد "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months after recruitment,"
-msgstr ""
+msgstr "شهور بعد التعيين، "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months,"
-msgstr ""
+msgstr "شهور، "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months."
-msgstr ""
+msgstr "شهور. "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
@@ -1681,30 +1798,30 @@ msgstr "oe_kanban_text_red"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "once published"
-msgstr ""
+msgstr "فور نشره "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_view_activity
 msgid "text-danger"
-msgstr ""
+msgstr "text-danger"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "then after"
-msgstr ""
+msgstr "ثم بعد "
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "then every"
-msgstr ""
+msgstr "ثم كل "
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid ""
 "{{ hasattr(object, 'name') and object.name or '' }} requests an Appraisal"
-msgstr ""
+msgstr "{{ hasattr(object, 'name') و object.name or '' }} يطلب تقييماً "
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_confirm
 msgid "{{ object.employee_id.name }}: Appraisal Confirmed"
-msgstr ""
+msgstr "{{ object.employee_id.name }}: تم تأكيد التقييم "

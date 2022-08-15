@@ -17,9 +17,6 @@ This module allows the creation of the EDI documents and the communication with 
         'account_edi',
         'l10n_mx',
         'base_vat',
-        'base_address_extended',
-        'attachment_indexation',
-        'base_address_city',
         'product_unspsc'
     ],
     'external_dependencies': {

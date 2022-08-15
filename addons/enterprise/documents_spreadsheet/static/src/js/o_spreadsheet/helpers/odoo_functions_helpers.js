@@ -93,7 +93,7 @@ function _getOdooFunctionsFromAST(ast) {
             return _getOdooFunctionsFromAST(ast.left).concat(_getOdooFunctionsFromAST(ast.right));
         }
         case "FUNCALL": {
-            const functionName = ast.value;
+            const functionName = ast.value.toUpperCase();
             if (["PIVOT", "PIVOT.HEADER", "PIVOT.POSITION"].includes(functionName)) {
                 return [{ functionName, args: ast.args, isPivot: true }];
             } else if (["LIST", "LIST.HEADER"].includes(functionName)) {

@@ -13,7 +13,7 @@
                     <section class="s_text_block">
                         <div class="container">
                             <p>
-                                <span t-field="appointment_type.name"/> on <strong t-out="datetime_locale"/>
+                                <span t-field="appointment_type.name"/> on <strong t-out="datetime_locale"/> (<strong t-out="request.session.timezone or appointment_type.timezone"/>)
                             </p>
                         </div>
                     </section>
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row col-xl-8 mx-auto" t-if="question.question_type == 'text'">
-                                    <label t-attf-for="question_#{question.id}" class="col-md-4 col-form-label" t-out="question.name"/>
+                                    <label t-attf-for="question_#{question.id}" class="col-md-4 col-form-label" t-out="' '.join([question.name, '*' if question.question_required else ''])"/>
                                     <div class="col-md-8">
                                         <textarea class="form-control" rows="8"
                                             t-att-required="question.question_required or None"

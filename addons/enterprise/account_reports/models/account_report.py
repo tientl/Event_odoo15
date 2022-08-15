@@ -89,36 +89,63 @@ class AccountReport(models.AbstractModel):
     def _init_filter_journals(self, options, previous_options=None):
         if self.filter_journals is None:
             return
+        all_journal_groups = self._get_filter_journal_groups()
+        all_journals = self._get_filter_journals()
+        journals_sel = []
+        options['journals'] = []
+        group_selected = False
+        if previous_options and previous_options.get('journals'):
+            for journal in previous_options['journals']:
+                if isinstance(journal.get('id'), int) and journal.get('id') in all_journals.ids and journal.get('selected'):
+                    journals_sel.append(journal)
+        # In case no previous_options exist, the default behaviour is to select the first Journal Group that exists.
+        elif all_journal_groups:
+            selected_journals = all_journals - all_journal_groups[0].excluded_journal_ids
+            for journal in selected_journals:
+                journals_sel.append({
+                    'id': journal.id,
+                    'name': journal.name,
+                    'code': journal.code,
+                    'type': journal.type,
+                    'selected': True,
+                })
+        # Create the dropdown menu
+        if all_journal_groups:
+            options['journals'].append({'id': 'divider', 'name': _('Journal Groups')})
+            for group in all_journal_groups:
+                group_journal_ids = (all_journals.filtered(lambda x: x.company_id == group.company_id) - group.excluded_journal_ids).ids
+                if not group_selected and journals_sel \
+                        and len(journals_sel) == len(group_journal_ids) \
+                        and all(journal_opt['id'] in group_journal_ids for journal_opt in journals_sel):
+                    group_selected = group
+                options['journals'].append({'id': 'group', 'name': group.name, 'ids': group_journal_ids})
 
         previous_company = False
-        if previous_options and previous_options.get('journals'):
-            journal_map = dict((opt['id'], opt['selected']) for opt in previous_options['journals'] if opt['id'] != 'divider' and 'selected' in opt)
-        else:
-            journal_map = {}
-        options['journals'] = []
-
-        group_header_displayed = False
-        default_group_ids = []
-        for group in self._get_filter_journal_groups():
-            journal_ids = (self._get_filter_journals() - group.excluded_journal_ids).ids
-            if len(journal_ids):
-                if not group_header_displayed:
-                    group_header_displayed = True
-                    options['journals'].append({'id': 'divider', 'name': _('Journal Groups')})
-                    default_group_ids = journal_ids
-                options['journals'].append({'id': 'group', 'name': group.name, 'ids': journal_ids})
-
-        for j in self._get_filter_journals():
-            if j.company_id != previous_company:
-                options['journals'].append({'id': 'divider', 'name': j.company_id.name})
-                previous_company = j.company_id
+        journals_selection = {opt['id'] for opt in journals_sel}
+        for journal in all_journals:
+            if journal.company_id != previous_company:
+                options['journals'].append({'id': 'divider', 'name': journal.company_id.name})
+                previous_company = journal.company_id
             options['journals'].append({
-                'id': j.id,
-                'name': j.name,
-                'code': j.code,
-                'type': j.type,
-                'selected': journal_map.get(j.id, j.id in default_group_ids),
+                'id': journal.id,
+                'name': journal.name,
+                'code': journal.code,
+                'type': journal.type,
+                'selected': journal.id in journals_selection,
             })
+
+        # Compute the displayed option name
+        if group_selected:
+            options['name_journal_group'] = group_selected.name
+        elif len(journals_sel) == 0 or len(journals_sel) == len(all_journals):
+            options['name_journal_group'] = _("All Journals")
+        elif len(journals_sel) <= 5:
+            options['name_journal_group'] = ', '.join(jrnl['code'] for jrnl in journals_sel)
+        elif len(journals_sel) == 6:
+            options['name_journal_group'] = ', '.join(jrnl['code'] for jrnl in journals_sel) + _(" and one other")
+        else:
+            options['name_journal_group'] = ', '.join(jrnl['code'] for jrnl in journals_sel[:5]) + _(" and %s others",
+                                                                                                     len(journals_sel) - 5)
 
     @api.model
     def _get_options_journals(self, options):
@@ -237,12 +264,12 @@ class AccountReport(models.AbstractModel):
         date_from = fields.Date.from_string(period_vals['date_from'])
         date_to = date_from - datetime.timedelta(days=1)
 
-        if period_type == 'fiscalyear':
+        if period_type in ('fiscalyear', 'today'):
             # Don't pass the period_type to _get_dates_period to be able to retrieve the account.fiscal.year record if
             # necessary.
             company_fiscalyear_dates = self.env.company.compute_fiscalyear_dates(date_to)
             return self._get_dates_period(options, company_fiscalyear_dates['date_from'], company_fiscalyear_dates['date_to'], mode, strict_range=strict_range)
-        if period_type in ('month', 'today', 'custom'):
+        if period_type in ('month', 'custom'):
             return self._get_dates_period(options, *date_utils.get_month(date_to), mode, period_type='month', strict_range=strict_range)
         if period_type == 'quarter':
             return self._get_dates_period(options, *date_utils.get_quarter(date_to), mode, period_type='quarter', strict_range=strict_range)
@@ -293,16 +320,10 @@ class AccountReport(models.AbstractModel):
         if previous_mode == 'single' and options_mode == 'range':
             # 'single' date mode to 'range'.
 
-            if previous_filter == 'custom':
+            if previous_filter:
                 date_to = fields.Date.from_string(previous_date_to or previous_date_from)
                 date_from = self.env.company.compute_fiscalyear_dates(date_to)['date_from']
                 options_filter = 'custom'
-            elif previous_filter == 'today':
-                date_to = fields.Date.context_today(self)
-                date_from = date_utils.get_month(date_to)[0]
-                options_filter = 'custom'
-            elif previous_filter:
-                options_filter = previous_filter
             else:
                 options_filter = default_filter
 
@@ -340,7 +361,8 @@ class AccountReport(models.AbstractModel):
         if not date_from or not date_to:
             if options_filter == 'today':
                 date_to = fields.Date.context_today(self)
-                date_from = date_utils.get_month(date_to)[0]
+                date_from = self.env.company.compute_fiscalyear_dates(date_to)['date_from']
+                period_type = 'today'
             elif 'month' in options_filter:
                 date_from, date_to = date_utils.get_month(fields.Date.context_today(self))
                 period_type = 'month'
@@ -451,7 +473,7 @@ class AccountReport(models.AbstractModel):
         def create_date_domain(options_date):
             date_field = options_date.get('date_field', 'date')
             domain = [(date_field, '<=', options_date['date_to'])]
-            if options_date['mode'] == 'range':
+            if options_date['mode'] == 'range' and options_date['date_from']:
                 strict_range = options_date.get('strict_range')
                 if not strict_range:
                     domain += [
@@ -608,15 +630,20 @@ class AccountReport(models.AbstractModel):
                 'columns': [{'name': self.format_value(c) if isinstance(c, (int, float)) else c, 'no_format_name': c} for c in val_dict['totals']],
             })
             if not self._context.get('print_mode') or unfolded:
-                # add every direct child group recursively
-                children = []
-                for child in sorted(val_dict['children_codes']):
-                    add_to_hierarchy(children, child, level + 1, val_dict['id'], hierarchy)
-                # add all the lines that are in this group but not in one of this group's children groups
-                for l in val_dict['lines']:
-                    l['level'] = level + 1
-                    l['parent_id'] = val_dict['id']
-                lines.extend(sorted(val_dict['lines'] + children, key=lambda k: k.get('account_code', '') + k['name']))
+                for i in val_dict['children_codes']:
+                    hierarchy[i]['parent_code'] = i
+                all_lines = [hierarchy[id] for id in val_dict["children_codes"]] + val_dict["lines"]
+                for line in sorted(all_lines, key=lambda k: k.get('account_code', '') + k['name']):
+                    if 'children_codes' in line:
+                        children = []
+                        # if the line is a child group, add it recursively
+                        add_to_hierarchy(children, line['parent_code'], level + 1, val_dict['id'], hierarchy)
+                        lines.extend(children)
+                    else:
+                        # add lines that are in this group but not in one of this group's children groups
+                        line['level'] = level + 1
+                        line['parent_id'] = val_dict['id']
+                        lines.append(line)
 
         def compute_hierarchy(lines, level, parent_id):
             # put every line in each of its parents (from less global to more global) and compute the totals
@@ -733,11 +760,12 @@ class AccountReport(models.AbstractModel):
                 ('move_id.fiscal_position_id.foreign_vat', '=', False),
             ]
 
-        if fiscal_position_opt == 'all':
-            return []
+        if type(fiscal_position_opt) is int:
+            # It's a fiscal position id
+            return [('move_id.fiscal_position_id', '=', fiscal_position_opt)]
 
-        # Else it's a fiscal position id
-        return [('move_id.fiscal_position_id', '=', fiscal_position_opt)]
+        # 'all', or option isn't specified
+        return []
 
     ####################################################
     # OPTIONS: MULTI COMPANY
@@ -1095,7 +1123,8 @@ class AccountReport(models.AbstractModel):
     def tax_tag_template_open_aml(self, options, params=None):
         active_id = self._parse_line_id(params.get('id'))[-1][2]
         tag_template = self.env['account.tax.report.line'].browse(active_id)
-        domain = [('tax_tag_ids', 'in', tag_template.tag_ids.ids)] + self.env['account.move.line']._get_tax_exigible_domain()
+        company_ids = [comp_opt['id'] for comp_opt in options.get('multi_company', [])] or self.env.company.ids
+        domain = [('tax_tag_ids', 'in', tag_template.tag_ids.ids), ('company_id', 'in', company_ids)] + self.env['account.move.line']._get_tax_exigible_domain()
         return self.open_action(options, domain)
 
     def open_tax_report_line(self, options, params=None):
@@ -1338,13 +1367,6 @@ class AccountReport(models.AbstractModel):
             period_domain = [('state', '=', 'draft'), ('date', '<=', date_to)]
             options['unposted_in_period'] = bool(self.env['account.move'].search_count(period_domain))
 
-        if options.get('journals'):
-            journals_selected = set(journal['id'] for journal in options['journals'] if journal.get('selected'))
-            for journal_group in self.env['account.journal.group'].search([('company_id', '=', self.env.company.id)]):
-                if journals_selected and journals_selected == set(self._get_filter_journals().ids) - set(journal_group.excluded_journal_ids.ids):
-                    options['name_journal_group'] = journal_group.name
-                    break
-
         report_manager = self._get_report_manager(options)
         info = {'options': options,
                 'context': self.env.context,
@@ -1562,6 +1584,7 @@ class AccountReport(models.AbstractModel):
                          'options': json.dumps(options),
                          'output_format': 'pdf',
                          'financial_id': self.env.context.get('id'),
+                         'allowed_company_ids': self.env.context.get('allowed_company_ids'),
                          }
                 }
 
@@ -1572,8 +1595,6 @@ class AccountReport(models.AbstractModel):
         return {
             'o_account_reports_no_print': '',
             'table-responsive': '',
-            markupsafe.Markup('<a'): markupsafe.Markup('<span'),
-            markupsafe.Markup('</a>'): markupsafe.Markup('</span>')
         }
 
     def get_pdf(self, options):
@@ -1624,10 +1645,12 @@ class AccountReport(models.AbstractModel):
                          'options': json.dumps(options),
                          'output_format': 'xlsx',
                          'financial_id': self.env.context.get('id'),
+                         'allowed_company_ids': self.env.context.get('allowed_company_ids'),
                          }
                 }
 
     def get_xlsx(self, options, response=None):
+        self = self.with_context(self._set_context(options))
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {
             'in_memory': True,
@@ -1740,6 +1763,7 @@ class AccountReport(models.AbstractModel):
                          'options': json.dumps(options),
                          'output_format': 'xml',
                          'financial_id': self.env.context.get('id'),
+                         'allowed_company_ids': self.env.context.get('allowed_company_ids'),
                          }
                 }
 
@@ -1753,6 +1777,7 @@ class AccountReport(models.AbstractModel):
                          'options': json.dumps(options),
                          'output_format': 'txt',
                          'financial_id': self.env.context.get('id'),
+                         'allowed_company_ids': self.env.context.get('allowed_company_ids'),
                          }
                 }
 

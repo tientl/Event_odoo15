@@ -893,80 +893,16 @@ var TableBlockTotal = AbstractNewBuildingBlock.extend({
     _dataInheritance: function (values) {
         var data = this._dataInheritanceValues(values);
         return this._createContent({
-            contentInStructure:
-                '<table class="table table-sm o_report_block_total">' +
-                '<t t-set="total_currency_id" t-value="' + data.currency_id + '"/>' +
-                '<t t-set="total_amount_total" t-value="' + data.amount_total + '"/>' +
-                '<t t-set="total_amount_untaxed" t-value="' + data.amount_untaxed + '"/>' +
-                '<t t-set="total_amount_by_groups" t-value="' + data.amount_by_groups + '"/>' +
-                '<tr class="border-black o_subtotal">' +
-                    '<td><strong>Subtotal</strong></td>' +
-                    '<td class="text-right">' +
-                        '<span t-esc="total_amount_untaxed" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                    '</td>' +
-                '</tr>' +
-                '<t t-foreach="total_amount_by_groups" t-as="total_amount_by_group">' +
-                    '<tr>' +
-                        '<t t-if="len(total_amount_by_group) == 1 and total_amount_untaxed == total_amount_by_group[2]">' +
-                            '<td><span t-esc="total_amount_by_group[0]"/></td>' +
-                            '<td class="text-right o_price_total">' +
-                                '<span t-esc="total_amount_by_group[3]"/>' +
-                            '</td>' +
-                        '</t>' +
-                        '<t t-else="">' +
-                            '<td>' +
-                                '<span t-esc="total_amount_by_group[0]"/>' +
-                                '<span><span>on</span>' +
-                                    '<t t-esc="total_amount_by_group[4]"/>' +
-                                '</span>' +
-                            '</td>' +
-                            '<td class="text-right o_price_total">' +
-                                '<span t-esc="total_amount_by_group[3]"/>' +
-                            '</td>' +
-                        '</t>' +
-                    '</tr>' +
-                '</t>' +
-                '<t t-if="total_amount_by_groups is None">' +
-                    '<tr>' +
-                        '<td>Taxes</td>' +
-                        '<td class="text-right">' +
-                            '<span t-esc="total_amount_total - total_amount_untaxed" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                        '</td>' +
-                    '</tr>' +
-                '</t>' +
-                '<tr class="border-black o_total">' +
-                    '<td><strong>Total</strong></td>' +
-                    '<td class="text-right">' +
-                        '<span t-esc="total_amount_total" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                    '</td>' +
-                '</tr>' +
-                '</table>',
+            contentInStructure: 
+                '<table class="table table-sm">' +
+                    `<t t-set="tax_totals" t-value="json.loads(${data.tax_totals_json})"/>` +
+                    '<t t-call="account.document_tax_totals"/>' +
+                '</table>'
         });
     },
     _dataInheritanceValues: function (values) {
-        var currency_id = values.related.split('.')[0] + ".env.company.currency_id";
-        var amount_untaxed = '0.0';
-        var amount_total = '0.0';
-        var amount_by_groups = 'None';
-        if (values.relation === 'account.move' || values.relation === 'purchase.order') {
-            currency_id = values.related + '.currency_id';
-        }
-        if (values.relation === 'sale.order') {
-            currency_id = values.related + '.pricelist_id.currency_id';
-        }
-        if (values.relation === 'account.move' || values.relation === 'sale.order') {
-            amount_by_groups = values.related + '.amount_by_group';
-        }
-        if (values.relation === 'account.move' || values.relation === 'sale.order' || values.relation === 'purchase.order') {
-            amount_untaxed = values.related + '.amount_untaxed';
-            amount_total = values.related + '.amount_total';
-        }
-        return {
-            currency_id: currency_id,
-            amount_total: amount_total,
-            amount_untaxed: amount_untaxed,
-            amount_by_groups: amount_by_groups,
-        };
+        const tax_totals_json = `${values.related}.tax_totals_json`;
+        return { tax_totals_json };
     },
 });
 

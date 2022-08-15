@@ -6,7 +6,12 @@ from dateutil.relativedelta import relativedelta
 from psycopg2 import sql
 
 from odoo import models, api, fields
+from odoo.tools import split_every
 
+# When cleaning_mode = automatic, _clean_records calls action_validate.
+# This is quite slow so requires smaller batch size.
+DR_CREATE_STEP_AUTO = 5000
+DR_CREATE_STEP_MANUAL = 50000
 
 class DataCleaningModel(models.Model):
     _name = 'data_cleaning.model'
@@ -68,7 +73,7 @@ class DataCleaningModel(models.Model):
             cm_model.records_to_clean_count = counts[cm_model.id] if cm_model.id in counts else 0
 
     def _cron_clean_records(self):
-        self.sudo().search([])._clean_records()
+        self.sudo().search([])._clean_records(batch_commits=True)
         self.sudo()._notify_records_to_clean()
 
     def _clean_records_format_phone(self, actions, field):
@@ -82,6 +87,9 @@ class DataCleaningModel(models.Model):
         existing_rows = self._cr.fetchall()
 
         records = self.env[self.res_model_name].search([(field, 'not in', [False, ''])])
+        records = records.with_context(prefetch_fields=False)
+        # Avoids multiple select queries when reading fields in _get_country_id and record[field].
+        records.read([fname for fname in ['country_id', 'company_id'] if fname in records] + [field])
         field_id = actions[field]['field_id']
         rule_ids = actions[field]['rule_ids']
         result = []
@@ -98,7 +106,7 @@ class DataCleaningModel(models.Model):
         return result
 
 
-    def _clean_records(self):
+    def _clean_records(self, batch_commits=False):
         self.flush()
 
         records_to_clean = []
@@ -153,10 +161,18 @@ class DataCleaningModel(models.Model):
                         })
 
             if cleaning_model.cleaning_mode == 'automatic':
-                self.env['data_cleaning.record'].create(records_to_create).action_validate()
+                for records_to_create_batch in split_every(DR_CREATE_STEP_AUTO, records_to_create):
+                    self.env['data_cleaning.record'].create(records_to_create_batch).action_validate()
+                    if batch_commits:
+                        # Commit after each batch iteration to avoid complete rollback on timeout as
+                        # this can create lots of new records.
+                        self.env.cr.commit()
             else:
                 records_to_clean = records_to_clean + records_to_create
-        self.env['data_cleaning.record'].create(records_to_clean)
+        for records_to_clean_batch in split_every(DR_CREATE_STEP_MANUAL, records_to_clean):
+            self.env['data_cleaning.record'].create(records_to_clean_batch)
+            if batch_commits:
+                self.env.cr.commit()
 
     @api.model
     def _notify_records_to_clean(self):

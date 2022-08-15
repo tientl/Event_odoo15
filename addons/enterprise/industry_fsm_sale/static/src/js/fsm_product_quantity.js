@@ -15,10 +15,9 @@ const FSMProductQty = FieldInteger.extend({
     events: _.extend({}, FieldInteger.prototype.events, {
         'click button[name="fsm_remove_quantity"]': '_removeQuantity',
         'click button[name="fsm_add_quantity"]': '_addQuantity',
-        'click span[name="fsm_quantity"]': '_editQuantity',
-        'blur span[name="fsm_quantity"]': '_onBlur',
-        'keypress span[name="fsm_quantity"]': '_onKeyPress',
-        'keydown span[name="fsm_quantity"]': '_onKeyDown',
+        'click input[name="fsm_quantity"]': '_editQuantity',
+        'blur input[name="fsm_quantity"]': '_onBlur',
+        'keydown input[name="fsm_quantity"]': '_onKeyDown'
     }),
 
     /**
@@ -29,6 +28,7 @@ const FSMProductQty = FieldInteger.extend({
         this._super.apply(this, arguments);
         this.isReadonly = !!record.context.hide_qty_buttons;
         this.mode = 'readonly';
+        this.nodeOptions.type = 'number';
         this.muteRemoveQuantityButton = false;
         this.exitEditMode = false; // use to know when the user exits the edit mode.
     },
@@ -38,7 +38,7 @@ const FSMProductQty = FieldInteger.extend({
      */
     start: function () {
         this.$buttons = this.$('button');
-        this.$fsmQuantityElement = this.$('span[name="fsm_quantity"]');
+        this._prepareInput(this.$('input[name="fsm_quantity"]'));
         this.$el.on('click', (e) => this._onWidgetClick(e));
         this._super.apply(this, arguments);
     },
@@ -48,8 +48,8 @@ const FSMProductQty = FieldInteger.extend({
      * Add the invalid class on a field
      */
     setInvalidClass: function () {
-        this.$fsmQuantityElement.addClass('o_field_invalid');
-        this.$fsmQuantityElement.attr('aria-invalid', 'true');
+        this.$input.addClass('o_field_invalid');
+        this.$input.attr('aria-invalid', 'true');
     },
 
     /**
@@ -57,8 +57,8 @@ const FSMProductQty = FieldInteger.extend({
      * Remove the invalid class on a field
      */
     removeInvalidClass: function () {
-        this.$fsmQuantityElement.removeClass('o_field_invalid');
-        this.$fsmQuantityElement.removeAttr('aria-invalid');
+        this.$input.removeClass('o_field_invalid');
+        this.$input.removeAttr('aria-invalid');
     },
 
     /**
@@ -111,7 +111,7 @@ const FSMProductQty = FieldInteger.extend({
      *
      * @param {MouseEvent} e
      */
-    _addQuantity: async function (e) {
+    _addQuantity: function (e) {
         e.stopPropagation();
         if (this._isValid) {
             if (this._isDirty) {
@@ -131,7 +131,7 @@ const FSMProductQty = FieldInteger.extend({
     _editQuantity: function (e) {
         e.stopPropagation();
         if (this.mode == 'edit') {
-            // When the user double clicks on the span, he cannot select the text to edit it
+            // When the user double clicks on the input, he cannot select the text to edit it
             // This condition is used to allow the double click on this element to select all into it.
             return;
         }
@@ -147,8 +147,6 @@ const FSMProductQty = FieldInteger.extend({
      * Key Down Listener function.
      *
      * The main goal of this function is to validate the edition when the ENTER key is down.
-     * The other goal is to know if the text edited is selected at least a part.
-     * It is useful to not have more than 9 digits for the product quantity.
      *
      * @param {KeyboardEvent} e
      */
@@ -156,26 +154,7 @@ const FSMProductQty = FieldInteger.extend({
         e.stopPropagation();
         if (e.keyCode === $.ui.keyCode.ENTER) {
             e.preventDefault();
-            this._onBlur();
-        } else if ((e.ctrlKey || e.metaKey) && ['c', 'v'].includes(e.key)) {
-            // the "copy-paste" is not managed in this widget, because we cannot keep the number of digits at most 9 digits.
-            e.preventDefault();
-        }
-    },
-
-    /**
-     * Key Press Listener function.
-     *
-     * This method prevents the user to enter a character different than a digit.
-     *
-     * @param {KeyboardEvent} e
-     */
-    _onKeyPress: function (e) {
-        e.stopPropagation();
-        if (e.key.length === 1) { // then it is a character
-            if (!/[0-9]/.test(e.key) || (!this._getSelectedText() && e.target.innerText.length >= 9)) { // if the key is not a number then bypass it.
-                e.preventDefault();
-            }
+            this.$input.focus().blur();
         }
     },
 
@@ -185,17 +164,15 @@ const FSMProductQty = FieldInteger.extend({
      * @override
      */
     _onInput: function () {
-        this._formatFSMQuantity();
-        if (this.hasOwnProperty('range')) {
-            this._removeFSMQuantitySelection();
-        }
-        this.$input.val(this.$fsmQuantityElement.text());
+        this.$input.toggleClass('small', this.$input.val().length > this._maxLengthBeforeSmall);
         this._super.apply(this, arguments);
-        if (!this._isValid) {
-            this.setInvalidClass();
-        } else {
+        try {
+            this._parseValue(this.$input.val());
             this.removeInvalidClass();
+        } catch (e) {
+            this.setInvalidClass();
         }
+        
     },
 
     /**
@@ -205,6 +182,11 @@ const FSMProductQty = FieldInteger.extend({
     _getValue: function () {
         return this.$input ? this.$input.val() : this.value;
     },
+
+    /**
+     * Maximum length of value before the small class is applied to the input
+     */
+    _maxLengthBeforeSmall: 5,
 
     /**
      * _onBlur is called when the user stops and focus out the edition of the quantity for the current product.
@@ -218,7 +200,11 @@ const FSMProductQty = FieldInteger.extend({
             if (this.mode !== 'readonly') {
                 this.mode = 'readonly';
                 this.exitEditMode = true;
-                this._renderReadonly();
+                this.$input
+                    .removeClass('o_input')
+                    .toggleClass('text-muted', this.value === 0);
+                if (this._getValue() === '') this.$input.val(0);
+                this._isDirty = false;
             }
         } catch (err) {
             // incase of UserError do not display the warning
@@ -230,66 +216,6 @@ const FSMProductQty = FieldInteger.extend({
     },
 
     /**
-     * Format fsm quantity span based on the number of digits
-     *
-     * If the number of digits is greater than 5 then the font size is reduced.
-     */
-    _formatFSMQuantity: function () {
-        this.$fsmQuantityElement.toggleClass('small', this.$fsmQuantityElement.text().length > 5);
-    },
-
-    /**
-     * Get the selected text in the span when we are in edit mode.
-     *
-     * Source: https://stackoverflow.com/a/3545105
-     */
-    _getSelectedText: function () {
-        if (window.getSelection) {
-            return window.getSelection().toString();
-        } else if (document.selection) {
-            return document.selection.createRange().text;
-        }
-        return '';
-    },
-
-    /**
-     * Select the FSM quantity when the user want to edit the quantity.
-     *
-     * If the value is 0 then we remove it, otherwise we select all content in the span.
-     *
-     * Source: https://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div/12244703#12244703
-     */
-    _selectFSMQuantity: function () {
-        if (this.value === 0) {
-            return;
-        }
-        const element = this.$fsmQuantityElement[0];
-        if (document.body.createTextRange) {
-            this.range = document.body.createTextRange();
-            this.range.moveToElementText(element);
-            this.range.select();
-        } else if (window.getSelection) {
-            const selection = window.getSelection();
-            this.range = document.createRange();
-            this.range.selectNodeContents(element);
-            selection.removeAllRanges();
-            selection.addRange(this.range);
-        }
-    },
-
-    _removeFSMQuantitySelection: function () {
-        if (window.getSelection) {
-            const selection = window.getSelection();
-            if (selection.removeRange) {
-                selection.removeRange(this.range);
-            } else { // for Safari browser
-                selection.removeAllRanges();
-            }
-        }
-        delete this.range;
-    },
-
-    /**
      * @override
      */
     _render: function () {
@@ -298,7 +224,6 @@ const FSMProductQty = FieldInteger.extend({
         this.exitEditMode = false;
         this.muteRemoveQuantityButton = this.record.data.hasOwnProperty('quantity_decreasable') && !this.record.data.quantity_decreasable;
         this._super.apply(this, arguments);
-        this._formatFSMQuantity();
     },
 
     _renderButtons: function () {
@@ -318,25 +243,26 @@ const FSMProductQty = FieldInteger.extend({
      */
     _renderEdit: function () {
         this._renderButtons();
-        this._prepareInput(this.$fsmQuantityElement);
-        this.$fsmQuantityElement
-            .attr('contenteditable', true)
+        this._prepareInput(this.$input);
+        this.$input
+            .removeAttr('readonly')
             .removeClass('text-muted')
-            .text(this.value === 0 ? "" : this.value)
-            .focus();
-        this._selectFSMQuantity();
+            .toggleClass('small', this.value.toString().length > this._maxLengthBeforeSmall)
+            .val(this.value === 0 ? "" : this.value)
+            .focus()
+            .select();
     },
-
     /**
      * @override
      */
     _renderReadonly: function () {
         this._renderButtons();
-        this.$fsmQuantityElement
-            .attr('contenteditable', false)
+        this.$input
+            .attr('readonly', 'readonly')
             .removeClass('o_input')
+            .toggleClass('small', this.value.toString().length > this._maxLengthBeforeSmall)
             .toggleClass('text-muted', this.value === 0)
-            .text(this.value);
+            .val(this.value);
         this._isDirty = false;
     },
     destroy: function () {

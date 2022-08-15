@@ -5,7 +5,9 @@
 # Translators:
 # Martin Trigaux, 2021
 # Alexandra Jubert <aju@odoo.com>, 2021
-# Cécile Collart <cco@odoo.com>, 2021
+# Khadija Mbazaa <khadija.mbazaa@gmail.com>, 2022
+# Thomas Charpentier, 2022
+# Cécile Collart <cco@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -13,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 10:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:38+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2021\n"
+"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -150,7 +152,7 @@ msgstr "Type de validation"
 #. module: approvals
 #: model:ir.model,name:approvals.model_approval_category_approver
 msgid "Approval Type Approver"
-msgstr ""
+msgstr "Description du type de validation"
 
 #. module: approvals
 #: model:ir.ui.menu,name:approvals.approvals_menu_root
@@ -207,7 +209,7 @@ msgstr "Validateur"
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__user_ids
 msgid "Approver Users"
-msgstr ""
+msgstr "Approbateur"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
@@ -241,7 +243,7 @@ msgstr "Nombre de pièces jointes"
 #: model:ir.model.fields,field_description:approvals.field_approval_category__automated_sequence
 #: model:ir.model.fields,field_description:approvals.field_approval_request__automated_sequence
 msgid "Automated Sequence?"
-msgstr "Séquence automatisée?"
+msgstr "Séquence automatisée ?"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
@@ -432,7 +434,7 @@ msgstr "Manager de l'employé"
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__existing_request_user_ids
 msgid "Existing Request User"
-msgstr ""
+msgstr "Demande d'utilisateur existant"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__existing_user_ids
@@ -538,6 +540,11 @@ msgid ""
 "        Is Required Approver: the employee's manager will be required to approve the request.\n"
 "    "
 msgstr ""
+"Comment le supérieur de l'employé interagit avec ce type d'approbation.\n"
+"\n"
+"    Vide: Ne rien faire\n"
+"    Est Approbateur: Le nom du supérieur apparait dans la liste des approbateurs\n"
+"    Est Approbateur requis: L'approbation du supérieur devient obligatoire. "
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__id
@@ -593,7 +600,7 @@ msgstr "Minimum non valide"
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__invalid_minimum_warning
 msgid "Invalid Minimum Warning"
-msgstr ""
+msgstr "Avertissement de minimum non valide"
 
 #. module: approvals
 #: model:ir.model.fields.selection,name:approvals.selection__approval_category__manager_approval__approver
@@ -608,7 +615,7 @@ msgstr "Est un abonné"
 #. module: approvals
 #: model:ir.model.fields.selection,name:approvals.selection__approval_category__manager_approval__required
 msgid "Is Required Approver"
-msgstr ""
+msgstr "Est un Approbateur obligatoire"
 
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_job_referral_award
@@ -646,7 +653,7 @@ msgstr "Dernière mise à jour le"
 #: model_terms:ir.actions.act_window,help:approvals.approval_request_action
 #: model_terms:ir.actions.act_window,help:approvals.approval_request_action_all
 msgid "Let's go to the"
-msgstr ""
+msgstr "Passons à "
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__location
@@ -694,6 +701,8 @@ msgstr "Validation minimale"
 msgid ""
 "Minimum Approval must be equal or superior to the sum of required Approvers."
 msgstr ""
+"Le nombre minimum d'approbations doit être, au moins, supérieur ou égal à la"
+" somme des approbateurs obligatoires."
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__my_activity_date_deadline
@@ -729,6 +738,7 @@ msgstr "Nom"
 #. module: approvals
 #: model:ir.model.fields.selection,name:approvals.selection__approval_approver__status__new
 #: model:ir.model.fields.selection,name:approvals.selection__approval_request__user_status__new
+#: code:addons/approvals/models/approval_category.py:0
 msgid "New"
 msgstr "Nouveau"
 
@@ -1121,6 +1131,7 @@ msgstr "Vous devez joindre au moins un document."
 #, python-format
 msgid "Your minimum approval exceeds the total of default approvers."
 msgstr ""
+"Votre approbation minimale dépasse le total des approbateurs par défaut"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form

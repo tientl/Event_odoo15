@@ -16,6 +16,7 @@
         'data/hr_contract_salary_advantage_data.xml',
         'data/hr_contract_salary_resume_data.xml',
         'data/hr_contract_salary_personal_info_data.xml',
+        'data/cp200/employee_termination_fees_data.xml',
         'report/hr_contract_history_report_views.xml',
         'wizard/generate_simulation_link_views.xml',
         'report/hr_contract_history_report_views.xml',

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+from dateutil.relativedelta import relativedelta
 
 from odoo.tests import tagged
 from odoo.exceptions import ValidationError
@@ -94,9 +95,10 @@ class TestPayrollCreditTime(TestPayrollCommon):
         self.assertEqual(john_allocation.number_of_days, 18)
 
         # Apply allocation changes directly - Credit time exit
-        continuation_contract = self.env['hr.contract'].search(view['domain']).filtered(lambda contract: not contract.time_credit and contract.id != john_current_contract.id)
+        continuation_date = date(current_year, 5, 1)
+        continuation_contract = self.env['hr.contract'].search(view['domain']).filtered(lambda contract: contract.date_start == continuation_date and contract.id != john_current_contract.id)
         self.env['l10n_be.schedule.change.allocation']._cron_update_allocation_from_new_schedule(continuation_contract.date_start)
-        self.assertEqual(continuation_contract.time_credit, False)
+        self.assertEqual(continuation_contract.time_credit, True)  # Wizard is part_time
         self.assertEqual(john_allocation.number_of_days, 10)
 
     def test_credit_time_for_a(self):

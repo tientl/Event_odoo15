@@ -28,5 +28,12 @@ class L10nBe28110(models.Model):
             'res_model': 'hr.payslip',  # Security Restriction to payroll managers
         } for employee, filename, data in files if self._payroll_documents_enabled(employee.company_id)])
 
+        template = self.env.ref('documents_l10n_be_hr_payroll.mail_template_281_10', raise_if_not_found=False)
+        if template:
+            for employee, dummy, dummy in files:
+                if not self._payroll_documents_enabled(employee.company_id):
+                    continue
+                template.send_mail(employee.id, notif_layout='mail.mail_notification_light')
+
     def action_post_in_documents(self):
         self._action_generate_pdf(post_process=True)

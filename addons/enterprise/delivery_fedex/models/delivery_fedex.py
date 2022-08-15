@@ -37,6 +37,7 @@ FEDEX_CURR_MATCH = {
 
 FEDEX_STOCK_TYPE = [
     ('PAPER_4X6', 'PAPER_4X6'),
+    ('PAPER_4X6.75', 'PAPER_4X6.75'),
     ('PAPER_4X8', 'PAPER_4X8'),
     ('PAPER_4X9', 'PAPER_4X9'),
     ('PAPER_7X4.75', 'PAPER_7X4.75'),
@@ -44,9 +45,11 @@ FEDEX_STOCK_TYPE = [
     ('PAPER_8.5X11_TOP_HALF_LABEL', 'PAPER_8.5X11_TOP_HALF_LABEL'),
     ('PAPER_LETTER', 'PAPER_LETTER'),
     ('STOCK_4X6', 'STOCK_4X6'),
+    ('STOCK_4X6.75', 'STOCK_4X6.75'),
     ('STOCK_4X6.75_LEADING_DOC_TAB', 'STOCK_4X6.75_LEADING_DOC_TAB'),
     ('STOCK_4X6.75_TRAILING_DOC_TAB', 'STOCK_4X6.75_TRAILING_DOC_TAB'),
     ('STOCK_4X8', 'STOCK_4X8'),
+    ('STOCK_4X9', 'STOCK_4X9'),
     ('STOCK_4X9_LEADING_DOC_TAB', 'STOCK_4X9_LEADING_DOC_TAB'),
     ('STOCK_4X9_TRAILING_DOC_TAB', 'STOCK_4X9_TRAILING_DOC_TAB')
 ]
@@ -73,6 +76,8 @@ class ProviderFedex(models.Model):
     fedex_default_package_type_id = fields.Many2one('stock.package.type', string="Fedex Package Type")
     fedex_service_type = fields.Selection([('INTERNATIONAL_ECONOMY', 'INTERNATIONAL_ECONOMY'),
                                            ('INTERNATIONAL_PRIORITY', 'INTERNATIONAL_PRIORITY'),
+                                           ('FEDEX_INTERNATIONAL_PRIORITY', 'FEDEX_INTERNATIONAL_PRIORITY'),
+                                           ('FEDEX_INTERNATIONAL_PRIORITY_EXPRESS', 'FEDEX_INTERNATIONAL_PRIORITY_EXPRESS'),
                                            ('FEDEX_GROUND', 'FEDEX_GROUND'),
                                            ('FEDEX_2_DAY', 'FEDEX_2_DAY'),
                                            ('FEDEX_2_DAY_AM', 'FEDEX_2_DAY_AM'),
@@ -86,7 +91,7 @@ class ProviderFedex(models.Model):
                                            ('FEDEX_NEXT_DAY_END_OF_DAY', 'FEDEX_NEXT_DAY_END_OF_DAY'),
                                            ('FEDEX_EXPRESS_SAVER', 'FEDEX_EXPRESS_SAVER'),
                                            ],
-                                          default='INTERNATIONAL_PRIORITY')
+                                          default='FEDEX_INTERNATIONAL_PRIORITY')
     fedex_duty_payment = fields.Selection([('SENDER', 'Sender'), ('RECIPIENT', 'Recipient')], required=True, default="SENDER")
     fedex_weight_unit = fields.Selection([('LB', 'LB'),
                                           ('KG', 'KG')],
@@ -191,7 +196,7 @@ class ProviderFedex(models.Model):
             srm.set_master_package(weight_value, 1)
 
         # Commodities for customs declaration (international shipping)
-        if self.fedex_service_type in ['INTERNATIONAL_ECONOMY', 'INTERNATIONAL_PRIORITY'] or is_india:
+        if 'INTERNATIONAL' in self.fedex_service_type or is_india:
             total_commodities_amount = 0.0
             commodity_country_of_manufacture = order.warehouse_id.partner_id.country_id.code
 
@@ -204,7 +209,7 @@ class ProviderFedex(models.Model):
                 commodity_weight_value = self._fedex_convert_weight(line.product_id.weight * line.product_uom_qty, self.fedex_weight_unit)
                 commodity_quantity = line.product_uom_qty
                 commodity_quantity_units = 'EA'
-                commodity_harmonized_code = line.product_id.hs_code or ''
+                commodity_harmonized_code = line.product_id.hs_code.replace(".", "") if line.product_id.hs_code else ''
                 srm.commodities(_convert_curr_iso_fdx(order_currency.name), commodity_amount, commodity_number_of_piece, commodity_weight_units, commodity_weight_value, commodity_description, commodity_country_of_manufacture, commodity_quantity, commodity_quantity_units, commodity_harmonized_code)
             srm.customs_value(_convert_curr_iso_fdx(order_currency.name), total_commodities_amount, "NON_DOCUMENTS")
             srm.duties_payment(order.warehouse_id.partner_id, superself.fedex_account_number, superself.fedex_duty_payment)
@@ -257,23 +262,23 @@ class ProviderFedex(models.Model):
             net_weight = self._fedex_convert_weight(picking.shipping_weight, self.fedex_weight_unit)
 
             # Commodities for customs declaration (international shipping)
-            if self.fedex_service_type in ['INTERNATIONAL_ECONOMY', 'INTERNATIONAL_PRIORITY'] or (picking.partner_id.country_id.code == 'IN' and picking.picking_type_id.warehouse_id.partner_id.country_id.code == 'IN'):
+            if 'INTERNATIONAL' in self.fedex_service_type  or (picking.partner_id.country_id.code == 'IN' and picking.picking_type_id.warehouse_id.partner_id.country_id.code == 'IN'):
 
                 commodity_currency = order_currency
                 total_commodities_amount = 0.0
                 commodity_country_of_manufacture = picking.picking_type_id.warehouse_id.partner_id.country_id.code
 
-                for operation in picking.move_line_ids:
-                    total_commodities_amount += operation.sale_price
-                    commodity_description = operation.product_id.name
+                for product in picking.move_line_ids.mapped('product_id'):
+                    related_operations = picking.move_line_ids.filtered(lambda ml: ml.product_id == product)
+                    commodity_quantity = sum(related_operations.mapped('qty_done'))
+                    commodity_amount = sum([round(operation.sale_price / (commodity_quantity or 1), 2) for operation in related_operations])
+                    total_commodities_amount += (commodity_amount * commodity_quantity)
+                    commodity_description = product.name
                     commodity_number_of_piece = '1'
                     commodity_weight_units = self.fedex_weight_unit
-                    commodity_weight_value = self._fedex_convert_weight(operation.product_id.weight * operation.qty_done, self.fedex_weight_unit)
-                    commodity_quantity = operation.qty_done
+                    commodity_weight_value = self._fedex_convert_weight(product.weight * commodity_quantity, self.fedex_weight_unit)
                     commodity_quantity_units = 'EA'
-                    commodity_harmonized_code = operation.product_id.hs_code or ''
-                    commodity_amount = round(operation.sale_price/commodity_quantity, 2) if commodity_quantity else operation.sale_price
-
+                    commodity_harmonized_code = product.hs_code.replace(".", "") if product.hs_code else ''
                     srm.commodities(_convert_curr_iso_fdx(commodity_currency.name), commodity_amount, commodity_number_of_piece, commodity_weight_units, commodity_weight_value, commodity_description, commodity_country_of_manufacture, commodity_quantity, commodity_quantity_units, commodity_harmonized_code)
                 srm.customs_value(_convert_curr_iso_fdx(commodity_currency.name), total_commodities_amount, "NON_DOCUMENTS")
                 srm.duties_payment(picking.picking_type_id.warehouse_id.partner_id, superself.fedex_account_number, superself.fedex_duty_payment)
@@ -481,27 +486,27 @@ class ProviderFedex(models.Model):
             dept_number=dept_number,
         )
         srm.set_master_package(net_weight, 1)
-        if self.fedex_service_type in ['INTERNATIONAL_ECONOMY', 'INTERNATIONAL_PRIORITY'] or (picking.partner_id.country_id.code == 'IN' and picking.picking_type_id.warehouse_id.partner_id.country_id.code == 'IN'):
+        if 'INTERNATIONAL' in self.fedex_service_type  or (picking.partner_id.country_id.code == 'IN' and picking.picking_type_id.warehouse_id.partner_id.country_id.code == 'IN'):
 
             order_currency = picking.sale_id.currency_id or picking.company_id.currency_id
             commodity_currency = order_currency
             total_commodities_amount = 0.0
             commodity_country_of_manufacture = picking.picking_type_id.warehouse_id.partner_id.country_id.code
 
-            for operation in picking.move_line_ids:
-                total_commodities_amount += operation.sale_price
-                commodity_description = operation.product_id.name
+            for product in picking.move_line_ids.mapped('product_id'):
+                related_operations = picking.move_line_ids.filtered(lambda ml: ml.product_id == product)
+                commodity_quantity = sum([
+                    operation.qty_done if operation.state == 'done' else operation.product_uom_qty
+                    for operation in related_operations
+                ])
+                commodity_amount = sum([round(operation.sale_price / (commodity_quantity or 1), 2) for operation in related_operations])
+                total_commodities_amount += (commodity_amount * commodity_quantity)
+                commodity_description = product.name
                 commodity_number_of_piece = '1'
                 commodity_weight_units = self.fedex_weight_unit
-                if operation.state == 'done':
-                    commodity_weight_value = self._fedex_convert_weight(operation.product_id.weight * operation.qty_done, self.fedex_weight_unit)
-                    commodity_quantity = operation.qty_done
-                else:
-                    commodity_weight_value = self._fedex_convert_weight(operation.product_id.weight * operation.product_uom_qty, self.fedex_weight_unit)
-                    commodity_quantity = operation.product_uom_qty
-                commodity_amount = round(operation.sale_price/commodity_quantity, 2) if commodity_quantity else operation.sale_price
+                commodity_weight_value = self._fedex_convert_weight(product.weight * commodity_quantity, self.fedex_weight_unit)
                 commodity_quantity_units = 'EA'
-                commodity_harmonized_code = operation.product_id.hs_code or ''
+                commodity_harmonized_code = product.hs_code.replace(".", "") if product.hs_code else ''
                 srm.commodities(_convert_curr_iso_fdx(commodity_currency.name), commodity_amount, commodity_number_of_piece, commodity_weight_units, commodity_weight_value, commodity_description, commodity_country_of_manufacture, commodity_quantity, commodity_quantity_units, commodity_harmonized_code)
             srm.customs_value(_convert_curr_iso_fdx(commodity_currency.name), total_commodities_amount, "NON_DOCUMENTS")
             # We consider that returns are always paid by the company creating the label

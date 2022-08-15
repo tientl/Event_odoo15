@@ -198,6 +198,7 @@ class LuxembourgElectronicReportTest(TestAccountReportsCommon):
                                 <NumericField id="715">0,00</NumericField>
                                 <NumericField id="049">0,00</NumericField>
                                 <NumericField id="194">0,00</NumericField>
+                                <NumericField id="719">0,00</NumericField>
                                 <NumericField id="056">0,00</NumericField>
                                 <NumericField id="712">0,00</NumericField>
                                 <NumericField id="714">0,00</NumericField>
@@ -210,6 +211,7 @@ class LuxembourgElectronicReportTest(TestAccountReportsCommon):
                                 <NumericField id="725">0,00</NumericField>
                                 <NumericField id="059">0,00</NumericField>
                                 <NumericField id="195">0,00</NumericField>
+                                <NumericField id="729">0,00</NumericField>
                                 <NumericField id="731">0,00</NumericField>
                                 <NumericField id="733">0,00</NumericField>
                                 <NumericField id="735">0,00</NumericField>
@@ -269,6 +271,7 @@ class LuxembourgElectronicReportTest(TestAccountReportsCommon):
                                 <NumericField id="097">0,00</NumericField>
                                 <NumericField id="094">0,00</NumericField>
                                 <NumericField id="095">0,00</NumericField>
+                                <NumericField id="096">0,00</NumericField>
                                 <NumericField id="102">39,50</NumericField>
                                 <NumericField id="103">0,00</NumericField>
                                 <NumericField id="104">39,50</NumericField>
@@ -276,6 +279,8 @@ class LuxembourgElectronicReportTest(TestAccountReportsCommon):
                                 <Choice id="204">0</Choice>
                                 <Choice id="205">1</Choice>
                                 <NumericField id="403">0</NumericField>
+                                <NumericField id="418">0</NumericField>
+                                <NumericField id="453">0</NumericField>
                         </FormData>
                     </Declaration>
                 </Declarer>

@@ -78,7 +78,8 @@ class HrContract(models.Model):
     ip = fields.Boolean('Intellectual Property', default=False, tracking=True)
     ip_wage_rate = fields.Float(string="IP percentage", help="Should be between 0 and 100 %")
     ip_value = fields.Float(compute='_compute_ip_value')
-    time_credit = fields.Boolean('Part Time', readonly=True, help='This is a part time contract.')
+    # Please stop making this field readonly
+    time_credit = fields.Boolean('Part Time', readonly=False, help='This is a part time contract.')
     work_time_rate = fields.Float(
         compute='_compute_work_time_rate', store=True, readonly=True,
         string='Work time rate', help='Work time rate versus full time working schedule.')
@@ -129,10 +130,12 @@ class HrContract(models.Model):
     @api.depends('time_credit', 'resource_calendar_id.hours_per_week', 'standard_calendar_id.hours_per_week')
     def _compute_work_time_rate(self):
         for contract in self:
-            if contract.time_credit:
+            if contract.time_credit and contract.standard_calendar_id.hours_per_week:
                 contract.work_time_rate = contract.resource_calendar_id.hours_per_week / contract.standard_calendar_id.hours_per_week
-            else:
+            elif contract.company_id.resource_calendar_id.hours_per_week:
                 contract.work_time_rate = contract.resource_calendar_id.hours_per_week / contract.company_id.resource_calendar_id.hours_per_week
+            else:
+                contract.work_time_rate = 1
 
     @api.depends(
         'wage', 'state', 'employee_id.l10n_be_scale_seniority', 'job_id.l10n_be_scale_category',
@@ -255,8 +258,12 @@ class HrContract(models.Model):
 
     @api.depends('meal_voucher_amount')
     def _compute_meal_voucher_info(self):
+        # The amount of the meal voucher is computed on the basis of the contribution
+        # of the employer and the employee. Indeed, the first can contribute up to a
+        # maximum of € 6.91 per check and per day provided, while the participation
+        # of the second must amount to a minimum of € 1.09.
         for contract in self:
-            contract.meal_voucher_paid_by_employer = contract.meal_voucher_amount * (1 - 0.1463)
+            contract.meal_voucher_paid_by_employer = contract.meal_voucher_amount - 1.09
             monthly_nb_meal_voucher = 220.0 / 12
             contract.meal_voucher_paid_monthly_by_employer = contract.meal_voucher_paid_by_employer * monthly_nb_meal_voucher
             contract.meal_voucher_average_monthly_amount = contract.meal_voucher_amount * monthly_nb_meal_voucher

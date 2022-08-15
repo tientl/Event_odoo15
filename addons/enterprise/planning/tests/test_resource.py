@@ -19,6 +19,25 @@ class TestPlanningResource(TestCommonPlanning):
             'resource_type': 'material'
         })
 
+    def test_resource_material(self):
+        slot_a = self.env['planning.slot'].create({
+            'resource_id': self.res_willywaller.id,
+            'start_datetime': datetime(2019, 6, 6, 8, 0, 0),
+            'end_datetime': datetime(2019, 6, 6, 12, 0, 0)
+        })
+        self.assertEqual(slot_a.state, 'published', 'Shift with resource type material should be published by default')
+
+        slot_b = self.env['planning.slot'].create({
+            'resource_id': self.resource_janice.id,
+            'start_datetime': datetime(2019, 6, 6, 13, 0, 0),
+            'end_datetime': datetime(2019, 6, 6, 17, 0, 0)
+        })
+        slot_b.resource_id = self.res_willywaller.id
+        self.assertEqual(slot_a.state, 'published', 'Changing resource with resource type material should make shift published')
+
+        slot_b.action_unpublish()
+        self.assertEqual(slot_b.state, 'published', 'Even after unpublish, Material resource shift should always be published')
+
     def test_resource_conflicts(self):
         slot_a = self.env['planning.slot'].create({
             'resource_id': self.res_willywaller.id,
@@ -44,9 +63,27 @@ class TestPlanningResource(TestCommonPlanning):
         slot_a.resource_id = self.resource_bert
         self.assertEqual(slot_a.overlap_slot_count, 0)
 
-    def test_resource_publication_warning(self):
+    def test_resource_material_publication_warning(self):
         slot_a = self.env['planning.slot'].create({
             'resource_id': self.res_willywaller.id,
+            'start_datetime': datetime(2019, 6, 6, 8, 0, 0),
+            'end_datetime': datetime(2019, 6, 6, 12, 0, 0)
+        })
+        self.assertFalse(slot_a.publication_warning)
+        self.assertEqual(slot_a.state, 'published', 'Shift should be published by default')
+
+        slot_a.start_datetime = datetime(2019, 6, 6, 11, 0, 0)
+        self.assertFalse(slot_a.publication_warning, 'Shift does not have publication warning for material type resource')
+
+        slot_a.resource_id = self.resource_janice
+        self.assertTrue(slot_a.publication_warning, 'Shift will display the publication warning for human type resource')
+
+        slot_a.resource_id = self.res_willywaller
+        self.assertFalse(slot_a.publication_warning, 'Shift should not show publication warning for changing resoure from human type to material type')
+
+    def test_resource_human_publication_warning(self):
+        slot_a = self.env['planning.slot'].create({
+            'resource_id': self.resource_janice.id,
             'start_datetime': datetime(2019, 6, 6, 8, 0, 0),
             'end_datetime': datetime(2019, 6, 6, 12, 0, 0)
         })
@@ -54,6 +91,13 @@ class TestPlanningResource(TestCommonPlanning):
         self.assertEqual(slot_a.state, 'draft')
 
         slot_a.action_publish()
+        self.assertFalse(slot_a.publication_warning, 'Shift should not have publication warning when user publish the shift')
+        self.assertEqual(slot_a.state, 'published')
+
+        slot_a.start_datetime = datetime(2019, 6, 6, 11, 0, 0)
+        self.assertTrue(slot_a.publication_warning, 'Shift should have publication warning when user change date of shift')
+
+        slot_a.resource_id = False
         self.assertFalse(slot_a.publication_warning)
         self.assertEqual(slot_a.state, 'published')
 

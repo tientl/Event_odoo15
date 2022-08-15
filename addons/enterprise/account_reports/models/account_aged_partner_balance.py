@@ -118,7 +118,7 @@ class ReportAccountAgedPartner(models.AbstractModel):
             JOIN account_move move ON account_move_line.move_id = move.id
             JOIN account_journal journal ON journal.id = account_move_line.journal_id
             JOIN account_account account ON account.id = account_move_line.account_id
-            JOIN res_partner partner ON partner.id = account_move_line.partner_id
+            LEFT JOIN res_partner partner ON partner.id = account_move_line.partner_id
             LEFT JOIN ir_property trust_property ON (
                 trust_property.res_id = 'res.partner,'|| account_move_line.partner_id
                 AND trust_property.name = 'trust'

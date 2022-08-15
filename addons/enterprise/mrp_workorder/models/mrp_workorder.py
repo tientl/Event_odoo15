@@ -116,7 +116,7 @@ class MrpProductionWorkcenterLine(models.Model):
             if wo.test_type in ('register_byproducts', 'register_consumed_materials'):
                 if wo.quality_state == 'none':
                     completed_lines = wo.move_line_ids.filtered(lambda l: l.lot_id) if wo.component_id.tracking != 'none' else wo.move_line_ids
-                    if not self.move_id.additional:
+                    if not wo.move_id.additional:
                         wo.component_remaining_qty = self._prepare_component_quantity(wo.move_id, wo.qty_producing) - sum(completed_lines.mapped('qty_done'))
                     else:
                         wo.component_remaining_qty = self._prepare_component_quantity(wo.move_id, wo.qty_remaining) - sum(completed_lines.mapped('qty_done'))
@@ -154,11 +154,12 @@ class MrpProductionWorkcenterLine(models.Model):
         report_type = quality_point_id.test_report_type
 
         if self.product_id.tracking == 'none':
+            xml_id = 'product.action_open_label_layout'
+            wizard_action = self.env['ir.actions.act_window']._for_xml_id(xml_id)
+            wizard_action['context'] = {'default_product_ids': self.product_id.ids}
             if report_type == 'zpl':
-                xml_id = 'stock.label_barcode_product_product'
-            else:
-                xml_id = 'product.report_product_product_barcode'
-            res = self.env.ref(xml_id).report_action([self.product_id.id] * qty)
+                wizard_action['context'].update({'default_print_format': 'zpl'})
+            res = wizard_action
         else:
             if self.finished_lot_id:
                 if report_type == 'zpl':
@@ -421,8 +422,12 @@ class MrpProductionWorkcenterLine(models.Model):
                     }
                     if point.test_type == 'register_byproducts':
                         moves = move_finished_ids.filtered(lambda m: m.product_id == point.component_id)
+                        if not moves:
+                            moves = production.move_finished_ids.filtered(lambda m: not m.operation_id and m.product_id == point.component_id)
                     elif point.test_type == 'register_consumed_materials':
                         moves = move_raw_ids.filtered(lambda m: m.product_id == point.component_id)
+                        if not moves:
+                            moves = production.move_raw_ids.filtered(lambda m: not m.operation_id and m.product_id == point.component_id)
                     else:
                         check = self.env['quality.check'].create(values)
                         previous_check.next_check_id = check
@@ -504,7 +509,7 @@ class MrpProductionWorkcenterLine(models.Model):
             else:
                 index = list(self.production_id.workorder_ids).index(self)
                 backorder = (self.production_id.procurement_group_id.mrp_production_ids - self.production_id).filtered(
-                    lambda p: p.workorder_ids[index].state not in ('cancel', 'done')
+                    lambda p: index < len(p.workorder_ids) and p.workorder_ids[index].state not in ('cancel', 'done')
                 )[:1]
 
         # One a piece is produced, you can launch the next work order
@@ -536,7 +541,7 @@ class MrpProductionWorkcenterLine(models.Model):
         # Loop on the quants to get the locations. If there is not enough
         # quantity into stock, we take the move location. Anyway, no
         # reservation is made, so it is still possible to change it afterwards.
-        vals = {
+        shared_vals = {
             'move_id': self.move_id.id,
             'product_id': self.move_id.product_id.id,
             'location_dest_id': location_dest_id.id,
@@ -546,6 +551,7 @@ class MrpProductionWorkcenterLine(models.Model):
             'company_id': self.move_id.company_id.id,
         }
         for quant in quants:
+            vals = shared_vals.copy()
             quantity = quant.quantity - quant.reserved_quantity
             quantity = self.product_id.uom_id._compute_quantity(quantity, self.product_uom_id, rounding_method='HALF-UP')
             rounding = quant.product_uom_id.rounding
@@ -564,6 +570,7 @@ class MrpProductionWorkcenterLine(models.Model):
                 break
 
         if float_compare(self.qty_done, 0, precision_rounding=self.product_id.uom_id.rounding) > 0:
+            vals = shared_vals.copy()
             vals.update({
                 'location_id': self.move_id.location_id.id,
                 'qty_done': self.qty_done,
@@ -613,7 +620,10 @@ class MrpProductionWorkcenterLine(models.Model):
                 'withControlPanel': False,
                 'form_view_initial_mode': 'edit',
             },
-            'context': {'from_production_order': self.env.context.get('from_production_order')},
+            'context': {
+                'from_production_order': self.env.context.get('from_production_order'),
+                'from_manufacturing_order': self.env.context.get('from_manufacturing_order')
+            },
         }
 
     def action_next(self):
@@ -658,11 +668,15 @@ class MrpProductionWorkcenterLine(models.Model):
         # workorder tree view action should redirect to the same view instead of workorder kanban view when WO mark as done.
         if self.env.context.get('from_production_order'):
             action = self.env["ir.actions.actions"]._for_xml_id("mrp.action_mrp_workorder_production_specific")
-            action['domain'] = expression.AND([domain, [('production_id', 'in', self.production_id.procurement_group_id.mrp_production_ids.ids)]])
+            action['domain'] = domain
             action['target'] = 'main'
             action['context'] = {
                 'no_breadcrumbs': True,
             }
+            if self.env.context.get('from_manufacturing_order'):
+                action['context'].update({
+                    'search_default_production_id': self.production_id.id
+                })
         else:
             # workorder tablet view action should redirect to the same tablet view with same workcenter when WO mark as done.
             action = self.env["ir.actions.actions"]._for_xml_id("mrp_workorder.mrp_workorder_action_tablet")
@@ -690,9 +704,13 @@ class MrpProductionWorkcenterLine(models.Model):
                     }
                 }
 
-        lot = self.env['stock.production.lot'].search([('name', '=', barcode)])
+        lot = False
 
         if self.component_tracking:
+            lot = self.env['stock.production.lot'].search([
+                ('name', '=', barcode),
+                ('product_id', '=', self.component_id.id)
+            ])
             if not lot:
                 # create a new lot
                 # create in an onchange is necessary here ("new" cannot work here)
@@ -703,6 +721,10 @@ class MrpProductionWorkcenterLine(models.Model):
                 })
             self.lot_id = lot
         elif self.production_id.product_id.tracking and self.production_id.product_id.tracking != 'none':
+            lot = self.env['stock.production.lot'].search([
+                ('name', '=', barcode),
+                ('product_id', '=', self.product_id.id)
+            ])
             if not lot:
                 lot = self.env['stock.production.lot'].create({
                     'name': barcode,

@@ -2,12 +2,13 @@ odoo.define('documents.mobile_tests', function (require) {
 "use strict";
 
 const DocumentsKanbanView = require('documents.DocumentsKanbanView');
+const DocumentsListRenderer = require('documents.DocumentsListRenderer');
 const DocumentsListView = require('documents.DocumentsListView');
 const { createDocumentsView } = require('documents.test_utils');
 
 const { afterEach, beforeEach } = require('@mail/utils/test_utils');
 
-const { dom, nextTick } = require('web.test_utils');
+const { dom, mock, nextTick } = require('web.test_utils');
 
 QUnit.module('documents', {}, function () {
 QUnit.module('documents_kanban_mobile_tests.js', {
@@ -65,9 +66,16 @@ QUnit.module('documents_kanban_mobile_tests.js', {
                 ],
             },
         });
+        mock.patch(DocumentsListRenderer, {
+            init() {
+                this._super(...arguments);
+                this.LONG_TOUCH_THRESHOLD = 0;
+            }
+        });
     },
     afterEach() {
         afterEach(this);
+        mock.unpatch(DocumentsListRenderer);
     },
 }, function () {
     QUnit.module('DocumentsKanbanViewMobile', function () {
@@ -270,9 +278,10 @@ QUnit.module('documents_kanban_mobile_tests.js', {
     QUnit.module('DocumentsInspector');
 
     QUnit.test('toggle inspector based on selection', async function (assert) {
-        assert.expect(13);
+        assert.expect(15);
 
         const list = await createDocumentsView({
+            touchScreen: true,
             View: DocumentsListView,
             model: 'documents.document',
             data: this.data,
@@ -288,10 +297,11 @@ QUnit.module('documents_kanban_mobile_tests.js', {
         assert.containsN(list, '.o_document_list_record', 2,
             "should have 2 records in the renderer");
 
-        // select a first record
-        await dom.click(list.$('.o_document_list_record:first .o_list_record_selector input'));
+        // select a first record (enter selection mode)
+        await dom.triggerEvent(list.$('.o_document_list_record:first'), 'touchstart');
+        await dom.triggerEvent(list.$('.o_document_list_record:first'), 'touchend');
         await nextTick();
-        assert.containsOnce(list, '.o_document_list_record .o_list_record_selector input:checked',
+        assert.containsOnce(list, '.o_document_list_record.o_data_row_selected',
         "should have 1 record selected");
         const toggleInspectorSelector = '.o_documents_mobile_inspector > .o_documents_toggle_inspector';
         assert.isVisible(list.$(toggleInspectorSelector),
@@ -299,32 +309,41 @@ QUnit.module('documents_kanban_mobile_tests.js', {
         assert.strictEqual(list.$(toggleInspectorSelector).text().replace(/\s+/g, " ").trim(), '1 document selected');
 
         await dom.click(list.$(toggleInspectorSelector));
-        assert.isVisible(list.$('.o_documents_mobile_inspector'),
+        assert.isVisible(list.$('.o_documents_mobile_inspector > *:not(.o_documents_toggle_inspector)'),
             "inspector should be opened");
 
         await dom.click(list.$('.o_documents_close_inspector'));
-        assert.isNotVisible(list.$('.o_documents_mobile_inspector'),
+        assert.isNotVisible(list.$('.o_documents_mobile_inspector > *:not(.o_documents_toggle_inspector)'),
             "inspector should be closed");
 
         // select a second record
-        await dom.click(list.$('.o_document_list_record:eq(1) .o_list_record_selector input'));
+        await dom.triggerEvent(list.$('.o_document_list_record:eq(1)'), 'touchstart');
+        await dom.triggerEvent(list.$('.o_document_list_record:eq(1)'), 'touchend');
         await nextTick();
-        assert.containsN(list, '.o_document_list_record .o_list_record_selector input:checked', 2,
+        assert.containsN(list, '.o_document_list_record.o_data_row_selected', 2,
             "should have 2 records selected");
         assert.strictEqual(list.$(toggleInspectorSelector).text().replace(/\s+/g, " ").trim(), '2 documents selected');
+        assert.isNotVisible(list.$('.o_documents_mobile_inspector > *:not(.o_documents_toggle_inspector)'),
+            "inspector should stay closed");
+
+        // disable selection mode
+        await dom.click(list.$('.o_discard_selection'));
+        await nextTick();
+        assert.containsNone(list, '.o_document_list_record.o_data_row_selected',
+            "shouldn't have record selected");
 
         // click on the record
         await dom.click(list.$('.o_document_list_record:first'));
         await nextTick();
-        assert.containsOnce(list, '.o_document_list_record .o_list_record_selector input:checked',
+        assert.containsOnce(list, '.o_document_list_record.o_data_row_selected',
             "should have 1 record selected");
         assert.strictEqual(list.$(toggleInspectorSelector).text().replace(/\s+/g, " ").trim(), '1 document selected');
-        assert.isVisible(list.$('.o_documents_mobile_inspector'),
+        assert.isVisible(list.$('.o_documents_mobile_inspector > *:not(.o_documents_toggle_inspector)'),
             "inspector should be opened");
 
         // close inspector
         await dom.click(list.$('.o_documents_close_inspector'));
-        assert.containsOnce(list, '.o_document_list_record .o_list_record_selector input:checked',
+        assert.containsOnce(list, '.o_document_list_record.o_data_row_selected',
             "should still have 1 record selected after closing inspector");
 
         list.destroy();

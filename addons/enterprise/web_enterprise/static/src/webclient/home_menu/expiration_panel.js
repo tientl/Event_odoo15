@@ -1,6 +1,8 @@
 /** @odoo-module **/
 import { browser } from "@web/core/browser/browser";
+import { formatDate, deserializeDateTime, serializeDate } from "@web/core/l10n/dates";
 import { useService } from "@web/core/utils/hooks";
+import { blockUI, unblockUI } from "web.framework";
 
 const { Component, hooks } = owl;
 const { useState, useRef } = hooks;
@@ -25,16 +27,15 @@ export class ExpirationPanel extends Component {
         }
 
         this.cookie = useService("cookie");
-        this.ui = useService("ui");
         this.rpc = useService("rpc");
         this.orm = useService("orm");
 
         let expirationDate;
         if (this.enterprise.expirationDate) {
-            expirationDate = this._parseExpirationDate(this.enterprise.expirationDate);
+            expirationDate = deserializeDateTime(this.enterprise.expirationDate);
         } else {
             // If no date found, assume 1 month and hope for the best
-            expirationDate = new DateTime.local().plus({ days: 30 });
+            expirationDate = DateTime.utc().plus({ days: 30 });
         }
         const diffDays = this._computeDiffDays(expirationDate);
 
@@ -70,7 +71,8 @@ export class ExpirationPanel extends Component {
 
     mounted() {
         if (this.state.diffDays <= 0) {
-            this.ui.block({
+            this.isUIBlocked = true;
+            blockUI({
                 message: this.el,
                 css: { cursor: "auto" },
                 overlayCSS: { cursor: "auto" },
@@ -81,6 +83,14 @@ export class ExpirationPanel extends Component {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * @param {DateTime} date
+     * @returns {string}
+     */
+    formatDate(date) {
+        return formatDate(date, { format: "DDD", timezone: true });
+    }
 
     /**
      * Used to ensure global state consistency.
@@ -98,18 +108,9 @@ export class ExpirationPanel extends Component {
      * @param {number} date
      */
     _computeDiffDays(date) {
-        const today = new DateTime.local();
+        const today = DateTime.utc();
         const duration = date.diff(today, "days");
         return Math.round(duration.values.days);
-    }
-    /**
-     * @private
-     * @param {string} date
-     * @returns {luxon.DateTime}
-     */
-    _parseExpirationDate(date) {
-        const fmt = "yyyy-MM-dd hh:mm:ss";
-        return new DateTime.fromFormat(date, fmt);
     }
 
     //--------------------------------------------------------------------------
@@ -135,7 +136,7 @@ export class ExpirationPanel extends Component {
      * @private
      */
     async _onBuy() {
-        const limitDate = new DateTime.local().minus({ days: 15 }).toFormat("yyyy-MM-dd");
+        const limitDate = serializeDate(DateTime.utc().minus({ days: 15 }));
         const args = [
             [
                 ["share", "=", false],
@@ -178,14 +179,16 @@ export class ExpirationPanel extends Component {
             "database.expiration_date",
         ]);
 
-        this.ui.unblock();
+        if (this.isUIBlocked) {
+            unblockUI();
+        }
 
         this._clearState();
         if (expirationDate !== oldDate && !linkedSubscriptionUrl) {
             this.state.message = "success";
             this.state.displayRegisterForm = false;
             this.state.alertType = "success";
-            this.state.expirationDate = this._parseExpirationDate(expirationDate);
+            this.state.expirationDate = deserializeDateTime(expirationDate);
         } else {
             this.state.alertType = "danger";
             this.state.buttonText = "Retry";
@@ -209,7 +212,7 @@ export class ExpirationPanel extends Component {
             "database.expiration_date",
         ]);
 
-        const oldDate = this._parseExpirationDate(oldDateStr);
+        const oldDate = deserializeDateTime(oldDateStr);
         if (this._computeDiffDays(oldDate) >= 30) {
             return;
         }
@@ -219,10 +222,12 @@ export class ExpirationPanel extends Component {
         const expirationDateStr = await this.orm.call("ir.config_parameter", "get_param", [
             "database.expiration_date",
         ]);
-        const expirationDate = this._parseExpirationDate(expirationDateStr);
+        const expirationDate = deserializeDateTime(expirationDateStr);
 
-        if (expirationDateStr !== oldDateStr && expirationDate > new DateTime.local()) {
-            this.ui.unblock();
+        if (expirationDateStr !== oldDateStr && expirationDate > DateTime.utc()) {
+            if (this.isUIBlocked) {
+                unblockUI();
+            }
             this._clearState();
             this.state.message = "update";
             this.state.alertType = "success";
@@ -266,10 +271,12 @@ export class ExpirationPanel extends Component {
             this.orm.call("ir.config_parameter", "get_param", ["database.enterprise_code"]),
         ]);
 
-        const expirationDate = this._parseExpirationDate(expirationDateStr);
+        const expirationDate = deserializeDateTime(expirationDateStr);
 
-        if (expirationDateStr !== oldDate && expirationDate > new DateTime.local()) {
-            this.ui.unblock();
+        if (expirationDateStr !== oldDate && expirationDate > DateTime.utc()) {
+            if (this.isUIBlocked) {
+                unblockUI();
+            }
             this._clearState();
             this.state.message = "success";
             this.state.alertType = "success";
@@ -277,8 +284,9 @@ export class ExpirationPanel extends Component {
             // Same remark as above (we just want to show clear button)
             this.state.diffDays = this._computeDiffDays(expirationDate);
         } else {
-            const params = enterpriseCode ? { contract: enterpriseCode } : {};
-            this.env.services.navigate("https://www.odoo.com/odoo-enterprise/renew", params);
+            const url = "https://www.odoo.com/odoo-enterprise/renew";
+            const contractQueryString = enterpriseCode ? `?contract=${enterpriseCode}` : "";
+            browser.location = `${url}${contractQueryString}`;
         }
     }
 
@@ -286,7 +294,7 @@ export class ExpirationPanel extends Component {
      * @private
      */
     async _onUpsell() {
-        const limitDate = new DateTime.local().minus({ days: 15 }).toFormat("yyyy-MM-dd");
+        const limitDate = serializeDate(DateTime.utc().minus({ days: 15 }));
         const [enterpriseCode, nbUsers] = await Promise.all([
             this.orm.call("ir.config_parameter", "get_param", ["database.enterprise_code"]),
             this.orm.call("res.users", "search_count", [

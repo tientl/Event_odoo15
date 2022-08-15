@@ -7,8 +7,41 @@ from odoo.exceptions import AccessError
 from odoo.tests import Form
 from odoo.tools import mute_logger
 from odoo import fields
+from odoo.tests.common import tagged
 
+
+@tagged('post_install', '-at_install')
 class TestSubscription(TestSubscriptionCommon):
+
+    def test_subscription_invoice_shipping_address(self):
+        """Test to check that subscription invoice first try to use partner_shipping_id and partner_id from
+        subscription"""
+        self.company = self.env.company
+
+        self.partner = self.env['res.partner'].create(
+            {'name': 'Stevie Nicks',
+             'email': 'sti@fleetwood.mac',
+             'company_id': self.company.id})
+
+        self.partner2 = self.env['res.partner'].create(
+            {'name': 'Partner 2',
+             'email': 'sti@fleetwood.mac',
+             'company_id': self.company.id})
+
+
+        invoice_id = self.subscription._recurring_create_invoice()
+        addr = self.subscription.partner_id.address_get(['delivery', 'invoice'])
+        self.assertEqual(invoice_id.partner_shipping_id.id, addr['invoice'])
+        self.assertEqual(invoice_id.partner_id.id, addr['delivery'])
+
+        self.subscription.write({
+            'partner_id': self.partner.id,
+            'partner_shipping_id': self.partner2.id,
+        })
+
+        invoice_id = self.subscription._recurring_create_invoice()
+        self.assertEqual(invoice_id.partner_shipping_id.id, self.partner2.id)
+        self.assertEqual(invoice_id.partner_id.id, self.partner.id)
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.models')
     def test_01_template(self):
@@ -44,151 +77,6 @@ class TestSubscription(TestSubscriptionCommon):
         })
         self.subscription.with_context(auto_commit=False)._recurring_create_invoice(automatic=True)
         self.assertEqual(self.subscription.stage_category, 'closed', 'website_contrect: subscription with online payment and no payment method set should get closed after 15 days')
-
-    # Mocking for 'test_auto_payment_with_token'
-    # Necessary to have a valid and done transaction when the cron on subscription passes through
-    def _mock_subscription_do_payment(self, payment_method, invoice, two_steps_sec=True):
-        tx_obj = self.env['payment.transaction']
-        reference = "CONTRACT-%s-%s" % (self.id, datetime.datetime.now().strftime('%y%m%d_%H%M%S'))
-        values = {
-            'amount': invoice.amount_total,
-            'acquirer_id': self.acquirer.id,
-            'operation': 'offline',
-            'currency_id': invoice.currency_id.id,
-            'reference': reference,
-            'token_id': payment_method.id,
-            'partner_id': invoice.partner_id.id,
-            'partner_country_id': invoice.partner_id.country_id.id,
-            'invoice_ids': [(6, 0, [invoice.id])],
-            'state': 'done',
-        }
-        tx = tx_obj.create(values)
-        return tx
-
-    # Mocking for 'test_auto_payment_with_token'
-    # Otherwise the whole sending mail process will be triggered
-    # And we are not here to test that flow, and it is a heavy one
-    def _mock_subscription_send_success_mail(self, tx, invoice):
-        self.mock_send_success_count += 1
-        return 666
-
-    # Mocking for 'test_auto_payment_with_token'
-    # Avoid account_id is False when creating the invoice
-    def _mock_prepare_invoice_data(self):
-        invoice = self.original_prepare_invoice_data()
-        invoice['partner_bank_id'] = False
-        return invoice
-
-    # Mocking for 'test_auto_payment_with_token'
-    # Avoid account_id is False when creating the invoice
-    def _mock_prepare_invoice_line(self, line, fiscal_position, date_start=False, date_stop=False):
-        line_values = self.original_prepare_invoice_line(line, fiscal_position, date_start, date_stop)
-        return line_values
-
-    def test_04_auto_payment_with_token(self):
-        from unittest.mock import patch
-
-        self.company = self.env.company
-        self.company.country_id = self.env.ref('base.us')
-
-        self.account_type_receivable = self.env['account.account.type'].create({
-            'name': 'receivable',
-            'type': 'receivable',
-            'internal_group': 'asset',
-        })
-
-        self.account_receivable = self.env['account.account'].create(
-            {'name': 'Ian Anderson',
-             'code': 'IA',
-             'user_type_id': self.account_type_receivable.id,
-             'company_id': self.company.id,
-             'reconcile': True})
-
-        self.account_type_sale = self.env['account.account.type'].create({
-            'name': 'income',
-            'type': 'other',
-            'internal_group': 'income',
-        })
-        self.account_sale = self.env['account.account'].create(
-            {'name': 'Product Sales ',
-             'code': 'S200000',
-             'user_type_id': self.account_type_sale.id,
-             'company_id': self.company.id,
-             'reconcile': False})
-
-        self.sale_journal = self.env['account.journal'].create(
-            {'name': 'reflets.info',
-             'code': 'ref',
-             'type': 'sale',
-             'company_id': self.company.id,
-             'default_account_id': self.account_sale.id})
-
-        self.partner = self.env['res.partner'].create(
-            {'name': 'Stevie Nicks',
-             'email': 'sti@fleetwood.mac',
-             'property_account_receivable_id': self.account_receivable.id,
-             'property_account_payable_id': self.account_receivable.id,
-             'company_id': self.company.id})
-
-        self.acquirer = self.env['payment.acquirer'].create(
-            {'name': 'The Wire',
-             'provider': 'transfer',
-             'company_id': self.company.id,
-             'state': 'test',
-             'redirect_form_view_id': self.env['ir.ui.view'].search([('type', '=', 'qweb')], limit=1).id})
-
-        self.payment_method = self.env['payment.token'].create(
-            {'name': 'Jimmy McNulty',
-             'partner_id': self.partner.id,
-             'acquirer_id': self.acquirer.id,
-             'acquirer_ref': 'Omar Little'})
-
-        self.original_prepare_invoice_data = self.subscription._prepare_invoice_data
-        self.original_prepare_invoice_line = self.subscription._prepare_invoice_line
-
-        patchers = [
-            patch('odoo.addons.sale_subscription.models.sale_subscription.SaleSubscription._prepare_invoice_line', wraps=self._mock_prepare_invoice_line),
-            patch('odoo.addons.sale_subscription.models.sale_subscription.SaleSubscription._prepare_invoice_data', wraps=self._mock_prepare_invoice_data),
-            patch('odoo.addons.sale_subscription.models.sale_subscription.SaleSubscription._do_payment', wraps=self._mock_subscription_do_payment),
-            patch('odoo.addons.sale_subscription.models.sale_subscription.SaleSubscription.send_success_mail', wraps=self._mock_subscription_send_success_mail),
-        ]
-
-        for patcher in patchers:
-            patcher.start()
-
-        self.subscription_tmpl.payment_mode = 'success_payment'
-
-        self.subscription.write({
-            'partner_id': self.partner.id,
-            'recurring_next_date': fields.Date.to_string(datetime.date.today()),
-            'template_id': self.subscription_tmpl.id,
-            'company_id': self.company.id,
-            'payment_token_id': self.payment_method.id,
-            'recurring_invoice_line_ids': [(0, 0, {'product_id': self.product.id, 'name': 'TestRecurringLine', 'price_unit': 50, 'uom_id': self.product.uom_id.id})],
-            'stage_id': self.ref('sale_subscription.sale_subscription_stage_in_progress'),
-        })
-        self.subscription.recurring_invoice_line_ids.onchange_product_id()
-        self.mock_send_success_count = 0
-        self.subscription.with_context(auto_commit=False)._recurring_create_invoice(automatic=True)
-        self.assertEqual(self.mock_send_success_count, 1, 'a mail to the invoice recipient should have been sent')
-        self.assertEqual(self.subscription.stage_category, 'progress', 'subscription with online payment and a payment method set should stay opened when transaction succeeds')
-
-        invoice_id = self.subscription.action_subscription_invoice()['res_id']
-        invoice = self.env['account.move'].browse(invoice_id)
-        recurring_total_with_taxes = self.subscription.recurring_total + (
-                    self.subscription.recurring_total * (self.tax_10.amount / 100.0))
-        self.assertEqual(invoice.amount_total, recurring_total_with_taxes,
-                         'website_subscription: the total of the recurring invoice created should be the subscription '
-                         'recurring total + the products taxes')
-        self.assertTrue(all(line.tax_ids.ids == self.tax_10.ids for line in invoice.invoice_line_ids),
-                        'website_subscription: All lines of the recurring invoice created should have the percent tax '
-                        'set on the subscription products')
-        self.assertTrue(
-            all(tax_line.tax_line_id == self.tax_10 for tax_line in invoice.line_ids.filtered('tax_line_id')),
-            'The invoice tax lines should be set and should all use the tax set on the subscription products')
-
-        for patcher in patchers:
-            patcher.stop()
 
     def test_05_sub_creation(self):
         """ Test multiple subscription creation from single SO"""
@@ -563,3 +451,171 @@ class TestSubscription(TestSubscriptionCommon):
             malicious_user_subscription.with_user(self.malicious_user).write({
                 'payment_token_id': stolen_payment_method.id,  # payment token not related to al capone
             })
+
+    def test_pricelist_discount(self):
+
+        discount_pricelist = self.env['product.pricelist'].create({
+            'name': 'Discount Pricelist',
+            'discount_policy': 'without_discount',
+            'currency_id': self.product.currency_id.id,
+        })
+
+        # Discount Pricelist item
+        self.env['product.pricelist.item'].create({
+            'percent_price': 20,
+            'compute_price': 'percentage',
+            'pricelist_id': discount_pricelist.id
+        })
+
+        subscription = self.env['sale.subscription'].create({
+            'name': 'TestSubscriptionDiscount',
+            'partner_id': self.user_portal.partner_id.id,
+            'pricelist_id': discount_pricelist.id,
+            'template_id': self.subscription_tmpl.id,
+            'company_id': self.company_data['company'].id
+        })
+        self.cr.precommit.clear()
+        subscription.write({'recurring_invoice_line_ids': [(0, 0, {
+            'name': 'TestRecurringLine',
+            'product_id': self.product.id,
+            'quantity': 1,
+            'price_unit': 50,
+            'uom_id': self.product.uom_id.id})]
+        })
+        line = subscription.recurring_invoice_line_ids
+
+        # Manually trigger onchange
+        line.onchange_product_quantity()
+
+        self.assertEqual(line.price_unit, 50, 'Price unit should not have change')
+        self.assertEqual(line.discount, 20, 'Discount should be applied on the line')
+        self.assertEqual(line.price_subtotal, 40, 'Price unit should be QTY * PRICE_UNIT * (1-DISCOUNT/100) = 1 * 50 * (1-0.20) = 40')
+
+    def test_onchange_product_quantity_with_different_currencies(self):
+        # onchange_product_quantity compute price unit into the currency of the subscription pricelist
+        # when currency of the product (Gold Coin) is different than subscription pricelist (USD)
+        self.subscription.write({'recurring_invoice_line_ids': [(0, 0, {
+            'name': 'TestRecurringLine',
+            'product_id': self.product.id,
+            'quantity': 1,
+            'price_unit': 50,
+            'uom_id': self.product.uom_id.id,
+        })]})
+        line = self.subscription.recurring_invoice_line_ids
+        self.assertEqual(line.price_unit, 50, 'Price unit should not have changed')
+        self.product.currency_id = self.currency_data['currency']
+        conversion_rate = self.env['res.currency']._get_conversion_rate(
+            self.product.currency_id,
+            self.subscription.pricelist_id.currency_id,
+            self.product.company_id or self.env.company,
+            fields.Date.today())
+        self.subscription.recurring_invoice_line_ids.onchange_product_quantity()
+        self.assertEqual(line.price_unit, self.subscription.pricelist_id.currency_id.round(50 * conversion_rate),
+            'Price unit must be converted into the currency of the pricelist (USD)')
+
+    def test_archive_partner_invoice_shipping_onchange_so(self):
+        # archived a partner must not remain set on invoicing/shipping address in subscription
+        # here, they are set via their parent (onchange) on SO
+        self.sale_order.partner_id = self.partner_a
+        self.sale_order.onchange_partner_id()
+        self.assertEqual(self.partner_a_invoice, self.sale_order.partner_invoice_id,
+             "Setting the customer on SO should set its invoice address via onchange.")
+        self.assertEqual(self.partner_a_shipping, self.sale_order.partner_shipping_id,
+             "Setting the customer on SO should set its delivery address via onchange.")
+
+        self.sale_order.order_line.mapped('subscription_id').unlink()
+        self.sale_order.action_confirm()
+        subscription = self.sale_order.order_line.mapped('subscription_id')
+        self.assertEqual(self.partner_a_invoice, subscription.partner_invoice_id,
+             "On the subscription, invoice address should be customer's invoice address.")
+        self.assertEqual(self.partner_a_shipping, subscription.partner_shipping_id,
+             "On the subscription, delivery address should be customer's delivery address.")
+
+        invoice = subscription._recurring_create_invoice()
+        self.assertEqual(self.partner_a_invoice, invoice.partner_id,
+             "On the invoice, invoice address should be customer's invoice address.")
+        self.assertEqual(self.partner_a_shipping, invoice.partner_shipping_id,
+             "On the invoice, delivery address should be customer's delivery address.")
+
+        self.partner_a.child_ids.write({'active': False})
+        self.assertFalse(subscription.partner_invoice_id,
+             "As invoice address have been archived, it should not be on the subscrption anymore.")
+        self.assertFalse(subscription.partner_shipping_id,
+             "As delivery address have been archived, it should not be on the subscrption anymore.")
+
+        invoice = subscription._recurring_create_invoice()
+        self.assertEqual(self.partner_a, invoice.partner_id,
+             "As there is no invoice address on the subscription, customer's address should be chosen as invoice address on the invoice.")
+        self.assertEqual(self.partner_a, invoice.partner_shipping_id,
+             "As there is no delivery address on the subscription, customer's address should be chosen as delivery address on the invoice.")
+
+    def test_onchange_partner_id_on_subscription(self):
+        # test onchange_partner_id on subscription
+        self.sale_order.order_line.mapped('subscription_id').unlink()
+        self.sale_order.action_confirm()
+
+        subscription = self.sale_order.order_line.mapped('subscription_id')
+
+        subscription.partner_id = self.partner_a
+        subscription.onchange_partner_id()
+        self.assertEqual(self.partner_a_invoice, subscription.partner_invoice_id,
+             "Setting the customer on subscription should set its invoice address via onchange.")
+        self.assertEqual(self.partner_a_shipping, subscription.partner_shipping_id,
+             "Setting the customer on subscription should set its delivery address via onchange.")
+
+    def test_archive_partner_invoice_shipping_manual_sub(self):
+        # archived a partner must not remain set on invoicing/shipping address in subscription
+        # here, they are set manually on subscription
+        self.sale_order.order_line.mapped('subscription_id').unlink()
+        self.sale_order.action_confirm()
+
+        subscription = self.sale_order.order_line.mapped('subscription_id')
+        initial_sub_partner = subscription.partner_id
+
+        subscription.write({
+            'partner_invoice_id': self.partner_a_invoice,
+            'partner_shipping_id': self.partner_a_shipping,
+        })
+        self.assertEqual(self.partner_a_invoice, subscription.partner_invoice_id,
+             "Invoice address should have been set manually on the subscription.")
+        self.assertEqual(self.partner_a_shipping, subscription.partner_shipping_id,
+             "Delivery address should have been set manually on the subscription.")
+
+        invoice = subscription._recurring_create_invoice()
+        self.assertEqual(self.partner_a_invoice, invoice.partner_id,
+             "On the invoice, invoice address should be the same as on the subscription.")
+        self.assertEqual(self.partner_a_shipping, invoice.partner_shipping_id,
+             "On the invoice, delivery address should be the same as on the subscription.")
+
+        self.partner_a.child_ids.write({'active': False})
+        self.assertFalse(subscription.partner_invoice_id,
+             "As invoice address have been archived, it should not be on the subscrption anymore.")
+        self.assertFalse(subscription.partner_shipping_id,
+             "As delivery address have been archived, it should not be on the subscrption anymore.")
+
+        invoice = subscription._recurring_create_invoice()
+        self.assertEqual(initial_sub_partner, invoice.partner_id,
+             "As there is no invoice address on the subscription, initial customer's address should be chosen as invoice address on the invoice.")
+        self.assertEqual(initial_sub_partner, invoice.partner_shipping_id,
+             "As there is no delivery address on the subscription, initial customer's address should be chosen as delivery address on the invoice.")
+
+    def test_portal_pay_subscription(self):
+        # When portal pays a subscription, a success mail is sent.
+        # This calls AccountMove.amount_by_group, which triggers _compute_invoice_taxes_by_group().
+        # As this method writes on this field and also reads tax_ids, which portal has no rights to,
+        # it might cause some access rights issues. This test checks that no error is raised.
+        portal_partner = self.user_portal.partner_id
+        portal_partner.country_id = self.env['res.country'].search([('code', '=', 'US')])
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+        })
+        acquirer = self.env['payment.acquirer'].create({
+            'name': 'Test',
+        })
+        tx = self.env['payment.transaction'].create({
+            'amount': 100,
+            'acquirer_id': acquirer.id,
+            'currency_id': self.env.company.currency_id.id,
+            'partner_id': portal_partner.id,
+        })
+        self.subscription.with_user(self.user_portal).sudo().send_success_mail(tx, invoice)

@@ -13,8 +13,9 @@ VAT_MANDATORY_FIELDS = [
     '450', '801', '802',
     # Monthly-only
     '093', '097', '457',
-    # Mandatory when 403 is specified (always true for us, with 0% tax)
-    '033', '042', '403',
+    # 033 and 042 are mandatory when 403 is specified (always true for us, with 0% tax)
+    '033', '042', '403', '414', '415', '418', '416', 
+    '417', '453', '452', '451',
 ]
 
 # Mapping dictionary: monthly fields as keys, list of corresponding annual fields as values
@@ -29,7 +30,10 @@ YEARLY_NEW_TOTALS = {
     '088': {'add': ['085', '086', '087', '406']},
     '179': {'add': ['090', '092', '228']},
     '093': {'add': ['080', '084', '088', '179']},
-    '101': {'add': ['098', '099', '100']}
+    '101': {'add': ['098', '099', '100']},
+    '102': {'add': ['093', '101'], 'subtract': ['097']},
+    '104': {'add': ['102']},
+    '105': {'add': ['103'], 'subtract': ['104']},
 }
 
 # Fields of the annual simplified declaration

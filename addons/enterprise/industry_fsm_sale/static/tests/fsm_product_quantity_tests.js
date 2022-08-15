@@ -86,15 +86,17 @@ QUnit.module('industry_fsm_sale', {}, function () {
     });
 
     QUnit.test('fsm_product_quantity widget in kanban view', async function (assert) {
-        assert.expect(4);
+        assert.expect(7);
 
         const kanban = await createView(this.kanban);
 
         assert.containsN(kanban, '.o_fsm_industry_product', 3, "The number of kanban record should be equal to 3 records.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) span[name="fsm_quantity"]').text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) span[name="fsm_quantity"]').text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) span[name="fsm_quantity"]').text(), "1", "The product quantity should be equal to 1.");
-
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) input[name="fsm_quantity"]').val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) input[name="fsm_quantity"]').val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) input[name="fsm_quantity"]').val(), "1", "The product quantity should be equal to 1.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) input[name="fsm_quantity"]').attr("type"), "number", "The input type should be number");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) input[name="fsm_quantity"]').attr("type"), "number", "The input type should be number");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) input[name="fsm_quantity"]').attr("type"), "number", "The input type should be number");
         kanban.destroy();
     });
 
@@ -109,9 +111,9 @@ QUnit.module('industry_fsm_sale', {}, function () {
         await kanban.reload();
 
         // Normally, only the last one should be decrease because the others have the quantity is equal to 0 and then we must not decrease it.
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) span[name="fsm_quantity"]').text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) span[name="fsm_quantity"]').text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) span[name="fsm_quantity"]').text(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) input[name="fsm_quantity"]').val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) input[name="fsm_quantity"]').val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) input[name="fsm_quantity"]').val(), "0", "The product quantity should be equal to 0.");
 
         kanban.destroy();
     });
@@ -127,9 +129,9 @@ QUnit.module('industry_fsm_sale', {}, function () {
         kanban.$('.o_fsm_industry_product button[name="fsm_add_quantity"]').click();
         assert.verifySteps(['fsm_add_quantity', 'fsm_add_quantity', 'fsm_add_quantity']);
         await kanban.reload();
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) span[name="fsm_quantity"]').text(), "1", "The product quantity should be equal to 1.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) span[name="fsm_quantity"]').text(), "1", "The product quantity should be equal to 1.");
-        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) span[name="fsm_quantity"]').text(), "2", "The product quantity should be equal to 2.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(1) input[name="fsm_quantity"]').val(), "1", "The product quantity should be equal to 1.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(2) input[name="fsm_quantity"]').val(), "1", "The product quantity should be equal to 1.");
+        assert.strictEqual(kanban.$('.o_fsm_industry_product:nth-child(3) input[name="fsm_quantity"]').val(), "2", "The product quantity should be equal to 2.");
 
         kanban.destroy();
     });
@@ -140,48 +142,46 @@ QUnit.module('industry_fsm_sale', {}, function () {
         const kanban = await createView(this.kanban);
 
         assert.containsN(kanban, '.o_fsm_industry_product', 3, "The number of kanban record should be equal to 3 records.");
-        const $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:first() span[name="fsm_quantity"]');
-        assert.strictEqual($firstFsmQuantitySpan.text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "false", "The produdt quantity should not be editable.");
+        const $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:first() input[name="fsm_quantity"]');
+        assert.strictEqual($firstFsmQuantitySpan.val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), true, "The produdt quantity should not be editable.");
 
         $firstFsmQuantitySpan.click();
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "true", "The product quantity should be editable.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), false, "The product quantity should be editable.");
         document.execCommand('insertText', false, "12");
         await dom.triggerEvent($firstFsmQuantitySpan, 'blur');
         assert.verifySteps(['set_fsm_quantity']);
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "false", "The product quantity should not be editable.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), true, "The product quantity should not be editable.");
         assert.doesNotHaveClass($firstFsmQuantitySpan, 'o_field_invalid', "the element should not be formatted like there is an error.");
-        assert.strictEqual($firstFsmQuantitySpan.text(), "12", "The content of the span tag should be the one written by the user.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), "12", "The content of the span tag should be the one written by the user.");
 
         kanban.destroy();
     });
 
     QUnit.test('fsm_product_quantity: edit manually a wrong product quantity', async function (assert) {
-        assert.expect(11);
+        assert.expect(9);
 
         const kanban = await createView(this.kanban);
 
         assert.containsN(kanban, '.o_fsm_industry_product', 3, "The number of kanban record should be equal to 3 records.");
-        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) span[name="fsm_quantity"]');
-        assert.strictEqual($firstFsmQuantitySpan.text(), "0", "The product quantity should be equal to 0.");
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "false", "The product quantity should not be editable.");
+        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) input[name="fsm_quantity"]');
+        assert.strictEqual($firstFsmQuantitySpan.val(), "0", "The product quantity should be equal to 0.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), true, "The product quantity should not be editable.");
 
         $firstFsmQuantitySpan.click();
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "true", "The product quantity should be editable.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), false, "The product quantity should be editable.");
 
         document.execCommand('insertText', false, "12a");
         await dom.triggerEvent($firstFsmQuantitySpan, 'blur');
-        assert.strictEqual($firstFsmQuantitySpan.text(), "12a", "The content of the span tag should be the one written by the user.");
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), "true", "The product quantity should always be editable because the text written is not valid.");
-        assert.hasClass($firstFsmQuantitySpan, 'o_field_invalid', "The element should be formatted like there is an error.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), "12", "Input with number type shouldn't allow character");
 
         $firstFsmQuantitySpan.click();
-        $firstFsmQuantitySpan.text(""); // simulate the deleting of the text
+        $firstFsmQuantitySpan.val(""); // simulate the deleting of the text
         document.execCommand('insertText', false, "12");
         await dom.triggerEvent($firstFsmQuantitySpan, 'blur');
         assert.verifySteps(['set_fsm_quantity']);
         assert.doesNotHaveClass($firstFsmQuantitySpan, 'o_field_invalid', "the element should not be formatted like there is an error.");
-        assert.strictEqual($firstFsmQuantitySpan.text(), "12", "The content of the span tag should be 12 units of product quantity.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), "12", "The content of the span tag should be 12 units of product quantity.");
         kanban.destroy();
     });
 
@@ -191,12 +191,12 @@ QUnit.module('industry_fsm_sale', {}, function () {
         const kanban = await createView(this.kanban);
 
         assert.containsN(kanban, '.o_fsm_industry_product', 3, "The number of kanban record should be equal to 3 records.");
-        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) span[name="fsm_quantity"]');
-        assert.strictEqual($firstFsmQuantitySpan.text(), '0', "The product quantity should be equal to 0.");
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), 'false', "The product quantity should not be editable.");
+        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) input[name="fsm_quantity"]');
+        assert.strictEqual($firstFsmQuantitySpan.val(), '0', "The product quantity should be equal to 0.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), true, "The product quantity should not be editable.");
 
         $firstFsmQuantitySpan.click();
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), 'true', "The product quantity should be editable.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), false, "The product quantity should be editable.");
 
         document.execCommand('insertText', false, '42');
 
@@ -205,7 +205,7 @@ QUnit.module('industry_fsm_sale', {}, function () {
         await dom.triggerEvent(target, 'keydown', { key: 'Enter', which: 13 });
         assert.verifySteps(['set_fsm_quantity']);
         assert.doesNotHaveClass($firstFsmQuantitySpan, 'o_field_invalid', "The element should not be formatted like there is an error.");
-        assert.strictEqual($firstFsmQuantitySpan.text(), '42', "The content of the span tag should be 12 units of product quantity.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), '42', "The content of the span tag should be 12 units of product quantity.");
         kanban.destroy();
     });
 
@@ -215,22 +215,22 @@ QUnit.module('industry_fsm_sale', {}, function () {
         const kanban = await createView(this.kanban);
 
         assert.containsN(kanban, '.o_fsm_industry_product', 3, "The number of kanban record should be equal to 3 records.");
-        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) span[name="fsm_quantity"]');
-        assert.strictEqual($firstFsmQuantitySpan.text(), '0', "The product quantity should be equal to 0.");
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), 'false', "The product quantity should not be editable.");
+        let $firstFsmQuantitySpan = kanban.$('.o_fsm_industry_product:nth(0) input[name="fsm_quantity"]');
+        assert.strictEqual($firstFsmQuantitySpan.val(), '0', "The product quantity should be equal to 0.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), true, "The product quantity should not be editable.");
         assert.doesNotHaveClass($firstFsmQuantitySpan, 'small', "The product quantity should not have this class.");
 
         $firstFsmQuantitySpan.click();
-        assert.strictEqual($firstFsmQuantitySpan.prop('contenteditable'), 'true', "The product quantity should be editable.");
+        assert.strictEqual($firstFsmQuantitySpan.prop('readonly'), false, "The product quantity should be editable.");
 
         document.execCommand('insertText', false, '123456');
 
         assert.hasClass($firstFsmQuantitySpan, 'small', "The font size of the product quantity should be smaller than before.");
         const target = document.activeElement;
         assert.strictEqual($firstFsmQuantitySpan[0], target, "The active element should be the first product quantity span tag.");
-        assert.strictEqual($firstFsmQuantitySpan.text(), '123456', "The content of the span tag should be 123456 units of product quantity.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), '123456', "The content of the span tag should be 123456 units of product quantity.");
         document.execCommand('delete');
-        assert.strictEqual($firstFsmQuantitySpan.text(), '12345', "The content of the span tag should be 12345 units of product quantity.");
+        assert.strictEqual($firstFsmQuantitySpan.val(), '12345', "The content of the span tag should be 12345 units of product quantity.");
         assert.doesNotHaveClass($firstFsmQuantitySpan, 'small', "The product quantity should not have this class.");
 
         kanban.destroy();

@@ -281,7 +281,17 @@ class HrAppraisal(models.Model):
         result.subscribe_employees()
         return result
 
+    def _check_access(self, fields):
+        fields = set(fields)
+        if {'manager_feedback', 'manager_feedback_published'} & fields:
+            if not all(a.can_see_manager_publish for a in self):
+                raise UserError(_('The manager feedback cannot be changed by an employee.'))
+        if {'employee_feedback', 'employee_feedback_published'} & fields:
+            if not all(a.can_see_employee_publish for a in self):
+                raise UserError(_('The employee feedback cannot be changed by managers.'))
+
     def write(self, vals):
+        self._check_access(vals.keys())
         if 'state' in vals and vals['state'] == 'pending':
             self.activity_feedback(['mail.mail_activity_data_meeting', 'mail.mail_activity_data_todo'])
             self.send_appraisal()
@@ -364,6 +374,28 @@ class HrAppraisal(models.Model):
                     appraisal['note'] = _('Note')
                     appraisal['assessment_note'] = (1, _('Assessment'))
         return records
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if set(groupby) & {'manager_feedback', 'employee_feedback'}:
+            raise UserError(_('Such grouping is not allowed.'))
+        return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)
+
+    def mapped(self, func):
+        if func and isinstance(func, str):
+            self._check_access(set(func.split('.')))
+        return super().mapped(func)
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        fields_list = {term[0] for term in args if isinstance(term, (tuple, list))}
+        self._check_access(fields_list)
+        return super()._search(args, offset, limit, order, count, access_rights_uid)
+
+    def filtered_domain(self, domain):
+        fields_list = {term[0] for term in domain if isinstance(term, (tuple, list))}
+        self._check_access(fields_list)
+        return super().filtered_domain(domain)
 
     def action_calendar_event(self):
         self.ensure_one()

@@ -74,9 +74,9 @@ class L10nClEdiUtilMixin(models.AbstractModel):
         # The attributes must be ordered and the file (archivo key) must be added as data content, otherwise doesn't
         # work
         data = collections.OrderedDict()
-        data['rutSender'] = int(digital_signature['subject_serial_number'][:8])
+        data['rutSender'] = int(digital_signature['subject_serial_number'][:-2])
         data['dvSender'] = digital_signature['subject_serial_number'][-1]
-        data['rutCompany'] = self._l10n_cl_format_vat(company_vat)[:8]
+        data['rutCompany'] = self._l10n_cl_format_vat(company_vat)[:-2]
         data['dvCompany'] = self._l10n_cl_format_vat(company_vat)[-1]
         data['archivo'] = (file_name, xml_message, 'text/xml')
 
@@ -115,7 +115,7 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             self._report_connection_err(MSG_ERROR['token'])
             return False
         url = url_join(REST_SERVER_URL[mode]['OTHER'],
-                       'boleta.electronica.envio/%s-%s-%s' % (company_vat[:8], company_vat[-1], track_id))
+                       'boleta.electronica.envio/%s-%s-%s' % (company_vat[:-2], company_vat[-1], track_id))
         try:
             response = requests.get(url, headers={'Cookie': 'TOKEN={}'.format(token)}, timeout=TIMEOUT_REST)
         except (requests.exceptions.Timeout, requests.exceptions.RequestException) as error:

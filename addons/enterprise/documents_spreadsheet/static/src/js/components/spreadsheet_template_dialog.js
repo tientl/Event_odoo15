@@ -6,11 +6,14 @@ odoo.define("documents_spreadsheet.TemplateDialog", function (require) {
     const Pager = require("web.Pager");
     const ActionModel = require("web.ActionModel");
 
+    const spreadsheet = require("@documents_spreadsheet/js/o_spreadsheet/o_spreadsheet_loader")[Symbol.for("default")];
     const { UNTITLED_SPREADSHEET_NAME } = require("@documents_spreadsheet/constants");
     const { getDataFromTemplate } = require("documents_spreadsheet.pivot_utils");
     const { DropPrevious } = require("web.concurrency");
 
     const { useState, useSubEnv } = owl.hooks;
+
+    const { createEmptyWorkbookData } = spreadsheet.helpers;
 
     class TemplateDialog extends owl.Component {
         constructor() {
@@ -97,7 +100,7 @@ odoo.define("documents_spreadsheet.TemplateDialog", function (require) {
             const data =
                 templateId !== null
                     ? await getDataFromTemplate(this.env.services.rpc, templateId)
-                    : {};
+                    : createEmptyWorkbookData(`${this.env._t("Sheet")}1`);
             const name =
                 templateId !== null
                     ? this.state.templates.find((template) => template.id === templateId).name

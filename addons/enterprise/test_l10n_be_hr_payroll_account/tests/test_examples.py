@@ -315,15 +315,15 @@ class TestExamples(AccountTestInvoicingCommon):
     # IP should be correct as we are in 2019,
     def test_with_car_with_atn_with_child(self):
         values = OrderedDict([
-            ('BASIC', 3198.89),
+            ('BASIC', 3198.87),
             ('ATN.INT', 5.00),
             ('ATN.MOB', 0.0),
-            ('SALARY', 3203.89),
+            ('SALARY', 3203.87),
             ('ONSS', -418.75),
             ('ATN.CAR', 109.92),
-            ('GROSSIP', 2895.07),
+            ('GROSSIP', 2895.05),
             ('IP.PART', -799.72),
-            ('GROSS', 2095.34),
+            ('GROSS', 2095.33),
             ('P.P', -343.31),
             ('ATN.CAR.2', -109.92),
             ('ATN.INT.2', -5.00),
@@ -333,7 +333,7 @@ class TestExamples(AccountTestInvoicingCommon):
             ('REP.FEES', 150.0),
             ('IP', 799.72),
             ('IP.DED', -59.98),
-            ('NET', 2476.45),
+            ('NET', 2476.43),
         ])
         address = self.env['res.partner'].create({
             'name': 'Roger',
@@ -415,15 +415,15 @@ class TestExamples(AccountTestInvoicingCommon):
     # ATN + No leave + IP (2019) + car
     def test_with_car_with_atn_with_car(self):
         values = OrderedDict([
-            ('BASIC', 3452.42),
+            ('BASIC', 3452.4),
             ('ATN.INT', 5.00),
             ('ATN.MOB', 0.0),
-            ('SALARY', 3457.42),
+            ('SALARY', 3457.4),
             ('ONSS', -451.88),
             ('ATN.CAR', 109.17),
-            ('GROSSIP', 3114.7),
-            ('IP.PART', -863.11),
-            ('GROSS', 2251.6),
+            ('GROSSIP', 3114.68),
+            ('IP.PART', -863.1),
+            ('GROSS', 2251.58),
             ('P.P', -458.76),
             ('ATN.CAR.2', -109.17),
             ('ATN.INT.2', -5.00),
@@ -431,9 +431,9 @@ class TestExamples(AccountTestInvoicingCommon):
             ('M.ONSS', -32.48),
             ('MEAL_V_EMP', -22.89),
             ('REP.FEES', 150.00),
-            ('IP', 863.11),
+            ('IP', 863.1),
             ('IP.DED', -64.73),
-            ('NET', 2571.67),
+            ('NET', 2571.65),
         ])
         address = self.env['res.partner'].create({
             'name': 'Roger4',

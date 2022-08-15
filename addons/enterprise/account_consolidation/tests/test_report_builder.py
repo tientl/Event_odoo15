@@ -5,6 +5,7 @@ from odoo.addons.account_consolidation.tests.account_consolidation_test_classes 
 from odoo.addons.account_consolidation.report.builder.comparison import ComparisonBuilder
 from odoo.addons.account_consolidation.report.builder.comparison import ComparisonBuilder
 from odoo.addons.account_consolidation.report.builder.default import DefaultBuilder
+from odoo.tools.misc import NON_BREAKING_SPACE
 
 from unittest.mock import patch
 
@@ -304,11 +305,11 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
                 'unfolded': True,
                 'columns': [
                     {
-                        'name': '1,000.00 €',
+                        'name': f'1,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': 1000.0
                     },
                     {
-                        'name': '-2,000.00 €',
+                        'name': f'-2,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': -2000.0
                     }
                 ]
@@ -322,11 +323,11 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
                 'parent_id': 'section-%s' % section.id,
                 'columns': [
                     {
-                        'name': '1,000.00 €',
+                        'name': f'1,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': 1000.0
                     },
                     {
-                        'name': '-2,000.00 €',
+                        'name': f'-2,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': -2000.0
                     }
                 ]
@@ -338,12 +339,12 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
                                section.child_ids[0].account_ids[0].name_get()[0][1],
                 'columns': [
                     {
-                        'name': '1,000.00 €',
+                        'name': f'1,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': 1000.0,
                         'class': 'number'
                     },
                     {
-                        'name': '-2,000.00 €',
+                        'name': f'-2,000.00{NON_BREAKING_SPACE}€',
                         'no_format_name': -2000.0,
                         'class': 'number'
                     }
@@ -373,8 +374,8 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
             'unfoldable': True,
             'unfolded': False,
             'columns': [
-                {'name': '0.00 €', 'no_format_name': 0.0},
-                {'name': '0.00 €', 'no_format_name': 0.0}
+                {'name': f'0.00{NON_BREAKING_SPACE}€', 'no_format_name': 0.0},
+                {'name': f'0.00{NON_BREAKING_SPACE}€', 'no_format_name': 0.0}
             ]
         }]
         self.assertListEqual(expected, section_line)
@@ -438,9 +439,9 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
         # NO PERCENTAGE
         # €
         euro_exp = {'id': 'grouped_accounts_total', 'name': 'Total', 'class': 'total', 'level': 1,
-                    'columns': [{'name': '0.00 €', 'no_format_name': 0.0, 'class': 'number'},
-                                {'name': '1,500,000.00 €', 'no_format_name': 1500000.0, 'class': 'number text-danger'},
-                                {'name': '-2,000.00 €', 'no_format_name': -2000.0, 'class': 'number text-danger'}]}
+                    'columns': [{'name': f'0.00{NON_BREAKING_SPACE}€', 'no_format_name': 0.0, 'class': 'number'},
+                                {'name': f'1,500,000.00{NON_BREAKING_SPACE}€', 'no_format_name': 1500000.0, 'class': 'number text-danger'},
+                                {'name': f'-2,000.00{NON_BREAKING_SPACE}€', 'no_format_name': -2000.0, 'class': 'number text-danger'}]}
         euro_total_line = self.builder._build_total_line(totals, {}, include_percentage=False)
         self.assertDictEqual(euro_total_line, euro_exp)
         # $
@@ -449,17 +450,17 @@ class TestComparisonBuilder(AccountConsolidationTestCase):
         usd_total_line = us_builder._build_total_line(totals, [ap_usd], include_percentage=False)
 
         usd_exp = {'id': 'grouped_accounts_total', 'name': 'Total', 'class': 'total', 'level': 1,
-                   'columns': [{'name': '$ 0.00', 'no_format_name': 0.0, 'class': 'number'},
-                               {'name': '$ 1,500,000.00', 'no_format_name': 1500000.0, 'class': 'number text-danger'},
-                               {'name': '$ -2,000.00', 'no_format_name': -2000.0, 'class': 'number text-danger'}]}
+                   'columns': [{'name': f'${NON_BREAKING_SPACE}0.00', 'no_format_name': 0.0, 'class': 'number'},
+                               {'name': f'${NON_BREAKING_SPACE}1,500,000.00', 'no_format_name': 1500000.0, 'class': 'number text-danger'},
+                               {'name': f'${NON_BREAKING_SPACE}-2,000.00', 'no_format_name': -2000.0, 'class': 'number text-danger'}]}
         self.assertDictEqual(usd_total_line, usd_exp)
         patched_bpc.assert_not_called()
         # WITH PERCENTAGE
         totals = [0.0, -2000.0]
         euro_prct_total_line = self.builder._build_total_line(totals, {}, include_percentage=True)
         euro_exp_prct = {'id': 'grouped_accounts_total', 'name': 'Total', 'class': 'total', 'level': 1,
-                         'columns': [{'name': '0.00 €', 'no_format_name': 0.0, 'class': 'number'},
-                                     {'name': '-2,000.00 €', 'no_format_name': -2000.0, 'class': 'number text-danger'},
+                         'columns': [{'name': f'0.00{NON_BREAKING_SPACE}€', 'no_format_name': 0.0, 'class': 'number'},
+                                     {'name': f'-2,000.00{NON_BREAKING_SPACE}€', 'no_format_name': -2000.0, 'class': 'number text-danger'},
                                      patched_bpc.return_value]}
         self.assertDictEqual(euro_prct_total_line, euro_exp_prct)
 

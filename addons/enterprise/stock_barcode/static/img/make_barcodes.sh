@@ -4,7 +4,7 @@ barcode -t 2x7+40+40 -m 50x30 -p "210x297mm" -e code128b -n > barcodes_actions_b
 O-CMD.MAIN-MENU
 O-CMD.DISCARD
 O-BTN.validate
-O-BTN.cancel
+O-CMD.cancel
 O-BTN.print-op
 O-BTN.print-slip
 O-BTN.pack

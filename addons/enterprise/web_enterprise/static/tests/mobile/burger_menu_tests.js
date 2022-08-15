@@ -94,6 +94,24 @@ QUnit.test("Burger Menu on an App", async (assert) => {
     assert.hasClass(wc.el.querySelector(".o_burger_menu_content"), "o_burger_menu_dark");
 });
 
+QUnit.test("Burger Menu on an App without SubMenu", async (assert) => {
+    assert.expect(6);
+
+    const wc = await createEnterpriseWebClient({ serverData });
+    await click(wc.el, ".o_app:first-of-type");
+    await legacyExtraNextTick();
+
+    assert.containsNone(wc, ".o_burger_menu");
+
+    await click(wc.el, ".o_mobile_menu_toggle");
+    assert.containsOnce(wc, ".o_burger_menu");
+    assert.containsOnce(wc, ".o_user_menu_mobile");
+    assert.containsOnce(wc, ".o_burger_menu_user");
+    assert.containsNone(wc, ".o_burger_menu_app");
+    await click(wc.el, ".o_burger_menu_close");
+    assert.containsNone(wc, ".o_burger_menu");
+});
+
 QUnit.test("Burger menu closes when an action is requested", async (assert) => {
     assert.expect(3);
 

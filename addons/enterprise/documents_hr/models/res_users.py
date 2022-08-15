@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models, fields
+from odoo import api, models, fields, _
 
 
 class Users(models.Model):
@@ -20,3 +20,17 @@ class Users(models.Model):
     def SELF_READABLE_FIELDS(self):
         return super().SELF_READABLE_FIELDS + ['document_count']
 
+    def action_see_documents(self):
+        self.ensure_one()
+        return {
+            'name': _('Documents'),
+            'domain': [('owner_id', '=', self.id)],
+            'res_model': 'documents.document',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'kanban')],
+            'view_mode': 'kanban',
+            'context': {
+                "default_owner_id": self.id,
+                "searchpanel_default_folder_id": False
+            },
+        }

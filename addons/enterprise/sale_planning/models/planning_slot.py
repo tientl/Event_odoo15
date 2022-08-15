@@ -202,7 +202,7 @@ class PlanningSlot(models.Model):
         to_allocate = self.sale_line_id.planning_hours_to_plan - self.sale_line_id.planning_hours_planned
         if to_allocate < 0.0:
             return [], [], None
-        work_intervals, unforecastable_intervals, resource, partial_interval_slots = self._get_resource_work_info(vals, slot_vals_list_per_resource)
+        work_intervals, unforecastable_intervals, resource, partial_interval_slots = self.sudo()._get_resource_work_info(vals, slot_vals_list_per_resource)
         following_slots_vals_list = []
         if work_intervals:
             following_slots_vals_list = self._get_slots_values(
@@ -433,7 +433,7 @@ class PlanningSlot(models.Model):
             ], ['employee_id', 'end_datetime:max'], ['employee_id'], orderby='end_datetime desc')
             cache[priority] = [res['employee_id'][0] for res in search]
         elif priority == 'default_role':
-            search = self.env['hr.employee'].search_read([
+            search = self.env['hr.employee'].sudo().search_read([
                 ('default_planning_role_id', '=', self.role_id.id),
                 ('id', 'not in', employee_ids_to_exclude),
             ], ['id'])

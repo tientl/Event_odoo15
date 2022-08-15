@@ -73,7 +73,7 @@ tour.register('helpdesk_tour', {
     content: _t("Let's go back to the <b>kanban view</b> to have an overview of your next tickets."),
     position: 'bottom',
 }, {
-    trigger: '.o_kanban_record',
+    trigger: 'body:not(:has(div.o_view_sample_data)) .o_kanban_helpdesk_ticket .o_kanban_record',
     content: Markup(_t('<b>Drag &amp; drop</b> the card to change the stage of your ticket.')),
     position: 'right',
     run: "drag_and_drop .o_kanban_group:eq(2) ",

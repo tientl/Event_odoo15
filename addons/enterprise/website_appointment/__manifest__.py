@@ -31,9 +31,6 @@ Allow clients to Schedule Appointments through your Website
     'post_init_hook': '_post_init_website_appointment',
     'license': 'OEEL-1',
     'assets': {
-        'web_editor.assets_wysiwyg': [
-            'website_appointment/static/src/js/wysiwyg.js',
-        ],
         'website.assets_editor': [
             'website_appointment/static/src/js/website_appointment.editor.js',
         ],

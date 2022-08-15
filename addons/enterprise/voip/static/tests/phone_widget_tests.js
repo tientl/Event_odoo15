@@ -1,6 +1,7 @@
 odoo.define('voip.tests', function (require) {
 "use strict";
 
+const basicFields = require('web.basic_fields');
 var config = require('web.config');
 var FormView = require('web.FormView');
 var ListView = require('web.ListView');
@@ -127,6 +128,35 @@ QUnit.module('voip', {
             "should still have proper tel prefix");
 
         list.destroy();
+    });
+
+    QUnit.test("click on phone field link triggers call once", async function (assert) {
+        testUtils.mock.patch(basicFields.FieldPhone, {
+            _onClickLink(...args) {
+                assert.step("phone link clicked");
+                this._super(...args);
+            },
+        });
+        const form = await createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: `<form string="Partners">
+                    <sheet>
+                        <group>
+                            <field name="foo" widget="phone"/>
+                        </group>
+                    </sheet>
+                </form>`,
+            res_id: 1,
+        });
+
+        await testUtils.dom.click(form.el.querySelector('.o_field_phone a'));
+        assert.containsOnce(form.el, ".o_form_readonly", "form view should not change to edit mode from click on phone link");
+        assert.verifySteps(["phone link clicked"], "should have called click handler of phone link only once");
+        testUtils.mock.unpatch(basicFields.FieldPhone);
+
+        form.destroy();
     });
 
 });

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from markupsafe import Markup
 import time
 from odoo import models, fields, api, _
 from odoo.tools.misc import formatLang
@@ -82,16 +83,13 @@ class ECSalesReport(models.AbstractModel):
                 if row['same_country'] or row['partner_country_code'] not in ec_country_to_check:
                     options['unexpected_intrastat_tax_warning'] = True
 
-                for option_code in options['ec_sale_code']:
-                    if row['tax_report_line_id'] in option_code['tax_report_line_ids']:
-                        name = option_code['name']
-                        code = option_code['code']
-
                 vat = row['vat'].replace(' ', '').upper()
 
                 if get_file_data:
+                    code = self._get_ec_sale_code_options_data(options)[row['tax_code']]['code']
                     columns = [vat.replace(' ', '').upper(), code, amt]
                 else:
+                    name = self._get_ec_sale_code_options_data(options)[row['tax_code']]['name']
                     columns = [vat[:2], vat[2:], name, amt]
 
                 if not self.env.context.get('no_format', False):
@@ -147,7 +145,7 @@ class ECSalesReport(models.AbstractModel):
         addr = company.partner_id.address_get(['invoice'])
         if addr.get('invoice', False):
             ads = self.env['res.partner'].browse([addr['invoice']])[0]
-            phone = ads.phone and ads.phone.replace(' ', '') or ''
+            phone = ads.phone and self._raw_phonenumber(ads.phone) or address.phone and self._raw_phonenumber(address.phone)
             email = ads.email or ''
             city = ads.city or ''
             post_code = ads.zip or ''
@@ -194,26 +192,35 @@ class ECSalesReport(models.AbstractModel):
             'post_code': post_code,
             'country': country,
             'email': email,
-            'phone': phone.replace('/', '').replace('.', '').replace('(', '').replace(')', '').replace(' ', ''),
+            'phone': self._raw_phonenumber(phone),
             'year': date_from[0:4],
             'month': month,
             'quarter': quarter,
             'comments': self._get_report_manager(options).summary or '',
             'issued_by': issued_by,
             'dnum': dnum,
+            'representative_node': self._get_belgian_xml_export_representative_node(),
         })
 
-        data_head = """<?xml version="1.0" encoding="ISO-8859-1"?>
-<ns2:IntraConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/IntraConsignment" IntraListingsNbr="1">
-""" + self._get_belgian_xml_export_representative_node()
-        data_comp_period = '\n\t\t<ns2:Declarant>\n\t\t\t<VATNumber>%(vatnum)s</VATNumber>\n\t\t\t<Name>%(company_name)s</Name>\n\t\t\t<Street>%(street)s</Street>\n\t\t\t<PostCode>%(post_code)s</PostCode>\n\t\t\t<City>%(city)s</City>\n\t\t\t<CountryCode>%(country)s</CountryCode>\n\t\t\t<EmailAddress>%(email)s</EmailAddress>\n\t\t\t<Phone>%(phone)s</Phone>\n\t\t</ns2:Declarant>'
-        data_comp_period += '\n\t\t<ns2:Period>\n'
-        if month:
-            data_comp_period += '\t\t\t<ns2:Month>%(month)s</ns2:Month>\n'
-        elif quarter:
-            data_comp_period += '\t\t\t<ns2:Quarter>%(quarter)s</ns2:Quarter>\n'
-        data_comp_period += '\t\t\t<ns2:Year>%(year)s</ns2:Year>\n\t\t</ns2:Period>'
-        data_comp_period %= xml_data
+        data_head = Markup(f"""<?xml version="1.0" encoding="ISO-8859-1"?>
+    <ns2:IntraConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/IntraConsignment" IntraListingsNbr="1">
+        %(representative_node)s
+        <ns2:IntraListing SequenceNumber="1" ClientsNbr="%(clientnbr)s" DeclarantReference="%(dnum)s" AmountSum="%(amountsum).2f">
+        <ns2:Declarant>
+            <VATNumber>%(vatnum)s</VATNumber>
+            <Name>%(company_name)s</Name>
+            <Street>%(street)s</Street>
+            <PostCode>%(post_code)s</PostCode>
+            <City>%(city)s</City>
+            <CountryCode>%(country)s</CountryCode>
+            <EmailAddress>%(email)s</EmailAddress>
+            <Phone>%(phone)s</Phone>
+        </ns2:Declarant>
+        <ns2:Period>
+            {"<ns2:Month>%(month)s</ns2:Month>" if month else ""}
+            {"<ns2:Quarter>%(quarter)s</ns2:Quarter>" if quarter else ""}
+            <ns2:Year>%(year)s</ns2:Year>
+        </ns2:Period>""") % xml_data
 
         data_clientinfo = ''
         seq = 0
@@ -230,9 +237,14 @@ class ECSalesReport(models.AbstractModel):
                 'code': line['columns'][1].get('name', ''),
                 'seq': seq,
             }
-            data_clientinfo += '\n\t\t<ns2:IntraClient SequenceNumber="%(seq)s">\n\t\t\t<ns2:CompanyVATNumber issuedBy="%(country)s">%(vatnum)s</ns2:CompanyVATNumber>\n\t\t\t<ns2:Code>%(code)s</ns2:Code>\n\t\t\t<ns2:Amount>%(amount).2f</ns2:Amount>\n\t\t</ns2:IntraClient>' % (client)
+            data_clientinfo += Markup("""
+        <ns2:IntraClient SequenceNumber="%(seq)s">
+            <ns2:CompanyVATNumber issuedBy="%(country)s">%(vatnum)s</ns2:CompanyVATNumber>
+            <ns2:Code>%(code)s</ns2:Code>
+            <ns2:Amount>%(amount).2f</ns2:Amount>
+        </ns2:IntraClient>""") % client
 
-        data_decl = '\n\t<ns2:IntraListing SequenceNumber="1" ClientsNbr="%(clientnbr)s" DeclarantReference="%(dnum)s" AmountSum="%(amountsum).2f">' % (xml_data)
-
-        data_rslt = data_head + data_decl + data_comp_period + data_clientinfo + '\n\t\t</ns2:IntraListing>\n</ns2:IntraConsignment>' % (xml_data)
-        return data_rslt.encode('ISO-8859-1')
+        data_rslt = data_head + data_clientinfo + Markup("""
+        </ns2:IntraListing>
+</ns2:IntraConsignment>""")
+        return data_rslt.encode('ISO-8859-1', 'ignore')

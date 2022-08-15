@@ -69,13 +69,15 @@ class HrContract(models.Model):
         self.ensure_one()
         return super()._is_salary_sacrifice() or self.l10n_be_group_insurance_rate
 
-    def _get_yearly_cost(self, inverse=False):
+    def _get_yearly_cost_sacrifice_fixed(self):
+        return super()._get_yearly_cost_sacrifice_fixed() + self._get_salary_costs_factor() * self.wage * self.l10n_be_group_insurance_rate / 100
+
+    def _get_salary_costs_factor(self):
         self.ensure_one()
-        res = super()._get_yearly_cost(inverse=inverse)
-        ratio = (1.0 - self.l10n_be_group_insurance_rate / 100)
-        if inverse:
-            return res / ratio
-        return res * ratio
+        res = super()._get_salary_costs_factor()
+        if self.l10n_be_group_insurance_rate:
+            return res * (1.0 - self.l10n_be_group_insurance_rate / 100)
+        return res
 
     @api.depends(
         'l10n_be_has_ambulatory_insurance',
@@ -110,3 +112,6 @@ class HrContract(models.Model):
         if name == 'group':
             return self.l10n_be_group_insurance_amount * (1 + 4.4 / 100.0)
         return super()._get_contract_insurance_amount(name)
+
+    def _get_advantage_values_l10n_be_ambulatory_insured_spouse(self, contract, advantages):
+        return {'l10n_be_ambulatory_insured_spouse': advantages['fold_l10n_be_ambulatory_insured_spouse']}

@@ -4,7 +4,7 @@ odoo.define('social.post_formatter_mixin', function (require) {
 var SocialEmojisMixin = require('@mail/js/emojis_mixin')[Symbol.for("default")];
 
 var SocialPostFormatterMixin = {
-    REGEX_AT: /\B@([\w\dÀ-ÿ-]+)/g,
+    REGEX_AT: /\B@([\w\dÀ-ÿ-.]+)/g,
     REGEX_HASHTAG: /\B#([a-zA-Z\d-_]+)/g,
     REGEX_URL: /http(s)?:\/\/(www\.)?[a-zA-Z0-9@:%_+~#=~#?&//=\-\.]{3,256}/g,
 };

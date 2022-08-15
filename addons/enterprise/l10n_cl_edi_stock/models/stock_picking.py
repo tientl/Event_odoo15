@@ -4,9 +4,11 @@ import base64
 import re
 
 from lxml import etree
-from html import unescape
+from markupsafe import Markup
+from psycopg2 import OperationalError
 
 from odoo import models, fields, _
+from odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util import UnexpectedXMLResponse
 from odoo.exceptions import UserError
 from odoo.tools import float_repr, html_escape
 from odoo.tools import BytesIO
@@ -125,7 +127,7 @@ class Picking(models.Model):
             'name': 'SII_{}'.format(file_name),
             'res_id': self.id,
             'res_model': self._name,
-            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1')),
+            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1', 'replace')),
             'type': 'binary',
         })
         self.l10n_cl_sii_send_file = attachment.id
@@ -160,7 +162,7 @@ class Picking(models.Model):
             'res_model': self._name,
             'res_id': self.id,
             'type': 'binary',
-            'datas': base64.b64encode(signed_dte.encode('ISO-8859-1'))
+            'datas': base64.b64encode(signed_dte.encode('ISO-8859-1', 'replace'))
         })
         self.l10n_cl_dte_file = dte_attachment.id
 
@@ -190,7 +192,7 @@ class Picking(models.Model):
             raise UserError(_(
                 'Your company has not an activity description configured. This is mandatory for electronic '
                 'delivery guide. Please go to your company and set the correct one (www.sii.cl - Mi SII)'))
-        if not self.partner_id.l10n_cl_activity_description:
+        if not (self.partner_id.l10n_cl_activity_description or self.partner_id.commercial_partner_id.l10n_cl_activity_description):
             raise UserError(_(
                 'There is not an activity description configured in the '
                 'customer record. This is mandatory for electronic delivery guide for this type of '
@@ -223,6 +225,7 @@ class Picking(models.Model):
             'mnt_value': float_repr(self._l10n_cl_get_tax_amounts()[0]['total_amount'], 0),
             'picking': self,
             'it1_value': self._format_length(move_lines[0].product_id.name, 40) if move_lines else '',
+            '__keep_empty_lines': True,
         }
         return values
 
@@ -249,7 +252,7 @@ class Picking(models.Model):
             guide_price = "product"
         max_vat_perc = 0.0
         move_retentions = self.env['account.tax']
-        for move in self.move_lines:
+        for move in self.move_lines.filtered(lambda x: x.quantity_done > 0):
             if guide_price == "product" or not move.sale_line_id:
                 taxes = move.product_id.taxes_id.filtered(lambda t: t.company_id == self.company_id)
                 price = move.product_id.lst_price
@@ -400,17 +403,13 @@ class Picking(models.Model):
         :return: xml that goes embedded inside the pdf417 code
         """
         dd = self.env.ref('l10n_cl_edi_stock.dd_template')._render(self._l10n_cl_edi_prepare_values())
-        # We need to unescape this because if not, in the xml you will have &amp;amp; and will give you errors
-        # in the signature check, with a rejection.
-        dd = str(dd).replace(r'&amp;', '&')
         ted = self.env.ref('l10n_cl_edi.ted_template')._render({
             'dd': dd,
-            'frmt': self._sign_message(dd.encode('ISO-8859-1'), caf_file.findtext('RSASK')),
+            'frmt': self._sign_message(dd.encode('ISO-8859-1', 'replace'), caf_file.findtext('RSASK')),
             'stamp': self._get_cl_current_strftime()
         })
-        ted = unescape(ted)
         return {
-            'ted': re.sub(r'\n\s*$', '', ted, flags=re.MULTILINE),
+            'ted': Markup(re.sub(r'\n\s*$', '', ted, flags=re.MULTILINE)),
             'barcode': etree.tostring(etree.fromstring(re.sub(
                 r'<TmstFirma>.*</TmstFirma>', '', ted.replace('&', '&amp;')),
                 parser=etree.XMLParser(remove_blank_text=True)))
@@ -438,7 +437,6 @@ class Picking(models.Model):
         dte_barcode_xml = self._l10n_cl_get_dte_barcode_xml(caf_file)
         template = self._get_dte_template()
         dte = template._render(self._prepare_dte_values())
-        dte = unescape(dte).replace(r'&', '&amp;')
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         signed_dte = self._sign_full_xml(
             dte, digital_signature, doc_id_number, 'doc', self.l10n_latam_document_type_id._is_doc_type_voucher())
@@ -449,6 +447,8 @@ class Picking(models.Model):
         file_name = 'F{}T{}.xml'.format(self.l10n_latam_document_number, self.l10n_latam_document_type_id.code)
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         template = self.env.ref('l10n_cl_edi.envio_dte') # Guia is always DTE
+        dte = self.l10n_cl_dte_file.raw.decode('ISO-8859-1')
+        dte = Markup(dte.replace('<?xml version="1.0" encoding="ISO-8859-1" ?>', ''))
         dte_rendered = template._render({
             'move': self, # Only needed for the name of the document type
             'RutEmisor': self._l10n_cl_format_vat(self.company_id.vat),
@@ -457,10 +457,9 @@ class Picking(models.Model):
             'FchResol': self.company_id.l10n_cl_dte_resolution_date,
             'NroResol': self.company_id.l10n_cl_dte_resolution_number,
             'TmstFirmaEnv': self._get_cl_current_strftime(),
-            'dte': base64.b64decode(self.l10n_cl_dte_file.datas).decode('ISO-8859-1')
+            'dte': dte,
+            '__keep_empty_lines': True,
         })
-        dte_rendered = unescape(dte_rendered).replace('<?xml version="1.0" encoding="ISO-8859-1" ?>',
-                                                                      '')
         dte_signed = self._sign_full_xml(
             dte_rendered, digital_signature, 'SetDoc',
             self.l10n_latam_document_type_id._is_doc_type_voucher() and 'bol' or 'env',
@@ -477,7 +476,7 @@ class Picking(models.Model):
             'res_model': self._name,
             'res_id': self.id,
             'type': 'binary',
-            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1'))
+            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1', 'replace'))
         })
         self.with_context(no_new_invoice=True).message_post(
             body=_('Partner DTE has been generated'),
@@ -500,6 +499,18 @@ class Picking(models.Model):
         """
         Send the DTE to the SII. It will be
         """
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(f'SELECT 1 FROM {self._table} WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
+        except OperationalError as e:
+            if e.pgcode == '55P03':
+                if not self.env.context.get('cron_skip_connection_errs'):
+                    raise UserError(_('This electronic document is being processed already.'))
+                return
+            raise e
+        # To avoid double send on double-click
+        if self.l10n_cl_dte_status != "not_sent":
+            return None
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         response = self._send_xml_to_sii(
             self.company_id.l10n_cl_dte_service_provider,
@@ -544,18 +555,29 @@ class Picking(models.Model):
             return None
 
         response_parsed = etree.fromstring(response.encode('utf-8'))
-        self.l10n_cl_dte_status = self._analyze_sii_result(response_parsed)
+
+        if response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO') in ['001', '002', '003']:
+            digital_signature.last_token = False
+            _logger.error('Token is invalid.')
+            return
+
+        try:
+            self.l10n_cl_dte_status = self._analyze_sii_result(response_parsed)
+        except UnexpectedXMLResponse:
+            # The assumption here is that the unexpected input is intermittent,
+            # so we'll retry later. If the same input appears regularly, it should
+            # be handled properly in _analyze_sii_result.
+            _logger.error("Unexpected XML response:\n{}".format(response))
+            return
+
         if self.l10n_cl_dte_status in ['accepted', 'objected']:
             self.l10n_cl_dte_partner_status = 'not_sent'
             if send_dte_to_partner:
                 self._l10n_cl_send_dte_to_partner()
-        if response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO') in ['001', '002', '003']:
-            digital_signature.last_token = False
-            _logger.error('Token is invalid.')
-        else:
-            self.message_post(
-                body=_('Asking for DTE status with response:') +
-                     '<br /><li><b>ESTADO</b>: %s</li><li><b>GLOSA</b>: %s</li><li><b>NUM_ATENCION</b>: %s</li>' % (
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO')),
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/GLOSA')),
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/NUM_ATENCION'))))
+
+        self.message_post(
+            body=_('Asking for DTE status with response:') +
+                 '<br /><li><b>ESTADO</b>: %s</li><li><b>GLOSA</b>: %s</li><li><b>NUM_ATENCION</b>: %s</li>' % (
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO')),
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/GLOSA')),
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/NUM_ATENCION'))))

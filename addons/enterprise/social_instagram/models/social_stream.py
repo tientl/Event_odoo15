@@ -33,7 +33,7 @@ class SocialStreamInstagram(models.Model):
         ).json()
 
         if 'data' not in response:
-            self.account_id.sudo().write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(response.json())
             return False
 
         posts_to_create = []

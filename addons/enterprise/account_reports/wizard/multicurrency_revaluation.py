@@ -14,11 +14,11 @@ class MulticurrencyRevaluationWizard(models.TransientModel):
     _description = 'Multicurrency Revaluation Wizard'
 
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    journal_id = fields.Many2one('account.journal', related="company_id.account_revaluation_journal_id", string='Journal', domain=[('type', '=', 'general')], required=True, readonly=False)
+    journal_id = fields.Many2one('account.journal', compute="_compute_accounting_values", inverse="_inverse_revaluation_journal", compute_sudo=True, string='Journal', domain=[('type', '=', 'general')], required=True, readonly=False)
     date = fields.Date(default=lambda self: self._context.get('date').get('date_to'), required=True)  # TODO change defult dates
     reversal_date = fields.Date(required=True)
-    expense_provision_account_id = fields.Many2one('account.account', related="company_id.account_revaluation_expense_provision_account_id", string='Expense account', required=True, readonly=False)
-    income_provision_account_id = fields.Many2one('account.account', related="company_id.account_revaluation_income_provision_account_id", string='Income Account', required=True, readonly=False)
+    expense_provision_account_id = fields.Many2one('account.account', compute="_compute_accounting_values", inverse="_inverse_expense_provision_account", compute_sudo=True, string='Expense account', required=True, readonly=False)
+    income_provision_account_id = fields.Many2one('account.account', compute="_compute_accounting_values", inverse="_inverse_income_provision_account", compute_sudo=True, string='Income Account', required=True, readonly=False)
     preview_data = fields.Text(compute="_compute_preview_data")
     show_warning_move_id = fields.Many2one('account.move', compute='_compute_show_warning')
 
@@ -98,6 +98,25 @@ class MulticurrencyRevaluationWizard(models.TransientModel):
             'line_ids': move_lines,
         }
         return move_vals
+
+    @api.depends('company_id')
+    def _compute_accounting_values(self):
+        for record in self:
+            record.journal_id = record.company_id.account_revaluation_journal_id
+            record.expense_provision_account_id = record.company_id.account_revaluation_expense_provision_account_id
+            record.income_provision_account_id = record.company_id.account_revaluation_income_provision_account_id
+
+    def _inverse_revaluation_journal(self):
+        for record in self:
+            record.company_id.sudo().account_revaluation_journal_id = record.journal_id
+
+    def _inverse_expense_provision_account(self):
+        for record in self:
+            record.company_id.sudo().account_revaluation_expense_provision_account_id = record.expense_provision_account_id
+
+    def _inverse_income_provision_account(self):
+        for record in self:
+            record.company_id.sudo().account_revaluation_income_provision_account_id = record.income_provision_account_id
 
     def create_entries(self):
         self.ensure_one()

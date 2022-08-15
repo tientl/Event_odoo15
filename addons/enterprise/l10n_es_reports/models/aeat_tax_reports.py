@@ -361,8 +361,9 @@ class AEATAccountFinancialReport(models.Model):
             parsed_generated_id = self._parse_line_id(generated_line['id'])
             if parsed_generated_id[-1][0] != 'total' and generated_line['level'] >= report_line.level and generated_line.get('caret_options') == 'partner_id':
                 rslt += fun_to_call({'line_data': generated_line, 'line_xml_id': line_xml_id, 'report_options': report_options})
-                if generated_line['id'] in required_ids_set:
-                    required_ids_set.remove(generated_line['id'])
+                partner_id = parsed_generated_id[-1][2]
+                if partner_id in required_ids_set:
+                    required_ids_set.remove(partner_id)
 
         for element in required_ids_set: # These elements are the ones for wich no line was generated, but that were into the original required ids set. So, we still treat them.
             rslt += fun_to_call({'line_data': {'id':element}, 'line_xml_id': line_xml_id, 'report_options': report_options})
@@ -573,9 +574,11 @@ class AEATAccountFinancialReport(models.Model):
         rslt += self._boe_format_string(' ' * 8)
         rslt += self._boe_format_string(' ')
         rslt += self._boe_format_number(boe_wizard._get_using_sii_2021_value())
-        rslt += self._boe_format_number(boe_wizard._get_exonerated_from_mod_390_2021_value(period))
 
-        if period in ('12', '4T'):
+        exonerated_from_mod_390 = boe_wizard._get_exonerated_from_mod_390_2021_value(period)
+        rslt += self._boe_format_number(exonerated_from_mod_390)
+
+        if exonerated_from_mod_390 == 1:
             profit_and_loss_report = self.env.ref('l10n_es_reports.financial_report_es_profit_and_loss')
             end_date = fields.Date.from_string(options['date']['date_to'])
             transactions_volume_options = profit_and_loss_report._get_options({
@@ -646,12 +649,33 @@ class AEATAccountFinancialReport(models.Model):
         boe_wizard = self._retrieve_boe_manual_wizard(options)
 
         # Casillas
-        for casilla in range(59, 62):
-            rslt += self._boe_format_number(casilla_lines_map[str(casilla)], length=17, decimal_places=2, signed=True, in_currency=True)
+        to_treat = ['59', '60']
+        if options['date']['date_from'] < '2022-01-01':
+            to_treat.append('61')
+
+            if '61' not in casilla_lines_map:
+                # Casilla 61 isn't used anymore. If it's not in casilla_lines_map, it means the module has been updated, and the line isn't shown
+                # anymore. Though, if we're re-generating data from before it ceased to exist, we still want to report it in the file. As it's
+                # not displayed in the report anymore, it's not in get_lines's result, and we hence can't rely on it as usual.
+                # Therefore, we compute it manually.
+                tag_61 = self.env.ref('l10n_es.mod_303_61')
+                tables, where_clause, where_params = self._query_get(options, [('tax_tag_ids', 'in', tag_61.ids)])
+                query = """
+                    SELECT -COALESCE(sum(account_move_line.balance), 0)
+                    FROM """ + tables + """
+                    WHERE """ + where_clause
+                self._cr.execute(query, where_params)
+                casilla_lines_map['61'] = self._cr.fetchone()[0]
+
+        for casilla in to_treat:
+            rslt += self._boe_format_number(casilla_lines_map[casilla], length=17, decimal_places=2, signed=True, in_currency=True)
 
         # Reserved for AEAT
         rslt += self._boe_format_number(casilla_lines_map['120'], length=17, decimal_places=2, signed=True, in_currency=True)
-        rslt += self._boe_format_number(0, length=17)
+
+        if options['date']['date_from'] < '2022-01-01':
+            rslt += self._boe_format_number(0, length=17)
+
         rslt += self._boe_format_number(casilla_lines_map['122'], length=17, decimal_places=2, signed=True, in_currency=True)
         rslt += self._boe_format_number(casilla_lines_map['123'], length=17, decimal_places=2, signed=True, in_currency=True)
         rslt += self._boe_format_number(casilla_lines_map['124'], length=17, decimal_places=2, signed=True, in_currency=True)
@@ -681,7 +705,8 @@ class AEATAccountFinancialReport(models.Model):
         partner_bank = boe_wizard.partner_bank_id
 
         bic, iban = self.get_bic_and_iban(partner_bank)
-        rslt += self._boe_format_string(bic if gov_giving_back else '', length=11)
+
+        rslt += self._boe_format_string(bic if gov_giving_back and iban and iban[:2] != 'ES' else '', length=11)
         rslt += self._boe_format_string(iban, length=34)
 
         # Reserved by AEAT
@@ -696,7 +721,7 @@ class AEATAccountFinancialReport(models.Model):
             rslt += self._boe_format_string(bank.country.code or '', length=2)
 
             # Marca SEPA
-            if iban:
+            if iban and boe_wizard.declaration_type != 'N':
                 iban_country_code = iban[:2]
                 if iban_country_code == 'ES':
                     marca = '1'
@@ -715,7 +740,11 @@ class AEATAccountFinancialReport(models.Model):
             rslt += self._boe_format_string('', length=138)
 
         # Reserved by AEAT
-        rslt += self._boe_format_string(' ' * 445)
+        reserved_empty_chars = 600
+        if options['date']['date_from'] < '2022-01-01':
+            reserved_empty_chars = 445
+
+        rslt += self._boe_format_string(' ' * reserved_empty_chars)
 
         # Footer of page 3
         rslt += self._boe_format_string('</T30303000>')
@@ -734,21 +763,21 @@ class AEATAccountFinancialReport(models.Model):
         # Header
         self = self.with_context(self._set_context(boe_report_options))
 
-        rslt = self._mod347_write_type2_header_record(current_company, boe_wizard, boe_report_options)
-        seguros_required_b = self._mod347_get_required_partner_ids_for_boe('insurance', year+'-01-01', year+'-12-31', boe_wizard, 'B', 'seguros')
-        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_insurance_bought', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'B', manual_parameters_map=manual_params, insurance=True), required_ids_set=seguros_required_b)
+        rslt = self._mod347_write_type2_header_record(current_company, boe_wizard, boe_report_options, year=year)
+        seguros_required_b = self._mod347_get_required_partner_ids_for_boe('insurance', year+'-01-01', year+'-12-31', boe_wizard, 'A', 'seguros')
+        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_insurance_bought', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'A', manual_parameters_map=manual_params, insurance=True), required_ids_set=seguros_required_b)
 
-        otras_required_a = self._mod347_get_required_partner_ids_for_boe('regular', year+'-01-01', year+'-12-31', boe_wizard, 'A', 'otras')
-        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_regular_sold', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'A', manual_parameters_map=manual_params), required_ids_set=otras_required_a)
+        otras_required_a = self._mod347_get_required_partner_ids_for_boe('regular', year+'-01-01', year+'-12-31', boe_wizard, 'B', 'otras')
+        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_regular_sold', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'B', manual_parameters_map=manual_params), required_ids_set=otras_required_a)
 
-        otras_required_b = self._mod347_get_required_partner_ids_for_boe('regular', year+'-01-01', year+'-12-31', boe_wizard, 'B', 'otras')
-        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_regular_bought', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'B', manual_parameters_map=manual_params), required_ids_set=otras_required_b)
+        otras_required_b = self._mod347_get_required_partner_ids_for_boe('regular', year+'-01-01', year+'-12-31', boe_wizard, 'A', 'otras')
+        rslt += self._call_on_sublines(boe_report_options, 'l10n_es_reports.mod_347_operations_regular_bought', lambda report_data: self._mod347_write_type2_partner_record(report_data, year, current_company, 'A', manual_parameters_map=manual_params), required_ids_set=otras_required_b)
 
         return rslt
 
     def _mod347_build_boe_report_options(self, options, year):
         boe_report_options = options.copy()
-        boe_report_options['date'] = {'filter': 'this_quarter', 'string': 'Q4 '+year, 'date_from': year+'-10-01', 'date_to': year+'-12-31', 'mode': 'range'}
+        boe_report_options['date'] = {'filter': 'custom', 'string': 'Q4 '+year, 'date_from': year+'-10-01', 'date_to': year+'-12-31', 'mode': 'range'}
         boe_report_options['comparison'] = {'date_to': year+'-09-30',
                                  'periods': [{'date_to': year+'-09-30', 'date_from': year+'-07-01', 'string': 'Q3 '+year, 'mode': 'range'},
                                              {'date_to': year+'-06-30', 'date_from': year+'-04-01', 'string': 'Q2 '+year, 'mode': 'range'},
@@ -762,7 +791,7 @@ class AEATAccountFinancialReport(models.Model):
         cash_basis_manual_data = boe_wizard.cash_basis_mod347_data.filtered(lambda x: x.operation_key == operation_key and x.operation_class == operation_class)
         all_partners = cash_basis_manual_data.mapped('partner_id')
 
-        if operation_key == 'A': # Only for perceived amounts
+        if operation_key == 'B': # Only for perceived amounts
             # If invoice is not in the current period but cash payment is,
             # we need to inject the partner into BOE so that this cash amount is reported
             cash_payments_aml = self.env['account.partial.reconcile'].search([('credit_move_id.date', '<=' ,date_to),
@@ -775,9 +804,13 @@ class AEATAccountFinancialReport(models.Model):
 
         return set(all_partners.ids)
 
-    def _mod347_write_type2_header_record(self, current_company, boe_wizard, boe_report_options):
+    def _mod347_write_type2_header_record(self, current_company, boe_wizard, boe_report_options, year=None):
+        if not year:
+            year = str(fields.Date.today().year)
+
         rslt = self._boe_format_number(1)
         rslt += self._boe_format_number(347)
+        rslt += self._boe_format_string(year, length=4)
         rslt += self._boe_format_string(self._extract_spanish_tin(current_company.partner_id), length=9)
         rslt += self._boe_format_string(current_company.name, length=40)
         rslt += self._boe_format_string('T')
@@ -801,7 +834,7 @@ class AEATAccountFinancialReport(models.Model):
         real_estates_data = self._mod347_get_real_estates_data(boe_report_options, current_company.currency_id)
         rslt += self._boe_format_number(real_estates_data['count'], length=9)
 
-        rslt += self._boe_format_number(real_estates_data['total'], length=15, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
+        rslt += self._boe_format_number(real_estates_data['total'], length=16, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
 
         rslt += self._boe_format_string(' ' * 205)
         rslt += self._boe_format_string(' ' * 9) # TIN of the legal representant; blank if 14 years or older
@@ -830,16 +863,22 @@ class AEATAccountFinancialReport(models.Model):
         rslt += self._boe_format_string(year, length=4)
         rslt += self._boe_format_string(self._extract_spanish_tin(current_company.partner_id), length=9)
         rslt += self._boe_format_string(line_partner.country_id.code == 'ES' and self._extract_spanish_tin(line_partner) or '', length=9)
+        rslt += self._boe_format_string(' ' * 9) # TIN of the legal representant; blank if 14 years or older
         rslt += self._boe_format_string(line_partner.display_name, length=40)
         rslt += self._boe_format_string('D') # 'Tipo de hoja', constant
 
         province_code = line_partner.state_id and SPANISH_PROVINCES_REPORT_CODES.get(line_partner.state_id.code) or '99'
         rslt += self._boe_format_string(province_code, length=2)
         # The country code is only mandatory if there is no province code (hence: no head office in Spain)
-        if province_code == '99' and (not line_partner.country_id or not line_partner.country_id.code):
-            raise UserError(_("Partner with %s (id %d) is not associated to any Spanish province, and should hence have a country code. For this, fill in its 'country' field.") % (line_partner.name, line_partner.id))
+        if province_code == '99':
+            if not line_partner.country_id or not line_partner.country_id.code:
+                raise UserError(_("Partner with %s (id %d) is not associated to any Spanish province, and should hence have a country code. For this, fill in its 'country' field.") % (line_partner.name, line_partner.id))
 
-        rslt += self._boe_format_string(line_partner.country_id.code or '', length=2)
+            if line_partner.country_id.code == 'ES':
+                raise UserError(_("Partner %s (id %s) is located in Spain but does not have any province. Please set one.", line_partner.name, line_partner.id))
+
+        partner_country_code = line_partner.country_id.code
+        rslt += self._boe_format_string(partner_country_code if partner_country_code and partner_country_code != 'ES' else '', length=2)
         rslt += self._boe_format_string(' ') # Constant
         rslt += self._boe_format_string(operation_key, length=1)
 
@@ -861,8 +900,8 @@ class AEATAccountFinancialReport(models.Model):
                 current_invoice_type = domain_tuple[2]
                 break
 
-        user_type_id = operation_key == 'A' and self.env.ref('account.data_account_type_receivable').id or self.env.ref('account.data_account_type_payable').id
-        matching_field = operation_key == 'A' and 'debit' or 'credit'
+        user_type_id = operation_key == 'B' and self.env.ref('account.data_account_type_receivable').id or self.env.ref('account.data_account_type_payable').id
+        matching_field = operation_key == 'B' and 'debit' or 'credit'
         cash_payments_lines_in_period = self.env['account.move.line'].search([('date','<=',year+'-12-31'), ('date','>=',year+'-01-01'), ('journal_id.type','=','cash'), ('payment_id','!=',False), ('partner_id','=',line_partner.id), ('account_id.user_type_id','=',user_type_id), ('company_id','=',current_company.id)])
         metalico_amount = 0
         for cash_payment_aml in cash_payments_lines_in_period:
@@ -895,12 +934,12 @@ class AEATAccountFinancialReport(models.Model):
         real_estates_vat_year_total = currency_id.round(real_estates_vat_year_total)
         rslt += self._boe_format_number(real_estates_vat_year_total, length=16, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
 
-        rslt += self._boe_format_string(year, length=4)
+        rslt += self._boe_format_string('0000', length=4) # Ejercicio for metalico operations ; automatic computation not supported
 
-        for trimester in range(1, 4):
-            trimester_total = report_data['line_data'].get('columns', [{} for i in range(1, 4)])[-trimester].get('no_format', 0)
+        for trimester_index in range(3, -1, -1): # 4th trimester is at position 0 ; 1st at position 3
+            trimester_total = report_data['line_data'].get('columns', [{} for i in range(0, 4)])[trimester_index].get('no_format',0)
             rslt += self._boe_format_number(trimester_total, length=16, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
-            rslt += self._boe_format_number(real_estates_vat_by_trimester[trimester], length=16, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
+            rslt += self._boe_format_number(real_estates_vat_by_trimester[trimester_index], length=16, decimal_places=2, signed=True, sign_pos=' ', in_currency=True)
 
         # 'NIF Operador Comunitario'
         europe_countries = self.env.ref('base.europe').country_ids

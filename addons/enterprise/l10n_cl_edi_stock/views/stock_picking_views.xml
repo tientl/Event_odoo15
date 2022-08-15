@@ -31,7 +31,7 @@
                     <button name="l10n_cl_send_dte_to_sii" type="object" attrs="{'invisible': [('l10n_cl_dte_status', '!=', 'not_sent')]}" string="⇒ Send Now to SII" class="oe_inline oe_link" groups="base.group_user"/>
                     <button name="l10n_cl_verify_dte_status" type="object" attrs="{'invisible': [('l10n_cl_dte_status', '!=', 'ask_for_status')]}" string="⇒ Verify on SII" class="oe_inline oe_link" groups="base.group_user"/>
                 </div>
-                <field name="l10n_cl_delivery_guide_reason" attrs="{'invisible': ['|', ('l10n_cl_delivery_guide_reason', '=', False), ('l10n_cl_dte_status', '=', False), ('l10n_latam_document_number', '=', False)], 'readonly': [('l10n_cl_draft_status', '=', False)]}"/>
+                <field name="l10n_cl_delivery_guide_reason" attrs="{'invisible': [('country_code', '!=', 'CL')], 'readonly': [('l10n_cl_dte_status', 'not in', [False, 'cancelled'])]}"/>
             </xpath>
             <xpath expr="//notebook//page[@name='note']" position="after">
                 <page string="Delivery Guide" name="electronic_invoice" attrs="{'invisible':['|', ('country_code', '!=', 'CL'), ('l10n_cl_dte_status', '=', False), ('l10n_latam_document_number', '=', False)]}">

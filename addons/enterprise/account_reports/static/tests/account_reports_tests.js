@@ -9,8 +9,53 @@ odoo.define('account_reports/static/tests/account_reports_tests', function (requ
 
     const { dom } = testUtils;
 
-    QUnit.module('Account Reports', {}, () => {
-        QUnit.test("mounted is called once when returning on 'Account Reports' from breadcrumb", async assert => {
+    QUnit.module('Account Reports', {
+        beforeEach: function () {
+            this.models = {
+                partner: {
+                    fields: {
+                        display_name: {string: "Displayed name", type: "char"},
+                    },
+                    records: [
+                        {id: 1, display_name: "Genda Swami"},
+                    ],
+                }
+            };
+            this.views = {
+                'partner,false,form': '<form><field name="display_name"/></form>',
+                'partner,false,search': '<search></search>',
+            };
+            this.actions = {
+                42: {
+                    id: 42,
+                    name: "Account reports",
+                    tag: 'account_report',
+                    type: 'ir.actions.client',
+                }
+            };
+            this.mockRPC = function (route) {
+                if (route === '/web/dataset/call_kw/account.report/get_report_informations') {
+                    return Promise.resolve({
+                        options: {},
+                        buttons: [],
+                        main_html: '<a action="go_to_details">Go to detail view</a>',
+                    });
+                } else if (route === '/web/dataset/call_kw/account.report/go_to_details') {
+                    return Promise.resolve({
+                        type: "ir.actions.act_window",
+                        res_id: 1,
+                        res_model: "partner",
+                        views: [
+                            [false, "form"],
+                        ],
+                    });
+                } else if (route === '/web/dataset/call_kw/account.report/get_html_footnotes') {
+                    return Promise.resolve("");
+                }
+            }
+        }
+    }, () => {
+        QUnit.test("mounted is called once when returning on 'Account Reports' from breadcrumb", async function(assert) {
             // This test can be removed as soon as we don't mix legacy and owl layers anymore.
             assert.expect(7);
 
@@ -30,51 +75,10 @@ odoo.define('account_reports/static/tests/account_reports_tests', function (requ
                 }
             });
 
-            const models = {
-                partner: {
-                    fields: {
-                        display_name: { string: "Displayed name", type: "char" },
-                    },
-                    records: [
-                        {id: 1, display_name: "Genda Swami"},
-                    ],
-                }
-            };
-            const views = {
-                'partner,false,form': '<form><field name="display_name"/></form>',
-                'partner,false,search': '<search></search>',
-            };
-            const actions = {
-                42: {
-                    id: 42,
-                    name: "Account reports",
-                    tag: 'account_report',
-                    type: 'ir.actions.client',
-                }
-            };
-            const serverData = { models, views, actions };
+            const serverData = {models: this.models, views: this.views, actions: this.actions};
             const webClient = await createWebClient({
                 serverData,
-                mockRPC: function (route) {
-                    if (route === '/web/dataset/call_kw/account.report/get_report_informations') {
-                        return Promise.resolve({
-                            options: {},
-                            buttons: [],
-                            main_html: '<a action="go_to_details">Go to detail view</a>',
-                        });
-                    } else if (route === '/web/dataset/call_kw/account.report/go_to_details') {
-                        return Promise.resolve({
-                            type: "ir.actions.act_window",
-                            res_id: 1,
-                            res_model: "partner",
-                            views: [
-                                [false, "form"],
-                            ],
-                        });
-                    } else if (route === '/web/dataset/call_kw/account.report/get_html_footnotes') {
-                        return Promise.resolve("");
-                    }
-                },
+                mockRPC: this.mockRPC,
             });
 
             await doAction(webClient, 42);
@@ -94,6 +98,23 @@ odoo.define('account_reports/static/tests/account_reports_tests', function (requ
             ]);
 
             unpatch(ControlPanel.prototype, 'test.ControlPanel');
+        });
+
+        QUnit.test("recomputeHeader is unregistered when leaving the 'Account Reports' view", async function (assert) {
+            assert.expect(1);
+
+            const serverData = {models: this.models, views: this.views, actions: this.actions};
+            const webClient = await createWebClient({
+                serverData,
+                mockRPC: this.mockRPC,
+            });
+
+            await doAction(webClient, 42);
+            await dom.click($(webClient.el).find('a[action="go_to_details"]'));
+            await legacyExtraNextTick();
+            $(window).trigger('resize');
+            assert.ok(true);
+            webClient.destroy();
         });
     });
 

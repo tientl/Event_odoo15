@@ -10,6 +10,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.addons.sale_ebay.controllers.main import EbayController
 from odoo.addons.sale_ebay.tools.ebaysdk import Trading
+from odoo.tools.misc import str2bool
 
 
 class ResConfigSettings(models.TransientModel):
@@ -83,8 +84,8 @@ class ResConfigSettings(models.TransientModel):
         # by default all currencies active field is set to False except EUR and USD
         self.ebay_currency.active = True
 
-        out_of_stock = self.ebay_out_of_stock or ''
-        if out_of_stock != self.env['ir.config_parameter'].get_param('ebay_out_of_stock'):
+        out_of_stock = self.ebay_out_of_stock
+        if out_of_stock != str2bool(self.env['ir.config_parameter'].get_param('ebay_out_of_stock')):
             set_param('ebay_out_of_stock', out_of_stock)
             siteid = self.ebay_site.ebay_id if self.ebay_site else 0
 
@@ -126,9 +127,9 @@ class ResConfigSettings(models.TransientModel):
     @api.model
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
-        get_param = self.env['ir.config_parameter'].sudo().get_param
+        get_param = self.env['ir.config_parameter'].sudo().get_param('ebay_out_of_stock')
         res.update(
-            ebay_out_of_stock=get_param('ebay_out_of_stock', default=False),
+            ebay_out_of_stock=str2bool(get_param) if get_param else False,
         )
         return res
 

@@ -16,7 +16,7 @@ class AssetModify(models.TransientModel):
     value_residual = fields.Monetary(string="Depreciable Amount", help="New residual amount for the asset")
     salvage_value = fields.Monetary(string="Not Depreciable Amount", help="New salvage amount for the asset")
     currency_id = fields.Many2one(related='asset_id.currency_id')
-    date = fields.Date(default=fields.Date.today(), string='Date')
+    date = fields.Date(default=lambda self: fields.Date.today(), string='Date')
     need_date = fields.Boolean(compute="_compute_need_date")
     gain_value = fields.Boolean(compute="_compute_gain_value", help="Technical field to know if we should display the fields for the creation of gross increase asset")
     account_asset_id = fields.Many2one('account.account', string="Asset Gross Increase Account")

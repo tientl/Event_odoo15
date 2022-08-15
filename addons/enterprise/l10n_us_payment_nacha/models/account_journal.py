@@ -7,7 +7,9 @@ class AccountJournal(models.Model):
 
     def _default_outbound_payment_methods(self):
         res = super()._default_outbound_payment_methods()
-        return res | self.env.ref('l10n_us_payment_nacha.account_payment_method_nacha')
+        if self._is_payment_method_available("nacha"):
+            res |= self.env.ref('l10n_us_payment_nacha.account_payment_method_nacha')
+        return res
 
     nacha_immediate_destination = fields.Char(help="This will be provided by your bank.",
                                               string="Immediate Destination")

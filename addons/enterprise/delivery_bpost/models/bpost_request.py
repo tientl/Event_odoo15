@@ -203,9 +203,10 @@ class BpostRequest():
                   'shipmentType': carrier.bpost_shipment_type,
                   'parcelReturnInstructions': carrier.bpost_parcel_return_instructions,
                   'boxes': boxes,
+                  '_record': picking,
                   }
         xml = carrier.env['ir.qweb']._render('delivery_bpost.bpost_shipping_request', values)
-        code, response = self._send_request('send', xml, carrier)
+        code, response = self._send_request('send', xml.encode(), carrier)
         if code != 201 and response:
             try:
                 root = etree.fromstring(response)
@@ -315,7 +316,7 @@ class BpostRequest():
             boxes.append({
                 'weight': str(_grams(weight_in_kg)),
                 'parcelValue': max(min(int(parcel_value*100), 2500000), 100),
-                'contentDescription': ' '.join(["%d %s" % (line.qty_done, re.sub('[\W_]+', '', line.product_id.name or '')) for line in package_lines])[:50],
+                'contentDescription': ' '.join(["%d %s" % (line.qty_done, re.sub('[\W_]+', ' ', line.product_id.name or '')) for line in package_lines])[:50],
             })
         lines_without_package = picking.move_line_ids.filtered(lambda sml: not sml.result_package_id)
         if lines_without_package:
@@ -324,7 +325,7 @@ class BpostRequest():
             boxes.append({
                 'weight': str(_grams(weight_in_kg)),
                 'parcelValue': max(min(int(parcel_value*100), 2500000), 100),
-                'contentDescription': ' '.join(["%d %s" % (line.qty_done, re.sub('[\W_]+', '', line.product_id.name or '')) for line in lines_without_package])[:50],
+                'contentDescription': ' '.join(["%d %s" % (line.qty_done, re.sub('[\W_]+', ' ', line.product_id.name or '')) for line in lines_without_package])[:50],
             })
         return boxes
 
@@ -335,6 +336,6 @@ class BpostRequest():
         boxes = [{
             'weight': str(_grams(weight_in_kg)),
             'parcelValue': max(min(int(parcel_value*100), 2500000), 100),
-            'contentDescription': ' '.join(["%d %s" % (line.product_qty, re.sub('[\W_]+', '', line.product_id.name or '')) for line in picking.move_lines])[:50],
+            'contentDescription': ' '.join(["%d %s" % (line.product_qty, re.sub('[\W_]+', ' ', line.product_id.name or '')) for line in picking.move_lines])[:50],
         }]
         return boxes

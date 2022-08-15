@@ -144,3 +144,39 @@ class TestHrReferral(TestHrReferralBase):
         self.assertEqual(job_applicant.earned_points, 76, "He received all points.")
         self.assertEqual(len(job_applicant.referral_points_ids), 4, "We add a line in received points.")
         self.assertEqual(job_applicant.referral_state, 'hired', "Referral is hired, even if stage (not hired) exist with bigger sequence.")
+
+    def test_referral_no_point_done_stage(self):
+        """ Make sure stages use in referral with points = 0 are properly mark as done
+        """
+        final_stage = self.env.ref('hr_recruitment.stage_job5')
+        # Change final sequence since we want new stage to be in between
+        final_stage.sequence = 20
+        stage_parking_1 = self.env['hr.recruitment.stage'].create({
+            'name': 'parking1',
+            'use_in_referral': True,
+            'job_ids': [(6, 0, self.job_dev.ids)],
+            'sequence': 15,
+            'points': 0,
+        })
+        stage_parking_2 = self.env['hr.recruitment.stage'].create({
+            'name': 'parking2',
+            'use_in_referral': True,
+            'job_ids': [(6, 0, self.job_dev.ids)],
+            'sequence': 16,
+            'points': 0,
+        })
+        job_applicant = self.env['hr.applicant'].create({
+            'name': 'Technical worker',
+            'description': 'A nice applicant !',
+            'job_id': self.job_dev.id,
+            'ref_user_id': self.richard_user.id,
+            'company_id': self.company_1.id
+        })
+        info_dashboard = json.loads(job_applicant.shared_item_infos)
+        self.assertEqual([x['done'] for x in info_dashboard], [True, False, False, False, False, False, False])
+        job_applicant.stage_id = stage_parking_2
+        info_dashboard = json.loads(job_applicant.shared_item_infos)
+        self.assertEqual([x['done'] for x in info_dashboard], [True, True, True, True, True, True, False], "parking1 and parking2 should be marked as done")
+        job_applicant.stage_id = stage_parking_1
+        info_dashboard = json.loads(job_applicant.shared_item_infos)
+        self.assertEqual([x['done'] for x in info_dashboard], [True, True, True, True, True, False, False], 'parking2 should not be marked as done anymore')

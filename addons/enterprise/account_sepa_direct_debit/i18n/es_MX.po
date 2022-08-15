@@ -5,8 +5,8 @@
 # Translators:
 # Martin Trigaux, 2021
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2021
-# Braulio D. López Vázquez <bdl@odoo.com>, 2021
 # Lucia Pacheco <lpo@odoo.com>, 2021
+# Braulio D. López Vázquez <bdl@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -14,13 +14,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 07:57+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2021\n"
+"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -316,7 +316,7 @@ msgstr "Mandato de cliente"
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__partner_id
 msgid "Customer whose payments are to be managed by this mandate."
-msgstr "Cliente cuyos pagos son manejados por este mandato."
+msgstr "Cliente cuyos pagos los gestiona este mandato."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__start_date
@@ -358,7 +358,7 @@ msgstr "Mandatos de domiciliación bancaria"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_journal_dashboard_kanban_view
 msgid "Direct Debit Payment to Collect"
-msgstr "Pagos por cobrar por domiciliación bancaria"
+msgstr "Pago por cobrar por domiciliación bancaria"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__payments_to_collect_nber
@@ -406,7 +406,7 @@ msgstr "Seguidores"
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Seguidores (Partners)"
+msgstr "Seguidores (partners)"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__activity_type_icon
@@ -537,8 +537,8 @@ msgstr "Apunte de diario"
 msgid ""
 "Journal to use to receive SEPA Direct Debit payments from this mandate."
 msgstr ""
-"Diario utilizado para recibir pagos de domiciliación bancaria SEPA de este "
-"mandato."
+"Diario que se utiliza para recibir pagos de domiciliación bancaria SEPA de "
+"este mandato."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate____last_update
@@ -558,7 +558,7 @@ msgstr "Ultima actualización el"
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_main_attachment_id
 msgid "Main Attachment"
-msgstr "Archivos adjuntos principales"
+msgstr "Archivo adjunto principal"
 
 #. module: account_sepa_direct_debit
 #: model:ir.actions.report,name:account_sepa_direct_debit.sdd_mandate_form_report_main
@@ -967,8 +967,8 @@ msgid ""
 "Technical field used to inform the end user there is a SDD mandate that "
 "could be used to register that payment"
 msgstr ""
-"Campo técnico utilizado para informar al usuario final que hay un mandato "
-"SDD que puede ser utilizado para registrar ese pago"
+"Campo técnico que se utiliza para informar al usuario final que hay un "
+"mandato SDD que puede ser utilizado para registrar ese pago"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_account_bank_statement_line__sdd_mandate_scheme
@@ -982,7 +982,7 @@ msgid ""
 "Some banks/businesses might not accept B2B SDD."
 msgstr ""
 "El esquema B2B es un esquema opcional\n"
-"ofrecido exclusivamente a empresarios.\n"
+"que se ofrece exclusivamente a empresarios.\n"
 "Algunos bancos y negocios tal vez no acepten SDD B2B."
 
 #. module: account_sepa_direct_debit
@@ -1051,9 +1051,9 @@ msgid ""
 "- 'closed' designates a mandate that has been marked as not to use anymore without invalidating the previous transactions done with it.- 'revoked' means the mandate has been signaled as fraudulent by the customer. It cannot be used anymore, and should not ever have been. You will probably need to refund the related invoices, if any.\n"
 msgstr ""
 "El estado en el que se encuentra este mandato. \n"
-"- \"borrador\" signficia que el mandato aún necesitar ser confirmado antes de poder ser utilizado. \n"
-"- \"activo\" significa que este mandato puede ser utilizado para pagar facturas. \n"
-"- \"cerrado\" designa un mandato que ha sido marcado para ya no ser utilizado ya que invalida las transacciones previas hechas con él.- \"revocado\" significa que el cliente ha señalado el mandato como fraudulento. Ya no puede ser utilizado, y no debe serlo nunca. Probablemente necesitará reembolsar las facturas relacionadas, si las hay.\n"
+"- \"borrador\" significa que el mandato aún necesitar confirmarse antes de poder utilizarse. \n"
+"- \"activo\" significa que este mandato puede utilizarse para pagar facturas. \n"
+"- \"cerrado\" designa un mandato que ha sido marcado para ya no ser utilizado porque invalida las transacciones previas hechas con él.- \"revocado\" significa que el cliente ha señalado el mandato como fraudulento. Ya no puede utilizarse, y no debe usarse nunca. Probablemente deberá reembolsar las facturas relacionadas, si las hay.\n"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__name
@@ -1066,7 +1066,7 @@ msgid ""
 "This invoice will be paid using direct debit and is only\n"
 "                        sent for informative purposes."
 msgstr ""
-"Esta factura será pagada utilizando domiciliación bancaria y solamente\n"
+"Esta factura se pagará utilizando domiciliación bancaria y solamente\n"
 "                        se envía con fines informativos."
 
 #. module: account_sepa_direct_debit
@@ -1086,9 +1086,9 @@ msgid ""
 "will automatically go from 'active' to 'closed' after its first use in "
 "payment if this option is set.\n"
 msgstr ""
-"Verdadero si y solo si se puede utilizar este mandado para solo una "
-"transacción. Pasará de \"activo\" a \"cerrado\" de forma automática después "
-"de su primer uso en el pago si esta opción está establecida.\n"
+"True si y solo si se puede utilizar este mandado para solo una transacción. "
+"Pasará de \"activo\" a \"cerrado\" de forma automática después de su primer "
+"uso en el pago si esta opción está establecida.\n"
 
 #. module: account_sepa_direct_debit
 #: code:addons/account_sepa_direct_debit/models/account_payment.py:0

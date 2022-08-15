@@ -17,7 +17,7 @@ class IrActionReport(models.Model):
             device = self.mapped('device_id')[0]
         else:
             device = self.env['iot.device'].browse(data['device_id'])
-        datas = self._render(res_ids, data=data).encode()
+        datas = self._render(res_ids, data=data)
         data_bytes = datas[0]
         data_base64 = base64.b64encode(data_bytes)
         return device.iot_id.ip, device.identifier, data_base64

@@ -5,6 +5,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from odoo.addons.sale_amazon import const
 from odoo.addons.sale_amazon.lib import mws
 from odoo.addons.sale_amazon.models import mws_connector as mwsc
 
@@ -130,7 +131,7 @@ class StockPicking(models.Model):
             xml_feed = mwsc.generate_order_fulfillment_feed(
                 account.seller_key,
                 amazon_order_ref,
-                picking.carrier_id.name,
+                picking._get_formatted_carrier_name(),
                 picking.carrier_tracking_ref,
                 items_data,
             )
@@ -162,3 +163,20 @@ class StockPicking(models.Model):
             and m.quantity_done > 0  # Only notify Amazon for shipped products
             and m.quantity_done == m.product_uom_qty  # Only consider fully shipped products
         ).sale_line_id
+
+    def _get_formatted_carrier_name(self):
+        """ Return the formatted carrier name.
+
+        If a carrier is set and it is not a custom carrier, search for its Amazon-formatted name. If
+        it is a custom carrier or if it is not supported by Amazon, fallback on the carrier name.
+        """
+        self.ensure_one()
+
+        shipper_name = None
+        if self.carrier_id:
+            carrier_key = self.carrier_id._get_delivery_type()  # Get the final delivery type
+            if carrier_key in ('fixed', 'base_on_rule'):  # The delivery carrier is a custom one
+                carrier_key = self.carrier_id.name  # Fallback on the carrier name
+            carrier_key = ''.join(filter(str.isalnum, carrier_key)).lower()  # Normalize the key
+            shipper_name = const.AMAZON_CARRIER_NAMES_MAPPING.get(carrier_key, self.carrier_id.name)
+        return shipper_name

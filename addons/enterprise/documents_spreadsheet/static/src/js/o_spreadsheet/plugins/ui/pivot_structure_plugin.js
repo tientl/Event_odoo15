@@ -391,6 +391,7 @@ export default class PivotStructurePlugin extends spreadsheet.UIPlugin {
         }
         const dataSource = this._getDataSource(pivot.id);
         dataSource.on("data-loaded", this, () => {
+            this.dispatch("EVALUATE_CELLS", { sheetId: this.getters.getActiveSheetId() });
             this.dispatch("AUTORESIZE_COLUMNS", {
                 sheetId,
                 cols,

@@ -6,7 +6,9 @@ from odoo.addons.account_reports.tests.account_sales_report_common import Accoun
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import Form
+from odoo.tools.misc import NON_BREAKING_SPACE
 from freezegun import freeze_time
+
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class LuxembourgSalesReportTest(AccountSalesReportCommon):
@@ -86,11 +88,11 @@ class LuxembourgSalesReportTest(AccountSalesReportCommon):
             #   Partner                country cod              VAT Number,              Tax    Amount
             [   0,                     1,                       2,                       3,     4],
             [
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'L',  '600.00 €'),
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'T',  '500.00 €'),
-                (self.partner_b.name,  self.partner_b.vat[:2],  self.partner_b.vat[2:],  'T',  '500.00 €'),
-                (self.partner_a.name,  self.partner_a.vat[:2],  self.partner_a.vat[2:],  'S',  '700.00 €'),
-                (self.partner_b.name,  self.partner_b.vat[:2],  self.partner_b.vat[2:],  'S',  '700.00 €'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'L', f'600.00{NON_BREAKING_SPACE}€'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'T', f'500.00{NON_BREAKING_SPACE}€'),
+                (self.partner_b.name, self.partner_b.vat[:2], self.partner_b.vat[2:], 'T', f'500.00{NON_BREAKING_SPACE}€'),
+                (self.partner_a.name, self.partner_a.vat[:2], self.partner_a.vat[2:], 'S', f'700.00{NON_BREAKING_SPACE}€'),
+                (self.partner_b.name, self.partner_b.vat[:2], self.partner_b.vat[2:], 'S', f'700.00{NON_BREAKING_SPACE}€'),
             ],
         )
 

@@ -127,7 +127,9 @@ class WebStudioReportController(main.WebStudioController):
         return fields
 
     @http.route('/web_studio/get_report_views', type='json', auth='user')
-    def get_report_views(self, report_name, record_id):
+    def get_report_views(self, report_name, record_id=None):
+        if record_id is None:
+            raise UserError(_("To edit this document please create a record first"))
         loaded = set()
         views = {}
 

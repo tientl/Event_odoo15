@@ -3,6 +3,8 @@ from odoo import fields
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
 from odoo.tests import tagged
 import logging
+from odoo.tools.misc import NON_BREAKING_SPACE
+
 
 _logger = logging.getLogger(__name__)
 
@@ -16,14 +18,21 @@ class TestReports(TestAccountReportsCommon):
         cls.maxDiff = None
         cls.company_data["company"].write({
             "state_id": cls.env.ref("base.state_in_gj").id,
+            "street": "street1",
+            "city": "city1",
+            "zip": "123456",
             "country_id": cls.env.ref("base.in").id,
             })
         cls.partner_a.write({
             "vat": "24BBBFF5679L8ZR",
             "state_id": cls.env.ref("base.state_in_gj").id,
+            "street": "street2",
+            "city": "city2",
+            "zip": "123456",
             "country_id": cls.env.ref("base.in").id,
             "l10n_in_gst_treatment": "regular",
             })
+        cls.product_a.write({"l10n_in_hsn_code": "01111"})
         cls.invoice = cls.init_invoice(
             "out_invoice",
             post=True,
@@ -44,10 +53,10 @@ class TestReports(TestAccountReportsCommon):
         # For B2B Invoice - 4A, AB, 4C, 6B, 6C
         expected = [
             {"name": 1, "class": ""},
-            {"name": "₹ 25.00", "class": "number"},
-            {"name": "₹ 25.00", "class": "number"},
-            {"name": "₹ 0.00", "class": "number"},
-            {"name": "₹ 0.00", "class": "number"}
+            {"name": f"₹{NON_BREAKING_SPACE}25.00", "class": "number"},
+            {"name": f"₹{NON_BREAKING_SPACE}25.00", "class": "number"},
+            {"name": f"₹{NON_BREAKING_SPACE}0.00", "class": "number"},
+            {"name": f"₹{NON_BREAKING_SPACE}0.00", "class": "number"}
             ]
         self.assertListEqual(expected, lines[0]['columns'], "Wrong values for Indian GSTR-1 B2B summary report.")
 

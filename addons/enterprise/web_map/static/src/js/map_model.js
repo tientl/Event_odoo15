@@ -195,19 +195,39 @@ const MapModel = AbstractModel.extend({
      * @private
      * @returns {Promise<results>}
      */
-    _fetchRecordData: function () {
-        return this._rpc({
+    async _fetchRecordData() {
+        const groupBy = this.data.groupBy ? this.data.groupBy.split(':')[0] : false;
+        const results = await this._rpc({
             route: '/web/dataset/search_read',
             model: this.model,
             context: this.context,
-            fields: this.data.groupBy ?
-                this.fields.concat(this.data.groupBy.split(':')[0]) :
+            fields: groupBy ?
+                this.fields.concat(groupBy) :
                 this.fields,
             domain: this.domain,
             orderBy: this.orderBy,
             limit: this.data.limit,
             offset: this.data.offset
-        });
+        })
+        if (results && groupBy && ["one2many", "many2many"].includes(this.fieldsInfo[groupBy].type)) {
+            const ids = new Set(results.records.flatMap((record) => record[groupBy]));
+            const groupbyRecords = await this._rpc({
+                method: 'name_get',
+                model: this.fieldsInfo[groupBy].relation,
+                context: this.context,
+                args: [[...ids]],
+            })
+            const labelPerRecordId = Object.fromEntries(groupbyRecords);
+            for (const record of results.records) {
+                record[groupBy] = record[groupBy].map(
+                    val =>
+                        val && val in labelPerRecordId
+                            ? [val, labelPerRecordId[val]]
+                            : false
+                );
+            }
+        }
+        return results;
     },
     /**
      * @private
@@ -224,22 +244,26 @@ const MapModel = AbstractModel.extend({
         };
         const groups = {};
         for (const record of this.data.records) {
-            const value = record[fieldName];
-            let id, name;
-            if (['date', 'datetime'].includes(this.fieldsInfo[fieldName].type)) {
-                const date = moment(value);
-                id = name = date.format(dateGroupFormats[subGroup]);
-            } else {
-                id = Array.isArray(value) ? value[0] : value;
-                name = Array.isArray(value) ? value[1] : value;
+            const vals = ["one2many", "many2many"].includes(this.fieldsInfo[fieldName].type)
+                ? record[fieldName] : [record[fieldName]];
+
+            for(const val of vals){
+                let id, name;
+                if (['date', 'datetime'].includes(this.fieldsInfo[fieldName].type)) {
+                    const date = moment(val);
+                    id = name = date.format(dateGroupFormats[subGroup]);
+                } else {
+                    id = Array.isArray(val) ? val[0] : val;
+                    name = Array.isArray(val) ? val[1] : val;
+                }
+                if (!groups[id]) {
+                    groups[id] = {
+                        name,
+                        records: [],
+                    };
+                }
+                groups[id].records.push(record);
             }
-            if (!groups[id]) {
-                groups[id] = {
-                    name,
-                    records: [],
-                };
-            }
-            groups[id].records.push(record);
         }
         return groups;
     },

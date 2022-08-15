@@ -113,9 +113,8 @@ class QualityPoint(models.Model):
     def _compute_component_ids(self):
         self.component_ids = False
         for point in self:
-            if not point.is_workorder_step or not self.bom_id:
-                continue
-            if point.test_type not in ('register_consumed_materials', 'register_byproducts'):
+            if not point.is_workorder_step or not self.bom_id or point.test_type not in ('register_consumed_materials', 'register_byproducts'):
+                point.component_id = None
                 continue
             if point.test_type == 'register_byproducts':
                 point.component_ids = point.bom_id.byproduct_ids.product_id

@@ -4,6 +4,7 @@ import {
     afterEach,
     afterNextRender,
     beforeEach,
+    isScrolledToBottom,
     start,
 } from '@mail/utils/test_utils';
 
@@ -272,14 +273,13 @@ QUnit.test('Message list is scrolled to new message after posting a message', as
             return (
                 threadViewer.thread.model === 'res.partner' &&
                 threadViewer.thread.id === 11 &&
-                scrollTop === messageList.scrollHeight - messageList.clientHeight
+                isScrolledToBottom(messageList)
             );
         },
     });
     const messageList = document.querySelector('.o_Chatter_scrollPanel');
-    assert.strictEqual(
-        messageList.scrollTop,
-        messageList.scrollHeight - messageList.clientHeight,
+    assert.ok(
+        isScrolledToBottom(messageList),
         "The message list should be scrolled to its bottom"
     );
 

@@ -298,7 +298,7 @@ odoo.define('timesheet_grid.TimerGridRenderer', function (require) {
         async _onKeydown(ev) {
             if (ev.key === 'Shift' && !this.stateTimer.timerRunning && !this.state.editMode) {
                 this.stateTimer.addTimeMode = true;
-            } else if (!ev.altKey && !ev.ctrlKey && !ev.metaKey && this.showTimerButton && ! ['input', 'textarea'].includes(ev.target.tagName.toLowerCase())) {
+            } else if (!ev.altKey && !ev.ctrlKey && !ev.metaKey && this.showTimerButton && ! (['input', 'textarea'].includes(ev.target.tagName.toLowerCase()) || ev.target.className.toLowerCase().includes('note'))) {
                 if (ev.key === 'Escape' && this.stateTimer.timerRunning) {
                     this._onTimerUnlink();
                 }

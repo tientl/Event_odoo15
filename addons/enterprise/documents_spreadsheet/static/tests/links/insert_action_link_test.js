@@ -26,6 +26,7 @@ import * as LegacyFavoriteMenu from "web.FavoriteMenu";
 import { InsertViewSpreadsheet } from "@documents_spreadsheet/insert_action_link_menu/insert_action_link_menu";
 import { InsertViewSpreadsheet as LegacyInsertViewSpreadsheet } from "@documents_spreadsheet/js/components/insert_action_link/insert_action_link_menu";
 import { browser } from "@web/core/browser/browser";
+import { spreadsheetLinkMenuCellService} from "../../src/js/o_spreadsheet/registries/odoo_menu_link_cell";
 
 const serviceRegistry = registry.category("services");
 const favoriteMenuRegistry = registry.category("favoriteMenu");
@@ -52,6 +53,7 @@ async function openView(viewType, options = {}) {
         { sequence: 1 }
     );
     serviceRegistry.add("spreadsheet", spreadsheetService);
+    serviceRegistry.add('spreadsheetLinkMenuCell', spreadsheetLinkMenuCellService);
     const webClient = await createWebClient({
         serverData,
         mockRPC: options.mockRPC,

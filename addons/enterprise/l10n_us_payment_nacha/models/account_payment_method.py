@@ -13,7 +13,7 @@ class AccountPaymentMethod(models.Model):
         res['nacha'] = {
             'mode': 'multi',
             'domain': [('type', '=', 'bank')],
-            'currency_id': self.env.ref("base.USD").id,
+            'currency_ids': self.env.ref("base.USD").ids,
             'country_id': self.env.ref("base.us").id
         }
         return res

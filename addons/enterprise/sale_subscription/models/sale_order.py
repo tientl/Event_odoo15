@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from dateutil.relativedelta import relativedelta
+from datetime import date
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -204,6 +205,8 @@ class SaleOrderLine(models.Model):
                         date_start = parse_date(self.env, match.group(1))
                         date_start_display = date_start
                         date_end = parse_date(self.env, match.group(2))
+                        if not isinstance(date_start, date) or not isinstance(date_end, date):
+                            date_start, date_end = None, None
                     except AttributeError:
                         # Fallback on discount
                         pass

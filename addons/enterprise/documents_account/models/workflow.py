@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, exceptions
+from odoo.tests.common import Form
 
 
 class WorkflowActionRuleAccount(models.Model):
@@ -19,24 +20,40 @@ class WorkflowActionRuleAccount(models.Model):
             invoice_ids = []
             for document in documents:
                 create_values = {
-                    'move_type': invoice_type,
-                    'journal_id': journal.id,
+                    'default_move_type': invoice_type,
+                    'default_journal_id': journal.id,
                 }
-                if invoice_type not in ['out_refund', 'out_invoice']:
-                    create_values['narration'] = False
                 if document.res_model == 'account.move.line' and document.res_id:
-                    create_values.update(document_request_line_id=document.res_id)
+                    create_values.update(default_document_request_line_id=document.res_id)
 
                 if self.partner_id:
-                    create_values.update(partner_id=self.partner_id.id)
+                    if invoice_type in ['in_invoice', 'in_refund']:
+                        payment_term_id = self.partner_id.property_supplier_payment_term_id.id
+                    elif invoice_type in ['out_invoice', 'out_refund']:
+                        payment_term_id = self.partner_id.property_payment_term_id.id
+                    create_values.update(
+                        default_partner_id=self.partner_id.id,
+                        default_invoice_payment_term_id=payment_term_id
+                    )
                 elif document.partner_id:
-                    create_values.update(partner_id=document.partner_id.id)
+                    if invoice_type in ['in_invoice', 'in_refund']:
+                        payment_term_id = document.partner_id.property_supplier_payment_term_id.id
+                    elif invoice_type in ['out_invoice', 'out_refund']:
+                        payment_term_id = document.partner_id.property_payment_term_id.id
+                    create_values.update(
+                        default_partner_id=document.partner_id.id,
+                        default_invoice_payment_term_id=payment_term_id
+                    )
 
                 if document.res_model == 'account.move' and document.res_id:
                     invoice_ids.append(document.res_id)
                 else:
-                    new_obj = self.env['account.move'].create(create_values)
-                    new_obj.partner_bank_id = new_obj.bank_partner_id.bank_ids and new_obj.bank_partner_id.bank_ids[0]
+                    with Form(self.env['account.move'].with_context(create_values)) as invoice_form:
+                        # ignore view required fields (it will fail on create for really required field)
+                        for modifiers in invoice_form._view['modifiers'].values():
+                            modifiers.pop("required", None)
+                        new_obj = invoice_form.save()
+
                     body = "<p>created from Documents app</p>"
                     # the 'no_document' key in the context indicates that this ir_attachment has already a
                     # documents.document and a new document shouldn't be automatically generated.

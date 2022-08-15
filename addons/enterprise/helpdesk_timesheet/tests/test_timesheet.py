@@ -40,3 +40,25 @@ class TestTimesheet(TestHelpdeskTimesheetCommon):
                 'helpdesk_ticket_id': ticket.id,
                 'task_id': task.id,
             })
+
+    def test_compute_timesheet_partner_from_ticket_customer(self):
+        partner2 = self.env['res.partner'].create({
+            'name': 'Customer ticket',
+            'email': 'customer@ticket.com',
+        })
+        helpdesk_ticket = self.env['helpdesk.ticket'].create({
+            'name': 'Test Ticket',
+            'team_id': self.helpdesk_team.id,
+            'partner_id': self.partner.id,
+        })
+        timesheet_entry = self.env['account.analytic.line'].create({
+            'name': 'the only timesheet. So lonely...',
+            'helpdesk_ticket_id': helpdesk_ticket.id,
+            'project_id': self.helpdesk_team.project_id.id,
+        })
+
+        self.assertEqual(timesheet_entry.partner_id, self.partner, "The timesheet entry's partner should be equal to the ticket's partner/customer")
+
+        helpdesk_ticket.write({'partner_id': partner2.id})
+
+        self.assertEqual(timesheet_entry.partner_id, partner2, "The timesheet entry's partner should still be equal to the ticket's partner/customer, after the change")

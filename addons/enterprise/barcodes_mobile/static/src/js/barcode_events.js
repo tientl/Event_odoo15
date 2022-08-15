@@ -18,16 +18,4 @@ var barcodeEvents = BarcodeEvents.BarcodeEvents;
 barcodeEvents.$barcodeInput.on('focus', function () {
     setTimeout(mobile.methods.closeVirtualKeyboard, 0);
 });
-
-// On mobile app, we can keep the input focused as the virtual keyboard
-// is closed by a specific method.
-barcodeEvents._blurBarcodeInput = function () {
-    if (this.$barcodeInput) {
-        this.$barcodeInput.val('');
-    }
-}
-barcodeEvents.__blurBarcodeInput = _.debounce(barcodeEvents._blurBarcodeInput,
-    barcodeEvents.inputTimeOut);
-
-
 });

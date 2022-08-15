@@ -5,7 +5,7 @@ from odoo.addons.web.controllers.main import content_disposition
 
 class DownloadCertificateRequst(http.Controller):
 
-    @http.route('/l10n_ar_edi/download_csr/<int:company_id>/', type='http', auth="user")
+    @http.route('/l10n_ar_edi/download_csr/<int:company_id>', type='http', auth="user")
     def download_csr(self, company_id, **kw):
         """ Download the certificate request file to upload in AFIP """
         company = http.request.env['res.company'].sudo().browse(company_id)

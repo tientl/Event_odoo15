@@ -52,6 +52,10 @@ class Task(models.Model):
                 ml_vals = fsm_sn_move._prepare_move_line_vals(quantity=0)
                 ml_vals['qty_done'] = qty - fsm_sn_move.quantity_done
                 ml_vals['lot_id'] = so_line.fsm_lot_id.id
+                if fsm_sn_move.product_id.tracking == "serial":
+                    quants = self.env['stock.quant']._gather(fsm_sn_move.product_id, fsm_sn_move.location_id, lot_id=so_line.fsm_lot_id)
+                    quant = quants.filtered(lambda q: q.quantity == 1.0)[:1]
+                    ml_vals['location_id'] = quant.location_id.id or fsm_sn_move.location_id.id
                 ml_to_create.append(ml_vals)
             all_fsm_sn_moves |= fsm_sn_moves
         self.env['stock.move.line'].create(ml_to_create)
@@ -86,7 +90,10 @@ class Task(models.Model):
 
     def write(self, vals):
         result = super().write(vals)
-        if 'user_id' in vals:
-            orders = self.mapped('sale_order_id').filtered(lambda order: order.state in ['draft', 'sent'])
-            orders.write({'user_id': vals['user_id']})
+        if 'user_ids' in vals:
+            for task in self:
+                user = task.user_ids[:1]
+                sale_order = task.sale_order_id
+                if sale_order.state in ['draft', 'sent'] and user != sale_order.user_id:
+                    sale_order.write({'user_id': user.id})
         return result

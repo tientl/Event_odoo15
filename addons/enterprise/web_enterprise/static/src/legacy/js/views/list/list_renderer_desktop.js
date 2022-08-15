@@ -7,11 +7,23 @@ odoo.define('web_enterprise.ListRenderer', function (require) {
     }
     const { qweb } = require('web.core');
     const ListRenderer = require('web.ListRenderer');
+    const ListView = require('web.ListView');
     const session = require('web.session');
+    const { patch } = require('web.utils');
     const PromoteStudioDialog = require('web_enterprise.PromoteStudioDialog');
 
-    ListRenderer.include({
+    patch(ListView.prototype, 'web_enterprise.ListView', {
+        init: function (viewInfo, params) {
+            this._super(viewInfo, params);
+            this.rendererParams.isStudioEditable = params.action && !!params.action.xml_id;
+        },
+    });
 
+    patch(ListRenderer.prototype, 'web_enterprise.ListRenderer', {
+        init: function (parent, state, params) {
+            this._super(...arguments);
+            this.isStudioEditable = params.isStudioEditable;
+        },
         //--------------------------------------------------------------------------
         // Private
         //--------------------------------------------------------------------------
@@ -25,7 +37,7 @@ odoo.define('web_enterprise.ListRenderer', function (require) {
          */
         _renderOptionalColumnsDropdown: function () {
             const $optionalColumnsDropdown = this._super(...arguments);
-            if (session.is_system) {
+            if (session.is_system && this.isStudioEditable) {
                 const $dropdownMenu = $optionalColumnsDropdown.find('.dropdown-menu');
                 if (this.optionalColumns.length) {
                     $dropdownMenu.append($("<hr />"));

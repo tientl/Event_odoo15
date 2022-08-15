@@ -147,4 +147,4 @@ class PosOrder(models.Model):
 
             return res
         else:
-            super().remove_from_ui(server_ids)
+            return super().remove_from_ui(server_ids)

@@ -2,6 +2,7 @@
 
 import { BasicDataSource } from "./basic_data_source";
 import { _t } from "web.core";
+import { removeContextUserInfo } from "./helpers";
 
 // -----------------------------------------------------------------------------
 // Types
@@ -24,7 +25,7 @@ export default class ListDataSource extends BasicDataSource {
         super(params);
         this.labels = {};
         this.limit = params.limit || 0;
-        this.definition = params.definition;
+        this.definition = JSON.parse(JSON.stringify(params.definition));
         this.setTimeoutPromise = undefined;
         this.computedDomain = this.definition.domain;
     }
@@ -33,7 +34,7 @@ export default class ListDataSource extends BasicDataSource {
         const data = await this.rpc({
             model: this.definition.model,
             method: "search_read",
-            context: this.definition.context,
+            context: removeContextUserInfo(this.definition.context),
             domain: this.computedDomain,
             fields: this.definition.columns.filter(f => this.getField(f)),
             orderBy: this.definition.orderBy,
@@ -196,6 +197,12 @@ export default class ListDataSource extends BasicDataSource {
         const field = this.getField(fieldName);
         if (!field) {
             throw new Error(_.str.sprintf(_t("The field %s does not exist or you do not have access to that field"), fieldName));
+        }
+        if (!(fieldName in record)) {
+            this.definition.columns.push(fieldName);
+            this.definition.columns = [...new Set(this.definition.columns)]; //Remove duplicates
+            this._fetchAfterTimeout();
+            return undefined;
         }
         if (field.type === "many2one") {
             return record[fieldName].length === 2 ? record[fieldName][1] : "";

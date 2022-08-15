@@ -12,6 +12,7 @@ Add a dynamic report about recruitment.
     'depends': ['hr_recruitment', 'web_dashboard'],
     'data': [
         'security/ir.model.access.csv',
+        'security/hr_recruitment_reports_security.xml',
         'report/hr_recruitment_report_views.xml',
     ],
     'installable': True,

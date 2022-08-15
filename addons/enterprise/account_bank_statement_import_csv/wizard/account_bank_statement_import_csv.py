@@ -6,6 +6,7 @@ import psycopg2
 
 from odoo import _, api, models
 from odoo.exceptions import UserError
+from odoo.addons.base_import.models.base_import import FIELDS_RECURSION_LIMIT
 
 
 class AccountBankStatementImport(models.TransientModel):
@@ -50,7 +51,7 @@ class AccountBankStmtImportCSV(models.TransientModel):
     _inherit = 'base_import.import'
 
     @api.model
-    def get_fields_tree(self, model, depth=2):
+    def get_fields_tree(self, model, depth=FIELDS_RECURSION_LIMIT):
         fields_list = super(AccountBankStmtImportCSV, self).get_fields_tree(model, depth=depth)
         if self._context.get('bank_stmt_import', False):
             add_fields = [{

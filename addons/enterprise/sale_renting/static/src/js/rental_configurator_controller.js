@@ -16,6 +16,7 @@ var RentalConfiguratorFormController = FormController.extend({
             return_date: state.return_date,
             price_unit: state.unit_price,
             product_uom_qty: state.quantity,
+            discount: 0.0,
             is_rental: true,
         };
     },

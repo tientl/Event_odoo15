@@ -2,8 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.delivery_easypost.models.easypost_request import EasypostRequest
 from odoo.addons.delivery_easypost.tests.common import EasypostTestCommon
+from odoo.tests import tagged
 
 
+@tagged('-standard', 'external')
 class TestEasypostRequest(EasypostTestCommon):
     def setUp(self):
         super().setUp()

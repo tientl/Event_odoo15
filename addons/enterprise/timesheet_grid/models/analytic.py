@@ -145,7 +145,8 @@ class AnalyticLine(models.Model):
                 domain_search.append([name, operator, value])
                 if name in ['project_id', 'task_id']:
                     if operator in ['=', '!='] and value:
-                        domain_project_task[name].append(('id', operator, value))
+                        field = "name" if isinstance(value, str) else "id"
+                        domain_project_task[name].append((field, operator, value))
                     elif operator in ['ilike', 'not ilike']:
                         domain_project_task[name].append(('name', operator, value))
             else:
@@ -193,7 +194,9 @@ class AnalyticLine(models.Model):
                     }
                     seen.append(k)
                     if not any(record == row for row in res_rows):
-                        rows.append({'values': record, 'domain': [('id', '=', -1)]})
+                        domain = expression.normalize_domain(
+                            [(field, '=', value[0]) for field, value in list(zip(row_fields, k)) if value and value[0]])
+                        rows.append({'values': record, 'domain': domain})
 
         if 'task_id' in domain_project_task:
             task_ids = self.env['project.task'].search(domain_project_task['task_id'])
@@ -206,7 +209,9 @@ class AnalyticLine(models.Model):
                     }
                     seen.append(k)
                     if not any(record == row for row in res_rows):
-                        rows.append({'values': record, 'domain': [('id', '=', -1)]})
+                        domain = expression.normalize_domain(
+                            [(field, '=', value[0]) for field, value in list(zip(row_fields, k)) if value and value[0]])
+                        rows.append({'values': record, 'domain': domain})
 
         # _grid_make_empty_cell return a dict, in this dictionary,
         # we need to check if the cell is in the current date,
@@ -419,6 +424,15 @@ class AnalyticLine(models.Model):
                 node.set('string', _('%s Spent') % (re.sub(r'[\(\)]', '', encoding_uom.name or '')))
         return etree.tostring(doc, encoding='unicode')
 
+    def _get_project_task_from_domain(self, domain):
+        project_id = task_id = False
+        for subdomain in domain:
+            if subdomain[0] == 'project_id' and subdomain[1] == '=':
+                project_id = subdomain[2]
+            elif subdomain[0] == 'task_id' and subdomain[1] == '=':
+                task_id = subdomain[2]
+        return project_id, task_id
+
     def adjust_grid(self, row_domain, column_field, column_value, cell_field, change):
         if column_field != 'date' or cell_field != 'unit_amount':
             raise ValueError(
@@ -429,11 +443,18 @@ class AnalyticLine(models.Model):
                 ))
 
         additionnal_domain = self._get_adjust_grid_domain(column_value)
-        domain = expression.AND([row_domain, additionnal_domain])
+        # Remove date from the domain
+        new_row_domain = []
+        for leaf in row_domain:
+            if leaf[0] == 'date':
+                new_row_domain += ['|', expression.TRUE_LEAF, leaf]
+            else:
+                new_row_domain.append(leaf)
+        domain = expression.AND([new_row_domain, additionnal_domain])
         line = self.search(domain)
 
         day = column_value.split('/')[0]
-        if len(line) > 1:  # copy the last line as adjustment
+        if len(line) > 1 or len(line) == 1 and line.validated:  # copy the last line as adjustment
             line[0].copy({
                 'name': _('Timesheet Adjustment'),
                 column_field: day,
@@ -444,11 +465,27 @@ class AnalyticLine(models.Model):
                 cell_field: line[cell_field] + change
             })
         else:  # create new one
-            self.search(row_domain, limit=1).copy({
-                'name': _('Timesheet Adjustment'),
-                column_field: day,
-                cell_field: change,
-            })
+            line_in_domain = self.search(row_domain, limit=1)
+            if line_in_domain:
+                line_in_domain.copy({
+                    'name': _('Timesheet Adjustment'),
+                    column_field: day,
+                    cell_field: change,
+                })
+            else:
+                project, task = self._get_project_task_from_domain(domain)
+
+                if task and not project:
+                    project = self.env['project.task'].browse([task]).project_id.id
+
+                if project:
+                    self.create([{
+                        'project_id': project,
+                        'task_id': task,
+                        column_field: day,
+                        cell_field: change,
+                    }])
+
         return False
 
     def _get_adjust_grid_domain(self, column_value):
@@ -814,16 +851,15 @@ class AnalyticLine(models.Model):
             1. Approver: in this access right, the user can't validate all timesheets,
             he can validate the timesheets where he is the manager or timesheet responsible of the
             employee who is assigned to this timesheets or the user is the owner of the project.
-            Furthermore, the user can validate his own timesheets.
+            The user cannot validate his own timesheets.
 
             2. Manager (Administrator): with this access right, the user can validate all timesheets.
         """
-        domain = [('validated', '=', validated)]
+        domain = [('is_timesheet', '=', True), ('validated', '=', validated)]
 
         if not self.user_has_groups('hr_timesheet.group_timesheet_manager'):
             return expression.AND([domain, ['|', ('employee_id.timesheet_manager_id', '=', self.env.user.id),
-                      '|', ('employee_id.parent_id.user_id', '=', self.env.user.id),
-                      '|', ('project_id.user_id', '=', self.env.user.id), ('user_id', '=', self.env.user.id)]])
+                      '|', ('employee_id.parent_id.user_id', '=', self.env.user.id), ('project_id.user_id', '=', self.env.user.id)]])
         return domain
 
     def _get_timesheets_to_merge(self):

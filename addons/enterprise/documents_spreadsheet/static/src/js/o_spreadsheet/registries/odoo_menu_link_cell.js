@@ -2,6 +2,8 @@
 
 import spreadsheet from "../o_spreadsheet_loader";
 import { _lt } from "@web/core/l10n/translation";
+import { registry } from "@web/core/registry";
+
 import { IrMenuSelector } from "../../components/ir_menu_selector/ir_menu_selector";
 
 const { cellRegistry, linkMenuRegistry } = spreadsheet.registries;
@@ -133,13 +135,14 @@ class OdooMenuLinkCell extends LinkCell {
     }
 
     action(env) {
-        env.services.menu.selectMenu(this._irMenuId);
+        const menu = env.services.menu.getMenu(this._irMenuId);
+        env.services.action.doAction(menu.actionID);
     }
 }
 
 class OdooViewLinkCell extends LinkCell {
     /**
-     * 
+     *
      * @param {string} id
      * @param {string} content
      * @param {ViewLinkDescription} actionDescription
@@ -168,35 +171,51 @@ class OdooViewLinkCell extends LinkCell {
         });
     }
 }
+export const spreadsheetLinkMenuCellService = {
+    dependencies: ["menu"],
+    start(env) {
+        function _getIrMenuByXmlId(xmlId) {
+            const menu = env.services.menu.getAll().find((menu) => menu.xmlid === xmlId);
+            if (!menu) {
+                throw new Error(`Menu ${xmlId} not found. You may not have the required access rights.`);
+            }
+            return menu;
+        };
 
-cellRegistry.add("OdooMenuIdLink", {
-    sequence: 65,
-    match: isMarkdownIrMenuIdLink,
-    createCell: (id, content, properties, sheetId, getters) => {
-        const { url } = parseMarkdownLink(content);
-        const menuId = parseIrMenuIdLink(url);
-        const menuName = getters.getIrMenuNameById(menuId);
-        return new OdooMenuLinkCell(id, content, menuId, menuName, properties);
+        cellRegistry.add("OdooMenuIdLink", {
+            sequence: 65,
+            match: isMarkdownIrMenuIdLink,
+            createCell: (id, content, properties, sheetId, getters) => {
+                const { url } = parseMarkdownLink(content);
+                const menuId = parseIrMenuIdLink(url);
+                const menuName = env.services.menu.getMenu(menuId).name;
+                return new OdooMenuLinkCell(id, content, menuId, menuName, properties);
+            },
+        }).add("OdooMenuXmlLink", {
+            sequence: 66,
+            match: isMarkdownIrMenuXmlLink,
+            createCell: (id, content, properties, sheetId, getters) => {
+                const { url } = parseMarkdownLink(content);
+                const xmlId = parseIrMenuXmlLink(url);
+                const menuId = _getIrMenuByXmlId(xmlId).id;
+                const menuName = _getIrMenuByXmlId(xmlId).name;
+                return new OdooMenuLinkCell(id, content, menuId, menuName, properties);
+            },
+        }).add("OdooIrFilterLink", {
+            sequence: 67,
+            match: isMarkdownViewLink,
+            createCell: (id, content, properties, sheetId, getters) => {
+                const { url } = parseMarkdownLink(content);
+                const actionDescription = parseViewLink(url);
+                return new OdooViewLinkCell(id, content, actionDescription, properties);
+            },
+        });
+
+        return true;
     },
-}).add("OdooMenuXmlLink", {
-    sequence: 66,
-    match: isMarkdownIrMenuXmlLink,
-    createCell: (id, content, properties, sheetId, getters) => {
-        const { url } = parseMarkdownLink(content);
-        const xmlId = parseIrMenuXmlLink(url);
-        const menuId = getters.getIrMenuIdByXmlId(xmlId);
-        const menuName = getters.getIrMenuNameByXmlId(xmlId);
-        return new OdooMenuLinkCell(id, content, menuId, menuName, properties);
-    },
-}).add("OdooIrFilterLink", {
-    sequence: 67,
-    match: isMarkdownViewLink,
-    createCell: (id, content, properties, sheetId, getters) => {
-        const { url } = parseMarkdownLink(content);
-        const actionDescription = parseViewLink(url);
-        return new OdooViewLinkCell(id, content, actionDescription, properties);
-    },
-});
+};
+
+registry.category("services").add("spreadsheetLinkMenuCell", spreadsheetLinkMenuCellService);
 
 linkMenuRegistry.add("odooMenu", {
     name: _lt("Link an Odoo menu"),
@@ -207,7 +226,7 @@ linkMenuRegistry.add("odooMenu", {
                 onMenuSelected: (menuId) => {
                     closeDialog();
                     const menu = env.services.menu.getMenu(menuId);
-                    const xmlId = menu.xmlid;
+                    const xmlId = menu && menu.xmlid;
                     const url = xmlId ? buildIrMenuXmlLink(xmlId) : buildIrMenuIdLink(menuId);
                     const name = menu.name;
                     const link = { url, label: name };

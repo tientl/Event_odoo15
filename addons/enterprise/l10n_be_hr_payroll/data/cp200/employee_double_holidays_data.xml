@@ -82,6 +82,21 @@ result = max(0, result / 0.92 * 0.85)
         <field name="struct_id" ref="hr_payroll_structure_cp200_double_holiday"/>
     </record>
 
+    <record id="cp200_employees_double_holiday_pay_pp_total" model="hr.salary.rule">
+        <field name="category_id" ref="hr_salary_rule_category_withholding_taxes_total"/>
+        <field name="name">Withholding Taxes (Total)</field>
+        <field name="code">PPTOTAL</field>
+        <field name="amount_select">code</field>
+        <field name="sequence">110</field>
+        <field name="condition_select">none</field>
+        <field name="appears_on_payslip" eval="False"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = -categories.PP
+        </field>
+        <field name="struct_id" ref="hr_payroll_structure_cp200_double_holiday"/>
+    </record>
+
     <function model="hr.salary.rule" name="write">
         <value model="hr.salary.rule" search="[
             ('struct_id', '=', ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_double_holiday')),

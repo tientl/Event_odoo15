@@ -16,7 +16,8 @@ DESCRIPTION_CREDIT_CODE = [
 DESCRIPTION_DEBIT_CODE = [
     ('1', 'Intereses'),
     ('2', 'Gastos por cobrar'),
-    ('3', 'Cambio del valor')
+    ('3', 'Cambio del valor'),
+    ('4', 'Otros'),
 ]
 
 
@@ -38,6 +39,7 @@ class AccountMove(models.Model):
                                                   ('12', 'Transporte'),
                                                   ('13', 'Cambiario'),
                                                   ('20', 'Nota Crédito que referencia una factura electrónica'),
+                                                  ('22', 'Nota Crédito sin referencia a facturas'),
                                                   ('23', 'Nota Crédito para facturación electrónica V1 (Decreto 2242)'),
                                                   ('30', 'Nota Débito que referencia una factura electrónica'),
                                                   ('32', 'Nota Débito sin referencia a facturas'),
@@ -52,6 +54,7 @@ class AccountMove(models.Model):
     l10n_co_edi_description_code_credit = fields.Selection(DESCRIPTION_CREDIT_CODE, string="Concepto Nota de Credito")
     l10n_co_edi_description_code_debit = fields.Selection(DESCRIPTION_DEBIT_CODE, string="Concepto Nota de Débito")
     l10n_co_edi_debit_note = fields.Boolean(related="journal_id.l10n_co_edi_debit_note")
+    l10n_co_edi_is_support_document = fields.Boolean('Support Document', related='journal_id.l10n_co_edi_is_support_document')
 
     # -------------------------------------------------------------------------
     # Compute
@@ -89,11 +92,17 @@ class AccountMove(models.Model):
     def _l10n_co_edi_get_electronic_invoice_type(self):
         if self.move_type == 'out_invoice':
             return 'ND' if self.l10n_co_edi_debit_note else 'INVOIC'
+        elif self.move_type == 'in_invoice':
+            return 'INVOIC'
         return 'NC'
 
     def _l10n_co_edi_get_electronic_invoice_type_info(self):
         if self.move_type == 'out_invoice':
             return 'DIAN 2.1: Nota Débito de Factura Electrónica de Venta' if self.l10n_co_edi_debit_note else 'DIAN 2.1: Factura Electrónica de Venta'
+        elif self.move_type == 'in_invoice':
+            return 'DIAN 2.1: documento soporte en adquisiciones efectuadas a no obligados a facturar.'
+        elif self.move_type == 'in_refund':
+            return 'DIAN 2.1: Nota de ajuste al documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura o documento equivalente'
         return 'DIAN 2.1: Nota Crédito de Factura Electrónica de Venta'
 
     # -------------------------------------------------------------------------
@@ -142,3 +151,10 @@ class AccountMoveLine(models.Model):
                 return (self.product_id.default_code, '999', 'Estándar de adopción del contribuyente')
 
         return ('1010101', '001', '')
+
+    def _l10n_co_edi_get_iae3_value(self, product_code):
+        value = {
+            '010': '9',
+            '001': '10',
+        }
+        return value.get(product_code, '')

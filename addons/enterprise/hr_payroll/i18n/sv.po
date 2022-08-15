@@ -9,20 +9,20 @@
 # Martin Trigaux, 2021
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2021
 # Martin Wilderoth <martin.wilderoth@linserv.se>, 2021
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2021
 # Fredrik Arvas <fredrik.arvas@vertel.se>, 2021
-# STefan Rundgren <stefanrundgren@cellglas.com>, 2021
-# Simon S, 2021
+# 3eec91a23d05c632ffac786ac42b81b8_b6fff7b <8985b7bc57db860af29969457dbb51b3_1018915>, 2021
 # Kim Asplund <kim.asplund@gmail.com>, 2021
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
+# Simon S, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
-"Last-Translator: Kim Asplund <kim.asplund@gmail.com>, 2021\n"
+"Last-Translator: Simon S, 2022\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,6 +42,18 @@ msgstr "# Lönebesked"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Lönebesked"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -177,7 +189,7 @@ msgstr "<strong>Startdatum för kontrakt</strong>"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
 msgid "<strong>Contract Type </strong>"
-msgstr ""
+msgstr "<strong>Avtalstyp </strong>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
@@ -785,7 +797,7 @@ msgstr "Landskod"
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.action_hr_payroll_confirm_payroll
 msgid "Create Draft Entry"
-msgstr ""
+msgstr "Skapa utkast"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
@@ -1237,7 +1249,7 @@ msgstr "Ange till exempel 50,0 för att tillämpa en procentsats på 50%"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_res_config_settings__module_l10n_fr_hr_payroll
 msgid "French Payroll"
-msgstr ""
+msgstr "Franska löner"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_from
@@ -1655,7 +1667,7 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip__email_cc
 msgid "List of cc from incoming emails."
-msgstr ""
+msgstr "Lista på CC från inkommande e-post"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__paid
@@ -2066,7 +2078,7 @@ msgstr "Löneanalysrapport"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
 msgid "Payroll Entries"
-msgstr ""
+msgstr "Löneverifikat"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
@@ -2392,7 +2404,7 @@ msgstr "Kreditfaktura"
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Refund: %(payslip)s"
-msgstr ""
+msgstr "Kreditering: %(payslip)s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_employee__registration_number
@@ -2476,7 +2488,7 @@ msgstr "Regel"
 #. module: hr_payroll
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_salary_rule_category
 msgid "Rule Categories"
-msgstr ""
+msgstr "Regelkategorier"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_form
@@ -2518,7 +2530,7 @@ msgstr "SMS leveransfel"
 #. module: hr_payroll
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_salary_configuration
 msgid "Salary"
-msgstr ""
+msgstr "Lön"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_contract.py:0
@@ -2727,7 +2739,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
 
 #. module: hr_payroll
@@ -2864,12 +2876,12 @@ msgstr "Beräkningsmetoden för regeln beloppet."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
+msgid "The contract this input should be applied to"
 msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
+msgid "The contract this worked days should be applied to"
 msgstr ""
 
 #. module: hr_payroll
@@ -2983,6 +2995,12 @@ msgstr ""
 "variabel namn (hra, ma, lta, etc.) och den variabla grundläggande."
 
 #. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr ""
+
+#. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_line__date_to
 msgid "To"
@@ -2991,12 +3009,12 @@ msgstr "Till"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_filter
 msgid "To Compute"
-msgstr ""
+msgstr "Att beräkna"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_filter
 msgid "To Confirm"
-msgstr ""
+msgstr "Att bekräfta"
 
 #. module: hr_payroll
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_payroll_employee_payslips_to_pay
@@ -3352,38 +3370,32 @@ msgstr "Arbetsschema"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong percentage base or quantity defined for:"
 msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python code defined for:"
 msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Fel i python-villkoret definierat för löneregeln %s (%s)."
-
-#. module: hr_payroll
-#: code:addons/hr_payroll/models/hr_salary_rule.py:0
-#, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python condition defined for:"
 msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Fel omfångsvillkor definierat för löneregeln %s (%s)."
+msgid "Wrong quantity defined for:"
+msgstr ""
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid "Wrong range condition defined for:"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

@@ -109,7 +109,7 @@ class DataCleaningRecord(models.Model):
 
         records = []
         records_per_model = {}
-        for record in self:
+        for record in self.filtered(lambda r: r.res_model_name):
             ids = records_per_model.get(record.res_model_name, [])
             ids.append(record.res_id)
             records_per_model[record.res_model_name] = ids

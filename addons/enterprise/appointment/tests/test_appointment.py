@@ -1,293 +1,400 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import json
+from datetime import date, datetime, timedelta
+from freezegun import freeze_time
 
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-
-from odoo import fields
+from odoo.addons.appointment.tests.common import AppointmentCommon
 from odoo.exceptions import ValidationError
-from odoo.tests import common, tagged, users
-from odoo.tests.common import new_test_user
+from odoo.tests import tagged, users
 
 
-@tagged('-at_install', 'post_install')
-class AppointmentTest(common.HttpCase):
+@tagged('appointment_slots')
+class AppointmentTest(AppointmentCommon):
 
-    def setUp(self):
-        super(AppointmentTest, self).setUp()
+    @users('apt_manager')
+    def test_appointment_share(self):
+        apt_types = self.env['calendar.appointment.type'].create([
+            {
+                'category': 'custom',
+                'employee_ids': self.staff_employee_bxls,
+                'name': 'Appointment 1',
+            }, {
+                'category': 'custom',
+                'employee_ids': self.staff_employee_aust,
+                'name': 'Appointment 2',
+            },
+        ])
 
-        # calendar events can mess up the availability of our employee later on.
-        self.env['calendar.event'].search([]).unlink()
-
-        self.company = self.env['res.company'].search([], limit=1)
-
-        self.resource_calendar = self.env['resource.calendar'].create({
-            'name': 'Small Day',
-            'company_id': self.company.id
+        apt_share_wizard = self.env['calendar.appointment.share'].create({
+            'appointment_type_ids' : apt_types[0],
         })
+        self.assertEqual(apt_types[0].employee_ids, apt_share_wizard.employee_ids)
 
-        self.resource_calendar.write({'attendance_ids': [(5, False, False)]})  # Wipe out all attendances
+        apt_share_wizard.appointment_type_ids = apt_types[1]
+        self.assertEqual(apt_types[1].employee_ids, apt_share_wizard.employee_ids)
 
-        self.attendance = self.env['resource.calendar.attendance'].create({
-            'name': 'monday morning',
-            'dayofweek': '0',
-            'hour_from': 8,
-            'hour_to': 12,
-            'calendar_id': self.resource_calendar.id
-        })
-
-        self.first_user_in_brussel = self.env['res.users'].create({'name': 'Grace Slick', 'login': 'grace'})
-        self.first_user_in_brussel.write({'tz': 'Europe/Brussels'})
-
-        self.second_user_in_australia = self.env['res.users'].create({'name': 'Australian guy', 'login': 'australian'})
-        self.second_user_in_australia.write({'tz': 'Australia/West'})
-
-        self.employee_in_brussel = self.env['hr.employee'].create({
-            'name': 'Grace Slick',
-            'user_id': self.first_user_in_brussel.id,
-            'company_id': self.company.id,
-            'resource_calendar_id': self.resource_calendar.id
-        })
-
-        self.employee_in_australia = self.env['hr.employee'].create({
-            'name': 'Chris Fisher',
-            'user_id': self.second_user_in_australia.id,
-            'company_id': self.company.id,
-            'resource_calendar_id': self.resource_calendar.id,
-        })
-
-        self.appointment_in_brussel = self.env['calendar.appointment.type'].create({
-            'name': 'Go ask Alice',
-            'appointment_duration': 1,
-            'min_schedule_hours': 1,
-            'max_schedule_days': 15,
-            'min_cancellation_hours': 1,
-            'appointment_tz': 'Europe/Brussels',
-            'employee_ids': [(4, self.employee_in_brussel.id, False)],
-            'slot_ids': [(0, False, {'weekday': '1', 'start_hour': 9, 'end_hour': 10})]  # Yes, monday has either 0 or 1 as weekday number depending on the object it's in
-        })
-
-    def test_extreme_timezone_delta(self):
-        context_australia = {'uid': self.second_user_in_australia.id,
-                             'tz': self.second_user_in_australia.tz,
-                             'lang': 'en_US'}
-
-        # As if the second user called the function
-        appointment = self.appointment_in_brussel.with_context(context_australia)
-
-        # Do what the controller actually does
-        months = appointment.sudo()._get_appointment_slots('Europe/Brussels', None)
-
-        # Verifying
-        utc_now = datetime.utcnow()
-        mondays_count = 0
-        # If the appointment has slots in the next month (the appointment can be taken 15 days in advance)
-        # We'll have the next month displayed, and if the last day of current month is not a sunday
-        # the first week of current month will be in the next month's starting week
-        # but greyed and therefore without slot (and we should have already checked that day anyway)
-        already_checked = set()
-
-        for month in months:
-            for week in month['weeks']:
-                for day in week:
-                    # For the sake of this test NOT to break each monday,
-                    # we only control those mondays that are *strictly* superior than today
-                    if day['day'] > utc_now.date() and\
-                        day['day'] < (utc_now + relativedelta(days=appointment.max_schedule_days)).date() and\
-                        day['day'].weekday() == 0 and\
-                        day['day'] not in already_checked:
-
-                        mondays_count += 1
-                        already_checked.add(day['day'])
-                        self.assertEqual(len(day['slots']), 1, 'Each monday should have only one slot')
-                        slot = day['slots'][0]
-                        self.assertEqual(slot['employee_id'], self.employee_in_brussel.id, 'The right employee should be available on each slot')
-                        self.assertEqual(slot['hours'], '09:00', 'Slots hours has to be 09:00')  # We asked to display the slots as Europe/Brussels
-
-        # Ensuring that we've gone through the *crucial* asserts at least once
-        # It might be more accurate to assert mondays_count >= 2, but we don't want this test to break when it pleases
-        self.assertGreaterEqual(mondays_count, 1, 'There should be at least one monday in the time range')
-
-    def test_accept_meeting_unauthenticated(self):
-        user = new_test_user(self.env, "test_user_1", email="test_user_1@nowhere.com", password="P@ssw0rd!", tz="UTC")
-        event = (
-            self.env["calendar.event"]
-            .create(
-                {
-                    "name": "Doom's day",
-                    "start": datetime(2019, 10, 25, 8, 0),
-                    "stop": datetime(2019, 10, 27, 18, 0),
-                    "partner_ids": [(4, user.partner_id.id)],
-                }
-            )
-        )
-        token = event.attendee_ids[0].access_token
-        url = "/calendar/meeting/accept?token=%s&id=%d" % (token, event.id)
-        res = self.url_open(url)
-
-        self.assertEqual(res.status_code, 200, "Response should = OK")
-        event.attendee_ids[0].invalidate_cache()
-        self.assertEqual(event.attendee_ids[0].state, "accepted", "Attendee should have accepted")
-
-    def test_accept_meeting_authenticated(self):
-        user = new_test_user(self.env, "test_user_1", email="test_user_1@nowhere.com", password="P@ssw0rd!", tz="UTC")
-        event = (
-            self.env["calendar.event"]
-            .create(
-                {
-                    "name": "Doom's day",
-                    "start": datetime(2019, 10, 25, 8, 0),
-                    "stop": datetime(2019, 10, 27, 18, 0),
-                    "partner_ids": [(4, user.partner_id.id)],
-                }
-            )
-        )
-        token = event.attendee_ids[0].access_token
-        url = "/calendar/meeting/accept?token=%s&id=%d" % (token, event.id)
-        self.authenticate("test_user_1", "P@ssw0rd!")
-        res = self.url_open(url)
-
-        self.assertEqual(res.status_code, 200, "Response should = OK")
-        event.attendee_ids[0].invalidate_cache()
-        self.assertEqual(event.attendee_ids[0].state, "accepted", "Attendee should have accepted")
-
-    def test_generate_recurring_slots(self):
-        slots = self.appointment_in_brussel._get_appointment_slots('UTC')
-        now = fields.Date.context_today(self.appointment_in_brussel)
-        for month in slots:
-            for week in month['weeks']:
-                for day in week:
-                    if day['day'] > now and\
-                        day['day'] < now + relativedelta(days=self.appointment_in_brussel.max_schedule_days) and\
-                        day['day'].month == week[-1]['day'].month and\
-                        day['day'].isoweekday() == 1:
-
-                        self.assertEqual(len(day['slots']), 1, "There should be 1 slot each monday")
-                    elif day['day'] < now:
-                        self.assertEqual(len(day['slots']), 0, "There should be no slot in the past")
-
-    @users('admin')
-    def test_generate_unique_slots(self):
-        now = datetime.now()
-        unique_slots = [{
-            'start': (now + timedelta(hours=1)).replace(microsecond=0).isoformat(' '),
-            'end': (now + timedelta(hours=2)).replace(microsecond=0).isoformat(' '),
-            'allday': False,
-        }, {
-            'start': (now + timedelta(days=2)).replace(microsecond=0).isoformat(' '),
-            'end': (now + timedelta(days=3)).replace(microsecond=0).isoformat(' '),
-            'allday': True,
-        }]
-        custom_appointment_type = self.env['calendar.appointment.type'].create({
+    @users('apt_manager')
+    def test_appointment_type_create(self):
+        # Custom: current employee set as default, otherwise accepts only 1 employee
+        apt_type = self.env['calendar.appointment.type'].create({
             'category': 'custom',
-            'slot_ids': [(0, 0, {
-                'start_datetime': fields.Datetime.from_string(slot.get('start')),
-                'end_datetime': fields.Datetime.from_string(slot.get('end')),
-                'allday': slot.get('allday'),
-                'slot_type': 'unique',
-            }) for slot in unique_slots],
-        })
-        self.assertEqual(custom_appointment_type.category, 'custom', "It should be a custom appointment type")
-        self.assertEqual(len(custom_appointment_type.slot_ids), 2, "Two slots should have been assigned to the appointment type")
-
-        slots = custom_appointment_type._get_appointment_slots('UTC')
-        for week in slots[0]['weeks']:
-            for day in week:
-                slot = day['slots']
-                if (now + timedelta(hours=1)).date() == day['day']:
-                    # Check if the month we are is greater than the one we are in if there are mutltiple months
-                    if (now + timedelta(hours=1)).date().month > week[0]['day'].month and len(slots) > 1:
-                        # Take the slots of the day in the next month (happens when we are in the end of the month)
-                        slot = next(d['slots'] for d in slots[1]['weeks'][0] if d["day"] == day['day'])
-
-                    self.assertEqual(len(slot), 1, "There should be 1 slot for this date")
-                elif (now + timedelta(days=2)).date() == day['day']:
-                    # Check if the month we are is greater than the one we are in if there are mutltiple months
-                    if (now + timedelta(days=2)).date().month != week[0]['day'].month and len(slots) > 1:
-                        # Take the slots of the day in the next month (happens when we are in the end of the month)
-                        slot = next(d['slots'] for d in slots[1]['weeks'][0] if d["day"] == day['day'])
-
-                    self.assertEqual(len(slot), 1, "There should be 1 all day slot for this date")
-                    self.assertEqual(slot[0]['hours'], 'All day')
-                else:
-                    self.assertEqual(len(slot), 0, "There should be no slot for this date")
-
-    @users('admin')
-    def test_create_custom_appointment(self):
-        self.authenticate('admin', 'admin')
-        now = datetime.now()
-        unique_slots = [{
-            'start': (now + timedelta(hours=1)).replace(microsecond=0).isoformat(' '),
-            'end': (now + timedelta(hours=2)).replace(microsecond=0).isoformat(' '),
-            'allday': False,
-        }, {
-            'start': (now + timedelta(days=2)).replace(microsecond=0).isoformat(' '),
-            'end': (now + timedelta(days=3)).replace(microsecond=0).isoformat(' '),
-            'allday': True,
-        }]
-        request = self.url_open(
-            "/appointment/calendar_appointment_type/create_custom",
-            data=json.dumps({
-                'params': {
-                    'slots': unique_slots,
-                }
-            }),
-            headers={"Content-Type": "application/json"},
-        ).json()
-        result = request.get('result', False)
-        self.assertTrue(result.get('id'), 'The request returns the id of the custom appointment type')
-        appointment_type = self.env['calendar.appointment.type'].browse(result['id'])
-        self.assertEqual(appointment_type.category, 'custom')
-        self.assertEqual(len(appointment_type.slot_ids), 2, "Two slots have been created")
-        self.assertTrue(all(slot.slot_type == 'unique' for slot in appointment_type.slot_ids), "All slots are 'unique'")
-
-    @users('admin')
-    def test_create_custom_appointment_without_employee(self):
-        # No Validation Error, the actual employee should be set by default
-        self.env['calendar.appointment.type'].create({
             'name': 'Custom without employee',
-            'category': 'custom',
         })
+        self.assertEqual(apt_type.employee_ids, self.apt_manager_employee)
 
-    @users('admin')
-    def test_create_custom_appointment_multiple_employees(self):
+        apt_type = self.env['calendar.appointment.type'].create({
+            'category': 'custom',
+            'employee_ids': [(4, self.staff_employees[0].id)],
+            'name': 'Custom with employee',
+        })
+        self.assertEqual(apt_type.employee_ids, self.staff_employees[0])
+
         with self.assertRaises(ValidationError):
             self.env['calendar.appointment.type'].create({
-                'name': 'Custom without employee',
                 'category': 'custom',
-                'employee_ids': [self.employee_in_brussel.id, self.employee_in_australia.id]
+                'employee_ids': self.staff_employees.ids,
+                'name': 'Custom with employees',
             })
 
-    @users('admin')
-    def test_create_work_hours_appointment_without_employee(self):
-        # No Validation Error, the actual employee should be set by default
-        self.env['calendar.appointment.type'].create({
-            'name': 'Work hours without employee',
+        # Work hours: only 1 / employee
+        apt_type = self.env['calendar.appointment.type'].create({
             'category': 'work_hours',
+            'name': 'Work hours on me',
         })
+        self.assertEqual(apt_type.employee_ids, self.apt_manager_employee)
 
-    @users('admin')
-    def test_create_work_hours_appointment_multiple_employees(self):
+        with self.assertRaises(ValidationError):
+            self.env['calendar.appointment.type'].create({
+                'category': 'work_hours',
+                'name': 'Work hours on me, duplicate',
+            })
+
         with self.assertRaises(ValidationError):
             self.env['calendar.appointment.type'].create({
                 'name': 'Work hours without employee',
                 'category': 'work_hours',
-                'employee_ids': [self.employee_in_brussel.id, self.employee_in_australia.id]
+                'employee_ids': [self.staff_employees.ids]
             })
 
-    @users('admin')
-    def test_search_create_work_hours(self):
-        self.authenticate('admin', 'admin')
-        request = self.url_open(
-            "/appointment/calendar_appointment_type/search_create_work_hours",
-            data=json.dumps({}),
-            headers={"Content-Type": "application/json"},
-        ).json()
-        result = request.get('result', False)
-        self.assertTrue(result.get('id'), 'The request returns the id of the custom appointment type')
-        appointment_type = self.env['calendar.appointment.type'].browse(result['id'])
-        self.assertEqual(appointment_type.category, 'work_hours')
-        self.assertEqual(len(appointment_type.slot_ids), 14, "Two slots have been created")
-        self.assertTrue(all(slot.slot_type == 'recurring' for slot in appointment_type.slot_ids), "All slots are 'recurring'")
+    @users('apt_manager')
+    def test_generate_slots_recurring(self):
+        """ Generates recurring slots, check begin and end slot boundaries. """
+        apt_type = self.apt_type_bxls_2days.with_user(self.env.user)
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('Europe/Brussels')
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 3, 6)  # last day of last week of February
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_start_hours': [8, 9, 10, 11, 13],  # based on appointment type start hours of slots but 12 is pause midi
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('apt_manager')
+    def test_generate_slots_recurring_UTC(self):
+        """ Generates recurring slots, check begin and end slot boundaries. Force
+        UTC results event if everything is Europe/Brussels based. """
+        apt_type = self.apt_type_bxls_2days.with_user(self.env.user)
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('UTC')
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 3, 6)  # last day of last week of February
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_start_hours': [7, 8, 9, 10, 12],  # based on appointment type start hours of slots but 12 is pause midi
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('apt_manager')
+    def test_generate_slots_recurring_wleaves(self):
+        """ Generates recurring slots, check begin and end slot boundaries
+        with leaves involved. """
+        apt_type = self.apt_type_bxls_2days.with_user(self.env.user)
+
+        # create personal leaves
+        _leaves = self._create_leaves(
+            self.staff_user_bxls,
+            [(self.reference_monday + timedelta(days=1),  # 2 hours first Tuesday
+              self.reference_monday + timedelta(days=1, hours=2)),
+             (self.reference_monday + timedelta(days=7), # next Monday: one hour
+              self.reference_monday + timedelta(days=7, hours=1))
+            ],
+        )
+        # add global leaves
+        _leaves += self._create_leaves(
+            self.env['res.users'],
+            [(self.reference_monday + timedelta(days=8), # next Tuesday is bank holiday
+              self.reference_monday + timedelta(days=8, hours=12))
+            ],
+            calendar=self.staff_user_bxls.resource_calendar_id,
+        )
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('Europe/Brussels')
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 3, 6)  # last day of last week of February
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_day_specific': {
+                (self.reference_monday + timedelta(days=1)).date(): [
+                    {'end': 11, 'start': 10},
+                    {'end': 12, 'start': 11},
+                    {'end': 14, 'start': 13}
+                ],  # leaves on 7-9 UTC
+                (self.reference_monday + timedelta(days=7)).date(): [
+                    {'end': 10, 'start': 9},
+                    {'end': 11, 'start': 10},
+                    {'end': 12, 'start': 11},
+                    {'end': 14, 'start': 13}
+                ],  # leaves on 7-8
+                (self.reference_monday + timedelta(days=8)).date(): [],  # 12 hours long bank holiday
+             },
+             'slots_start_hours': [8, 9, 10, 11, 13],  # based on appointment type start hours of slots but 12 is pause midi
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('apt_manager')
+    def test_generate_slots_recurring_wmeetings(self):
+        """ Generates recurring slots, check begin and end slot boundaries
+        with leaves involved. """
+        apt_type = self.apt_type_bxls_2days.with_user(self.env.user)
+
+        # create meetings
+        _meetings = self._create_meetings(
+            self.staff_user_bxls,
+            [(self.reference_monday + timedelta(days=1),  # 3 hours first Tuesday
+              self.reference_monday + timedelta(days=1, hours=3),
+              False
+             ),
+             (self.reference_monday + timedelta(days=7), # next Monday: one full day
+              self.reference_monday + timedelta(days=7, hours=1),
+              True,
+             ),
+             (self.reference_monday + timedelta(days=8, hours=2), # 1 hour next Tuesday (9 UTC)
+              self.reference_monday + timedelta(days=8, hours=3),
+              False,
+             ),
+             (self.reference_monday + timedelta(days=8, hours=3), # 1 hour next Tuesday (10 UTC, declined)
+              self.reference_monday + timedelta(days=8, hours=4),
+              False,
+             ),
+             (self.reference_monday + timedelta(days=8, hours=5), # 2 hours next Tuesday (12 UTC)
+              self.reference_monday + timedelta(days=8, hours=7),
+              False,
+             ),
+            ]
+        )
+        attendee = _meetings[-2].attendee_ids.filtered(lambda att: att.partner_id == self.staff_user_bxls.partner_id)
+        attendee.do_decline()
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('Europe/Brussels')
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 3, 6)  # last day of last week of February
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_day_specific': {
+                (self.reference_monday + timedelta(days=1)).date(): [
+                    {'end': 12, 'start': 11},
+                    {'end': 14, 'start': 13},
+                ],  # meetings on 7-10 UTC
+                (self.reference_monday + timedelta(days=7)).date(): [],  # on meeting "allday"
+                (self.reference_monday + timedelta(days=8)).date(): [
+                    {'end': 9, 'start': 8},
+                    {'end': 10, 'start': 9}, 
+                    {'end': 12, 'start': 11},
+                ],  # meetings 9-10 and 12-14
+             },
+             'slots_start_hours': [8, 9, 10, 11, 13],  # based on appointment type start hours of slots but 12 is pause midi
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('apt_manager')
+    def test_generate_slots_unique(self):
+        """ Check unique slots (note: custom appointment type does not check working
+        hours). """
+        unique_slots = [{
+            'start_datetime': self.reference_monday.replace(microsecond=0),
+            'end_datetime': (self.reference_monday + timedelta(hours=1)).replace(microsecond=0),
+            'allday': False,
+        }, {
+            'start_datetime': (self.reference_monday + timedelta(days=1)).replace(microsecond=0),
+            'end_datetime': (self.reference_monday + timedelta(days=2)).replace(microsecond=0),
+            'allday': True,
+        }]
+        apt_type = self.env['calendar.appointment.type'].create({
+            'category': 'custom',
+            'name': 'Custom with unique slots',
+            'slot_ids': [(5, 0)] + [
+                (0, 0, {'allday': slot['allday'],
+                        'end_datetime': slot['end_datetime'],
+                        'slot_type': 'unique',
+                        'start_datetime': slot['start_datetime'],
+                       }
+                ) for slot in unique_slots
+            ],
+        })
+        self.assertEqual(apt_type.category, 'custom', "It should be a custom appointment type")
+        self.assertEqual(apt_type.employee_ids, self.apt_manager_employee)
+        self.assertEqual(len(apt_type.slot_ids), 2, "Two slots should have been assigned to the appointment type")
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('Europe/Brussels')
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 3, 6)  # last day of last week of February
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_day_specific': {
+                self.reference_monday.date(): [{'end': 9, 'start': 8}],  # first unique 1 hour long
+                (self.reference_monday + timedelta(days=1)).date(): [{'allday': True, 'end': False, 'start': 8}],  # second unique all day-based
+             },
+             'slots_start_hours': [],  # all slots in this tests are unique, other dates have no slots
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('staff_user_aust')
+    def test_timezone_delta(self):
+        """ Test timezone delta. Not sure what original test was really doing. """
+        # As if the second user called the function
+        apt_type = self.apt_type_bxls_2days.with_user(self.env.user).with_context(
+            lang='en_US',
+            tz=self.staff_user_aust.tz,
+            uid=self.staff_user_aust.id,
+        )
+
+        # Do what the controller actually does, aka sudo
+        with freeze_time(self.reference_now):
+            slots = apt_type.sudo()._get_appointment_slots('Australia/West', employee=None)
+
+        global_slots_startdate = self.reference_now_monthweekstart
+        global_slots_enddate = date(2022, 4, 3)  # last day of last week of March
+        self.assertSlots(
+            slots,
+            [{'name_formated': 'February 2022',
+              'month_date': datetime(2022, 2, 1),
+              'weeks_count': 5,  # 31/01 -> 28/02 (06/03)
+             },
+             {'name_formated': 'March 2022',
+              'month_date': datetime(2022, 3, 1),
+              'weeks_count': 5,  # 28/02 -> 28/03 (03/04)
+             }
+            ],
+            {'enddate': global_slots_enddate,
+             'startdate': global_slots_startdate,
+             'slots_enddate': self.reference_now.date() + timedelta(days=15),  # maximum 2 weeks of slots
+             'slots_start_hours': [15, 16, 17, 18, 20],  # based on appointment type start hours of slots but 12 is pause midi, set in UTC+8
+             'slots_startdate': self.reference_monday.date(),  # first Monday after reference_now
+             'slots_weekdays_nowork': range(2, 7)  # working hours only on Monday/Tuesday (0, 1)
+            }
+        )
+
+    @users('apt_manager')
+    def test_unique_slots_availabilities(self):
+        """ Check that the availability of each unique slot is correct.
+        First we test that the 2 unique slots of the custom appointment type
+        are available. Then we check that there is now only 1 availability left
+        after the creation of a meeting which encompasses a slot. """
+        reference_monday = self.reference_monday.replace(microsecond=0)
+        unique_slots = [{
+            'allday': False,
+            'end_datetime': reference_monday + timedelta(hours=1),
+            'start_datetime': reference_monday,
+        }, {
+            'allday': False,
+            'end_datetime': reference_monday + timedelta(hours=3),
+            'start_datetime': reference_monday + timedelta(hours=2),
+        }]
+        apt_type = self.env['calendar.appointment.type'].create({
+            'category': 'custom',
+            'name': 'Custom with unique slots',
+            'slot_ids': [(0, 0, {
+                'allday': slot['allday'],
+                'end_datetime': slot['end_datetime'],
+                'slot_type': 'unique',
+                'start_datetime': slot['start_datetime'],
+                }) for slot in unique_slots
+            ],
+        })
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('UTC')
+        # get all monday slots where apt_manager is available
+        available_unique_slots = self._filter_appointment_slots(
+            slots,
+            filter_months=[(2, 2022)],
+            filter_weekdays=[0],
+            filter_employees=self.apt_manager_employee)
+        self.assertEqual(len(available_unique_slots), 2)
+
+        # Create a meeting encompassing the first unique slot
+        self._create_meetings(self.apt_manager, [(
+            unique_slots[0]['start_datetime'],
+            unique_slots[0]['end_datetime'],
+            False,
+        )])
+
+        with freeze_time(self.reference_now):
+            slots = apt_type._get_appointment_slots('UTC')
+        available_unique_slots = self._filter_appointment_slots(
+            slots,
+            filter_months=[(2, 2022)],
+            filter_weekdays=[0],
+            filter_employees=self.apt_manager_employee)
+        self.assertEqual(len(available_unique_slots), 1)
+        self.assertEqual(
+            available_unique_slots[0]['datetime'],
+            unique_slots[1]['start_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
+        )

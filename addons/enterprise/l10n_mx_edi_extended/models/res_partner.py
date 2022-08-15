@@ -29,3 +29,8 @@ class ResPartner(models.Model):
     def _compute_l10n_mx_edi_locality(self):
         for partner in self:
             partner.l10n_mx_edi_locality = partner.l10n_mx_edi_locality_id.name
+
+    @api.model
+    def _formatting_address_fields(self):
+        """Returns the list of address fields usable to format addresses."""
+        return super(ResPartner, self)._formatting_address_fields() + ['l10n_mx_edi_locality']

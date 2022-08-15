@@ -15,6 +15,11 @@ export class AbstractSpreadsheetAction extends owl.Component {
         this.state = useState({
             spreadsheetName: UNTITLED_SPREADSHEET_NAME,
         });
+        /**
+         * this.props.state is only present if we come from the breadcrumb.
+         * In that case, we do not want to execute the callback
+         */
+        this.initCallback = this.props.state ? undefined : this.props.action.params.initCallback;
     }
 
     async willStart() {

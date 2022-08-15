@@ -30,7 +30,7 @@ class AccountAsset(models.Model):
             "The 'On Hold' status can be set manually when you want to pause the depreciation of an asset for some time.\n"
             "You can manually close an asset when the depreciation is over. If the last line of depreciation is posted, the asset automatically goes in that status.")
     active = fields.Boolean(default=True)
-    asset_type = fields.Selection([('sale', 'Sale: Revenue Recognition'), ('purchase', 'Purchase: Asset'), ('expense', 'Deferred Expense')], compute='_compute_asset_type', store=True, index=True)
+    asset_type = fields.Selection([('sale', 'Sale: Revenue Recognition'), ('purchase', 'Purchase: Asset'), ('expense', 'Deferred Expense')], compute='_compute_asset_type', store=True, index=True, copy=True)
 
     # Depreciation params
     method = fields.Selection([('linear', 'Straight Line'), ('degressive', 'Declining'), ('degressive_then_linear', 'Declining then Straight Line')], string='Method', readonly=True, states={'draft': [('readonly', False)], 'model': [('readonly', False)]}, default='linear',
@@ -71,8 +71,18 @@ class AccountAsset(models.Model):
     original_move_line_ids = fields.Many2many('account.move.line', 'asset_move_line_rel', 'asset_id', 'line_id', string='Journal Items', readonly=True, states={'draft': [('readonly', False)]}, copy=False)
 
     # Analytic
-    account_analytic_id = fields.Many2one('account.analytic.account', string='Analytic Account', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
-    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tag', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    account_analytic_id = fields.Many2one(
+        comodel_name='account.analytic.account',
+        string='Analytic Account',
+        readonly=True,
+        states={'draft': [('readonly', False)], 'model': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    analytic_tag_ids = fields.Many2many(
+        comodel_name='account.analytic.tag',
+        string='Analytic Tag',
+        readonly=True,
+        states={'draft': [('readonly', False)], 'model': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
     # Dates
     first_depreciation_date = fields.Date(
@@ -120,13 +130,7 @@ class AccountAsset(models.Model):
                 raise UserError(_("All the lines should be from the same move type"))
             if not record.journal_id:
                 record.journal_id = misc_journal_id
-            total_credit = sum(line.credit for line in record.original_move_line_ids)
-            total_debit = sum(line.debit for line in record.original_move_line_ids)
-            record.original_value = total_credit + total_debit
-            if record.account_asset_id.multiple_assets_per_line and len(record.original_move_line_ids) == 1:
-                record.original_value /= max(1, int(record.original_move_line_ids.quantity))
-            if (total_credit and total_debit) or record.original_value == 0:
-                raise UserError(_("You cannot create an asset from lines containing credit and debit on the account or with a null amount"))
+            record.original_value = self._get_related_purchase_value(record)
 
     @api.depends('asset_type', 'user_type_id', 'state')
     def _compute_display_model_choice(self):
@@ -157,6 +161,16 @@ class AccountAsset(models.Model):
                 # Only set a default value, do not erase user inputs
                 record._onchange_account_depreciation_id()
                 record._onchange_account_depreciation_expense_id()
+
+    def _get_related_purchase_value(self, record):
+        total_credit = sum(line.credit for line in record.original_move_line_ids)
+        total_debit = sum(line.debit for line in record.original_move_line_ids)
+        related_purchase_value = total_credit + total_debit
+        if record.account_asset_id.multiple_assets_per_line and len(record.original_move_line_ids) == 1:
+            related_purchase_value /= max(1, int(record.original_move_line_ids.quantity))
+        if (total_credit and total_debit) or related_purchase_value == 0:
+            raise UserError(_("You cannot create an asset from lines containing credit and debit on the account or with a null amount"))
+        return related_purchase_value
 
     @api.onchange('account_depreciation_id')
     def _onchange_account_depreciation_id(self):
@@ -231,7 +245,7 @@ class AccountAsset(models.Model):
     @api.onchange('depreciation_move_ids')
     def _onchange_depreciation_move_ids(self):
         seq = 0
-        asset_remaining_value = self.original_value - self.already_depreciated_amount_import
+        asset_remaining_value = self.original_value - self.salvage_value - self.already_depreciated_amount_import
         cumulated_depreciation = 0
         for m in self.depreciation_move_ids.sorted(lambda x: x.date):
             seq += 1
@@ -273,7 +287,6 @@ class AccountAsset(models.Model):
             self.account_depreciation_id = model.account_depreciation_id
             self.account_depreciation_expense_id = model.account_depreciation_expense_id
             self.journal_id = model.journal_id
-            self.account_asset_id = model.account_asset_id
 
     @api.onchange('asset_type')
     def _onchange_type(self):
@@ -324,7 +337,7 @@ class AccountAsset(models.Model):
                 amount = residual_amount * self.method_progress_factor
             if self.method in ('linear', 'degressive_then_linear'):
                 nb_depreciation = max_depreciation_nb - starting_sequence
-                if self.prorata:
+                if self.prorata and not self.env.context.get("ignore_prorata"):
                     nb_depreciation -= 1
                 linear_amount = min(total_amount_to_depr / nb_depreciation, residual_amount)
                 if self.method == 'degressive_then_linear':
@@ -339,7 +352,7 @@ class AccountAsset(models.Model):
         posted_depreciation_move_ids = self.depreciation_move_ids.filtered(lambda x: x.state == 'posted' and not x.asset_value_change and not x.reversal_move_id).sorted(key=lambda l: l.date)
         already_depreciated_amount = sum([m.amount_total for m in posted_depreciation_move_ids])
         depreciation_number = self.method_number
-        if self.prorata:
+        if self.prorata and not self.env.context.get("ignore_prorata"):
             depreciation_number += 1
         starting_sequence = 0
         amount_to_depreciate = self.value_residual + sum([m.amount_total for m in amount_change_ids])
@@ -347,7 +360,7 @@ class AccountAsset(models.Model):
         # if we already have some previous validated entries, starting date is last entry + method period
         if posted_depreciation_move_ids and posted_depreciation_move_ids[-1].date:
             last_depreciation_date = fields.Date.from_string(posted_depreciation_move_ids[-1].date)
-            if last_depreciation_date > depreciation_date:  # in case we unpause the asset
+            if last_depreciation_date >= depreciation_date:  # in case we unpause the asset
                 depreciation_date = last_depreciation_date + relativedelta(months=+int(self.method_period))
         commands = [(2, line_id.id, False) for line_id in self.depreciation_move_ids.filtered(lambda x: x.state == 'draft')]
         newlines = self._recompute_board(depreciation_number, starting_sequence, amount_to_depreciate, depreciation_date, already_depreciated_amount, amount_change_ids)
@@ -357,6 +370,8 @@ class AccountAsset(models.Model):
             del(newline_vals['amount_total'])
             newline_vals_list.append(newline_vals)
         new_moves = self.env['account.move'].create(newline_vals_list)
+        if self.state == 'open':
+            new_moves._post()
         for move in new_moves:
             commands.append((4, move.id))
         return self.write({'depreciation_move_ids': commands})
@@ -508,6 +523,7 @@ class AccountAsset(models.Model):
             'name': _('Journal Entries'),
             'view_mode': 'tree,form',
             'res_model': 'account.move',
+            'search_view_id': [self.env.ref('account.view_account_move_filter').id, 'search'],
             'views': [(self.env.ref('account.view_move_tree').id, 'tree'), (False, 'form')],
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', self.depreciation_move_ids.ids)],
@@ -697,8 +713,8 @@ class AccountAsset(models.Model):
         line_before_pause = all_lines_before_pause and max(all_lines_before_pause, key=lambda x: x.date)
         following_lines = self.depreciation_move_ids.filtered(lambda x: x.date > pause_date)
         if following_lines:
-            if any(line.state == 'posted' for line in following_lines):
-                raise UserError(_("You cannot pause an asset with posted depreciation lines in the future."))
+            if any(line.state == 'posted' and not line.reversal_move_id for line in following_lines):
+                raise UserError(_("You cannot pause an asset with posted depreciation lines in the future without reverting them."))
 
             if self.prorata:
                 first_following = min(following_lines, key=lambda x: x.date)
@@ -792,3 +808,31 @@ class AccountAsset(models.Model):
         for record in self:
             if record.state == 'open' and record.depreciation_move_ids and not record.currency_id.is_zero(record.depreciation_move_ids.filtered(lambda x: not x.reversal_move_id).sorted(lambda x: (x.date, x.id))[-1].asset_remaining_value):
                 raise UserError(_("The remaining value on the last depreciation line must be 0"))
+
+    def get_formview_id(self, access_uid=None):
+        """ Overriding this method to redirect user to correct form view based on asset type """
+        for vid, view_type in self._get_views(self.asset_type):
+            if view_type == 'form':
+                return vid
+
+    def open_asset(self, view_mode):
+        asset_type = self.asset_type if len(self) == 1 else self[0].asset_type
+        views = [v for v in self._get_views(asset_type) if v[1] in view_mode]
+        action = {
+            'name': _('Asset'),
+            'view_mode': ','.join(view_mode),
+            'type': 'ir.actions.act_window',
+            'res_id': self.id if 'tree' not in view_mode else False,
+            'res_model': 'account.asset',
+            'views': views,
+            'domain': [('id', 'in', self.ids)],
+            'context': dict(self._context,
+                asset_type=asset_type,
+                default_asset_type=asset_type)
+        }
+        if asset_type == 'sale':
+            action['name'] = _('Deferred Revenue')
+        elif asset_type == 'expense':
+            action['name'] = _('Deferred Expense')
+
+        return action

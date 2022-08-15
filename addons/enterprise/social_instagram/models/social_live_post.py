@@ -31,7 +31,7 @@ class SocialLivePostInstagram(models.Model):
             ).json()
 
             if 'data' not in response:
-                self.account_id.sudo().write({'is_media_disconnected': True})
+                self.account_id._action_disconnect_accounts(response)
                 return False
 
             instagram_post_ids = [post.get('id') for post in response['data']]

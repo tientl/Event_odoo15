@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +23,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "- Feedback requested by -"
-msgstr ""
+msgstr "- Відгук запитуваний -"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -175,6 +175,41 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Шановний <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,\n"
+"                        <br/><br/>\n"
+"                        Було запитано відгук про <t t-out=\"object.appraisal_id.employee_id.name or 'this'\">оцінювання</t>.\n"
+"                        <br/>\n"
+"                        Знайдіть час на проходження опитування.\n"
+"                        <br/><br/>\n"
+"                        Дякуємо!\n"
+"                        <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    Переглянути оцінювання\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"background-color:#F8F8F8;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">Щорічне оцінювання.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                            <a t-att-href=\"object.get_start_url()\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                <t t-if=\"object.survey_id.certification\">\n"
+"                                    Почати сертифікацію\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    Почати оцінювання\n"
+"                                </t>\n"
+"                            </a>\n"
+"                        </div>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
@@ -264,7 +299,7 @@ msgstr "Лише менеджери опитування"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_department__appraisal_survey_template_id
 msgid "Appraisal Survey"
-msgstr ""
+msgstr "Опитування оцінювання"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_res_company__appraisal_survey_template_id
@@ -280,7 +315,7 @@ msgstr "Оцінка за період"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Appraisal of"
-msgstr ""
+msgstr "Оцінювання"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_5
@@ -326,7 +361,7 @@ msgstr "Повернутися до оцінювання"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__can_edit_body
 msgid "Can Edit Body"
-msgstr ""
+msgstr "Можна редагувати тіло"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
@@ -494,7 +529,7 @@ msgstr "Від"
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR Appraisal: Ask Feedback"
-msgstr ""
+msgstr "Оцінювання HR: Запитати про відгук"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__id
@@ -532,7 +567,7 @@ msgstr "Ініціативність та самостійність"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "Редактор"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -586,7 +621,7 @@ msgstr "Цілі"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 msgid "Optional message"
-msgstr ""
+msgstr "Опціональне повідомлення"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -596,6 +631,10 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"Додаткова мова перекладу (код ISO), яку можна вибрати під час надсилання "
+"електронного листа. Якщо не встановлено, використовуватиметься англійська "
+"версія. Зазвичай це має бути вираз-заповнювач, який забезпечує відповідну "
+"мову, напр. {{ object.partner_id.lang }}."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__null_value
@@ -645,12 +684,12 @@ msgstr "Одержувачі"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "Модель рендеру"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Responded:"
-msgstr ""
+msgstr "Відповідь:"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_2
@@ -683,7 +722,7 @@ msgstr "Надіслати"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_hr_appraisal__survey_ids
 msgid "Sent out surveys"
-msgstr ""
+msgstr "Розіслати опитування"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -724,7 +763,7 @@ msgstr "Опитування"
 #: code:addons/hr_appraisal_survey/models/survey.py:0
 #, python-format
 msgid "Survey Feedback"
-msgstr ""
+msgstr "Відгук опитування"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_question_answer
@@ -750,7 +789,7 @@ msgstr "Опитування"
 #. module: hr_appraisal_survey
 #: model:mail.template,subject:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "Take part in {{ object.employee_id.name or 'this' }} appraisal"
-msgstr ""
+msgstr "Візьміть участь в опитуванні {{ object.employee_id.name or 'this' }}"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -795,6 +834,9 @@ msgid ""
 "This field is used with 360 Feedback setting on Appraisal App, the aim is to"
 " define a default Survey Template related to this department."
 msgstr ""
+"Це поле використовується з налаштуванням Відгуку 360 в модулі Оцінювання, "
+"метою є визначення шаблону опитування за замовчуванням, пов’язаного з цим "
+"відділом."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -849,7 +891,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__user_body
 msgid "User Contents"
-msgstr ""
+msgstr "Користувач містить"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -880,6 +922,8 @@ msgid ""
 "You can create surveys used for appraisals. Design easily your appraisal,\n"
 "                send invitations and analyze answers."
 msgstr ""
+"Ви можете створювати опитування для оцінювання. Легко створюйте своє оцінювання, \n"
+"надсилайте запрошення та аналізуйте відповіді."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view

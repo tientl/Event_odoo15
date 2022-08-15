@@ -98,7 +98,6 @@ QUnit.module('Views', {
         var cell = grid.$('div.o_grid_input:contains(2:30)').get(0);
         cell.focus();
         cell.click();
-        cell.blur();
 
         assert.strictEqual(grid.$('div.o_grid_input:contains(0:00)').length, 12,
             "should have correctly parsed another float_time");
@@ -1350,7 +1349,7 @@ QUnit.module('Views', {
     QUnit.module('GridViewComponents');
 
     QUnit.test('float_toggle component', async function (assert) {
-        assert.expect(16);
+        assert.expect(25);
         var grid = await createView({
             View: GridView,
             model: 'analytic.line',
@@ -1365,10 +1364,10 @@ QUnit.module('Views', {
                     '<field name="unit_amount" type="measure" widget="float_toggle" options="{\'factor\': 0.125, \'range\': [0.0, 0.5, 1.0]}"/>' +
                 '</grid>',
             currentDate: "2017-01-31",
-            mockRPC: function (route, args) {
+            async mockRPC(route, args) {
                 if (args.method === 'adjust_grid') {
                     if (args.args[3] == '2017-02-01/2017-02-02') { // use case "clicking on empty cell button"
-                        assert.strictEqual(args.args[5], 8, "saving 1 on float_toggle button will register 8 in database (1 / 0.125)");
+                        assert.strictEqual(args.args[5], 4, "saving 0.5 on float_toggle button will register 4 in database (0.5 / 0.125)");
                     }
                     if (args.args[3] == '2017-01-30/2017-01-31') { // use case "clicking on non empty cell button"
                         assert.strictEqual(args.args[5], -10, "saving 0.00 on float_toggle button will send a negative delta of 1.25 / 0.125");
@@ -1411,18 +1410,48 @@ QUnit.module('Views', {
         await testUtils.dom.click($button);
         assert.strictEqual(grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(2) button').text(), '0.50',
             "0.5 is the next value since 0.0 was the closest value in the range");
+
+        await testUtils.nextTick();
+        await new Promise(resolve => setTimeout(resolve, 200));
+
         await testUtils.dom.click($button);
         assert.strictEqual(grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(2) button').text(), '1.00',
             "0.5 becomes 1.0 as it is the next value in the range");
 
+        await testUtils.nextTick();
+
         // clicking on non empty cell button (1.25)
         var $button = grid.$('.o_grid_section:eq(0) .o_grid_cell_container:eq(0) button');
-        $button.focus();
 
         await testUtils.dom.click($button);
         assert.strictEqual(grid.$('.o_grid_section:eq(0) .o_grid_cell_container:eq(0) button').text(), '0.00',
             "1.25 is starting value, the closest in the range is 1.00, so the next will be 0.00");
+
+        assert.strictEqual(grid.$('tfoot tr td:eq(6) div').text(), '0.00',
+            "The sixth cell of the footer should contain 0.00");
+        assert.strictEqual(grid.$('tbody tr:eq(1) td.o_grid_total').text(), '0.00',
+            "The total of the BS task should be 0.00");
+        var $button = grid.$('.o_grid_section:eq(0) .o_grid_cell_container:eq(5) button');
+        $button.focus();
+        await testUtils.dom.click($button);
         $button.blur();
+        assert.strictEqual(grid.$('tfoot tr td:eq(6) div').text(), '0.50',
+            "The fourth cell of the footer should contain 0.50");
+        assert.strictEqual(grid.$('tbody tr:eq(1) td.o_grid_total').text(), '0.50',
+            "The total of the BS task should be 0.50");
+
+        assert.strictEqual(grid.$('tfoot tr td:eq(4) div').text(), '0.00',
+            "The fifth cell of the footer should contain 0.00");
+        assert.strictEqual(grid.$('tbody tr:eq(1) td.o_grid_total').text(), '0.50',
+            "The total of the BS task should be 0.50");
+        var $button = grid.$('.o_grid_section:eq(0) .o_grid_cell_container:eq(4) button');
+        $button.focus();
+        await testUtils.dom.click($button);
+        $button.blur();
+        assert.strictEqual(grid.$('tfoot tr td:eq(5) div').text(), '0.50',
+            "The fifth cell of the footer should contain 0.50");
+        assert.strictEqual(grid.$('tbody tr:eq(1) td.o_grid_total').text(), '1.00',
+            "The total of the BS task should be 0.00");
         await testUtils.nextTick();
         grid.destroy();
     });
@@ -1458,11 +1487,12 @@ QUnit.module('Views', {
         await testUtils.dom.click($button);
         assert.strictEqual(grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(2) button').text(), '0,50',
             "0,5 is the next value since 0,0 was the closest value in the range");
+        await testUtils.nextTick();
+        await new Promise(resolve => setTimeout(resolve, 200));
         await testUtils.dom.click($button);
         assert.strictEqual(grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(2) button').text(), '1,00',
             "0,5 becomes 1,0 as it is the next value in the range");
 
-        $button.blur();
         await testUtils.nextTick();
         grid.destroy();
     });
@@ -1674,7 +1704,7 @@ QUnit.module('Views', {
         grid.destroy();
     });
 
-    QUnit.test('button disabled after blur', async function (assert) {
+    QUnit.test('button disabled after click', async function (assert) {
         /*
          * OPW 2121906
          * We disable the button and enable it only when the RPC call is done.
@@ -1707,19 +1737,19 @@ QUnit.module('Views', {
             },
         }
         const grid = await createView(params);
-        const $button =grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(0) button');
+        const $button = grid.$('.o_grid_section:eq(1) .o_grid_cell_container:eq(0) button');
         $button.focus();
         testUtils.dom.click($button);
-        $button.blur();
+
         await testUtils.nextTick();
 
         assert.ok(rpcCalled, 'The RPC should be called');
-        assert.ok($button.is(':disabled'), 'the button is disabled while the RPC call is not done');
+        assert.ok($button.is(':disabled'), 'The button is disabled while the RPC call is not done');
 
         def.resolve();
         await testUtils.nextTick();
 
-        assert.notOk($button.is(':disabled'), 'the button is enabled when the RPC call is done');
+        assert.notOk($button.is(':disabled'), 'The button is enabled when the RPC call is done');
         grid.destroy();
     });
 
@@ -1761,7 +1791,6 @@ QUnit.module('Views', {
 
         $button1.focus();
         $button1.click();
-        $button1.blur();
         await testUtils.nextTick();
         assert.ok(rpcCalled, 'The RPC should be called');
 
@@ -1958,10 +1987,43 @@ QUnit.module('Views', {
 
         $button.focus();
         $button.click();
-        $button.blur(); // will trigger the adjustment call
         await testUtils.nextTick();
 
         assert.strictEqual($button.text(), '0.50');
+        grid.destroy();
+    });
+
+    QUnit.test('display the grid if the first row is empty', async function (assert) {
+        assert.expect(1);
+        this.arch = `<grid string="Timesheet By Project" adjustment="object" adjust_name="adjust_grid">
+                <field name="project_id" type="row" section="1"/>
+                <field name="task_id" type="row"/>
+                <field name="date" type="col">
+                    <range name="week" string="Week" span="week" step="day"/>
+                    <range name="month" string="Month" span="month" step="day"/>
+                </field>
+                <field name="unit_amount" type="measure" widget="float_time"/>
+            </grid>`;
+        
+        this.data['analytic.line'].records = [];
+        this.data['analytic.line'].records.push({id: 2, project_id: 31, task_id: 1, date: "2017-01-10", unit_amount: 0});
+        this.data['analytic.line'].records.push({id: 6, project_id: 142, task_id: 12, date: "2017-01-26", unit_amount: 3.5});
+
+        var grid = await createView({
+            View: GridView,
+            model: 'analytic.line',
+            data: this.data,
+            arch: this.arch,
+            currentDate: "2017-01-24",
+            viewOptions: {
+                noContentHelp: `<p class="o_view_nocontent_smiling_face">
+                        No activities found. Let's start a new one!
+                    </p>`
+            }
+        });
+
+        assert.containsOnce(grid, '.o_view_grid', "Grid should be shown");
+
         grid.destroy();
     });
 });

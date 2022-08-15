@@ -3,16 +3,16 @@
 # 	* sale_planning
 # 
 # Translators:
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021
 # Martin Trigaux, 2021
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:18+0000\n"
+"POT-Creation-Date: 2021-11-16 13:44+0000\n"
 "PO-Revision-Date: 2021-09-14 12:43+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,26 +27,29 @@ msgid ""
 "                        as\n"
 "                    </span>"
 msgstr ""
+"<span attrs=\"{'invisible': [('planning_enabled', '=', False)]}\" class=\"oe_inline mr-2\">\n"
+"                        як\n"
+"                    </span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span class=\"o_stat_text\">Planned</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Заплановано</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span class=\"o_stat_text\">To plan</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Запланувати</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span>Hours</span>"
-msgstr ""
+msgstr "<span>Години</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_gantt_inherit_sale_planning
 msgid "<strong>Sales Order Item  — </strong>"
-msgstr ""
+msgstr "<strong>Елемент замовлення на продаж  — </strong>"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__allocated_hours
@@ -54,16 +57,15 @@ msgid "Allocated Hours"
 msgstr "Розподілені години"
 
 #. module: sale_planning
-#: model:ir.actions.act_window,name:sale_planning.sale_planning_action_schedule_by_sale_order
 #: model:ir.ui.menu,name:sale_planning.sale_planning_menu_schedule_by_sale_order
-msgid "Schedule by Sales Order"
-msgstr ""
+msgid "By Sales Order"
+msgstr "За замовленням на продаж"
 
 #. module: sale_planning
 #: model:product.product,name:sale_planning.developer_product
 #: model:product.template,name:sale_planning.developer_product_product_template
 msgid "Developer (Plan services)"
-msgstr ""
+msgstr "Розробник (Запланувати послуги)"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__end_datetime
@@ -82,12 +84,12 @@ msgstr "Години"
 #: model:product.product,name:sale_planning.technical_maintainance_product
 #: model:product.template,name:sale_planning.technical_maintainance_product_product_template
 msgid "IT Technical Maintenance (Plan services)"
-msgstr ""
+msgstr "Технічне обслуговування ІТ (Запланувати послуги)"
 
 #. module: sale_planning
 #: model:planning.role,name:sale_planning.planning_role_technician
 msgid "IT Technician"
-msgstr ""
+msgstr "ІТ-технік"
 
 #. module: sale_planning
 #: model:ir.model.fields,help:sale_planning.field_planning_slot__sale_line_plannable
@@ -97,6 +99,8 @@ msgid ""
 "If enabled, a shift will automatically be generated for the selected role "
 "when confirming the Sales Order."
 msgstr ""
+"Якщо ввімкнено, зміна буде автоматично створена для вибраної ролі під час "
+"підтвердження замовлення на продаж."
 
 #. module: sale_planning
 #: model_terms:ir.actions.act_window,help:sale_planning.sale_planning_action_schedule_by_sale_order
@@ -106,7 +110,7 @@ msgstr "Розпочніть планування, додавши нову зм�
 #. module: sale_planning
 #: model_terms:ir.actions.act_window,help:sale_planning.sale_planning_action_schedule_by_sale_order
 msgid "No shifts found. Let's create one!"
-msgstr ""
+msgstr "Не знайдено змін. Створіть їх!"
 
 #. module: sale_planning
 #: model:ir.model.constraint,message:sale_planning.constraint_planning_slot_check_datetimes_set_or_plannable_slot
@@ -114,12 +118,16 @@ msgid ""
 "Only slots linked to a sale order with a plannable service can be "
 "unscheduled."
 msgstr ""
+"Незапланованими можуть бути лише слоти, пов’язані з замовленням на продаж із"
+" запланованою послугою."
 
 #. module: sale_planning
 #: model_terms:product.product,description:sale_planning.developer_product
 #: model_terms:product.template,description:sale_planning.developer_product_product_template
 msgid "Our developer will help you to add new features to your Software."
 msgstr ""
+"Наш розробник допоможе вам додати нові функції до вашого програмного "
+"забезпечення."
 
 #. module: sale_planning
 #. openerp-web
@@ -134,7 +142,7 @@ msgstr "Заплановані замовлення"
 #: model:ir.model.fields,field_description:sale_planning.field_product_product__planning_enabled
 #: model:ir.model.fields,field_description:sale_planning.field_product_template__planning_enabled
 msgid "Plan Services"
-msgstr ""
+msgstr "Запланувати послуги"
 
 #. module: sale_planning
 #: code:addons/sale_planning/models/product.py:0
@@ -143,34 +151,37 @@ msgid ""
 "Plannable services should be a service product, product\n"
 "%s."
 msgstr ""
+"Плановані послуги повинні бути сервісним товаром, товаром\n"
+"%s."
 
 #. module: sale_planning
 #: code:addons/sale_planning/models/product.py:0
 #, python-format
 msgid "Plannable services should use an UoM within the %s category."
 msgstr ""
+"Плановані послуги повинні використовувати од. вим. в межах категорії %s."
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order__planning_first_sale_line_id
 msgid "Planning First Sale Line"
-msgstr ""
+msgstr "Планування першого рядка продажу"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order__planning_hours_planned
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order_line__planning_hours_planned
 msgid "Planning Hours Planned"
-msgstr ""
+msgstr "Години планування заплановано"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order__planning_hours_to_plan
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order_line__planning_hours_to_plan
 msgid "Planning Hours To Plan"
-msgstr ""
+msgstr "Години до планування"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order__planning_initial_date
 msgid "Planning Initial Date"
-msgstr ""
+msgstr "Початкова дата планування"
 
 #. module: sale_planning
 #: model:ir.model,name:sale_planning.model_planning_role
@@ -187,7 +198,7 @@ msgstr "Планування зміни"
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order_line__planning_slot_ids
 msgid "Planning Slot"
-msgstr ""
+msgstr "Слот планування"
 
 #. module: sale_planning
 #: model:ir.model,name:sale_planning.model_product_template
@@ -215,6 +226,11 @@ msgid "Sales Order Line"
 msgstr "Рядок замовлення на продаж"
 
 #. module: sale_planning
+#: model:ir.actions.act_window,name:sale_planning.sale_planning_action_schedule_by_sale_order
+msgid "Schedule by Sales Order"
+msgstr "Запланувати за замовленням на продаж"
+
+#. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_role__product_ids
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__role_product_ids
 msgid "Services"
@@ -235,21 +251,21 @@ msgstr "Початкова дата"
 #: model_terms:product.product,description:sale_planning.technical_maintainance_product
 #: model_terms:product.template,description:sale_planning.technical_maintainance_product_product_template
 msgid "Take a rest. We'll do our best."
-msgstr ""
+msgstr "Відпочиньте. Ми зробимо все якнайкраще."
 
 #. module: sale_planning
 #. openerp-web
 #: code:addons/sale_planning/static/src/js/backend/planning_gantt_controller.js:0
 #, python-format
 msgid "The sales orders have successfully been assigned."
-msgstr ""
+msgstr "Замовлення на продаж успішно призначено."
 
 #. module: sale_planning
 #. openerp-web
 #: code:addons/sale_planning/static/src/js/backend/planning_gantt_controller.js:0
 #, python-format
 msgid "There are no sales orders to assign or no employees are available."
-msgstr ""
+msgstr "Немає замовлень на продаж або немає працівників."
 
 #. module: sale_planning
 #. openerp-web
@@ -257,7 +273,7 @@ msgstr ""
 #, python-format
 msgid ""
 "This resource is not available for this shift during the selected period."
-msgstr ""
+msgstr "Цей ресурс недоступний для цієї зміни протягом вибраного періоду."
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
@@ -267,7 +283,7 @@ msgstr "Запланувати"
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_view_form_in_gantt_inherit_sale_planning
 msgid "Unschedule"
-msgstr ""
+msgstr "Зняти планування"
 
 #. module: sale_planning
 #: code:addons/sale_planning/models/sale_order_line.py:0

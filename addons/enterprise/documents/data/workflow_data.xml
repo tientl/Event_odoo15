@@ -9,7 +9,7 @@
 
         <!-- internal deprecate -->
 
-        <record id="documents_rule_internal_deprecate" model="documents.workflow.rule">
+        <record id="documents_rule_internal_deprecate" model="documents.workflow.rule" forcecreate="0">
             <field name="name">Deprecate</field>
             <field name="sequence">7</field>
             <field name="remove_activities">True</field>
@@ -19,7 +19,7 @@
             <field name="domain_folder_id" ref="documents_internal_folder"/>
         </record>
 
-        <record id="documents_workflow_action_deprecate" model="documents.workflow.action">
+        <record id="documents_workflow_action_deprecate" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_deprecate"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_internal_status"/>
@@ -28,7 +28,7 @@
 
         <!-- internal mark as draft -->
 
-        <record id="documents_rule_internal_mad" model="documents.workflow.rule">
+        <record id="documents_rule_internal_mad" model="documents.workflow.rule" forcecreate="0">
             <field name="name">Mark As Draft</field>
             <field name="sequence">5</field>
             <field name="condition_type">domain</field>
@@ -39,7 +39,7 @@
             <field name="domain_folder_id" ref="documents_internal_folder"/>
         </record>
 
-        <record id="documents_workflow_action_mad" model="documents.workflow.action">
+        <record id="documents_workflow_action_mad" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_mad"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_internal_status"/>
@@ -48,7 +48,7 @@
 
         <!-- internal ask for validation -->
 
-        <record id="documents_rule_internal_legal" model="documents.workflow.rule">
+        <record id="documents_rule_internal_legal" model="documents.workflow.rule" forcecreate="0">
             <field name="name">Send to Legal</field>
             <field name="sequence">2</field>
             <field name="condition_type">domain</field>
@@ -60,14 +60,14 @@
             <field name="activity_type_id" ref="documents.mail_documents_activity_data_tv"/>
         </record>
 
-        <record id="documents_workflow_action_afv" model="documents.workflow.action">
+        <record id="documents_workflow_action_afv" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_legal"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_internal_status"/>
             <field name="tag_id" ref="documents.documents_internal_status_tc"/>
         </record>
 
-        <record id="documents_workflow_action_afv_legal" model="documents.workflow.action">
+        <record id="documents_workflow_action_afv_legal" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_legal"/>
             <field name="action">add</field>
             <field name="facet_id" ref="documents.documents_internal_knowledge"/>
@@ -76,7 +76,7 @@
 
         <!-- internal mark as bill -->
 
-        <record id="documents_rule_internal_mark" model="documents.workflow.rule">
+        <record id="documents_rule_internal_mark" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">5</field>
             <field name="name">Mark As Bill</field>
             <field name="condition_type">domain</field>
@@ -88,14 +88,14 @@
             <field name="folder_id" ref="documents.documents_finance_folder"/>
         </record>
 
-        <record id="documents_workflow_action_mark_inbox" model="documents.workflow.action">
+        <record id="documents_workflow_action_mark_inbox" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_mark"/>
             <field name="action">add</field>
             <field name="facet_id" ref="documents.documents_finance_status"/>
             <field name="tag_id" ref="documents.documents_finance_status_inbox"/>
         </record>
 
-        <record id="documents_workflow_action_mark_bill" model="documents.workflow.action">
+        <record id="documents_workflow_action_mark_bill" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_internal_mark"/>
             <field name="action">add</field>
             <field name="facet_id" ref="documents.documents_finance_documents"/>
@@ -106,7 +106,7 @@
 
         <!-- finance validate -->
 
-        <record id="documents_rule_finance_validate" model="documents.workflow.rule">
+        <record id="documents_rule_finance_validate" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">6</field>
             <field name="name">Validate</field>
             <field name="condition_type">domain</field>
@@ -117,7 +117,7 @@
             <field name="domain_folder_id" ref="documents.documents_finance_folder"/>
         </record>
 
-        <record id="documents_workflow_action_finance_validate" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_validate" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_validate"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_status"/>
@@ -126,7 +126,7 @@
 
         <!-- finance ask for validation -->
 
-        <record id="documents_rule_finance_afv" model="documents.workflow.rule">
+        <record id="documents_rule_finance_afv" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">7</field>
             <field name="name">Ask for Validation</field>
             <field name="condition_type">domain</field>
@@ -139,7 +139,7 @@
             <field name="domain_folder_id" ref="documents.documents_finance_folder"/>
         </record>
 
-        <record id="documents_workflow_action_finance_afv" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_afv" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_afv"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_status"/>
@@ -148,7 +148,7 @@
 
         <!-- finance move to inbox -->
 
-        <record id="documents_rule_finance_mti" model="documents.workflow.rule">
+        <record id="documents_rule_finance_mti" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">7</field>
             <field name="name">Move To Inbox</field>
             <field name="condition_type">domain</field>
@@ -160,7 +160,7 @@
             <field name="domain_folder_id" ref="documents.documents_finance_folder"/>
         </record>
 
-        <record id="documents_workflow_action_finance_mti" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_mti" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_mti"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_status"/>
@@ -169,7 +169,7 @@
 
         <!-- finance set as 2018 contract-->
 
-        <record id="documents_rule_finance_2018contracts" model="documents.workflow.rule">
+        <record id="documents_rule_finance_2018contracts" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">8</field>
             <field name="name" eval="'Set As ' + str(datetime.now().year) + ' Contracts'"/>
             <field name="domain_folder_id" ref="documents_finance_folder"/>
@@ -179,21 +179,21 @@
             <field name="domain_folder_id" ref="documents.documents_finance_folder"/>
         </record>
 
-        <record id="documents_workflow_action_finance_status_validated" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_status_validated" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_2018contracts"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_status"/>
             <field name="tag_id" ref="documents.documents_finance_status_validated"/>
         </record>
 
-        <record id="documents_workflow_action_finance_2018contracts" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_2018contracts" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_2018contracts"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_fiscal_year"/>
             <field name="tag_id" ref="documents.documents_finance_fiscal_year_2018"/>
         </record>
 
-        <record id="documents_workflow_action_finance_DocumentContract" model="documents.workflow.action">
+        <record id="documents_workflow_action_finance_DocumentContract" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_rule_finance_2018contracts"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_finance_documents"/>

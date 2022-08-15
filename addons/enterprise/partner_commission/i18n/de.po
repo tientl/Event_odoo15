@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2021
 # Max-Milan Stoyanov, 2021
+# Friederike Fasterling-Nesselbosch, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 11:00+0000\n"
 "PO-Revision-Date: 2021-09-14 12:41+0000\n"
-"Last-Translator: Max-Milan Stoyanov, 2021\n"
+"Last-Translator: Friederike Fasterling-Nesselbosch, 2022\n"
 "Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,6 +34,8 @@ msgid ""
 "<span class=\"o_form_label\">Minimum PO amount total</span>\n"
 "                            <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">Mindestbestellwert insgesamt</span>\n"
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_plan__active
@@ -52,7 +55,7 @@ msgstr "Archiviert"
 #. module: partner_commission
 #: model:ir.model.fields.selection,name:partner_commission.selection__sale_subscription__commission_plan_assignation__auto
 msgid "Based On Referrer"
-msgstr ""
+msgstr "Basierend auf Empfehler"
 
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_sale_subscription__commission_plan_assignation
@@ -64,14 +67,14 @@ msgstr ""
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_rule__is_capped
 msgid "Capped"
-msgstr ""
+msgstr "Gedeckelt"
 
 #. module: partner_commission
 #: model:ir.model.fields.selection,name:partner_commission.selection__purchase_order__purchase_type__commission
 #: model:product.product,name:partner_commission.product_commission
 #: model:product.template,name:partner_commission.product_commission_product_template
 msgid "Commission"
-msgstr ""
+msgstr "Provision"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_res_company__commission_automatic_po_frequency
@@ -87,7 +90,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_commission.field_sale_subscription__commission_plan_id
 #: model_terms:ir.ui.view,arch_db:partner_commission.sale_subscription_view_form_inherit_partner_commission
 msgid "Commission Plan"
-msgstr ""
+msgstr "Provisionsplan"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_sale_subscription__commission_plan_assignation
@@ -98,7 +101,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:partner_commission.action_commission_plans
 #: model:ir.ui.menu,name:partner_commission.menu_commission_plans
 msgid "Commission Plans"
-msgstr ""
+msgstr "Provisionspläne"
 
 #. module: partner_commission
 #: model:ir.model,name:partner_commission.model_commission_plan
@@ -145,7 +148,7 @@ msgstr "Erstellt am"
 #. module: partner_commission
 #: model:ir.actions.act_window,name:partner_commission.action_view_customer_invoices
 msgid "Customer Invoices"
-msgstr "Ausgangsrechnungen"
+msgstr "Kundenrechnungen"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_res_partner_grade__default_commission_plan_id
@@ -161,12 +164,12 @@ msgstr "Anzeigename"
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_sale_subscription__commission_plan_frozen
 msgid "Freeze Commission Plan"
-msgstr ""
+msgstr "Provisionsplan einfrieren"
 
 #. module: partner_commission
 #: model_terms:ir.ui.view,arch_db:partner_commission.res_config_settings_view_form
 msgid "Frequency at which purchase orders will be automatically confirmed"
-msgstr ""
+msgstr "Häufigkeit, mit der Bestellungen automatisch bestätigt werden"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_plan__id
@@ -181,11 +184,16 @@ msgid ""
 "The product must belong to the selected category.\n"
 "Use several rules if you need to match multiple products within a category."
 msgstr ""
+"Wenn gesetzt, gilt die Regel nicht für die gesamte Kategorie, sondern nur für das angegebene Produkt.\n"
+"Das Produkt muss zu der ausgewählten Kategorie gehören.\n"
+"Verwenden Sie mehrere Regeln, wenn Sie mehrere Produkte innerhalb einer Kategorie abgleichen müssen."
 
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_purchase_order__invoice_commission_count
 msgid "Invoices that have generated commissions included in this order"
 msgstr ""
+"Rechnungen, die Provisionen generiert haben, die in dieser Bestellung "
+"enthalten sind"
 
 #. module: partner_commission
 #: model:ir.model,name:partner_commission.model_account_move
@@ -233,12 +241,14 @@ msgstr "Manuell"
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_rule__max_commission
 msgid "Max Commission"
-msgstr ""
+msgstr "Maximale Provision"
 
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_commission_rule__max_commission
 msgid "Maximum amount, specified in the currency of the pricelist, if given."
 msgstr ""
+"Höchstbetrag, der in der Währung der Preisliste angegeben wird, sofern "
+"vorhanden."
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_res_company__commission_po_minimum
@@ -266,17 +276,17 @@ msgstr "Nur eigene Dokumente"
 #: model:ir.cron,cron_name:partner_commission.cron_confirm_purchase_orders
 #: model:ir.cron,name:partner_commission.cron_confirm_purchase_orders
 msgid "Partner Commission: confirm purchase orders"
-msgstr ""
+msgstr "Partner Provision: Bestellungen bestätigen"
 
 #. module: partner_commission
 #: model:ir.model,name:partner_commission.model_res_partner_grade
 msgid "Partner Grade"
-msgstr ""
+msgstr "Partner Grad"
 
 #. module: partner_commission
 #: model_terms:ir.ui.view,arch_db:partner_commission.res_config_settings_view_form
 msgid "Partners Commissions"
-msgstr ""
+msgstr "Partner Provisionen"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_rule__pricelist_id
@@ -297,7 +307,7 @@ msgstr "Produkt"
 #: code:addons/partner_commission/models/commission_plan.py:0
 #, python-format
 msgid "Product %s does not belong to category %s"
-msgstr ""
+msgstr "Produkt %s gehört nicht zu Kategorie %s"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_commission_rule__category_id
@@ -312,12 +322,12 @@ msgstr ""
 #. module: partner_commission
 #: model:ir.model,name:partner_commission.model_purchase_order
 msgid "Purchase Order"
-msgstr "Beschaffungsauftrag"
+msgstr "Bestellung"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_purchase_order__purchase_type
 msgid "Purchase Type"
-msgstr ""
+msgstr "Einkaufstyp"
 
 #. module: partner_commission
 #: model:ir.model.fields.selection,name:partner_commission.selection__res_company__commission_automatic_po_frequency__quarterly
@@ -332,7 +342,7 @@ msgstr "Wechselkurs"
 #. module: partner_commission
 #: model:ir.model.constraint,message:partner_commission.constraint_commission_rule_check_rate
 msgid "Rate should be between 0 and 100."
-msgstr ""
+msgstr "Die Rate sollte zwischen 0 und 100 liegen."
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_account_bank_statement_line__referrer_id
@@ -341,7 +351,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_commission.field_sale_order__referrer_id
 #: model:ir.model.fields,field_description:partner_commission.field_sale_subscription__referrer_id
 msgid "Referrer"
-msgstr ""
+msgstr "Empfehler"
 
 #. module: partner_commission
 #: model:ir.model.fields,field_description:partner_commission.field_sale_order__commission
@@ -376,7 +386,7 @@ msgstr "Reihenfolge"
 #: model:ir.model.fields,field_description:partner_commission.field_purchase_order__invoice_commission_count
 #: model_terms:ir.ui.view,arch_db:partner_commission.purchase_order_form_inherit_partner_commission
 msgid "Source Invoices"
-msgstr ""
+msgstr "Quellrechnungen"
 
 #. module: partner_commission
 #: model:ir.model,name:partner_commission.model_sale_subscription
@@ -392,7 +402,7 @@ msgstr "Vorlage für Abonnements"
 #: model:ir.model.fields,help:partner_commission.field_sale_order__commission_plan_id
 #: model:ir.model.fields,help:partner_commission.field_sale_subscription__commission_plan_id
 msgid "Takes precedence over the Referrer's commission plan."
-msgstr ""
+msgstr "Hat Vorrang vor dem Provisionsplan des Empfehlers."
 
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_res_partner_grade__default_commission_plan_id
@@ -400,6 +410,8 @@ msgid ""
 "The default commission plan used for this grade. Can be overwritten on the "
 "partner form."
 msgstr ""
+"Der für diese Besoldungsgruppe verwendete Standard-Provisionsplan. Kann auf "
+"dem Partnerformular überschrieben werden."
 
 #. module: partner_commission
 #: model_terms:ir.ui.view,arch_db:partner_commission.res_config_settings_view_form
@@ -407,6 +419,7 @@ msgid ""
 "The required minimum amount total needed to automatically confirm purchase "
 "orders"
 msgstr ""
+"Der erforderliche Mindestbetrag um Bestellungen automatisch zu bestätigen"
 
 #. module: partner_commission
 #: model:product.product,uom_name:partner_commission.product_commission
@@ -422,7 +435,7 @@ msgstr "Wöchentlich"
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_commission_rule__is_capped
 msgid "Whether the commission is capped."
-msgstr ""
+msgstr "Ob die Provision begrenzt ist."
 
 #. module: partner_commission
 #: model:ir.model.fields,help:partner_commission.field_sale_subscription__commission_plan_frozen
@@ -430,3 +443,6 @@ msgid ""
 "Whether the commission plan is frozen. When checked, the commission plan "
 "won't automatically be updated according to the partner level."
 msgstr ""
+"Ob der Provisionsplan eingefroren ist. Wenn diese Option aktiviert ist, wird"
+" der Provisionsplan nicht automatisch entsprechend der Partnerstufe "
+"aktualisiert."

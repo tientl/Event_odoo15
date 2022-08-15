@@ -406,3 +406,37 @@ class TestHrPayrollAccount(TestHrPayrollAccountCommon):
 
         # I verify that the Accounting Entry is created.
         self.assertTrue(self.hr_payslip_john.move_id, 'Accounting entry has not been created!')
+
+    def test_09_hr_payslip(self):
+        """Checking if taxes are added on a payslip accounting entry when there is a default tax on the journal"""
+
+        # Create a default tax for the account on the salary rule.
+        hra_tax = self.env['account.tax'].create({
+            'name': "hra_tax",
+            'amount_type': 'percent',
+            'amount': 10.0,
+            'type_tax_use': 'sale',
+        })
+
+        # Create a account for the HRA salary rule.
+        self.hra_account = self.env['account.account'].create({
+            'name': 'House Rental',
+            'code': '654321',
+            'user_type_id': self.env.ref('account.data_account_type_revenue').id,
+            'tax_ids': [(4, hra_tax.id)]
+        })
+
+        # Assign the account to the salary rule and the rule to the hr structure.
+        self.hra_rule.account_credit = self.hra_account
+        self.hra_rule.account_debit = self.hra_account
+        self.hr_structure_softwaredeveloper.rule_ids = [(4, self.hra_rule.id)]
+
+        self.hr_payslip_john.compute_sheet()
+
+        # Validate the payslip.
+        self.hr_payslip_john.action_payslip_done()
+
+        # Verify that the taxes are applied on hra move lines.
+        for line in self.hr_payslip_john.move_id.line_ids:
+            if line.account_id.id == self.hra_account.id:
+                self.assertEqual(line.tax_ids, hra_tax, 'The account default tax is not added to move lines!')

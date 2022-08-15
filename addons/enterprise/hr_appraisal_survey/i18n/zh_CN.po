@@ -4,6 +4,9 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# Benson <Benson.Dr@Gmail.com>, 2022
+# 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +25,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "- Feedback requested by -"
-msgstr ""
+msgstr "- 要求的反馈 --"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -85,6 +88,16 @@ msgid ""
 "            </ol>\n"
 "        </data>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<data><p>考核者应根据以下提供的衡量标准对员工的主要工作成就和业绩进行评分。</p>\n"
+"            <ol>\n"
+"                <li>明显超过该职位所要求的标准和期望值</li>\n"
+"                <li>超过标准和预期</li>\n"
+"                <li>达到标准和期望</li>\n"
+"                <li>没有达到标准和期望</li>\n"
+"                <li>明显低于标准和预期</li>\n"
+"            </ol>\n"
+"        </data>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_5
@@ -92,6 +105,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p/>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p/>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_2
@@ -100,6 +115,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p> </p>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p> </p>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_4
@@ -107,6 +124,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p>Identify professional, performance, or project objectives you recommend for employee’s continued career development over the coming year.</p>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p>确定你为员工未来一年的持续职业发展建议的专业、绩效或项目目标。</p>"
 
 #. module: hr_appraisal_survey
 #: model:survey.survey,description:hr_appraisal_survey.appraisal_feedback_template
@@ -158,6 +177,41 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        亲爱的<t t-out=\"object.partner_id.name or ''\">布兰登-弗里曼</t>\n"
+"                       <br/><br/>\n"
+"                        要求<t t-out=\"object.appraisal_id.employee_id.name or 'this'\">对此</t>进行鉴定反馈。\n"
+"                       <br/>\n"
+"                        请花时间填写调查表。\n"
+"                       <br/><br/>\n"
+"                        谢谢您!\n"
+"                       <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    视图评估\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"background-color:#F8F8F8;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">年度评估。</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                            <a t-att-href=\"object.get_start_url()\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                <t t-if=\"object.survey_id.certification\">\n"
+"                                    开始认证\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    开始调查\n"
+"                                </t>\n"
+"                            </a>\n"
+"                        </div>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
@@ -211,7 +265,7 @@ msgstr "附加评语"
 msgid ""
 "An appraisal feedback was requested. Please take time to fill the <a "
 "href=\"%s\" target=\"_blank\">survey</a>"
-msgstr ""
+msgstr "要求进行一次评估反馈。请花时间填写<a href=\"%s\" target=\"_blank\">调查表</a>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
@@ -242,7 +296,7 @@ msgstr "仅评估经理"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_department__appraisal_survey_template_id
 msgid "Appraisal Survey"
-msgstr ""
+msgstr "评估调查"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_res_company__appraisal_survey_template_id
@@ -258,7 +312,7 @@ msgstr "期间的评价"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Appraisal of"
-msgstr ""
+msgstr "评估"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_5
@@ -304,7 +358,7 @@ msgstr "返回评估"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__can_edit_body
 msgid "Can Edit Body"
-msgstr ""
+msgstr "允许编辑"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
@@ -469,7 +523,7 @@ msgstr "从"
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR Appraisal: Ask Feedback"
-msgstr ""
+msgstr "人力资源评估：询问反馈"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__id
@@ -507,7 +561,7 @@ msgstr "主动性和自主性"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "编辑"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -559,7 +613,7 @@ msgstr "目标"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 msgid "Optional message"
-msgstr ""
+msgstr "可选信息"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -569,6 +623,8 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"在发送邮件时可选择的语言代码(ISO 代码)。如果没有设置，会使用英文版本。一般用占位符来确定合适的语言，例如: {{ "
+"object.partner_id.lang }}."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__null_value
@@ -618,12 +674,12 @@ msgstr "收件人"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "呈现模型"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Responded:"
-msgstr ""
+msgstr "答复了："
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_2
@@ -654,7 +710,7 @@ msgstr "发送"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_hr_appraisal__survey_ids
 msgid "Sent out surveys"
-msgstr ""
+msgstr "发出的调查"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -695,7 +751,7 @@ msgstr "调查"
 #: code:addons/hr_appraisal_survey/models/survey.py:0
 #, python-format
 msgid "Survey Feedback"
-msgstr ""
+msgstr "调查反馈"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_question_answer
@@ -721,7 +777,7 @@ msgstr "调查"
 #. module: hr_appraisal_survey
 #: model:mail.template,subject:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "Take part in {{ object.employee_id.name or 'this' }} appraisal"
-msgstr ""
+msgstr "参加{{ object.employee_id.name 或 'this' }}的考核。}}的考核"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -763,7 +819,7 @@ msgstr "您输入的答案无效。"
 msgid ""
 "This field is used with 360 Feedback setting on Appraisal App, the aim is to"
 " define a default Survey Template related to this department."
-msgstr ""
+msgstr "这个字段与Appraisal App上的360反馈设置一起使用，目的是定义一个与这个部门有关的默认调查模板。"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -814,7 +870,7 @@ msgstr "在下方对上述绩效评估作出评论。"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__user_body
 msgid "User Contents"
-msgstr ""
+msgstr "用户内容"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -841,6 +897,8 @@ msgid ""
 "You can create surveys used for appraisals. Design easily your appraisal,\n"
 "                send invitations and analyze answers."
 msgstr ""
+"你可以创建用于评估的调查。轻松设计你的评估。\n"
+"                发送邀请并分析答案。"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view

@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:18+0000\n"
 "PO-Revision-Date: 2021-09-14 12:41+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,16 +29,21 @@ msgid ""
 "                            upon validation.\n"
 "                        </small>"
 msgstr ""
+"<small class=\"text-muted form-text\">\n"
+"                            سوف يتم إرسال نسخة من التوكيل عبر البريد الإلكتروني إلى\n"
+"                            <span name=\"o_sdd_partner_email\"/>\n"
+"                            عند التصديق.\n"
+"                        </small>"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "<strong>Authenticated by SMS by:</strong>"
-msgstr ""
+msgstr "<strong>تمت المصادقة عن طريق الرسائل النصية القصيرة بواسطة:</strong> "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "<strong>Date and place of signature:</strong>"
-msgstr ""
+msgstr "<strong>توقيع المكان والزمان:</strong> "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
@@ -45,6 +51,8 @@ msgid ""
 "<strong>Name of the reference party:</strong>\n"
 "                            ......................................"
 msgstr ""
+"<strong>اسم طرف المرجع:</strong>\n"
+"                            ......................................"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
@@ -140,6 +148,91 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">معاملة الخصم المباشر لـ SEPA </span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.reference or ''\"/>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    مرحباً <t t-out=\"object.partner_id.name or ''\">براندن فريمان</t>،<br/><br/>\n"
+"\n"
+"                    سوف يتم إرسال طلب دفع خصم SEPA المباشر الذي تبلغ قيمته <t t-out=\"format_amount(object.amount, object.currency_id) or ''\">$ 10.00</t> إلى حسابك البنكي.<br/>\n"
+"\n"
+"                    سوف يتم الخصم من حسابك <t t-out=\"ctx.get('iban') or ''\">LU 28 001 94006447500003</t> خلال يومين أو بعد ذلك بقليل، يرجى التأكد من أن حسابك يحتوي على المبلغ المطلوب.<br/><br/>\n"
+"\n"
+"                    <t t-if=\"ctx.get('creditor_identifier') or ctx.get('mandate_ref')\">\n"
+"                        بيانات التاجر:<br/>\n"
+"                        <ul>\n"
+"                            <t t-if=\"ctx.get('creditor_identifier')\">\n"
+"                                <li>IBAN: <t t-out=\"ctx['creditor_identifier'] or ''\">NO 93 8601 1117947</t></li>\n"
+"                            </t>\n"
+"                            <t t-if=\"ctx.get('mandate_ref')\">\n"
+"                                <li>مرجع توكيل خصم SEPA المباشر: <t t-out=\"ctx['mandate_ref'] or ''\"/></li>\n"
+"                            </t>\n"
+"                        </ul>\n"
+"                    </t>\n"
+"                    لا تتردد في التواصل معنا إذا كانت لديك أي أسئلة أو استفسارات.\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">شركتك</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        مشغل بواسطة <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">أودو</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,body_html:payment_sepa_direct_debit.mail_template_sepa_notify_validation
@@ -219,12 +312,86 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.payment_journal_id.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">توكيل خصم SEPA المباشر الخاص بك</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.partner_bank_id.acc_number or ''\">BE15001559627230</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    مرحباً <t t-out=\"object.partner_id.name or ''\">براندن فريمان</t>،<br/><br/>\n"
+"\n"
+"                    <p>لقد تم تصديق إذن توكيل خصم SEPA المباشر مع <t t-out=\"company.name or ''\">شركتك</t>.</p>\n"
+"\n"
+"                    <p>ستجد نسخة من تصديق هذا التوكيل مرفقة ببريدك الإلكتروني.</p>\n"
+"\n"
+"                    <p>لا تتردد في التواصل معنا إذا كانت لديك أي أسئلة أو استفسارات.</p>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">شركتك</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        مشغل بواسطة <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">أودو</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "Both the phone number and the verification code are required."
-msgstr ""
+msgstr "رقم الهاتف ورمز التحقق كلاهما مطلوبان. "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
@@ -241,7 +408,7 @@ msgstr "جهة الاتصال"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Could not send the verification code."
-msgstr ""
+msgstr "تعذر إرسال رمز التحقق. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__currency_id
@@ -252,12 +419,12 @@ msgstr "العملة"
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Direct Debit: %s"
-msgstr ""
+msgstr "الخصم المباشر: %s "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_mandate_form
 msgid "Electronic Signature"
-msgstr ""
+msgstr "التوقيع الإلكتروني "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
@@ -268,7 +435,7 @@ msgstr "IBAN"
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Incorrect phone number."
-msgstr ""
+msgstr "رقم الهاتف غير صحيح. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_account_move_line
@@ -278,13 +445,13 @@ msgstr "عنصر اليومية"
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Missing Signature. Please fill your name and signature."
-msgstr ""
+msgstr "التوقيع غير موجود. يرجى كتابة الاسم والتوقيع. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Missing or invalid IBAN."
-msgstr ""
+msgstr "رقم IBAN غير موجود أو غير صالح. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
@@ -294,22 +461,22 @@ msgstr "التوقيع الإلكتروني"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_acquirer
 msgid "Payment Acquirer"
-msgstr "معالج السداد"
+msgstr "بوابة الدفع "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_account_payment_method
 msgid "Payment Methods"
-msgstr "طرق السداد"
+msgstr "طرق الدفع "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_token
 msgid "Payment Token"
-msgstr "كلمة سر السداد"
+msgstr "رمز الدفع "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_transaction
 msgid "Payment Transaction"
-msgstr "معاملة السداد"
+msgstr "معاملة الدفع "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__phone_number
@@ -320,7 +487,7 @@ msgstr "رقم الهاتف"
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Phone Verification"
-msgstr ""
+msgstr "التحقق عن طريق الهاتف "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__provider
@@ -332,18 +499,18 @@ msgstr "المزود"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Re-send SMS"
-msgstr ""
+msgstr "إعادة إرسال الرسالة النصية القصيرة "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Restricted to countries in the SEPA zone. Forbidden countries: %s"
-msgstr ""
+msgstr "يقتصر على الدول في منطقة SEPA. الدول المحظورة: %s "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_sdd_mandate
 msgid "SDD Mandate"
-msgstr "تفويض SDD"
+msgstr "توكيل SDD "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields.selection,name:payment_sepa_direct_debit.selection__payment_acquirer__provider__sepa_direct_debit
@@ -353,58 +520,58 @@ msgstr "خصم SEPA المباشر"
 #. module: payment_sepa_direct_debit
 #: model:account.payment.method,name:payment_sepa_direct_debit.payment_method_sepa_direct_debit
 msgid "SEPA Direct Debit (acquirer)"
-msgstr ""
+msgstr "توكيل خصم SEPA المباشر (بوابة الدفع) "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_token__sdd_mandate_id
 msgid "SEPA Direct Debit Mandate"
-msgstr "تفويض خصم SEPA المباشر"
+msgstr "توكيل خصم SEPA المباشر "
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 #: model:mail.template,subject:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 msgid "SEPA Direct Debit: Charge Notification"
-msgstr ""
+msgstr "خصم SEPA المباشر: إشعار الرسوم "
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "SEPA Direct Debit: Validation Notification"
-msgstr ""
+msgstr "خصم SEPA المباشر: إشعار التصديق "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_credits
 msgid "SMS Credits"
-msgstr ""
+msgstr "رصيد الرسائل النصية القصيرة "
 
 #. module: payment_sepa_direct_debit
 #. openerp-web
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "SMS Sent"
-msgstr ""
+msgstr "الرسائل النصية القصيرة المرسلة "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "SMS could not be sent due to insufficient credit."
-msgstr ""
+msgstr "تعذر إرسال الرسالة النصية القصيرة لعدم وجود الرصيد الكافي. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "SMS verification is disabled."
-msgstr ""
+msgstr "تم تعطيل التحقق عن طريق الرسائل النصية القصيرة. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_token.py:0
 #, python-format
 msgid "Saved payment methods cannot be restored once they have been archived."
-msgstr ""
+msgstr "لا يمكن استعادة طرق الدفع المحفوظة بمجرد أن تتم أرشفتها. "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Send SMS"
-msgstr "إرسال رسالة نصية قصيرة SMS"
+msgstr "إرسال رسالة نصية قصيرة "
 
 #. module: payment_sepa_direct_debit
 #. openerp-web
@@ -412,7 +579,7 @@ msgstr "إرسال رسالة نصية قصيرة SMS"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Server Error"
-msgstr "خطأ في السيرفر"
+msgstr "خطأ في الخادم "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__signature
@@ -423,33 +590,33 @@ msgstr "التوقيع"
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__signed_by
 msgid "Signed By"
-msgstr ""
+msgstr "تم التوقيع من قِبَل "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__signed_on
 msgid "Signed On"
-msgstr ""
+msgstr "تم التوقيع في "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "Signed online on"
-msgstr ""
+msgstr "تم التوقيع عبر الإنترنت في "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__provider
 msgid "The Payment Service Provider to use with this acquirer"
-msgstr ""
+msgstr "مقدم خدمة الدفع لاستخدامه مع بوابة الدفع هذه "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The bank account of the journal is not a valid IBAN."
-msgstr ""
+msgstr "الحساب البنكي لدفتر اليومية ليس رقم IBAN صالحاً. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_on
 msgid "The date of the signature"
-msgstr ""
+msgstr "تاريخ التوقيع "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -459,130 +626,137 @@ msgid ""
 "not already created an account with this bank number. If that is the case, "
 "log in under that account."
 msgstr ""
+"تعذر إنشاء التوكيل. يرجى تأكيد حساب IBAN الخاص بك وأنك لم تقم بإنشاء حساب من"
+" قبل باستخدام رقم البنك هذا. إذا قمت بذلك بالفعل، قم بتسجيل الدخول باستخدام "
+"هذا الحساب. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The mandate is invalid."
-msgstr ""
+msgstr "التوكيل غير صالح. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The mandate owner and customer do not match."
-msgstr ""
+msgstr "مالك التوكيل والعميل غير متطابقين. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was signed by %s."
-msgstr ""
+msgstr "تم التوقيع على التوكيل بواسطة %s. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was verified with phone number %s."
-msgstr ""
+msgstr "تم تأكيد التوكيل باستخدام رقم الهاتف %s. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The name and signature must be provided."
-msgstr ""
+msgstr "يجب كتابة الاسم والتوقيع. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_by
 msgid "The name of the signer"
-msgstr ""
+msgstr "اسم المُوَقّع "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number does not match."
-msgstr ""
+msgstr "رقم الهاتف غير مطابق. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The phone number must be provided and verified."
-msgstr ""
+msgstr "يجب أن تتم كتابة رقم الهاتف والتأكد من صحته. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number should be in international format."
-msgstr ""
+msgstr "يجب أن يكون رقم الهاتف بالصيغة الدولية. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__phone_number
 msgid "The phone number used for verification by SMS code"
-msgstr ""
+msgstr "رقم الهاتف مستخدم للتصديق عن طريق كود الرسائل النصية القصيرة "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The token is not linked to a mandate."
-msgstr ""
+msgstr "الرمز غير مرتبط بتوكيل. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The transaction is not linked to a token."
-msgstr ""
+msgstr "المعاملة غير مرتبطة برمز. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The verification code does not match."
-msgstr ""
+msgstr "كود التحقق غير مطابق. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "This mandate has already been verified."
-msgstr ""
+msgstr "لقد تم التحقق من هذا التوكيل بالفعل. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Unknown mandate ID."
-msgstr ""
+msgstr "معرف التوكيل غير معروف. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__verification_code
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Verification Code"
-msgstr ""
+msgstr "كود التصديق "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__verified
 msgid "Verified"
-msgstr "معتمد"
+msgstr "مصدق "
 
 #. module: payment_sepa_direct_debit
 #. openerp-web
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "We are not able to process your payment."
-msgstr ""
+msgstr "لم نتمكن من معالجة الدفع الخاص بك. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
 msgid "Whether a signature is required to create a new mandate."
-msgstr ""
+msgstr "ما إذا كان الأمر يتطلب توقيعاً لإنشاء توكيل جديد أم لا. "
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Whether phone numbers must be verified by an SMS code."
 msgstr ""
+"ما إذا كان من الضروري التحقق من رقم الهاتف عن طريق رمز الرسائل النصية "
+"القصيرة أم لا. "
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
 msgid ""
 "You don't have enough credit to send SMS. You can buy new credits here:"
 msgstr ""
+"لا تملك الرصيد الكافي لإرسال رسالة نصية قصيرة. بإمكانك شراء رصيد جديد من "
+"هنا: "
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,subject:payment_sepa_direct_debit.mail_template_sepa_notify_validation
@@ -590,6 +764,7 @@ msgid ""
 "Your SEPA Direct Debit Mandate with {{ "
 "object.payment_journal_id.company_id.name }}"
 msgstr ""
+"توكيل خصم SEPA الخاص بك مع {{ object.payment_journal_id.company_id.name }} "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -598,6 +773,8 @@ msgid ""
 "Your company must have a creditor identifier in order to issue a SEPA Direct"
 " Debit payment request. It can be set in Accounting settings."
 msgstr ""
+"يجب أن تمتلك شركتك مُعرف دائن لإنشاء طلبات سداد بنظام خصم SEPA المباشر. "
+"يمكنك ضبطه من إعدادات المحاسبة. "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
@@ -608,4 +785,4 @@ msgstr "كود التأكيد هو %s"
 #. module: payment_sepa_direct_debit
 #: model:mail.template,report_name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "{{ (object.name or '').replace('/','_') }}"
-msgstr ""
+msgstr "{{ (object.name or '').replace('/','_') }}"

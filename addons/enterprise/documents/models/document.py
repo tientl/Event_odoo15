@@ -96,12 +96,10 @@ class Document(models.Model):
         for record in self:
             attachment = record.attachment_id.with_context(no_document=True)
             if attachment:
-                # Avoid inconsistency in the data.
+                # Avoid inconsistency in the data, write both at the same time.
                 # In case a check_access is done between res_id and res_model modification,
                 # an access error can be received. (Mail causes this check_access)
-                attachment.res_id = False
-                attachment.res_model = record.res_model
-                attachment.res_id = record.res_id
+                attachment.write({'res_model': record.res_model, 'res_id': record.res_id})
 
     @api.onchange('url')
     def _onchange_url(self):
@@ -222,6 +220,13 @@ class Document(models.Model):
         subject = msg_dict.get('subject', '')
         if custom_values is None:
             custom_values = {}
+
+        # Remove non existing tags to allow saving document with the mail alias
+        tags = custom_values.get('tag_ids')
+        if tags and isinstance(tags, (list, tuple)) and isinstance(tags[0], (list, tuple)):
+            custom_values['tag_ids'] = [(tags[0][0], tags[0][1],
+                                             self.env['documents.tag'].browse(tags[0][2]).exists().ids)]
+
         defaults = {
             'name': "Mail: %s" % subject,
             'active': False,
@@ -396,7 +401,7 @@ class Document(models.Model):
                         record.previous_attachment_ids = [(3, attachment_id, False)]
                     record.previous_attachment_ids = [(4, record.attachment_id.id, False)]
                 if 'datas' in vals:
-                    old_attachment = record.attachment_id.copy()
+                    old_attachment = record.attachment_id.with_context(no_document=True).copy()
                     # removes the link between the old attachment and the record.
                     old_attachment.write({
                         'res_model': 'documents.document',

@@ -22,7 +22,7 @@ class CalendarEventCrm(models.Model):
             partner = event.partner_ids - event.user_id.partner_id
             lead_values.append(event._get_lead_values(partner[:1]))
 
-        leads = self.env['crm.lead'].create(lead_values)
+        leads = self.env['crm.lead'].with_context(mail_create_nosubscribe=True).create(lead_values)
         for event, lead in zip(self, leads):
             event._link_with_lead(lead)
             lead.activity_schedule(

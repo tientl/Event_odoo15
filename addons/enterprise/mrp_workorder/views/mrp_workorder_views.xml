@@ -108,7 +108,7 @@
                         <field name="product_id" options="{'no_open': True}" readonly="1"/>
                         <label for="qty_producing" string=":"/>
                         <field name="qty_producing" class="oe_inline text-left" attrs="{'readonly': ['|', '|', ('allow_producing_quantity_change', '=', False), ('product_tracking', '=', 'serial'), ('state', 'in', ('done', 'cancel'))]}" required="1"/>
-                        / <field name="qty_remaining" class="oe_inline text-left"/>
+                        / <field name="qty_remaining" class="oe_inline text-left" attrs="{'invisible': [('state', '=', 'done')]}"/> <field name="qty_production" class="oe_inline text-left" attrs="{'invisible': [('state', '!=', 'done')]}"/>
                         <label for="product_uom_id" string="" class="oe_inline"/>
                         <field name="product_uom_id" options="{'no_open': True}" class="oe_inline" readonly="1"/>
                     </div>
@@ -128,7 +128,7 @@
                     <div class="o_workorder_bar_content o_workorder_actions">
                         <button name="action_menu" type="object" class="btn-secondary o_workorder_icon_btn" string="" icon="fa-bars" aria-label="Dropdown menu" title="Dropdown menu"/>
                         <button name="button_pending" type="object" class="btn-secondary mr8" attrs="{'invisible': ['|', ('is_user_working', '=', False), ('working_state', '=', 'blocked')]}" barcode_trigger="pause" string="Pause"/>
-                        <button name="button_start" type="object" class="btn-warning" attrs="{'invisible': ['|', ('is_user_working', '=', True), ('working_state', '=', 'blocked')]}" barcode_trigger="pause" string="Continue"/>
+                        <button name="button_start" type="object" class="btn-warning" attrs="{'invisible': ['|', '|', ('is_user_working', '=', True), ('working_state', '=', 'blocked'), ('state', '=', 'done')]}" barcode_trigger="pause" string="Continue"/>
                         <button name="button_unblock" type="object" context="{'default_workcenter_id': workcenter_id}" attrs="{'invisible': [('working_state', '!=', 'blocked')]}" string="Unblock" class="btn-danger"/>
                         <button name="action_previous" type="object" class="btn-secondary" string="Previous" icon="fa-chevron-left o_workorder_btn_icon_small" attrs="{'invisible': [('is_first_step', '=', True)]}" barcode_trigger="prev"/>
                         <button disabled="1" class="btn-secondary" string="Previous" icon="fa-chevron-left o_workorder_btn_icon_small" attrs="{'invisible': [('is_first_step', '=', False)]}"/>

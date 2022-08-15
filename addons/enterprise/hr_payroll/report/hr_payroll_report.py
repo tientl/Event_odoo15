@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from psycopg2 import sql
 
 from odoo import tools
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class HrPayrollReport(models.Model):
@@ -42,8 +43,8 @@ class HrPayrollReport(models.Model):
         ('2', 'Paid Time Off'),
         ('3', 'Unpaid Time Off')], string='Work, (un)paid Time Off', readonly=True)
 
-    def init(self):
-        query = """
+    def _select(self):
+        return """
             SELECT
                 p.id as id,
                 CASE WHEN wd.id = min_id.min_line THEN 1 ELSE 0 END as count,
@@ -66,31 +67,44 @@ class HrPayrollReport(models.Model):
                 wd.number_of_hours as number_of_hours,
                 CASE WHEN wd.id = min_id.min_line THEN pln.total ELSE 0 END as net_wage,
                 CASE WHEN wd.id = min_id.min_line THEN plb.total ELSE 0 END as basic_wage,
-                CASE WHEN wd.id = min_id.min_line THEN plg.total ELSE 0 END as gross_wage
-            FROM
-                (SELECT * FROM hr_payslip WHERE state IN ('done', 'paid')) p
-                    left join hr_employee e on (p.employee_id = e.id)
-                    left join hr_payslip_worked_days wd on (wd.payslip_id = p.id)
-                    left join hr_work_entry_type wet on (wet.id = wd.work_entry_type_id)
-                    left join (select payslip_id, min(id) as min_line from hr_payslip_worked_days group by payslip_id) min_id on (min_id.payslip_id = p.id)
-                    left join hr_payslip_line pln on (pln.slip_id = p.id and  pln.code = 'NET')
-                    left join hr_payslip_line plb on (plb.slip_id = p.id and plb.code = 'BASIC')
-                    left join hr_payslip_line plg on (plg.slip_id = p.id and plg.code = 'GROSS')
-                    left join hr_contract c on (p.contract_id = c.id)
-            GROUP BY
-                e.id,
-                e.department_id,
-                e.company_id,
-                wd.id,
-                wet.id,
-                p.id,
-                p.name,
-                p.date_from,
-                p.date_to,
-                pln.total,
-                plb.total,
-                plg.total,
-                min_id.min_line,
-                c.id"""
+                CASE WHEN wd.id = min_id.min_line THEN plg.total ELSE 0 END as gross_wage"""
+
+    def _from(self):
+        return """FROM
+            (SELECT * FROM hr_payslip WHERE state IN ('done', 'paid')) p
+                left join hr_employee e on (p.employee_id = e.id)
+                left join hr_payslip_worked_days wd on (wd.payslip_id = p.id)
+                left join hr_work_entry_type wet on (wet.id = wd.work_entry_type_id)
+                left join (select payslip_id, min(id) as min_line from hr_payslip_worked_days group by payslip_id) min_id on (min_id.payslip_id = p.id)
+                left join hr_payslip_line pln on (pln.slip_id = p.id and pln.code = 'NET')
+                left join hr_payslip_line plb on (plb.slip_id = p.id and plb.code = 'BASIC')
+                left join hr_payslip_line plg on (plg.slip_id = p.id and plg.code = 'GROSS')
+                left join hr_contract c on (p.contract_id = c.id)"""
+
+    def _group_by(self):
+        return """GROUP BY
+            e.id,
+            e.department_id,
+            e.company_id,
+            wd.id,
+            wet.id,
+            p.id,
+            p.name,
+            p.date_from,
+            p.date_to,
+            pln.total,
+            plb.total,
+            plg.total,
+            min_id.min_line,
+            c.id"""
+
+    def init(self):
+        query = """
+        %s
+        %s
+        %s""" % (self._select(), self._from(), self._group_by())
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(sql.SQL("CREATE or REPLACE VIEW {} as ({})").format(sql.Identifier(self._table), sql.SQL(query)))
+        self.env.cr.execute(
+            sql.SQL("CREATE or REPLACE VIEW {} as ({})").format(
+                sql.Identifier(self._table),
+                sql.SQL(query)))

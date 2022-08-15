@@ -25,7 +25,7 @@ patch(MainComponent.prototype, 'stock_barcode_picking_batch', {
     },
 
     async exit(ev) {
-        if (this.displayBarcodeLines && this.env.model.needPickings && !this.env.model.needPickingType) {
+        if (this.displayBarcodeLines && this.env.model.needPickings && !this.env.model.needPickingType && this.env.model.pickingTypes) {
             this.env.model.record.picking_type_id = false;
             return this.env.model.trigger('update');
         }

@@ -4,7 +4,7 @@
 
         <!-- Folders -->
 
-        <record id="documents_fleet_folder" model="documents.folder">
+        <record id="documents_fleet_folder" model="documents.folder" forcecreate="0">
             <field name="name">Fleet</field>
             <field name="group_ids" eval="[(4, ref('fleet.fleet_group_manager'))]"/>
             <field name="read_group_ids" eval="[(4, ref('base.group_user'))]"/>
@@ -14,7 +14,7 @@
 
         <!-- Facets -->
 
-        <record id="documents_fleet" model="documents.facet">
+        <record id="documents_fleet" model="documents.facet" forcecreate="0">
             <field name="name">Fleet</field>
             <field name="sequence">5</field>
             <field name="folder_id" ref="documents_fleet_folder"/>
@@ -22,13 +22,13 @@
 
         <!-- Tags -->
 
-        <record id="documents_vehicles" model="documents.tag">
+        <record id="documents_vehicles" model="documents.tag" forcecreate="0">
             <field name="name">Vehicles Documents</field>
             <field name="facet_id" ref="documents_fleet"/>
             <field name="sequence">14</field>
         </record>
 
-        <record id="documents_fine" model="documents.tag">
+        <record id="documents_fine" model="documents.tag" forcecreate="0">
             <field name="name">Fine</field>
             <field name="facet_id" ref="documents_fleet"/>
             <field name="sequence">15</field>

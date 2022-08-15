@@ -135,6 +135,7 @@ var ViewEditorManager = AbstractEditorManager.extend({
             'group': ['name'],
             'div': ['name'],
             'filter': ['name'],
+            'button': ['name'],
         };
     },
     /**
@@ -835,6 +836,7 @@ var ViewEditorManager = AbstractEditorManager.extend({
                 view_id: view_id,
                 studio_view_arch: studio_view_arch,
                 operations: operations,
+                model: this.x2mModel ? this.x2mModel : this.model_name,
                 // We write views in the base language to make sure we do it on the source term field
                 // of ir.ui.view
                 context: _.extend({}, session.user_context, {lang: false}),
@@ -1718,7 +1720,8 @@ var ViewEditorManager = AbstractEditorManager.extend({
         var position = event.data.position || 'after';
         var xpath_info;
         if (node) {
-            xpath_info = findParentsPositions(this.view.arch, node);
+            const arch = Editors[this.view_type].prototype.preprocessArch(this.view.arch);
+            xpath_info = findParentsPositions(arch, node);
         }
         switch (structure) {
             case 'text':

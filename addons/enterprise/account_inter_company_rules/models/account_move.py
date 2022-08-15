@@ -43,7 +43,7 @@ class AccountMove(models.Model):
                 invoice_vals['invoice_line_ids'].append((0, 0, line._inter_company_prepare_invoice_line_data()))
 
             inv_new = inv.with_context(default_move_type=invoice_vals['move_type']).new(invoice_vals)
-            for line in inv_new.invoice_line_ids:
+            for line in inv_new.invoice_line_ids.filtered(lambda l: not l.display_type):
                 # We need to adapt the taxes following the fiscal position, but we must keep the
                 # price unit.
                 price_unit = line.price_unit
@@ -114,10 +114,16 @@ class AccountMoveLine(models.Model):
             'quantity': self.quantity,
             'discount': self.discount,
             'price_unit': self.price_unit,
-            'analytic_account_id': self.analytic_account_id.id,
-            'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
+            'analytic_account_id': not self.analytic_account_id.company_id and self.analytic_account_id.id,
+            'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.filtered(lambda r: not r.company_id).ids)],
         }
         # Ensure no account will be set at creation
         if self.display_type:
             vals['account_id'] = False
+
+        # Set company of analytic account to false to avoid inconsistencies in company record rules
+        company = self.env['res.company']._find_company_from_partner(self.move_id.partner_id.id)
+        analytic_company = self.analytic_account_id.company_id
+        if company and analytic_company and company.rule_type == 'invoice_and_refund' and company != analytic_company:
+            self.analytic_account_id.company_id = False
         return vals

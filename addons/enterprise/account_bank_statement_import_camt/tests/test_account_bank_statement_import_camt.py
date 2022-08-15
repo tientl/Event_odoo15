@@ -97,6 +97,7 @@ class TestAccountBankStatementImportCamt(AccountTestInvoicingCommon):
         """
         This test aims at importing a file with amounts expressed in EUR and USD.
         The company's currency is USD.
+        The exchange rate is provided and the company's currency is set in the source currency.
         """
         usd_currency = self.env.ref('base.USD')
         self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
@@ -113,12 +114,36 @@ class TestAccountBankStatementImportCamt(AccountTestInvoicingCommon):
 
     def test_minimal_and_multicurrency_camt_file_import_04(self):
         """
-        This test aims at importing a file with amounts expressed in EUR and USD but with no rate provided.
+        This test aims at importing a file with amounts expressed in EUR and USD.
         The company's currency is USD.
+        This is the same test than test_minimal_and_multicurrency_camt_file_import_02,
+        except that the company's currency is set in the target currency.
         """
         usd_currency = self.env.ref('base.USD')
         self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
         self._test_minimal_camt_file_import('camt_053_minimal_and_multicurrency_04.xml', usd_currency)
+
+    def test_minimal_and_multicurrency_camt_file_import_05(self):
+        """
+        This test aims at importing a file with amounts expressed in EUR and USD.
+        The company's currency is USD.
+        This is the same test than test_minimal_and_multicurrency_camt_file_import_04,
+        except that the exchange rate is inverted.
+        """
+        usd_currency = self.env.ref('base.USD')
+        self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
+        self._test_minimal_camt_file_import('camt_053_minimal_and_multicurrency_05.xml', usd_currency)
+
+    def test_minimal_and_multicurrency_camt_file_import_06(self):
+        """
+        This test aims at importing a file with amounts expressed in EUR and USD.
+        The company's currency is USD.
+        This is the same test than test_minimal_and_multicurrency_camt_file_import_02,
+        except that the exchange rate is leading to a rounding difference.
+        """
+        usd_currency = self.env.ref('base.USD')
+        self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
+        self._test_minimal_camt_file_import('camt_053_minimal_and_multicurrency_06.xml', usd_currency)
 
     def test_several_minimal_stmt_different_currency(self):
         """
@@ -211,8 +236,20 @@ class TestAccountBankStatementImportCamt(AccountTestInvoicingCommon):
     def test_camt_with_several_tx_details_and_instructed_amount(self):
         self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_instructed_amount.xml')
 
-    def test_camt_with_several_tx_details_and_multicurrency(self):
-        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_multicurrency.xml')
+    def test_camt_with_several_tx_details_and_instructed_amount_02(self):
+        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_instructed_amount_02.xml')
+
+    def test_camt_with_several_tx_details_and_multicurrency_01(self):
+        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_multicurrency_01.xml')
+
+    def test_camt_with_several_tx_details_and_multicurrency_02(self):
+        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_multicurrency_02.xml')
+
+    def test_camt_with_several_tx_details_and_multicurrency_03(self):
+        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_multicurrency_03.xml')
+
+    def test_camt_with_several_tx_details_and_charges(self):
+        self._test_camt_with_several_tx_details('camt_053_several_tx_details_and_charges.xml')
 
     def test_several_ibans_match_journal_camt_file_import(self):
         # Create a bank account and journal corresponding to the CAMT
@@ -313,7 +350,18 @@ class TestAccountBankStatementImportCamt(AccountTestInvoicingCommon):
 
     def test_charges_camt_file_import(self):
         """
+        This test aims to import a statement having transactions including charges in their
+        total amount. In that case, we need to check that the retrieved amount is correct.
         """
         usd_currency = self.env.ref('base.USD')
         self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
         self._test_minimal_camt_file_import('camt_053_minimal_charges.xml', usd_currency)
+
+    def test_charges_camt_file_import_02(self):
+        """
+        This test aims to import a statement having transactions including charges in their
+        total amount. In that case, we need to check that the retrieved amount is correct.
+        """
+        usd_currency = self.env.ref('base.USD')
+        self.assertEqual(self.env.company.currency_id.id, usd_currency.id)
+        self._test_minimal_camt_file_import('camt_053_minimal_charges_02.xml', usd_currency)

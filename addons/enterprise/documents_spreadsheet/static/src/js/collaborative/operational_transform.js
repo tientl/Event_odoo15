@@ -48,6 +48,7 @@ inverseCommandRegistry
         ];
     })
     .add("ADD_PIVOT", identity)
+    .add("EDIT_GLOBAL_FILTER", identity)
     .add("ADD_PIVOT_FORMULA", identity)
     .add("ADD_ODOO_LIST", identity)
     .add("ADD_ODOO_LIST_FORMULA", identity);

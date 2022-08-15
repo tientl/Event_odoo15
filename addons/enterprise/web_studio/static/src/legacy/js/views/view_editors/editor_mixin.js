@@ -127,6 +127,10 @@ return {
             .map(([attr, value]) => attr);
         return matchedAttrs.length > 0 && matchedAttrs.length === Object.keys(attrs).length;
     },
+
+    preprocessArch: function(arch) {
+        return arch;
+    },
 };
 
 });

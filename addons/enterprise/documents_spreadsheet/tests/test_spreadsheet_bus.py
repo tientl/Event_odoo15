@@ -67,6 +67,24 @@ class TestSpreadsheetBus(SpreadsheetTestCommon, MailCase):
             "It should have ignored the wrong spreadsheet"
         )
 
+    def test_snapshot(self):
+        spreadsheet = self.create_spreadsheet()
+        current_revision_id = self.get_revision(spreadsheet)
+        self.snapshot(
+            spreadsheet,
+            current_revision_id, "snapshot-revision-id", {"sheets": []},
+        )
+        self.assertEqual(
+            self.poll_spreadsheet(spreadsheet.id),
+            [{
+                "type": "SNAPSHOT_CREATED",
+                "id": spreadsheet.id,
+                "serverRevisionId": current_revision_id,
+                "nextRevisionId": "snapshot-revision-id",
+            }],
+            "It should have notified the snapshot"
+        )
+
     def test_poll_access(self):
         group = self.env["res.groups"].create({"name": "test group"})
         spreadsheet = self.create_spreadsheet()

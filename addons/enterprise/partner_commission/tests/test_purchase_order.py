@@ -8,6 +8,7 @@ from odoo.exceptions import AccessError
 from odoo.tools import format_date
 from odoo.tests.common import Form, tagged
 from odoo.addons.partner_commission.tests.setup import Line, Spec, TestCommissionsSetup
+from odoo.tools.misc import NON_BREAKING_SPACE
 
 
 @tagged('commission_purchase')
@@ -106,7 +107,7 @@ class TestPurchaseOrder(TestCommissionsSetup):
         date_to = sub.recurring_next_date
         date_from = fields.Date.subtract(date_to, years=1)
 
-        expected = f"""Commission on INV/12345/0001, Customer, 2,000.00 €
+        expected = f"""Commission on INV/12345/0001, Customer, 2,000.00{NON_BREAKING_SPACE}€
 {sub.code}, from {format_date(self.env, date_from)} to {format_date(self.env, date_to)} (12 month(s))"""
         self.assertEqual(inv.commission_po_line_id.name, expected)
 

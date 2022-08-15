@@ -35,6 +35,9 @@ export class DashboardStatistic extends owl.Component {
                 const stat = this.props.model.getStatisticDescription(this.props.name);
                 statType = stat.fieldType;
             }
+            // Aggregates for many2one always use group operator "count_distinct"
+            // and thus must be considered as integers (@see dashboard arch parser)
+            statType = statType === "many2one" ? "integer" : statType;
             this.formatOpts = formatterOptions[statType] || formatterOptions.default;
             this.formatter = statType && formatters.get(statType);
         }

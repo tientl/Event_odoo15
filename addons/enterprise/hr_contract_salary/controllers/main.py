@@ -49,6 +49,7 @@ class SignContract(Sign):
                 contract.applicant_id.emp_id = contract.employee_id
             self._create_activity_advantage(contract, 'running')
             contract.wage_on_signature = contract.wage_with_holidays
+
         # Both applicant/employee and HR responsible have signed
         if request_item.sign_request_id.nb_closed == 2:
             if contract.employee_id:
@@ -220,14 +221,14 @@ class HrContractSalary(http.Controller):
 
         if not contract.employee_id:
             be_country = request.env["res.country"].search([("code", "=", "BE")])
-            contract.employee_id = request.env['hr.employee'].sudo().create({
+            contract.employee_id = request.env['hr.employee'].with_context(tracking_disable=True).sudo().create({
                 'name': '',
                 'active': False,
                 'country_id': be_country.id,
                 'certificate': False,  # To force encoding it
                 'company_id': contract.company_id.id,
             })
-            contract.employee_id.address_home_id = request.env['res.partner'].sudo().create({
+            contract.employee_id.address_home_id = request.env['res.partner'].with_context(tracking_disable=True).sudo().create({
                 'name': 'Simulation',
                 'type': 'private',
                 'country_id': be_country.id,
@@ -242,7 +243,10 @@ class HrContractSalary(http.Controller):
         for field_name, value in kw.items():
             values.update(self._apply_url_value(contract, field_name, value))
         new_gross = contract.sudo()._get_gross_from_employer_costs(values['final_yearly_costs'])
-        contract.wage = new_gross
+        contract.write({
+            'wage': new_gross,
+            'final_yearly_costs': values['final_yearly_costs'],
+        })
         values.update({
             'need_personal_information': not values['redirect_to_job'],
             'submit': not values['redirect_to_job'],
@@ -409,6 +413,7 @@ class HrContractSalary(http.Controller):
             'employee_id': employee.id,
             'structure_type_id': contract.structure_type_id.id,
             'wage': advantages['wage'],
+            'final_yearly_costs': advantages['final_yearly_costs'],
             'resource_calendar_id': contract.resource_calendar_id.id,
             'default_contract_id': contract.default_contract_id.id,
             'hr_responsible_id': contract.hr_responsible_id.id,
@@ -492,7 +497,7 @@ class HrContractSalary(http.Controller):
             partner.write(address_home_vals)
         else:
             address_home_vals['active'] = False
-            partner = request.env['res.partner'].sudo().with_context(lang=None).create(address_home_vals)
+            partner = request.env['res.partner'].sudo().with_context(lang=None, tracking_disable=True).create(address_home_vals)
 
         # Update personal info on the employee
         bank_account_vals['partner_id'] = partner.id
@@ -530,7 +535,7 @@ class HrContractSalary(http.Controller):
                 ('applicant_id', '=', applicant.id), ('employee_id', '!=', False)], limit=1)
             employee = existing_contract.employee_id
         if not employee:
-            employee = request.env['hr.employee'].sudo().create({
+            employee = request.env['hr.employee'].sudo().with_context(tracking_disable=True).create({
                 'name': 'Simulation Employee',
                 'active': False,
                 'company_id': contract.company_id.id,
@@ -552,8 +557,8 @@ class HrContractSalary(http.Controller):
         if not no_write and contract.state == 'draft':
             contract.write(vals)
         else:
-            contract = request.env['hr.contract'].sudo().create(vals)
-
+            contract = request.env['hr.contract'].sudo().with_context(tracking_disable=True).create(vals)
+            contract.final_yearly_costs = float(contract_values['final_yearly_costs'] or 0.0)
         return contract
 
     @http.route('/salary_package/update_salary', type="json", auth="public")
@@ -562,8 +567,12 @@ class HrContractSalary(http.Controller):
         contract = self._check_access_rights(contract_id)
 
         new_contract = self.create_new_contract(contract, advantages)
-        new_gross = new_contract._get_gross_from_employer_costs(float(advantages['contract']['final_yearly_costs'] or 0.0))
-        new_contract.wage = new_gross
+        final_yearly_costs = float(advantages['contract']['final_yearly_costs'] or 0.0)
+        new_gross = new_contract._get_gross_from_employer_costs(final_yearly_costs)
+        new_contract.write({
+            'wage': new_gross,
+            'final_yearly_costs': final_yearly_costs,
+        })
 
         result['new_gross'] = round(new_gross, 2)
         result.update(self._get_compute_results(new_contract))
@@ -599,7 +608,8 @@ class HrContractSalary(http.Controller):
             if resume_line.value_type == 'contract':
                 value = new_contract[resume_line.code] if resume_line.code in new_contract else 0
             if resume_line.value_type == 'sum':
-                resume_explanation = _('Equals to the sum of the following values:\n\n%s', '\n+ '.join(resume_line.advantage_ids.res_field_id.mapped('field_description')))
+                resume_explanation = _('Equals to the sum of the following values:\n\n%s',
+                    '\n+ '.join(resume_line.advantage_ids.res_field_id.sudo().mapped('field_description')))
                 for advantage in resume_line.advantage_ids:
                     if not advantage.fold_field or (advantage.fold_field and new_contract[advantage.fold_field]):
                         field = advantage.field
@@ -615,7 +625,7 @@ class HrContractSalary(http.Controller):
             result['resume_lines_mapped'][resume_line.category_id.name][resume_line.code] = (resume_line.name, round(float(monthly_total), 2), uoms['currency'], resume_explanation)
         return result
 
-    @http.route(['/salary_package/onchange_advantage/'], type='json', auth='public')
+    @http.route(['/salary_package/onchange_advantage'], type='json', auth='public')
     def onchange_advantage(self, advantage_field, new_value, contract_id, advantages):
         # Return a dictionary describing the new advantage configuration:
         # - new_value: The advantage new_value (same by default)
@@ -634,7 +644,7 @@ class HrContractSalary(http.Controller):
             description = advantage.description
         return {'new_value': new_value, 'description': description, 'extra_values': False}
 
-    @http.route(['/salary_package/onchange_personal_info/'], type='json', auth='public')
+    @http.route(['/salary_package/onchange_personal_info'], type='json', auth='public')
     def onchange_personal_info(self, field, value):
         # sudo as public users can't access ir.model.fields
         info = request.env['hr.contract.salary.personal.info'].sudo().search([('field', '=', field)])
@@ -713,7 +723,7 @@ class HrContractSalary(http.Controller):
             values=values)
         return contract.id
 
-    @http.route(['/salary_package/submit/'], type='json', auth='public')
+    @http.route(['/salary_package/submit'], type='json', auth='public')
     def submit(self, contract_id=None, advantages=None, **kw):
         contract = self._check_access_rights(contract_id)
         if kw.get('employee_contract_id', False):
@@ -722,6 +732,7 @@ class HrContractSalary(http.Controller):
                 kw['employee'] = contract.employee_id
         kw['package_submit'] = True
         new_contract = self.create_new_contract(contract, advantages, no_write=True, **kw)
+
         if isinstance(new_contract, dict) and new_contract.get('error'):
             return new_contract
 

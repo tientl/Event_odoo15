@@ -5,21 +5,23 @@
 # Translators:
 # Geoffrey_GMF <gmf@odoo.com>, 2021
 # Martin Trigaux, 2021
-# Alexandra Jubert <aju@odoo.com>, 2021
+# Camille Dantinne <cmd@odoo.com>, 2022
+# Alexandra Jubert, 2022
+# Cécile Collart <cco@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2022-01-24 08:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:41+0000\n"
-"Last-Translator: Alexandra Jubert <aju@odoo.com>, 2021\n"
+"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: planning
 #. openerp-web
@@ -113,6 +115,53 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"                    <p>\n"
+"                    <t t-if=\"ctx.get('employee')\">\n"
+"                        Cher <t t-out=\"ctx['employee'].name or ''\"/>,\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Bonjour,\n"
+"                    </t>\n"
+"                        <br/><br/>\n"
+"                    <t t-if=\"ctx.get('assigned_new_shift')\">\n"
+"                        Vous avez été affecté à de nouveaux postes :\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Veuillez trouver votre planning pour la période suivante :\n"
+"                    </t>\n"
+"                    </p>\n"
+"                    <br/>\n"
+"\n"
+"                    <table style=\"table-layout: fixed; width: 80%; margin: auto;\">\n"
+"                        <tr>\n"
+"                            <th style=\"padding: 5px;text-align: left; width: 15%;\">Du</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"format_date(ctx.get('start_datetime')) or ''\">05/05/2021</td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <th style=\"padding: 5px;text-align: left; width: 15%;\">au</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"format_date(ctx.get('end_datetime')) or ''\">05/05/2021</td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"\n"
+"                    <div t-if=\"ctx.get('planning_url')\" style=\"margin: 15px;\">\n"
+"                        <a t-att-href=\"ctx.get('planning_url')\" target=\"_blank\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">Voir votre planning</a>\n"
+"                    </div>\n"
+"\n"
+"                    <div t-if=\"ctx.get('slot_unassigned_count')\">\n"
+"                        <p>De nouveaux postes ouvertes sont disponibles. S'il vous plaît, attribuez-vous si vous êtes disponible.</p>\n"
+"                    </div>\n"
+"                    <br/>\n"
+"\n"
+"                    <t t-if=\"ctx.get('message')\">\n"
+"                        <p t-out=\"ctx['message'] or ''\"/>\n"
+"                    </t>\n"
+"\n"
+"                    <p t-if=\"hasattr(object, 'allow_self_unassign') and object.allow_self_unassign and hasattr(object, 'self_unassign_days_before') and object.self_unassign_days_before\">\n"
+"                        Pour rappel, vous avez <t t-out=\"object.self_unassign_days_before or ''\">5</t> jour(s) avant le début d'un poste pour vous désassigner si vous n'êtes pas disponible. Merci pour votre compréhension.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: planning
 #: model:mail.template,body_html:planning.email_template_slot_single
@@ -159,6 +208,47 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"                    <p>Cher <t t-out=\"ctx.get('employee_name', '')\">Anita Oliver</t>,<br/><br/></p>\n"
+"                    <t t-if=\"ctx.get('open_shift_available')\">\n"
+"                        <p>Une nouvelle période de travail ouvert est disponible :</p>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        <p>L'horaire suivant vous a été attribué :</p>\n"
+"                    </t>\n"
+"                    <br/>\n"
+"                    <table style=\"width: 80%; margin: auto;\">\n"
+"                        <tr>\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Du</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"ctx.get('start_datetime') or ''\">05/31/2021 08:00:00</td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Au</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"ctx.get('end_datetime') or ''\">05/31/2021 16:00:00</td>\n"
+"                        </tr>\n"
+"                        <tr t-if=\"object.role_id\">\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Rôle</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.role_id.name or ''\">Barman</td>\n"
+"                        </tr>\n"
+"                        <tr t-if=\"hasattr(object, 'sale_line_id') and object.sale_line_id\">\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Ligne de vente</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.sudo().sale_line_id.name or ''\"/>\n"
+"                        </tr>\n"
+"                        <tr t-if=\"hasattr(object, 'project_id') and object.project_id\">\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Projet</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.sudo().project_id.name or ''\">Gathering</td>\n"
+"                        </tr>\n"
+"                        <tr t-if=\"hasattr(object, 'task_id') and object.task_id\">\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Tâche</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.sudo().task_id.name or ''\">Chef</td>\n"
+"                        </tr>\n"
+"                        <tr t-if=\"hasattr(object, 'name') and object.name\">\n"
+"                            <th style=\"padding: 5px;text-align: left;\">Note</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.name or ''\">/</td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </div>\n"
+"            "
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_shift_notification
@@ -222,7 +312,7 @@ msgstr ""
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_gantt
 msgid "<i class=\"fa fa-long-arrow-right\" title=\"Arrow\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-long-arrow-right\" title=\"Arrow\"/>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.period_report_template
@@ -231,7 +321,9 @@ msgstr "<span aria-label=\"Close\">×</span>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form
-msgid "<span class=\"align-middle\">for this resource at the same time.</span>"
+msgid ""
+"<span class=\"align-middle\" attrs=\"{'invisible': [('overlap_slot_count', "
+"'=', 0)]}\">for this resource at the same time.</span>"
 msgstr ""
 
 #. module: planning
@@ -318,7 +410,7 @@ msgid ""
 "All subsequent shifts will be deleted. Are you sure you want to continue?"
 msgstr ""
 "Tous les postes ultérieurs seront supprimés. Êtes-vous sûr de vouloir "
-"continuer?"
+"continuer ?"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__allocated_hours
@@ -398,7 +490,7 @@ msgstr "Par Rôle"
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_res_company__planning_allow_self_unassign
 msgid "Can Employee Un-Assign Themselves?"
-msgstr "Les employés peuvent-ils se désassigner eux-mêmes?"
+msgstr "Les employés peuvent-ils se désassigner eux-mêmes ?"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.hr_employee_view_form_simplified
@@ -824,7 +916,7 @@ msgstr "Poste assigné à l'utilisateur actuel?"
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__is_past
 msgid "Is This Shift In The Past?"
-msgstr "Poste dans le passé?"
+msgstr "Poste dans le passé ?"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__is_unassign_deadline_passed
@@ -913,7 +1005,7 @@ msgstr ""
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid "Let's start managing your employees' schedule!"
-msgstr "Commençons à gérer l'emploi du temps de vos employés!"
+msgstr "Commençons à gérer l'emploi du temps de vos employés !"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_schedule_by_resource
@@ -971,19 +1063,19 @@ msgstr "Pas de données"
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_roles
 msgid "No roles found. Let's create one!"
-msgstr "Pas de rôles trouvés. Créons-en un!"
+msgstr "Pas de rôles trouvés. Créons-en un !"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_shift_template
 msgid "No shift templates found. Let's create one!"
-msgstr "Pas de modèles de poste trouvés. Créons-en un!"
+msgstr "Pas de modèles de poste trouvés. Créons-en un !"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_my_calendar
 #: model_terms:ir.actions.act_window,help:planning.planning_action_schedule_by_resource
 #: model_terms:ir.actions.act_window,help:planning.planning_action_schedule_by_role
 msgid "No shifts found. Let's create one!"
-msgstr "Pas de postes trouvés. Créons-en un!"
+msgstr "Pas de postes trouvés. Créons-en un !"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__name
@@ -1291,7 +1383,7 @@ msgstr "Planning"
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_action_schedule_by_resource
 msgid "Schedule by Resource"
-msgstr ""
+msgstr "Planning par Ressource"
 
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_action_schedule_by_role
@@ -1362,7 +1454,7 @@ msgstr "Séquence"
 #: model:ir.actions.act_window,name:planning.planning_action_settings
 #: model:ir.ui.menu,name:planning.planning_menu_settings_config
 msgid "Settings"
-msgstr "Configuration"
+msgstr "Paramètres"
 
 #. module: planning
 #: code:addons/planning/controllers/main.py:0
@@ -1414,6 +1506,8 @@ msgid ""
 "Shifts are periods allocated to your resources for a specific role. "
 "Together, they constitute your resources' planning."
 msgstr ""
+"Les postes sont des périodes allouées à vos ressources pour un rôle "
+"spécifique. Ensemble, ils constituent le planning de vos ressources."
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.period_report_template
@@ -1545,13 +1639,13 @@ msgstr ""
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shifts have successfully been published and sent."
-msgstr ""
+msgstr "Les quarts de travail ont été publiés et envoyés avec succès."
 
 #. module: planning
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shifts have successfully been published."
-msgstr ""
+msgstr "Les quarts de travail ont été publiés avec succès."
 
 #. module: planning
 #. openerp-web
@@ -1611,6 +1705,8 @@ msgid ""
 "This employee isn't expected to work during this period. Planned hours : %s "
 "hours"
 msgstr ""
+"Cet employé n'est pas censé travailler pendant cette période. Horaires "
+"prévus : %s heures"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.period_report_template
@@ -1629,7 +1725,7 @@ msgstr "Le poste a été sauvegardé avec succès entant que modèle."
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.resource_resource_kanban_view
 msgid "Timezone:"
-msgstr ""
+msgstr "Fuseau horaire :"
 
 #. module: planning
 #: model:digest.tip,name:planning.digest_tip_planning_0

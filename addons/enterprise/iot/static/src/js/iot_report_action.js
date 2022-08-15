@@ -26,14 +26,16 @@ async function iotReportActionHandler(action, options, env) {
     if (action.device_id) {
         // Call new route that sends you report to send to printer
         const orm = env.services.orm;
-        const args = [action.id, action.context.active_ids, { device_id: action.device_id }];
+        action.data = action.data || {};
+        action.data["device_id"] = action.device_id;
+        const args = [action.id, action.context.active_ids, action.data];
         const [ip, identifier, document] = await orm.call("ir.actions.report", "iot_render", args);
         const adapterParent = new ComponentAdapter(null, { Component }); // For trigger_up and service calls
         const iotDevice = new DeviceProxy(adapterParent, { iot_ip: ip, identifier });
         iotDevice.add_listener(data => onValueChange(data, env));
         iotDevice.action({ document })
             .then(data => onIoTActionResult(data, env))
-            .guardedCatch(() => adapterParent.call("iot_longpolling", "_doWarnFail", ip));
+            .guardedCatch(() => iotDevice.call("iot_longpolling", "_doWarnFail", ip));
         return true;
     }
 }

@@ -119,7 +119,6 @@ var ClientAction = AbstractAction.extend({
         $replenishButton.on('mouseover', this._onMouseOverReplenish.bind(this));
         $replenishButton.on('mouseout', this._onMouseOutReplenish.bind(this));
         this.$buttons.find('.o_mrp_mps_create').on('click', this._onClickCreate.bind(this));
-        this.$buttons.find('.o_mps_mps_show_line').on('click', this._onChangeCompany.bind(this));
         const res = await this.updateControlPanel({
             title: _t('Master Production Schedule'),
             cp_content: {
@@ -129,6 +128,7 @@ var ClientAction = AbstractAction.extend({
         this._controlPanelWrapper.$el.find('.o_filter_menu').before(
             $(QWeb.render('mrp_mps_control_panel_option_buttons', {groups: this.groups}))
         );
+        this._controlPanelWrapper.$el.find('.o_mps_mps_show_line').on('click', this._onChangeCompany.bind(this));
         return res;
     },
 
@@ -212,6 +212,7 @@ var ClientAction = AbstractAction.extend({
                 orderBy: [{name: 'id', asc: false}]
             }).then(function (result) {
                 if (result.length) {
+                    self.active_ids.push(result[0].id);
                     return self._renderProductionSchedule(result[0].id);
                 }
             });
@@ -394,7 +395,7 @@ var ClientAction = AbstractAction.extend({
                     $warehouse = $('.o_mps_content[data-warehouse_id='+ state.warehouse_id[0] +']');
                 }
                 if ($warehouse.length) {
-                    $warehouse.last().append($table);
+                    $warehouse.last().after($table);
                 } else {
                     $('.o_mps_product_table').append($table);
                 }
@@ -733,10 +734,11 @@ var ClientAction = AbstractAction.extend({
      */
     _onSearch: async function (searchQuery) {
         this.domain = searchQuery.domain;
-        this.$pager.remove();
-        this.pager.destroy();
         await this._getRecordIds();
-        await this.renderPager();
+        const currentMinimum = 1;
+        const limit = defaultPagerSize;
+        const size = this.recordsPager.length;
+        await this.pager.update({ currentMinimum, limit, size });
         await this._reloadContent();
         await this.updateControlPanel();
     },

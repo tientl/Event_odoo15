@@ -68,7 +68,7 @@ class HrContractEmployeeReport(models.Model):
                 LEFT JOIN hr_employee e ON (e.id = c.employee_id)
                 LEFT JOIN (
                     SELECT employee_id, contract_end
-                    FROM (SELECT employee_id, MAX(COALESCE(date_end, current_date)) as contract_end FROM hr_contract WHERE state != 'cancel' GROUP BY employee_id) c_end
+                    FROM (SELECT employee_id, MAX(COALESCE(date_end, current_date + 1)) as contract_end FROM hr_contract WHERE state != 'cancel' GROUP BY employee_id) c_end
                     WHERE c_end.contract_end <= current_date) exit on (exit.employee_id = c.employee_id)
                 LEFT JOIN (
                     SELECT employee_id, MIN(date_start) as contract_start

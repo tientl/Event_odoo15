@@ -263,3 +263,48 @@ class TestTaxReportCarryover(TestAccountReportsCommon):
             carryover_lines = self.env['account.tax.carryover.line'].search(domain)
             carried_over_sum = sum([line.amount for line in carryover_lines])
             self.assertEqual(carried_over_sum, 0)
+
+    def test_tax_report_carry_over_non_persistent_and_used_in_balance_with_empty_period(self):
+        tax_25_line = self._create_tax_report_line('Base 25%', self.tax_report, sequence=5, tag_name='base_25',
+                                                   code='t25', is_carryover_used_in_balance=True)
+        tax_32_line = self._create_tax_report_line('Total line', self.tax_report, sequence=6,
+                                                   carry_over_condition='always_carry_over_and_set_to_0',
+                                                   formula='t25',
+                                                   carry_over_destination_line_id=tax_25_line.id,
+                                                   is_carryover_persistent=False)
+        # Create a move with 100$ 25% tax
+        report, taxes, invoice = self._trigger_carryover_line_creation(self.company_data, [tax_25_line], False)
+
+        # Then close the period to trigger the carryover line creation
+        # Line 32 is using line 25 in its formula, and will carry over to line 25 of next period
+        # So we check this one and make sure it has a carryover balance of 25
+        self._check_carryover_test_result(invoice, report, self.company_data, 25.0, tax_25_line)
+
+        # Get the report for the next period to test that the carryover is used in the balance
+        options = self._init_options(report, fields.Date.from_string('2020-04-30'), fields.Date.from_string('2020-04-30'))
+        lines = report._get_lines(options)
+        line_id = report._get_generic_line_id('account.tax.report.line', tax_25_line.id)
+        line_25 = [line for line in lines if line['id'] == line_id][0]
+
+        # The balance of the line 25 for the next period is the balance of its carryover from last period.
+        self.assertEqual(line_25['columns'][0]['balance'], 25.0)
+
+        # Close the current period again. As no changes were done and 32 is using 25 in the formula, the amount should
+        # Be the same. Thus, there should be no new carryover line.
+        with patch.object(type(report), '_get_vat_report_attachments', autospec=True, side_effect=lambda *args, **kwargs: []):
+            vat_closing_move = report._generate_tax_closing_entries(options)
+            vat_closing_move.action_post()
+
+            # Directly check the carryover lines. As the carried over balance is the same as the last period, no
+            # new move has been added
+            domain = tax_25_line.with_company(self.company_data['company'])._get_carryover_lines_domain(options)
+            carryover_lines = self.env['account.tax.carryover.line'].search(domain)
+            self.assertEqual(len(carryover_lines), 1)
+            # Get the report for the next period again
+            options = self._init_options(report, fields.Date.from_string('2020-05-30'), fields.Date.from_string('2020-05-30'))
+            lines = report._get_lines(options)
+            line_id = report._get_generic_line_id('account.tax.report.line', tax_25_line.id)
+            line_25 = [line for line in lines if line['id'] == line_id][0]
+
+            # The balance of the line 25 for the next period is the same as the last period as no changes occurred.
+            self.assertEqual(line_25['columns'][0]['balance'], 25.0)

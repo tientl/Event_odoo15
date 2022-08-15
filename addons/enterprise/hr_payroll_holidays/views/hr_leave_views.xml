@@ -30,6 +30,15 @@
             <xpath expr="//field[@name='holiday_status_id']" position="after">
                 <field name="payslip_state" widget="state_selection" class="ml-auto"/>
             </xpath>
+            <button name="action_refuse" position="before">
+                <button
+                    string="Report to Next Month"
+                    name="action_report_to_next_month"
+                    type="object"
+                    class="oe_highlight"
+                    groups="hr_payroll.group_hr_payroll_user"
+                    attrs="{'invisible': ['|', ('payslip_state', '!=', 'blocked'), ('state', '!=', 'validate')]}"/>
+            </button>
         </field>
     </record>
 

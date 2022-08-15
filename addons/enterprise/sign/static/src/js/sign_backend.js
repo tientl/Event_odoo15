@@ -1229,7 +1229,15 @@ odoo.define('sign.template', function(require) {
                     }
                     template = template[0];
                     self.sign_template = template;
-                    self.has_sign_requests = (template.sign_request_ids.length > 0);
+                    var defHasSignRequests = self._rpc({
+                        model: 'sign.template',
+                        method: 'has_sign_requests',
+                        args: [[template.id],],
+                        kwargs: {context: session.user_context},
+                        })
+                        .then(function (has_sign_requests){
+                            self.has_sign_requests = has_sign_requests;
+                        });
 
                     var defSignItems = self._rpc({
                             model: 'sign.item',
@@ -1258,7 +1266,7 @@ odoo.define('sign.template', function(require) {
                             self.isPDF = (attachment.mimetype.indexOf('pdf') > -1);
                         });
 
-                    return Promise.all([defSignItems, defIrAttachments]);
+                    return Promise.all([defSignItems, defIrAttachments, defHasSignRequests]);
                 });
 
             var defSelectOptions = this._rpc({

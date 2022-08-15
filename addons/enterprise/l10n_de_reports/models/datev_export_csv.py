@@ -13,7 +13,7 @@ import zipfile
 import time
 import io
 
-BalanceKey = namedtuple('BalanceKey', ['from_code', 'to_code', 'partner_id'])
+BalanceKey = namedtuple('BalanceKey', ['from_code', 'to_code', 'partner_id', 'tax_id'])
 
 
 class AccountDatevCompany(models.Model):
@@ -230,7 +230,8 @@ class DatevExportCSV(models.AbstractModel):
         fname, full_path = ir_attachment._get_path(False, 'ww' + sha[2:])
         with zipfile.ZipFile(full_path, 'w', False) as zf:
             zf.writestr('EXTF_accounting_entries.csv', self.get_csv(options))
-            zf.writestr('EXTF_customer_accounts.csv', self._get_partner_list(options))
+            zf.writestr('EXTF_customer_accounts.csv', self._get_partner_list(options, customer=True))
+            zf.writestr('EXTF_vendor_accounts.csv', self._get_partner_list(options, customer=False))
         ir_attachment._file_delete(fname)
         return open(full_path, 'rb')
 
@@ -243,7 +244,7 @@ class DatevExportCSV(models.AbstractModel):
             client_number = 999
         return [consultant_number, client_number]
 
-    def _get_partner_list(self, options):
+    def _get_partner_list(self, options, customer=True):
         date_from = fields.Date.from_string(options.get('date').get('date_from'))
         date_to = fields.Date.from_string(options.get('date').get('date_to'))
         fy = self.env.company.compute_fiscalyear_dates(date_to)
@@ -255,26 +256,35 @@ class DatevExportCSV(models.AbstractModel):
 
         output = io.BytesIO()
         writer = pycompat.csv_writer(output, delimiter=';', quotechar='"', quoting=2)
-
         preheader = ['EXTF', 510, 16, 'Debitoren/Kreditoren', 4, None, None, '', '', '', datev_info[0], datev_info[1], fy, 8,
             '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
         header = ['Konto', 'Name (AdressatentypUnternehmen)', 'Name (Adressatentypnatürl. Person)', '', '', '', 'Adressatentyp']
-        move_line_ids = self.with_context(self._set_context(options), print_mode=True, aml_only=True)._get_lines(options)
+
+        # if we do _get_lines with some unfolded lines, only those will be returned, but we want all of them
+        move_line_ids = self.with_context(self._set_context(options), print_mode=True, aml_only=True)._get_lines({**options, 'unfolded_lines': []})
         lines = [preheader, header]
 
         if len(move_line_ids):
-            self.env.cr.execute("""
-                SELECT distinct(aml.partner_id)
-                FROM account_move_line aml
-                LEFT JOIN account_move m
-                    ON aml.move_id = m.id
-                WHERE aml.id IN %s
-                    AND aml.tax_line_id IS NULL
-                    AND aml.debit != aml.credit
-                    AND aml.account_id != m.l10n_de_datev_main_account_id""", (tuple(move_line_ids),))
+            if customer:
+                move_types = ('out_refund', 'out_invoice', 'out_receipt')
+            else:
+                move_types = ('in_refund', 'in_invoice', 'in_receipt')
+            select = """SELECT distinct(aml.partner_id)
+                        FROM account_move_line aml
+                        LEFT JOIN account_move m
+                        ON aml.move_id = m.id
+                        WHERE aml.id IN %s
+                            AND aml.tax_line_id IS NULL
+                            AND aml.debit != aml.credit
+                            AND m.move_type IN %s
+                            AND aml.account_id != m.l10n_de_datev_main_account_id"""
+            self.env.cr.execute(select, (tuple(move_line_ids), move_types))
         partners = self.env['res.partner'].browse([p.get('partner_id') for p in self.env.cr.dictfetchall()])
         for partner in partners:
-            code = self._find_partner_account(partner.property_account_receivable_id, partner)
+            if customer:
+                code = self._find_partner_account(partner.property_account_receivable_id, partner)
+            else:
+                code = self._find_partner_account(partner.property_account_payable_id, partner)
             line_value = {
                 'code': code,
                 'company_name': partner.name if partner.is_company else '',
@@ -289,15 +299,13 @@ class DatevExportCSV(models.AbstractModel):
             array[2] = line_value.get('person_name')
             array[6] = line_value.get('natural')
             lines.append(array)
-            code_payable = self._find_partner_account(partner.property_account_payable_id, partner)
-            if code_payable != code:
-                line_value['code'] = code_payable
-                array[0] = line_value.get('code')
-                lines.append(array)
         writer.writerows(lines)
         return output.getvalue()
 
     def _find_partner_account(self, account, partner):
+        param_start = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count', "100000000")[:9]
+        param_start_vendors = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count_vendors', "700000000")[:9]
+        len_param = max(param_start.isdigit() and len(param_start) or 9, param_start_vendors.isdigit() and len(param_start_vendors) or 9, 5)
         if (account.internal_type in ('receivable', 'payable') and partner):
             # Check if we have a property as receivable/payable on the partner
             # We use the property because in datev and in germany, partner can be of 2 types
@@ -309,12 +317,15 @@ class DatevExportCSV(models.AbstractModel):
             account = partner.property_account_receivable_id if account.internal_type == 'receivable' else partner.property_account_payable_id
             fname   = "property_account_receivable_id"       if account.internal_type == "receivable" else "property_account_payable_id"
             prop = self.env['ir.property']._get(fname, "res.partner", partner.id)
-            if prop == account:
-                return str(account.code).ljust(8, '0')
-            param_start = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count')
-            start_count = param_start and param_start.isdigit() and int(param_start) or 100000000
+            if prop:
+                return str(account.code).ljust(len_param - 1, '0')
+            if account.internal_type == 'receivable':
+                start_count = param_start.isdigit() and int(param_start) or 100000000
+            else:
+                start_count = param_start_vendors.isdigit() and int(param_start_vendors) or 700000000
+            start_count = int(str(start_count).ljust(len_param, '0'))
             return partner.l10n_de_datev_identifier or start_count + partner.id
-        return str(account.code).ljust(8, '0')
+        return str(account.code).ljust(len_param - 1, '0')
 
     # Source: http://www.datev.de/dnlexom/client/app/index.html#/document/1036228/D103622800029
     def get_csv(self, options):
@@ -334,7 +345,8 @@ class DatevExportCSV(models.AbstractModel):
             date_from, date_to, '', '', '', '', 0, 'EUR', '', '', '', '', '', '', '', '', '']
         header = ['Umsatz (ohne Soll/Haben-Kz)', 'Soll/Haben-Kennzeichen', 'WKZ Umsatz', 'Kurs', 'Basis-Umsatz', 'WKZ Basis-Umsatz', 'Konto', 'Gegenkonto (ohne BU-Schlüssel)', 'BU-Schlüssel', 'Belegdatum', 'Belegfeld 1', 'Belegfeld 2', 'Skonto', 'Buchungstext']
 
-        move_line_ids = self.with_context(self._set_context(options), print_mode=True, aml_only=True)._get_lines(options)
+        # if we do _get_lines with some unfolded lines, only those will be returned, but we want all of them
+        move_line_ids = self.with_context(self._set_context(options), print_mode=True, aml_only=True)._get_lines({**options, 'unfolded_lines': []})
         lines = [preheader, header]
 
         moves = move_line_ids
@@ -344,10 +356,9 @@ class DatevExportCSV(models.AbstractModel):
             move_ids = [l.get('move_id') for l in self.env.cr.dictfetchall()]
             moves = self.env['account.move'].browse(move_ids)
         for m in moves:
-            total_aml_balance_per_key = defaultdict(float)  # key: BalanceKey
-            total_aml_balance_per_tax_line = defaultdict(float)  # key: Model<account.move.line>
-            total_aml_balance_per_key_per_tax_line = defaultdict(lambda: defaultdict(float))
             line_values = {}  # key: BalanceKey
+            move_currencies = {}
+            payment_account = 0  # Used for non-reconciled payments
 
             for aml in m.line_ids:
                 if aml.debit == aml.credit:
@@ -361,77 +372,51 @@ class DatevExportCSV(models.AbstractModel):
                 if aml.tax_line_id:
                     continue
 
-                amount = abs(aml.balance)
-                # Finding back the amount with tax included from the move can be tricky
-                # The line with the tax contains the tax_base_amount which is the gross value
-                # However if we have 2 product lines with the same tax, we will have a move like this
-                # Debit   Credit   Tax_line_id   Tax_ids   Tax_base_amount   Account_id
-                #  10        0        false       false            0          Receivable
-                #  0         3         1          false            7          Tax
-                #  0        3,5       false        [1]             0          Income Account
-                #  0        3,5       false        [1]             0          Income Account
-                #
-                # What we want to export for his move in datev is something like this:
-                # Account             CounterAccount   Amount
-                # Income Account      Receivable        10
-                #
-                # So when we are on an "Income Account" line linked to a tax, we try to find back
-                # the line representing the tax and we use as amount the tax line balance + base_amount
-                # This means that in the case we happen to have another line with same tax and income account,
-                # (as described above), We have to skip it.
-                # A Problem that might happen since tax are grouped is: if we have a line
-                # with tax 1 and 2 specified on the line, and another line with only tax 1
-                # specified on the line. This will result in a case where we can't easily get
-                # back the gross amount for both lines. This case is not supported by this export
-                # function and will result in incorrect exported lines for datev.
-                code_correction = ''
-                if aml.balance > 0:
-                    letter = 's'
-                elif aml.balance < 0:
-                    letter = 'h'
+                if aml.price_total != 0:
+                    line_amount = aml.price_total
+                    # convert line_amount in company currency
+                    if aml.currency_id != aml.company_id.currency_id:
+                        line_amount = line_amount / (aml.amount_currency / aml.balance)
                 else:
-                    if aml.move_id.move_type in ('out_invoice', 'in_refund',):
-                        letter = 'h'
-                    else:
-                        letter = 's'
-                tax_amls = self.env['account.move.line']
+                    line_amount = aml.balance
+
+                code_correction = ''
+                if aml.move_id.is_inbound():
+                    letter = 'h'
+                elif aml.move_id.is_outbound():
+                    letter = 's'
+                else:
+                    letter = 's'
                 if aml.tax_ids:
-                    tax_balance_sum = 0
                     codes = set(aml.tax_ids.mapped('l10n_de_datev_code'))
                     if len(codes) == 1:
                         # there should only be one max, else skip code
                         code_correction = codes.pop()
-                    for tax in aml.tax_ids:
-                        # Find tax line in the move and get it's tax_base_amount
-                        if tax.amount:
-                            tax_lines = m.line_ids.filtered(lambda l: l.tax_line_id == tax and l.partner_id == aml.partner_id)
-                            tax_balance_sum += sum(tax_lines.mapped('balance'))
-                            tax_amls |= tax_lines
-
-                    if tax_balance_sum > 0:
-                        letter = 's'
-                    elif tax_balance_sum < 0:
-                        letter = 'h'
-                    else:
-                        if aml.move_id.move_type in ('out_invoice', 'in_refund',):
-                            letter = 'h'
-                        else:
-                            letter = 's'
 
                 # account and counterpart account
-                to_account_code = self._find_partner_account(aml.move_id.l10n_de_datev_main_account_id, aml.partner_id)
+                to_account_code = str(self._find_partner_account(aml.move_id.l10n_de_datev_main_account_id, aml.partner_id))
                 account_code = u'{code}'.format(code=self._find_partner_account(aml.account_id, aml.partner_id))
 
+                # We don't want to have lines with our outstanding payment/receipt as they don't represent real moves
+                # So if payment skip one move line to write, while keeping the account
+                # and replace bank account for outstanding payment/receipt for the other line
+
+                if aml.payment_id:
+                    if payment_account == 0:
+                        payment_account = account_code
+                        continue
+                    else:
+                        to_account_code = payment_account
+
                 # group lines by account, to_account & partner
-                match_key = BalanceKey(from_code=account_code, to_code=to_account_code, partner_id=aml.partner_id)
+                match_key = BalanceKey(from_code=account_code, to_code=to_account_code, partner_id=aml.partner_id,
+                                       tax_id=code_correction)
 
-                for tl in tax_amls:
-                    total_aml_balance_per_tax_line[tl] += amount
-                    total_aml_balance_per_key_per_tax_line[match_key][tl] += amount
-
-                total_aml_balance_per_key[match_key] += amount
                 if match_key in line_values:
                     # values already in line_values
+                    line_values[match_key]['line_amount'] += line_amount
+                    line_values[match_key]['line_base_amount'] += aml.price_total
+                    move_currencies[match_key].add(aml.currency_id)
                     continue
 
                 # reference
@@ -444,9 +429,12 @@ class DatevExportCSV(models.AbstractModel):
                 if to_account_code == account_code and aml.date_maturity:
                     receipt2 = aml.date
 
+                move_currencies[match_key] = set([aml.currency_id])
                 currency = aml.company_id.currency_id
                 line_values[match_key] = {
                     'waehrung': currency.name,
+                    'line_base_amount': aml.price_total,
+                    'line_base_currency': aml.currency_id.name,
                     'sollhaben': letter,
                     'buschluessel': code_correction,
                     'gegenkonto': to_account_code,
@@ -454,27 +442,31 @@ class DatevExportCSV(models.AbstractModel):
                     'belegfeld2': receipt2,
                     'datum': datetime.strftime(aml.move_id.date, '%-d%m'),
                     'konto': account_code or '',
-                    'kurs': str(currency.rate).replace('.', ','),
+                    'kurs': str(aml.currency_id.rate).replace('.', ','),
                     'buchungstext': receipt1,
+                    'line_amount': line_amount
                 }
 
             for match_key, line_value in line_values.items():
-                amount = total_aml_balance_per_key[match_key]
-                for tax_line in total_aml_balance_per_key_per_tax_line.get(match_key, []):
-                    # avoid division by zero
-                    if total_aml_balance_per_tax_line[tax_line]:
-                        # add ponderated tax
-                        amount += abs(tax_line.balance) * (
-                            total_aml_balance_per_key_per_tax_line[match_key][tax_line]
-                            / total_aml_balance_per_tax_line[tax_line]
-                        )
+                # For DateV, we can't have negative amount on a line, so we need to inverse the amount and inverse the
+                # credit/debit symbol.
+                if line_value['line_amount'] < 0:
+                    line_value['line_amount'] = -line_value['line_amount']
+                    if line_value['sollhaben'] == 'h':
+                        line_value['sollhaben'] = 's'
+                    else:
+                        line_value['sollhaben'] = 'h'
 
                 # Idiotic program needs to have a line with 116 elements ordered in a given fashion as it
                 # does not take into account the header and non mandatory fields
                 array = ['' for x in range(116)]
-                array[0] = float_repr(amount, aml.company_id.currency_id.decimal_places).replace('.', ',')
+                array[0] = float_repr(line_value['line_amount'], aml.company_id.currency_id.decimal_places).replace('.', ',')
                 array[1] = line_value.get('sollhaben')
                 array[2] = line_value.get('waehrung')
+                if (len(move_currencies[match_key]) == 1) and line_value.get('line_base_currency') != line_value.get('waehrung'):
+                    array[3] = line_value.get('kurs')
+                    array[4] = float_repr(line_value['line_base_amount'], aml.currency_id.decimal_places).replace('.', ',')
+                    array[5] = line_value.get('line_base_currency')
                 array[6] = line_value.get('konto')
                 array[7] = line_value.get('gegenkonto')
                 array[8] = line_value.get('buschluessel')

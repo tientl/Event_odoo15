@@ -7,10 +7,11 @@
             <field name="inherit_id" ref="account.view_account_move_reversal"/>
             <field name="arch" type="xml">
                 <field name="reason" position="after">
-                    <field name="l10n_co_edi_description_code_credit"/>
+                    <field name="country_code" invisible="1"/>
+                    <field name="l10n_co_edi_description_code_credit"
+                           attrs="{'invisible': [('country_code', '!=', 'CO')]}"/>
                 </field>
             </field>
         </record>
     </data>
 </odoo>
-

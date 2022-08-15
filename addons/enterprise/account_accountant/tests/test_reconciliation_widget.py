@@ -2,6 +2,8 @@ import logging
 import odoo.tests
 import time
 from odoo.addons.account.tests.common import TestAccountReconciliationCommon
+from odoo import fields
+from odoo.tools.misc import NON_BREAKING_SPACE
 
 _logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class TestReconciliationWidget(TestAccountReconciliationCommon):
         bank_stmt.button_post()
 
         result = self.env['account.reconciliation.widget'].get_bank_statement_line_data(bank_stmt.line_ids.ids)
-        self.assertEqual(result['lines'][0]['reconciliation_proposition'][0]['amount_str'], '$ 50.00')
+        self.assertEqual(result['lines'][0]['reconciliation_proposition'][0]['amount_str'], f'${NON_BREAKING_SPACE}50.00')
 
     def test_filter_partner1(self):
         inv1 = self.create_invoice(currency_id=self.currency_euro_id)
@@ -328,6 +330,86 @@ class TestReconciliationWidget(TestAccountReconciliationCommon):
         self.assertTrue('id' in res[0]['tax_tag_ids'][0])
         self.assertEqual(res[0]['tax_tag_ids'][0]['display_name'], 'the_tag')
 
+    def test_writeoff_single_entry(self):
+        """ Test writeoff are grouped by journal and date in common journal entries"""
+        today = fields.Date.today().strftime('%Y-07-15')
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'invoice_date': '2019-01-21',
+            'date': '2019-01-21',
+            'invoice_line_ids': [(0, 0, {
+                'product_id': self.product_a.id,
+                'price_unit': 1000.0,
+                'tax_ids': [(6, 0, self.tax_purchase_a.ids)],
+            })]
+        })
+        invoice.action_post()
+
+        ctx = {'active_model': 'account.move', 'active_ids': invoice.ids}
+        payment_register = self.env['account.payment.register'].with_context(**ctx).create({
+            'amount': 1161.5,
+        })
+        payment_vals = payment_register._create_payment_vals_from_wizard()
+        payment = self.env['account.payment'].create(payment_vals)
+        payment.action_post()
+
+        # Create a write-off for the residual amount.
+        account = self.company_data['default_account_receivable']
+        lines = (invoice + payment.move_id).line_ids.filtered(lambda line: line.account_id == account)
+
+        self.env['account.reconciliation.widget'].process_move_lines([{
+            'type': 'other',
+            'mv_line_ids': lines.ids,
+            'new_mv_line_dicts': [
+                {
+                    'name': 'TEST',
+                    'journal_id': self.company_data['default_journal_misc'].id,
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'balance': 10,
+                    'date': today,
+                    'tax_ids': [(6, 0, self.tax_purchase_a.ids)],
+                },
+                {
+                    'name': 'TEST TAX',
+                    'journal_id': self.company_data['default_journal_misc'].id,
+                    'account_id': self.company_data['default_account_tax_sale'].id,
+                    'date': today,
+                    'balance': 1.5,
+                    'tax_base_amount': -10,
+                    'tax_repartition_line_id': self.tax_purchase_a.invoice_repartition_line_ids.filtered('account_id').id
+                }
+            ]}])
+
+        self.assertTrue(all(line.reconciled for line in lines))
+
+        write_off = lines.full_reconcile_id.reconciled_line_ids.move_id - lines.move_id
+
+        self.assertEqual(len(write_off), 1, "It should create only a single journal entry")
+
+        self.assertRecordValues(write_off.line_ids.sorted('balance'), [
+            {
+                'partner_id': self.partner_a.id,
+                'debit': 0.0,
+                'credit': 10,
+            },
+            {
+                'partner_id': self.partner_a.id,
+                'debit': 0.0,
+                'credit': 1.5,
+            },
+            {
+                'partner_id': self.partner_a.id,
+                'debit': 1.5,
+                'credit': 0.0,
+            },
+            {
+                'partner_id': self.partner_a.id,
+                'debit': 10,
+                'credit': 0.0,
+            },
+        ])
+
     def test_prepare_writeoff_moves_multi_currency(self):
         for invoice_type in ('out_invoice', 'in_invoice'):
             # Create an invoice at rate 1:2.
@@ -554,3 +636,88 @@ class TestReconciliationWidget(TestAccountReconciliationCommon):
         }])
 
         self.assertEqual(invoice.amount_residual, 350)
+
+    def test_manual_writeoff_with_tax_opw2689002(self):
+        """ When the Reconciliation Model had a tax on the writeoff,
+            the journal_id wasn't populated by widget.get_reconciliation_dict_from_model()
+        """
+        today = fields.Date.today().strftime('%Y-%m-%d')
+        model = self.env["account.reconcile.model"].create({
+            'active': True,
+            'name': 'My Writeoff',
+            'sequence': 5,
+            'company_id': self.company.id,
+            'rule_type': 'writeoff_button',
+            'match_journal_ids': [(6, 0, self.bank_journal_euro.ids)],
+            'line_ids': [(0, 0, {
+                'label': 'My Writeoff line',
+                'journal_id': self.general_journal.id,
+                'account_id': self.expense_account.id,
+                'amount_type': 'percentage',
+                'amount_string': '100',
+                'tax_ids': [(6, 0, self.tax_purchase_a.ids)],
+                'force_tax_included': True,
+            })],
+        })
+        bank_statement = self.env['account.bank.statement'].create({
+            'journal_id': self.bank_journal_euro.id,
+            'date': today,
+            'name': 'Bank Statement TEST',
+            'reference': 'Useless ref',
+            'line_ids': [(0, 0, {
+                'amount': -200,
+                'payment_ref': 'payment_ref',
+                'partner_id': self.partner_agrolait.id
+            })],
+        })
+        bank_statement.button_post()
+
+        widget = self.env['account.reconciliation.widget']
+        widget.process_bank_statement_line(bank_statement.line_ids.ids, [{
+            "lines_vals_list": [{
+                "account_id": self.account_rsa.id,
+                "balance": 200,
+                "name": "payment_ref"
+            }],
+            "partner_id": self.partner_agrolait.id,
+            "to_check": False
+        }])
+        bank_statement.button_validate_or_action()
+        bank_statement_move_line = bank_statement.move_line_ids.search([("debit", "=", 200.0)])
+
+        invoice = self.env['account.move'].create({
+            'move_type': 'in_invoice',
+            'partner_id': self.partner_agrolait.id,
+            'date': today,
+            'invoice_date': today,
+            'currency_id': self.company.currency_id.id,
+            'invoice_line_ids': [(0, 0, {
+                'name': self.product_b.name,
+                'product_id': self.product_b.id,
+                'quantity': 20,
+                'tax_ids': [(6, 0, [self.tax_purchase_a.id])],
+                'price_unit': 10.0,
+            })],
+        })
+        invoice.action_post()
+        invoice_line = invoice.line_ids[-1]
+        self.assertEqual(invoice.payment_state, 'not_paid')
+
+        values = [{
+            "id": None,
+            "type": None,
+            "mv_line_ids": [bank_statement_move_line.id, invoice_line.id],
+            "new_mv_line_dicts": [{
+                'account_id': line['account_id']['id'],
+                'analytic_tag_ids': [(6, 0, line['analytic_tag_ids'] or [])],
+                'balance': line['balance'],
+                'journal_id': line['journal_id']['id'] if 'journal_id' in line else False,
+                'name': line['name'],
+                'reconcile_model_id': line['reconcile_model_id'],
+                'tax_ids': [(6, 0, [x['id'] for x in line['tax_ids']]) if 'tax_ids' in line else None],
+                'tax_repartition_line_id': line.get('tax_repartition_line_id', None),
+            } for line in widget.get_reconciliation_dict_from_model(
+                model.id, None, residual_balance=42, widget_partner_id=self.partner_agrolait.id)]
+        }]
+        widget.process_move_lines(values)
+        self.assertEqual(invoice.payment_state, 'paid')

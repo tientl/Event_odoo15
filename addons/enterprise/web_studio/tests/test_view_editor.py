@@ -35,7 +35,7 @@ class TestStudioController(TransactionCase):
 
 class TestEditView(TestStudioController):
 
-    def edit_view(self, base_view, studio_arch="", operations=None):
+    def edit_view(self, base_view, studio_arch="", operations=None, model=None):
         _ops = None
         if isinstance(operations, list):
             _ops = []
@@ -43,7 +43,7 @@ class TestEditView(TestStudioController):
                 _ops.append(deepcopy(op))  # the edit view controller may alter objects in place
         if studio_arch == "":
             studio_arch = "<data/>"
-        return self.studio_controller.edit_view(base_view.id, studio_arch, _ops)
+        return self.studio_controller.edit_view(base_view.id, studio_arch, _ops, model)
 
     def test_edit_view_binary_and_attribute(self):
         base_view = self.env['ir.ui.view'].create({
@@ -186,3 +186,139 @@ class TestEditView(TestStudioController):
               </form>
             """
         )
+
+    def test_edit_view_options_attribute(self):
+        op = {
+            'type': 'attributes',
+            'target': {
+                'tag': 'field',
+                'attrs': {'name': 'groups_id'},
+                'xpath_info': [
+                    {'tag': 'group', 'indice': 1},
+                    {'tag': 'group', 'indice': 2},
+                    {'tag': 'field', 'indice': 2}
+                ],
+                'subview_xpath': "//field[@name='user_ids']/form"
+            },
+            'position': 'attributes',
+            'node': {
+                'tag': 'field',
+                'attrs': {
+                    'name': 'groups_id',
+                    'widget': 'many2many_tags',
+                    'options': "{'color_field': 'color'}",
+                },
+                'children': [],
+                'has_label': True
+            },
+            'new_attrs': {'options': '{"color_field":"color","no_create":true}'}
+        }
+
+        base_view = self.env['ir.ui.view'].create({
+            'name': 'TestForm',
+            'type': 'form',
+            'model': 'res.partner',
+            'arch': """
+                    <form>
+                        <sheet>
+                            <field name="display_name"/>
+                            <field name="user_ids">
+                                <form>
+                                    <sheet>
+                                        <field name="groups_id" widget='many2many_tags' options="{'color_field': 'color'}"/>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </sheet>
+                    </form>"""
+        })
+        self.edit_view(base_view, operations=[op], model='res.users')
+
+        self.assertViewArchEqual(
+            base_view.get_combined_arch(),
+            """
+                <form>
+                    <sheet>
+                        <field name="display_name"/>
+                        <field name="user_ids">
+                            <form>
+                                <sheet>
+                                    <field name="groups_id" widget="many2many_tags" options="{&quot;color_field&quot;: &quot;color&quot;, &quot;no_create&quot;: true}"/>
+                                </sheet>
+                            </form>
+                        </field>
+                    </sheet>
+                </form>
+            """
+        )
+
+    def test_edit_view_add_binary_field_inside_group(self):
+        arch = """<form>
+            <sheet>
+                <notebook>
+                    <page>
+                        <group>
+                            <group name="group_left" />
+                            <group name="group_right" />
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>"""
+
+        base_view = self.env['ir.ui.view'].create({
+            'name': 'TestForm',
+            'type': 'form',
+            'model': 'res.partner',
+            'arch': arch
+        })
+
+        operation = {
+            'type': 'add',
+            'target': {
+                'tag': 'group',
+                'attrs': {
+                    'name': 'group_left'
+                },
+                'xpath_info': [
+                    {'tag': 'form', 'indice': 1},
+                    {'tag': 'sheet', 'indice': 1},
+                    {'tag': 'notebook', 'indice': 1},
+                    {'tag': 'page', 'indice': 1},
+                    {'tag': 'group', 'indice': 1},
+                    {'tag': 'group', 'indice': 1}
+                ]
+            },
+            'position': 'inside',
+            'node': {
+                'tag': 'field',
+                'attrs': {},
+                'field_description': {
+                    'type': 'binary',
+                    'field_description': 'New File',
+                    'name': 'x_studio_field_fDthx',
+                    'model_name': 'res.partner'
+                }
+
+            }
+        }
+
+        self.edit_view(base_view, operations=[operation])
+
+        expected_arch = """<form>
+            <sheet>
+                <notebook>
+                    <page>
+                        <group>
+                            <group name="group_left">
+                                <field filename="x_studio_field_fDthx_filename" name="x_studio_field_fDthx"/>
+                                <field invisible="1" name="x_studio_field_fDthx_filename"/>
+                            </group>
+                            <group name="group_right"/>
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>"""
+
+        self.assertViewArchEqual(base_view.get_combined_arch(), expected_arch)

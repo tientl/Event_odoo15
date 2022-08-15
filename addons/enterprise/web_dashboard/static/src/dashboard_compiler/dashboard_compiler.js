@@ -11,6 +11,7 @@ import {
     getModifier,
     isAlwaysInvisible,
     nodeIdentifier,
+    tranformStringForExpression,
 } from "./compile_helpers";
 
 /**
@@ -189,13 +190,16 @@ export class DashboardCompiler {
             aggName = this.nodeIdentifier.idFor(node);
         }
         const displayName = node.getAttribute("string") || aggName;
-        agg.setAttribute("displayName", `"${displayName}"`);
+        agg.setAttribute("displayName", tranformStringForExpression(displayName));
         agg.setAttribute("model", "model");
         agg.setAttribute("name", `"${aggName}"`);
         agg.setAttribute("statisticType", `"${node.tagName}"`);
 
         if ("value_label" in node.attributes) {
-            agg.setAttribute("valueLabel", `"${node.getAttribute("value_label")}"`);
+            agg.setAttribute(
+                "valueLabel",
+                tranformStringForExpression(node.getAttribute("value_label"))
+            );
         }
 
         if ("widget" in node.attributes) {
@@ -203,7 +207,7 @@ export class DashboardCompiler {
         }
 
         if ("help" in node.attributes) {
-            agg.setAttribute("help", `"${node.getAttribute("help")}"`);
+            agg.setAttribute("help", tranformStringForExpression(node.getAttribute("help")));
         }
 
         const modifiers = getAllModifiers(node);

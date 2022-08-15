@@ -105,3 +105,24 @@ class TestSaleOrder(TestCommissionsSetup):
         so.action_confirm()
 
         self.assertEqual(so.commission, 150)
+
+    def test_so_referrer_id_to_invoice(self):
+        """Referrer_id should be the same in the new created invoice"""
+        self.referrer.commission_plan_id = self.gold_plan
+
+        form = Form(self.env['sale.order'].with_user(self.salesman).with_context(tracking_disable=True))
+        form.partner_id = self.customer
+        form.referrer_id = self.referrer
+
+        with form.order_line.new() as line:
+            line.name = self.worker.name
+            line.product_id = self.worker
+            line.product_uom_qty = 1
+
+        so = form.save()
+        so.action_confirm()
+
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(tracking_disable=True).create({})
+
+        inv = invoice_wizard._create_invoice(so, so.order_line[0], 100)
+        self.assertEqual(inv.referrer_id, so.referrer_id)

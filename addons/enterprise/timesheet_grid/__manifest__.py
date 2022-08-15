@@ -41,6 +41,7 @@
             'timesheet_grid/static/src/js/timesheet_gantt/task_progress_gantt_view.js',
             'timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_model.js',
             'timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_controller.js',
+            'timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_group_by_no_date_mixin.js',
             'timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_renderer.js',
             'timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_view.js',
             'timesheet_grid/static/src/js/timesheet_grid/timesheet_timer_grid_model.js',
@@ -55,6 +56,9 @@
             'timesheet_grid/static/src/js/timesheet_pivot/timesheet_pivot_view.js',
             'timesheet_grid/static/src/js/tours/timesheet_grid.js',
             'timesheet_grid/static/src/js/widgets/timesheets_m2o_avatar_employee.js',
+        ],
+        "web.assets_backend_legacy_lazy": [
+            'timesheet_grid/static/src/js/timesheet_pivot/timesheet_pivot_legacy.js',
         ],
         'web.assets_tests': [
             'timesheet_grid/static/tests/tours/timesheet_record_time.js',

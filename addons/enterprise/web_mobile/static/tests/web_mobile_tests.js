@@ -29,6 +29,9 @@ odoo.define("web_mobile.tests", function (require) {
 
     const MY_IMAGE =
         "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+    const BASE64_SVG_IMAGE =
+        "PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNzUnIGhlaWdodD0nMTAwJyBmaWxsPScjMDAwJz48cG9seWdvbiBwb2ludHM9JzAsMCAxMDAsMCA1MCw1MCcvPjwvc3ZnPg==";
+    const BASE64_PNG_HEADER = "iVBORw0KGg";
 
     QUnit.module(
         "web_mobile",
@@ -665,15 +668,78 @@ odoo.define("web_mobile.tests", function (require) {
                     mobile.methods.updateAccount = function (options) {
                         const { avatar, name, username } = options;
                         assert.ok("should call updateAccount");
-                        assert.strictEqual(avatar, MY_IMAGE, "should have a base64 encoded avatar");
+                        assert.ok(avatar.startsWith(BASE64_PNG_HEADER), "should have a PNG base64 encoded avatar");
                         assert.strictEqual(name, "Marc Demo");
                         assert.strictEqual(username, "demo");
                         return Promise.resolve();
                     };
 
                     testUtils.mock.patch(session, {
-                        fetchAvatar() {
-                            return Promise.resolve(base64ToBlob(MY_IMAGE, "image/png"));
+                        url(path) {
+                            if (path === '/web/image') {
+                                return `data:image/png;base64,${MY_IMAGE}`;
+                            }
+                            return this._super(...arguments);
+                        },
+                    });
+
+                    const DummyView = FormView.extend({
+                        config: Object.assign({}, FormView.prototype.config, {
+                            Controller: FormView.prototype.config.Controller.extend(
+                                UpdateDeviceAccountControllerMixin
+                            ),
+                        }),
+                    });
+
+                    const dummy = await createView({
+                        View: DummyView,
+                        model: "partner",
+                        data: this.data,
+                        arch: `
+                <form>
+                    <sheet>
+                        <field name="name"/>
+                    </sheet>
+                </form>`,
+                        viewOptions: {
+                            mode: "edit",
+                        },
+                        session: {
+                            username: "demo",
+                            name: "Marc Demo",
+                        },
+                    });
+
+                    await testUtils.form.clickSave(dummy);
+                    await dummy.savingDef;
+
+                    dummy.destroy();
+                    testUtils.mock.unpatch(session);
+                    mobile.methods.updateAccount = __updateAccount;
+                }
+            );
+
+            QUnit.test(
+                "controller should call native updateAccount method with SVG avatar when saving record",
+                async function (assert) {
+                    assert.expect(4);
+
+                    const __updateAccount = mobile.methods.updateAccount;
+                    mobile.methods.updateAccount = function (options) {
+                        const { avatar, name, username } = options;
+                        assert.ok("should call updateAccount");
+                        assert.ok(avatar.startsWith(BASE64_PNG_HEADER), "should have a PNG base64 encoded avatar");
+                        assert.strictEqual(name, "Marc Demo");
+                        assert.strictEqual(username, "demo");
+                        return Promise.resolve();
+                    };
+
+                    testUtils.mock.patch(session, {
+                        url(path) {
+                            if (path === '/web/image') {
+                                return `data:image/svg+xml;base64,${BASE64_SVG_IMAGE}`;
+                            }
+                            return this._super(...arguments);
                         },
                     });
 
@@ -722,15 +788,18 @@ odoo.define("web_mobile.tests", function (require) {
                     mobile.methods.updateAccount = function (options) {
                         const { avatar, name, username } = options;
                         assert.ok("should call updateAccount");
-                        assert.strictEqual(avatar, MY_IMAGE, "should have a base64 encoded avatar");
+                        assert.ok(avatar.startsWith(BASE64_PNG_HEADER), "should have a PNG base64 encoded avatar");
                         assert.strictEqual(name, "Marc Demo");
                         assert.strictEqual(username, "demo");
                         return Promise.resolve();
                     };
 
                     testUtils.mock.patch(session, {
-                        fetchAvatar() {
-                            return Promise.resolve(base64ToBlob(MY_IMAGE, "image/png"));
+                        url(path) {
+                            if (path === '/web/image') {
+                                return `data:image/png;base64,${MY_IMAGE}`;
+                            }
+                            return this._super(...arguments);
                         },
                     });
 

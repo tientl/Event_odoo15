@@ -1,7 +1,11 @@
 /** @odoo-module */
 
+import { _t } from "@web/core/l10n/translation";
 import { UNTITLED_SPREADSHEET_NAME } from "../../../constants";
 import CommandResult from "../plugins/cancelled_reason";
+import spreadsheet from "@documents_spreadsheet/js/o_spreadsheet/o_spreadsheet_loader";
+
+const { createEmptyWorkbookData } = spreadsheet.helpers;
 
 /**
  * Get the intersection of two arrays
@@ -42,10 +46,24 @@ export async function createEmptySpreadsheet(rpc) {
                 name: UNTITLED_SPREADSHEET_NAME,
                 mimetype: "application/o-spreadsheet",
                 handler: "spreadsheet",
-                raw: "{}",
+                raw: JSON.stringify(createEmptyWorkbookData(`${_t("Sheet")}1`)),
             },
         ],
     });
+}
+
+/**
+ * Remove user specific info from the context
+ * @param {Object} context
+ * @returns {Object}
+ */
+export function removeContextUserInfo(context) {
+    context = { ...context };
+    delete context.allowed_company_ids;
+    delete context.tz;
+    delete context.lang;
+    delete context.uid;
+    return context;
 }
 
 /**
@@ -109,14 +127,18 @@ export function legacyRPC(orm) {
         delete params.model;
         const method = params.method;
         delete params.method;
-        if (params.groupBy) {
-            params.groupby = params.groupBy;
+        if ('groupBy' in params) {
+            if (params.groupBy) {
+                params.groupby = params.groupBy;
+            }
             delete params.groupBy;
         }
-        if (params.orderBy) {
-            params.order = params.orderBy
-                .map((order) => order.name + (order.asc !== false ? " ASC" : " DESC"))
-                .join(", ");
+        if ('orderBy' in params) {
+            if (params.orderBy) {
+                params.order = params.orderBy
+                    .map((order) => order.name + (order.asc !== false ? " ASC" : " DESC"))
+                    .join(", ");
+            }
             delete params.orderBy;
         }
         const { args, ...kwargs } = params;

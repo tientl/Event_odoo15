@@ -75,5 +75,5 @@ class TestAmazonCommon(TransactionCase):
         # Create a delivery carrier
         product = self.env['product.product'].create({'name': "This is a product"})
         self.carrier = self.env['delivery.carrier'].create(
-            {'name': "My Truck", 'product_id': product.id}
+            {'name': "My Truck", 'product_id': product.id}  # delivery_type == 'fixed'
         )

@@ -8,7 +8,7 @@
 # Duy BQ <duybq86@gmail.com>, 2021
 # Trinh Tran Thi Phuong <trinhttp@trobz.com>, 2021
 # Dung Nguyen Thi <dungnt@trobz.com>, 2021
-# Trần Hà <tranthuha13590@gmail.com>, 2021
+# Vo Thanh Thuy, 2021
 # 
 msgid ""
 msgstr ""
@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:42+0000\n"
-"Last-Translator: Trần Hà <tranthuha13590@gmail.com>, 2021\n"
+"Last-Translator: Vo Thanh Thuy, 2021\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,16 +43,31 @@ msgid ""
 "        </div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"            <p>Đồng bộ hóa đơn hàng Amazon có mã tham chiếu <t t-out=\"ctx.get('amazon_order_ref') or ''\">REF</t> đã gặp lỗi và không được hoàn thành.</p>\n"
+"            <p>Trừ khi đơn hàng bị hủy trong SellerCentral, không có đồng bộ hóa nào sẽ được thực hiện.</p>\n"
+"            <p>Để lên lịch thử đồng bộ hóa mới, hãy tiến hành như sau:\n"
+"                <ol>\n"
+"                    <li>Nhập Công cụ nhà phát triển.</li>\n"
+"                    <li>Mở đơn của tài khoản Amazon mà đơn hàng này được đặt.</li>\n"
+"                    <li>Điều hướng tới tab Theo dõi đơn .</li>\n"
+"                    <li>Đặt ngày cho <em>Đồng bộ đơn hàng cuối cùng</em> trước ngày cập nhật cuối cùng của đơn hàng.</li>\n"
+"                    <li>Lưu thay đổi và bấm vào nút <em>ĐỒNG BỘ ĐƠN HÀNG</em>.</li>\n"
+"                </ol>\n"
+"            </p>\n"
+"            <p>Nếu vấn đề vẫn xảy ra, liên hệ <a href=\"https://www.odoo.com/help/\">hỗ trợ Odoo</a>.</p>\n"
+"        </div>\n"
+"        "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__name
 msgid "A user-defined name for the account"
-msgstr ""
+msgstr "Tên do người dùng xác định cho tài khoản"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__api_ref
 msgid "API Identifier"
-msgstr ""
+msgstr "Mã định danh API"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__account_id
@@ -63,13 +78,13 @@ msgstr "Tài khoản"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Account Name"
-msgstr "Tên tài khoản kế toán"
+msgstr "Tên tài khoản "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__active
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_search
 msgid "Active"
-msgstr "Có hiệu lực"
+msgstr "Đang hoạt động"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
@@ -78,98 +93,101 @@ msgid ""
 "                                                to which this account has access will be\n"
 "                                                synchronized and automatically made available."
 msgstr ""
+"Sau khi xác nhận thông tin đăng nhập, sàn giao dịch\n"
+"                                                mà tài khoản này có quyền truy cập sẽ được\n"
+"                                                đồng bộ hóa và tự động khả dụng. "
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_account
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Amazon Account"
-msgstr ""
+msgstr "Tài khoản Amazon"
 
 #. module: sale_amazon
 #: model:ir.actions.act_window,name:sale_amazon.list_amazon_account_action
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_tree
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 msgid "Amazon Accounts"
-msgstr ""
+msgstr "Tài khoản Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_res_partner__amazon_email
 #: model:ir.model.fields,field_description:sale_amazon.field_res_users__amazon_email
 msgid "Amazon Email"
-msgstr ""
+msgstr "Email Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_stock_location__amazon_location
 msgid "Amazon Location"
-msgstr ""
+msgstr "Địa điểm Amazon "
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_marketplace
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_marketplace_view_form
 msgid "Amazon Marketplace"
-msgstr ""
+msgstr "Sàn giao dịch Amazon"
 
 #. module: sale_amazon
 #: model:ir.actions.act_window,name:sale_amazon.list_amazon_marketplace_action
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_marketplace_view_tree
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 msgid "Amazon Marketplaces"
-msgstr ""
+msgstr "Sàn giao dịch Amazon"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_offer
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_offer_id
 msgid "Amazon Offer"
-msgstr ""
+msgstr "Ưu đãi Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_offer_view_tree
 msgid "Amazon Offers"
-msgstr ""
+msgstr "Ưu đãi Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order__amazon_order_ref
 msgid "Amazon Order Ref"
-msgstr ""
+msgstr "Mã đơn hàng Amazon"
 
 #. module: sale_amazon
 #: model:product.product,name:sale_amazon.default_product
 #: model:product.template,name:sale_amazon.default_product_product_template
 msgid "Amazon Sale"
-msgstr ""
+msgstr "Hàng bán trên Amazon"
 
 #. module: sale_amazon
 #: model:product.product,name:sale_amazon.shipping_product
 #: model:product.template,name:sale_amazon.shipping_product_product_template
 msgid "Amazon Shipping"
-msgstr ""
+msgstr "Vận chuyển Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_stock_picking__amazon_sync_pending
 msgid "Amazon Sync Pending"
-msgstr ""
+msgstr "Đang chờ đồng bộ Amazon "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_crm_team__amazon_team
 msgid "Amazon Team"
-msgstr ""
+msgstr "Đội Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Amazon accounts correspond to Amazon Seller Central accounts."
-msgstr ""
+msgstr "Tài khoản Amazon tương ứng với tài khoản Amazon Seller Central. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_marketplace.py:0
 #, python-format
 msgid "Amazon marketplaces cannot be deleted."
-msgstr ""
+msgstr "Không thể xóa các sàn giao dịch Amazon. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Amazon move : %s"
-msgstr ""
+msgstr "Dịch chuyển Amazon : %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -179,6 +197,9 @@ msgid ""
 "Since the current carrier doesn't automatically provide a tracking "
 "reference, you need to set one manually."
 msgstr ""
+"Amazon yêu cầu phải cung cấp mã theo dõi cho từng lần giao hàng. Vì đơn vị "
+"vận chuyển hiện tại không tự động cung cấp mã theo dõi, bạn cần phải tự đặt "
+"mã theo cách thủ công. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -187,30 +208,32 @@ msgid ""
 "Amazon requires that a tracking reference is provided with each delivery. "
 "You need to assign a carrier to this delivery."
 msgstr ""
+"Amazon yêu cầu phải cung cấp mã theo dõi cho từng lần giao hàng. Bạn cần chỉ"
+" định đơn vị vận chuyển cho đơn giao hàng này. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_item_ref
 msgid "Amazon-defined item reference"
-msgstr ""
+msgstr "Mã mặt hàng do Amazon xác định "
 
 #. module: sale_amazon
 #: model:mail.template,name:sale_amazon.order_sync_failure
 msgid "Amazon: Order Synchronization Failure"
-msgstr ""
+msgstr "Amazon: Đồng bộ hóa đơn hàng thất bại "
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_orders_ir_actions_server
 #: model:ir.cron,cron_name:sale_amazon.ir_cron_sync_amazon_orders
 #: model:ir.cron,name:sale_amazon.ir_cron_sync_amazon_orders
 msgid "Amazon: sync orders"
-msgstr ""
+msgstr "Amazon: đồng bộ đơn hàng"
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_pickings_ir_actions_server
 #: model:ir.cron,cron_name:sale_amazon.ir_cron_sync_amazon_pickings
 #: model:ir.cron,name:sale_amazon.ir_cron_sync_amazon_pickings
 msgid "Amazon: sync pickings"
-msgstr ""
+msgstr "Amazon: đồng bộ lấy hàng"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -218,7 +241,7 @@ msgstr ""
 msgid ""
 "An error was encountered when confirming shipping of the order with amazon "
 "id %s."
-msgstr ""
+msgstr "Đã xảy ra lỗi khi xác nhận vận chuyển đơn hàng với id amazon %s. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -227,29 +250,29 @@ msgstr ""
 #: code:addons/sale_amazon/models/stock_picking.py:0
 #, python-format
 msgid "An error was encountered when preparing the connection to Amazon."
-msgstr ""
+msgstr "Đã xảy ra lỗi khi chuẩn bị kết nối với Amazon. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "An error was encountered when synchronizing Amazon order items."
-msgstr ""
+msgstr "Đã xảy ra lỗi khi đồng bộ hóa mặt hàng được đặt trên Amazon. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "An error was encountered when synchronizing Amazon orders."
-msgstr ""
+msgstr "Đã xảy ra lỗi khi đồng bộ hóa đơn hàng từ Amazon. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__auth_token
 msgid "Authorization Token"
-msgstr ""
+msgstr "Mã token ủy quyền"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__available_marketplace_ids
 msgid "Available Marketplaces"
-msgstr ""
+msgstr "Sàn giao dịch khả dụng"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_CA
@@ -294,14 +317,14 @@ msgstr "Thời điểm tạo"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Credentials"
-msgstr "Thông tin xác thực"
+msgstr "Thông tin đăng nhập"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/res_config_settings.py:0
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 #, python-format
 msgid "Default Products"
-msgstr ""
+msgstr "Sản phẩm mặc định"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__display_name
@@ -320,7 +343,7 @@ msgstr "Miền"
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Everything is correctly set up !"
-msgstr ""
+msgstr "Mọi thứ đã được thiết lập đúng cách!"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_FR
@@ -330,27 +353,27 @@ msgstr "Pháp"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_order_view_form
 msgid "Fulfilled by Amazon"
-msgstr ""
+msgstr "Hoàn thành bởi Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_order_view_form
 msgid "Fulfilled by Merchant"
-msgstr ""
+msgstr "Hoàn thành bởi người bán"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order__amazon_channel
 msgid "Fulfillment Channel"
-msgstr ""
+msgstr "Kênh hoàn thành đơn hàng"
 
 #. module: sale_amazon
 #: model:ir.model.fields.selection,name:sale_amazon.selection__sale_order__amazon_channel__fba
 msgid "Fulfillment by Amazon"
-msgstr ""
+msgstr "Hoàn thành bởi Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields.selection,name:sale_amazon.selection__sale_order__amazon_channel__fbm
 msgid "Fulfillment by Merchant"
-msgstr ""
+msgstr "Hoàn thành bởi người bán"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_DE
@@ -364,6 +387,8 @@ msgid ""
 "Gift message:\n"
 "%s"
 msgstr ""
+"Lời nhắn quà tặng:\n"
+"%s"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__id
@@ -377,6 +402,8 @@ msgstr "ID"
 msgid ""
 "If made inactive, this account will no longer be synchronized with Amazon"
 msgstr ""
+"Nếu đặt là không hoạt động, tài khoản này sẽ không còn đồng bộ với Amazon "
+"nữa"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -385,6 +412,8 @@ msgid ""
 "If the date is set in the past, orders placed on this Amazon Account before the first synchronization of the module might be synchronized with Odoo.\n"
 "If the date is set in the future, orders placed on this Amazon Account between the previous and the new date will not be synchronized with Odoo."
 msgstr ""
+"Nếu ngày được đặt trước đó, đơn hàng đặt trong tài khoản Amazon này trước ngày đồng bộ hóa đầu tiên của mô-đun có thể được đồng bộ hóa với Odoo.\n"
+"Nếu ngày được đặt trong tương lai, đơn hàng đặt trong tài khoản Amazon này giữa ngày trước đó và ngày mới đặt sẽ được đồng bộ hóa với Odoo."
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
@@ -393,26 +422,28 @@ msgid ""
 "                                         synchronize and add them to the "
 "current sync marketplaces"
 msgstr ""
+"Nếu tài khoản đã có quyền truy cập vào các sàn giao dịch mới, đồng bộ và "
+"thêm các sàn giao dịch này vào sàn giao dịch đồng bộ hiện có. "
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_search
 msgid "Inactive"
-msgstr "Vô hiệu lực"
+msgstr "Không hoạt động"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_stock_location
 msgid "Inventory Locations"
-msgstr "Địa điểm Kiểm kê"
+msgstr "Địa điểm tồn kho"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__is_follow_up_displayed
 msgid "Is Follow Up Displayed"
-msgstr ""
+msgstr "Theo dõi được hiển thị"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_stock_picking__amazon_sync_pending
 msgid "Is True if the picking must be notified to Amazon"
-msgstr ""
+msgstr "Là đúng nếu lấy hàng phải được thông báo cho Amazon"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_IT
@@ -429,7 +460,7 @@ msgstr "Sửa lần cuối vào"
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__last_orders_sync
 msgid "Last Orders Sync"
-msgstr ""
+msgstr "Đồng bộ đơn hàng cuối cùng"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__write_uid
@@ -453,7 +484,7 @@ msgstr "Sàn giao dịch"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Marketplaces"
-msgstr ""
+msgstr "Sàn giao dịch"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_MX
@@ -476,7 +507,7 @@ msgstr "Hà Lan"
 #: model:ir.model.fields,field_description:sale_amazon.field_product_product__offer_count
 #: model:ir.model.fields,field_description:sale_amazon.field_product_template__offer_count
 msgid "Offer Count"
-msgstr ""
+msgstr "Số ưu đãi"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -487,13 +518,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_product_template_view_form
 #, python-format
 msgid "Offers"
-msgstr ""
+msgstr "Ưu đãi"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Only available marketplaces can be selected"
-msgstr ""
+msgstr "Chỉ có thể chọn sàn giao dịch khả dụng"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__order_count
@@ -503,7 +534,7 @@ msgstr "Số đơn hàng"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Order Follow-up"
-msgstr ""
+msgstr "Theo dõi đơn hàng"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -532,26 +563,29 @@ msgid ""
 "the same package. Operations related to the product %s were not all "
 "confirmed at once."
 msgstr ""
+"Sản phẩm được giao tới khách hàng Amazon phải đóng tất cả các bộ phận trong "
+"cùng một gói hàng. Các hoạt động liên quan tới sản phẩm %s đã không được xác"
+" nhận cùng lúc. "
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Register your Amazon account"
-msgstr ""
+msgstr "Đăng ký tài khoản Amazon của bạn"
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Register yours to start synchronizing your orders into Odoo."
-msgstr ""
+msgstr "Hãy đăng ký tài khoản của bạn để bắt đầu đồng bộ đơn hàng vào Odoo. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__sku
 msgid "SKU"
-msgstr ""
+msgstr "SKU"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_amazon_offer_unique_sku
 msgid "SKU must be unique for a given account and marketplace."
-msgstr ""
+msgstr "SKU phải là duy nhất cho sàn giao dịch và tài khoản nhất định. "
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_sale_order
@@ -561,13 +595,13 @@ msgstr "Đơn bán hàng"
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Chi tiết đơn hàng"
+msgstr "Dòng đơn bán hàng"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_crm_team
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__team_id
 msgid "Sales Team"
-msgstr "Nhóm bán hàng"
+msgstr "Đội kinh doanh"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__user_id
@@ -580,16 +614,18 @@ msgid ""
 "Select the marketplace on which your seller account\n"
 "                                                was originally created."
 msgstr ""
+"Chọn sàn giao dịch mà tài khoản người bán của bạn\n"
+"                                                được tạo lúc đầu."
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__seller_key
 msgid "Seller ID"
-msgstr ""
+msgstr "ID người bán"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__base_marketplace_id
 msgid "Sign-up Marketplace"
-msgstr ""
+msgstr "Đăng ký sàn giao dịch"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_ES
@@ -605,88 +641,89 @@ msgstr "Địa điểm kho"
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Successfully updated the marketplaces available to this account !"
-msgstr ""
+msgstr "Đã cập nhật thành công các sàn giao dịch khả dụng cho tài khoản này!"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__active_marketplace_ids
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__active_marketplace_ids
 msgid "Sync Marketplaces"
-msgstr ""
+msgstr "Đồng bộ sàn giao dịch"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Sync Orders"
-msgstr ""
+msgstr "Đồng bộ đơn hàng"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Sync Pickings"
-msgstr ""
+msgstr "Đồng bộ lấy hàng"
 
 #. module: sale_amazon
 #: model:mail.template,subject:sale_amazon.order_sync_failure
 msgid ""
 "Synchronization of Amazon order {{ ctx.get('amazon_order_ref') }} has failed"
 msgstr ""
+"Đồng bộ hóa đơn hàng Amazon {{ ctx.get('amazon_order_ref') }} đã thất bại"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__tax_included
 msgid "Tax Included"
-msgstr "Tax Included"
+msgstr "Đã gồm thuế"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Test Credentials"
-msgstr ""
+msgstr "Thử thông tin đăng nhập"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__api_ref
 msgid "The Amazon-defined marketplace reference"
-msgstr ""
+msgstr "Mã tham chiếu sàn giao dịch do Amazon xác định "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_sale_order__amazon_order_ref
 msgid "The Amazon-defined order reference"
-msgstr ""
+msgstr "Mã tham chiếu đơn hàng do Amazon xác định"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__auth_token
 msgid ""
 "The MWS Authorization Token of the Amazon Seller Central account for Odoo"
-msgstr ""
+msgstr "Mã token ủy quyền MWS của tài khoản Amazon Seller Central cho Odoo"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__seller_key
 msgid "The Merchant ID of the Amazon Seller Central account"
-msgstr ""
+msgstr "ID người bán của tài khoản Amazon Seller Central"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy encountered an internal server error."
-msgstr ""
+msgstr "Proxy Odoo đã gặp lỗi máy chủ nội bộ. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy encountered an unhandled error."
-msgstr ""
+msgstr "Proxy Odoo đã gặp phải lỗi không thể giải quyết. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy received a malformed request."
-msgstr ""
+msgstr "Proxy Odoo đã nhận được một yêu cầu sai định dạng. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__team_id
 msgid "The Sales Team assigned to Amazon orders for reporting"
-msgstr ""
+msgstr "Đội kinh doanh được phân công cho đơn hàng Amazon để báo cáo"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__sku
 msgid "The Stock Keeping Unit"
-msgstr ""
+msgstr "Đơn vị phân loại hàng tồn kho SKU"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -696,30 +733,32 @@ msgid ""
 "The authentication to the Amazon Marketplace Web Service failed. Please "
 "verify your credentials."
 msgstr ""
+"Ủy quyền cho dịch vụ web sàn giao dịch Amazon đã thất bại. Vui lòng xác minh"
+" thông tin đăng nhập của bạn. "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "The communication with Amazon is overloaded, please try again later."
-msgstr ""
+msgstr "Giao tiếp với Amazon bị quá tải, vui lòng thử lại sau."
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__code
 msgid "The country code in ISO 3166-1 format"
-msgstr ""
+msgstr "Mã quốc gia theo định dạng ISO 3166-1"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__domain
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__domain
 msgid "The domain name associated with the marketplace"
-msgstr ""
+msgstr "Tên miền được liên kết với sàn giao dịch"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_res_partner__amazon_email
 #: model:ir.model.fields,help:sale_amazon.field_res_users__amazon_email
 msgid "The encrypted email of the customer. Does not forward mails"
-msgstr ""
+msgstr "Email được mã hóa của khách hàng. Không chuyển tiếp thư"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__last_orders_sync
@@ -728,6 +767,9 @@ msgid ""
 "whose status has not changed since this date will not be created nor updated"
 " in Odoo."
 msgstr ""
+"Ngày đồng bộ hóa cuối cùng cho đơn hàng được đặt bằng tài khoản này. Đơn "
+"hàng có trạng thái không đổi từ ngày này sẽ không được tạo hoặc cập nhật "
+"trong Odoo. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__location_id
@@ -735,22 +777,24 @@ msgid ""
 "The location of the stock managed by Amazon under the Amazon Fulfillment "
 "program"
 msgstr ""
+"Vị trí của hàng hóa quản lý bởi Amazon trong chương trình Hoàn thành đơn "
+"hàng của Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__marketplace_id
 msgid "The marketplace of this offer"
-msgstr ""
+msgstr "Sàn giao dịch của đơn hàng này"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__available_marketplace_ids
 msgid "The marketplaces this account has access to"
-msgstr ""
+msgstr "Sàn giao dịch mà tài khoản này có quyền truy cập"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__active_marketplace_ids
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__active_marketplace_ids
 msgid "The marketplaces this account sells on"
-msgstr ""
+msgstr "Sàn giao dịch mà tài khoản này bán hàng "
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/sale.py:0
@@ -760,6 +804,9 @@ msgid ""
 "already been delivered. Please create a return for this order to adjust the "
 "stock."
 msgstr ""
+"Đơn hàng bị khách hàng Amazon hủy trong khi một số sản phẩm đã được giao "
+"hàng. Vui lòng tạo lệnh trả hàng cho đơn hàng này để điều chỉnh số lượng "
+"hàng trong kho. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__base_marketplace_id
@@ -767,38 +814,42 @@ msgid ""
 "The original sign-up marketplace of this account. Used for authentication "
 "only."
 msgstr ""
+"Sàn giao dịch đăng ký ban đầu của tài khoản này. Chỉ được sử dụng cho ủy "
+"quyền. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__tax_included
 msgid "The price includes the tax amount"
-msgstr ""
+msgstr "Giá bao gồm thuế"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__account_id
 msgid "The seller account used to manage this product"
-msgstr ""
+msgstr "Tài khoản người bán được sử dụng để quản lý sản phẩm này"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_amazon_marketplace_unique_api_ref
 msgid "There can only exist one marketplace for a given API Identifier."
 msgstr ""
+"Chỉ có thể tồn tại một sàn giao dịch cho Mã định danh API đã cung cấp. "
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_sale_order_unique_amazon_order_ref
 msgid ""
 "There can only exist one sale order for a given Amazon Order Reference."
-msgstr ""
+msgstr "Chỉ được phép tồn tại một đơn bán hàng cho một mã đơn hàng Amazon. "
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_sale_order_line_unique_amazon_item_ref
 msgid ""
 "There can only exist one sale order line for a given Amazon Item Reference."
 msgstr ""
+"Chỉ được phép tồn tại một dòng đơn bán hàng cho một mã mặt hàng Amazon. "
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_stock_picking
 msgid "Transfer"
-msgstr "Điều chuyển"
+msgstr "Chuyển"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_stock_location__amazon_location
@@ -806,21 +857,23 @@ msgid ""
 "True if this location represents the stock of a seller managed by Amazon "
 "under the Amazon Fulfillment program"
 msgstr ""
+"Đúng nếu vị trí này thể hiện hàng tồn kho của người bán được quản lý bởi "
+"Amazon trong chương trình Hoàn thành đơn hàng bởi Amazon. "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_crm_team__amazon_team
 msgid "True if this sales team is associated with Amazon orders"
-msgstr ""
+msgstr "Đúng nếu đội kinh doanh được liên kết với đơn hàng Amazon"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_UK
 msgid "United Kingdom"
-msgstr "Vương Quốc Anh Thống Nhất"
+msgstr "Vương Quốc Anh"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_US
 msgid "United States of America"
-msgstr ""
+msgstr "Hoa Kỳ"
 
 #. module: sale_amazon
 #: model:product.product,uom_name:sale_amazon.default_product
@@ -828,17 +881,17 @@ msgstr ""
 #: model:product.template,uom_name:sale_amazon.default_product_product_template
 #: model:product.template,uom_name:sale_amazon.shipping_product_product_template
 msgid "Units"
-msgstr "Cái"
+msgstr "Đơn vị"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Update Available Marketplaces"
-msgstr ""
+msgstr "Cập nhật sàn giao dịch hiện có"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_offer_view_tree
 msgid "View on Seller Central"
-msgstr ""
+msgstr "Xem trong Seller Central"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -850,7 +903,7 @@ msgstr "Cảnh báo"
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "You don't have an active subscription. Please buy one here: %s"
-msgstr ""
+msgstr "Bạn không có đăng ký đang hoạt động. Hãy mua tại đây: %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -859,20 +912,22 @@ msgid ""
 "[%s] %s\n"
 "Condition: %s - %s"
 msgstr ""
+"[%s] %s\n"
+"Điều kiện: %s - %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "[%s] Delivery Charges for %s"
-msgstr ""
+msgstr "[%s] Phí vận chuyển là %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "[%s] Gift Wrapping Charges for %s"
-msgstr ""
+msgstr "[%s] Phí gói quà là %s"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "e.g. American Market"
-msgstr ""
+msgstr "ví dụ: Thị trường Mỹ"

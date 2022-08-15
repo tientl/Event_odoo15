@@ -46,7 +46,7 @@ class SocialStreamLinkedIn(models.Model):
             timeout=5)
 
         if posts_response.status_code != 200 or 'elements' not in posts_response.json():
-            self.sudo().account_id.is_media_disconnected = True
+            self.sudo().account_id._action_disconnect_accounts(posts_response.json())
             return False
 
         linkedin_post_data = {

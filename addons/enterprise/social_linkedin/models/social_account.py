@@ -6,7 +6,7 @@ import requests
 from datetime import datetime, timedelta
 from werkzeug.urls import url_join
 
-from odoo import models, fields, api
+from odoo import _, models, fields, api
 from odoo.addons.social.controllers.main import SocialValidationException
 
 
@@ -49,6 +49,23 @@ class SocialAccountLinkedin(models.Model):
             # store statistics
             account.write(all_stats_dict)
 
+    def _linkedin_fetch_followers_count(self):
+        """Fetch number of followers from the LinkedIn API."""
+        self.ensure_one()
+        endpoint = url_join(self.env['social.media']._LINKEDIN_ENDPOINT, 'networkSizes/urn:li:organization:%s' % self.linkedin_account_id)
+        # removing X-Restli-Protocol-Version header for this endpoint as it is not required according to LinkedIn Doc.
+        # using this header with an endpoint that doesn't support it will cause the request to fail
+        headers = self._linkedin_bearer_headers()
+        headers.pop('X-Restli-Protocol-Version', None)
+        response = requests.get(
+            endpoint,
+            params={'edgeType': 'CompanyFollowedByMember'},
+            headers=headers,
+            timeout=3)
+        if response.status_code != 200:
+            return 0
+        return response.json().get('firstDegreeSize', 0)
+
     def _compute_statistics_linkedin(self, last_30d=False):
         """Fetch statistics from the LinkedIn API.
 
@@ -88,7 +105,7 @@ class SocialAccountLinkedin(models.Model):
         data = response.json().get('elements', [{}])[0].get('totalShareStatistics', {})
 
         return {
-            'audience': data.get('uniqueImpressionsCount', 0),
+            'audience': self._linkedin_fetch_followers_count(),
             'engagement': data.get('clickCount', 0) + data.get('likeCount', 0) + data.get('commentCount', 0),
             'stories': data.get('shareCount', 0) + data.get('shareMentionsCount', 0),
         }
@@ -124,22 +141,32 @@ class SocialAccountLinkedin(models.Model):
             headers=self._linkedin_bearer_headers(linkedin_access_token),
             timeout=5).json()
 
+        # Avoid duplicates accounts
         accounts = []
+        accounts_urn = []
         if 'elements' in response and isinstance(response.get('elements'), list):
             for organization in response.get('elements'):
+                if organization.get('state') != 'APPROVED':
+                    continue
                 image_url = self._extract_linkedin_picture_url(organization.get('organization~'))
                 image_data = requests.get(image_url, timeout=10).content if image_url else None
-                accounts.append({
-                    'name': organization.get('organization~', {}).get('localizedName'),
-                    'linkedin_account_urn': organization.get('organization'),
-                    'linkedin_access_token': linkedin_access_token,
-                    'image': base64.b64encode(image_data) if image_data else False,
-                })
+                account_urn = organization.get('organization')
+                if account_urn not in accounts_urn:
+                    accounts_urn.append(account_urn)
+                    accounts.append({
+                        'name': organization.get('organization~', {}).get('localizedName'),
+                        'linkedin_account_urn': account_urn,
+                        'linkedin_access_token': linkedin_access_token,
+                        'image': base64.b64encode(image_data) if image_data else False,
+                    })
 
         return accounts
 
     def _create_linkedin_accounts(self, access_token, media):
         linkedin_accounts = self._get_linkedin_accounts(access_token)
+        if not linkedin_accounts:
+            raise SocialValidationException(_('There is no page linked to this account'))
+
         social_accounts = self.sudo().with_context(active_test=False).search([
             ('media_id', '=', media.id),
             ('linkedin_account_urn', 'in', [l.get('linkedin_account_urn') for l in linkedin_accounts])])

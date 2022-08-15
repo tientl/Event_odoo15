@@ -158,8 +158,13 @@ class PlanningShift(models.Model):
 
     @api.depends('task_id')
     def _compute_resource_id(self):
-        for slot in self.filtered(lambda slot: not slot.resource_id and slot.task_id and slot.start_datetime):
-            slot.resource_id = slot.task_id.user_ids[:1].resource_ids.filtered(lambda r: r.company_id.id == slot.company_id.id)
+        for slot in self:
+            if slot.resource_id or not slot.task_id:
+                continue
+            user_to_assign = slot.task_id.user_ids
+            if len(user_to_assign) > 1:
+                user_to_assign = (slot.role_id.employee_ids.user_id & user_to_assign)[:1] or user_to_assign[:1]
+            slot.resource_id = user_to_assign.employee_id.resource_id
 
     @api.model_create_multi
     def create(self, vals_list):

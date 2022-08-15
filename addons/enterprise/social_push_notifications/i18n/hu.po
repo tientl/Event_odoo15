@@ -3,24 +3,31 @@
 # 	* social_push_notifications
 # 
 # Translators:
-# Martin Trigaux, 2019
-# krnkris, 2019
-# gezza <geza.nagy@oregional.hu>, 2019
-# Ákos Nagy <akos.nagy@oregional.hu>, 2019
+# Martin Trigaux, 2021
+# krnkris, 2021
+# Tamás Németh <ntomasz81@gmail.com>, 2021
+# gezza <geza.nagy@oregional.hu>, 2021
+# Ákos Nagy <akos.nagy@oregional.hu>, 2021
+# Zsolt Godó <zsolttokio@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.5+e\n"
+"Project-Id-Version: Odoo Server saas~14.5+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-27 09:19+0000\n"
-"PO-Revision-Date: 2019-09-23 14:03+0000\n"
-"Last-Translator: Ákos Nagy <akos.nagy@oregional.hu>, 2019\n"
+"POT-Creation-Date: 2021-09-14 11:01+0000\n"
+"PO-Revision-Date: 2021-09-14 12:43+0000\n"
+"Last-Translator: Zsolt Godó <zsolttokio@gmail.com>, 2021\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid "<span class=\"pl-2\">seconds</span>"
+msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_marketing_campaign__social_post_ids
@@ -43,12 +50,12 @@ msgstr "Törzs"
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_res_config_settings
 msgid "Config Settings"
-msgstr "Beállítások konfigurálása"
+msgstr "Beállítások módosítása"
 
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
-msgid "Delay (seconds)"
-msgstr ""
+msgid "Delay"
+msgstr "Késés"
 
 #. module: social_push_notifications
 #. openerp-web
@@ -59,16 +66,19 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__display_push_notification_attributes
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__display_push_notification_attributes
 msgid "Display Push Notifications Attributes"
 msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__display_push_notifications_preview
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__display_push_notifications_preview
 msgid "Display Push Notifications Preview"
 msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,help:social_push_notifications.field_social_post__visitor_domain
+#: model:ir.model.fields,help:social_push_notifications.field_social_post_template__visitor_domain
 msgid "Domain to send push notifications to visitors."
 msgstr ""
 
@@ -79,10 +89,10 @@ msgid "Enable Web Push Notifications"
 msgstr ""
 
 #. module: social_push_notifications
+#: code:addons/social_push_notifications/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
-msgid ""
-"Enable push notifications and configure this website's notifications "
-"permission request"
+#, python-format
+msgid "Enable push notifications to be notified about new features."
 msgstr ""
 
 #. module: social_push_notifications
@@ -127,16 +137,14 @@ msgid "Firebase Web API Key"
 msgstr ""
 
 #. module: social_push_notifications
-#: code:addons/social_push_notifications/controllers/main.py:0
-#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
-#, python-format
-msgid "Get the latest news by enabling push notifications."
-msgstr ""
-
-#. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.push_notifications_preview
 msgid "Google Chrome ·"
 msgstr ""
+
+#. module: social_push_notifications
+#: model:ir.model,name:social_push_notifications.model_ir_http
+msgid "HTTP Routing"
+msgstr "HTTP irányítás"
 
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
@@ -144,21 +152,34 @@ msgid "Icon"
 msgstr "Ikon"
 
 #. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_template_view_form
+msgid "Icon Image"
+msgstr ""
+
+#. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
 msgid "Key File"
 msgstr ""
 
 #. module: social_push_notifications
-#: model:ir.model.fields,field_description:social_push_notifications.field_social_media__media_type
-msgid "Media Type"
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_template_view_form
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_view_form
+msgid "Local Time"
 msgstr ""
 
 #. module: social_push_notifications
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_media__media_type
+msgid "Media Type"
+msgstr "Médiatípus"
+
+#. module: social_push_notifications
+#. openerp-web
 #: code:addons/social_push_notifications/models/social_live_post.py:0
-#: code:addons/social_push_notifications/models/social_post.py:0
+#: code:addons/social_push_notifications/models/social_post_template.py:0
+#: code:addons/social_push_notifications/static/src/js/push_preview.js:0
 #, python-format
 msgid "New Message"
-msgstr ""
+msgstr "Új üzenet"
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_res_config_settings__notification_request_delay
@@ -192,10 +213,22 @@ msgid "Notification Request Title"
 msgstr ""
 
 #. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_template_view_form
+msgid "Notification Title"
+msgstr ""
+
+#. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.utm_campaign_view_kanban
 msgid "Notifications"
 msgstr "Értesítések"
+
+#. module: social_push_notifications
+#. openerp-web
+#: code:addons/social_push_notifications/static/src/js/push_preview.js:0
+#, python-format
+msgid "Notifications blocked"
+msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_marketing_campaign__social_push_notifications_count
@@ -220,6 +253,7 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__push_notification_image
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__push_notification_image
 msgid "Push Icon Image"
 msgstr ""
 
@@ -230,16 +264,22 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.website_visitor_view_search
-msgid "Push Notification Disabled"
+msgid "Push Notification Off"
 msgstr ""
 
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.website_visitor_view_search
-msgid "Push Notification Enabled"
+msgid "Push Notification On"
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_template_view_form
+msgid "Push Notification Options"
 msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__push_notification_title
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__push_notification_title
 msgid "Push Notification Title"
 msgstr ""
 
@@ -248,13 +288,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:social_push_notifications.field_utm_campaign__social_push_notification_ids
 #: model:ir.model.fields,field_description:social_push_notifications.field_website_visitor__has_push_notifications
 #: model:ir.model.fields.selection,name:social_push_notifications.selection__social_media__media_type__push_notifications
-#: model_terms:ir.ui.view,arch_db:social_push_notifications.utm_campaign_view_form
 #: model:social.media,name:social_push_notifications.social_media_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.utm_campaign_view_form
 msgid "Push Notifications"
-msgstr ""
+msgstr "Push értesítések"
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__push_notifications_preview
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__push_notifications_preview
 msgid "Push Notifications Preview"
 msgstr ""
 
@@ -265,6 +306,7 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__push_notification_target_url
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__push_notification_target_url
 msgid "Push Target URL"
 msgstr ""
 
@@ -291,7 +333,15 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__use_visitor_timezone
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__use_visitor_timezone
 msgid "Send at Visitors' Timezone"
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid ""
+"Send push notifications and configure this website's notifications "
+"permission request"
 msgstr ""
 
 #. module: social_push_notifications
@@ -302,7 +352,7 @@ msgstr "Küldő ID azonosító"
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_social_account
 msgid "Social Account"
-msgstr ""
+msgstr "Közösségi fiók"
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_social_live_post
@@ -317,6 +367,11 @@ msgstr "Közösségi média"
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_social_post
 msgid "Social Post"
+msgstr "Közösségi írás"
+
+#. module: social_push_notifications
+#: model:ir.model,name:social_push_notifications.model_social_post_template
+msgid "Social Post Template"
 msgstr ""
 
 #. module: social_push_notifications
@@ -326,11 +381,9 @@ msgid "Some selected visitors do not allow push notifications."
 msgstr ""
 
 #. module: social_push_notifications
-#: code:addons/social_push_notifications/controllers/main.py:0
-#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
-#, python-format
-msgid "Subscribe now!"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_template_view_form
+msgid "Target URL"
+msgstr "Cél URL"
 
 #. module: social_push_notifications
 #. openerp-web
@@ -352,13 +405,14 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,help:social_push_notifications.field_social_post__push_notification_image
+#: model:ir.model.fields,help:social_push_notifications.field_social_post_template__push_notification_image
 msgid "This icon will be displayed in the browser notification"
 msgstr ""
 
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
 msgid "Title"
-msgstr "Név"
+msgstr "Megszólítás"
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_utm_campaign
@@ -386,12 +440,20 @@ msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_post__visitor_domain
+#: model:ir.model.fields,field_description:social_push_notifications.field_social_post_template__visitor_domain
 msgid "Visitor Domain"
 msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.ui.menu,name:social_push_notifications.social_visitor
 msgid "Visitors"
+msgstr "Látogatók"
+
+#. module: social_push_notifications
+#: code:addons/social_push_notifications/controllers/main.py:0
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+#, python-format
+msgid "Want to discover new versions?"
 msgstr ""
 
 #. module: social_push_notifications
@@ -400,20 +462,15 @@ msgid "Web API Key"
 msgstr ""
 
 #. module: social_push_notifications
-#: model_terms:ir.ui.view,arch_db:social_push_notifications.social_post_view_form
-msgid "Web Notification Options"
-msgstr ""
-
-#. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
-msgid "Web Push Notifications (Social app)"
+msgid "Web Push Notifications"
 msgstr ""
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_website
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_account__website_id
 msgid "Website"
-msgstr "Weboldal"
+msgstr "Honlap"
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_website_visitor
@@ -427,8 +484,46 @@ msgid "You can't delete a Push Notification account."
 msgstr ""
 
 #. module: social_push_notifications
-#: model:ir.model.fields,help:social_push_notifications.field_social_post__use_visitor_timezone
+#: code:addons/social_push_notifications/models/social_account.py:0
+#, python-format
 msgid ""
-"e.g: If you post at 15:00, visitors will receive the post at 15:00 their "
-"time."
+"You have to either install \"firebase_admin>=2.17.0\" or "
+"\"google_auth>=1.18.0\" to be able to send push notifications."
+msgstr ""
+
+#. module: social_push_notifications
+#. openerp-web
+#: code:addons/social_push_notifications/static/src/js/push_preview.js:0
+#, python-format
+msgid ""
+"Your browser notifications are blocked or you're not in an HTTPS "
+"environment."
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid "e.g. \"280765099157\""
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid "e.g. \"BIzbSyXhhsFHEgphW55CSg5cV7h7c_S-AuTMKc9\""
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid "e.g. \"CCSc77KP_LX8dTAogFakOoJ_VqNP15u0-43psDJe__a9B...\""
+msgstr ""
+
+#. module: social_push_notifications
+#: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
+msgid "e.g. \"my-project-id\""
+msgstr ""
+
+#. module: social_push_notifications
+#: model:ir.model.fields,help:social_push_notifications.field_social_post__use_visitor_timezone
+#: model:ir.model.fields,help:social_push_notifications.field_social_post_template__use_visitor_timezone
+msgid ""
+"e.g: If you post at 15:00 your time, all visitors will receive the post at "
+"15:00 their time."
 msgstr ""

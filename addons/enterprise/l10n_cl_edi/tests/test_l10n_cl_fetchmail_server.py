@@ -8,10 +8,11 @@ from lxml import etree
 from odoo import fields
 from odoo.tests import Form, tagged
 from odoo.tools import misc
-from .common import TestL10nClEdiCommon
+from .common import TestL10nClEdiCommon, _check_with_xsd_patch
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
+@patch('odoo.tools.xml_utils._check_with_xsd', _check_with_xsd_patch)
 class TestFetchmailServer(TestL10nClEdiCommon):
     @classmethod
     def setUpClass(cls, chart_template_ref='l10n_cl.cl_chart_template'):
@@ -21,6 +22,11 @@ class TestFetchmailServer(TestL10nClEdiCommon):
             ('company_id', '=', cls.company_data['company'].id)
         ], limit=1)
         purchase_journal.write({'l10n_latam_use_documents': True})
+        sale_journal = cls.env['account.journal'].search([
+            ('type', '=', 'sale'),
+            ('company_id', '=', cls.company_data['company'].id)
+        ], limit=1)
+        sale_journal.write({'l10n_cl_point_of_sale_type': 'online', 'l10n_latam_use_documents': True})
 
     def test_get_dte_recipient_company_incoming_supplier_document(self):
         incoming_supplier_dte = misc.file_open(os.path.join(
@@ -320,7 +326,9 @@ class TestFetchmailServer(TestL10nClEdiCommon):
 
         self.assertEqual(move.l10n_cl_dte_acceptation_status, 'received')
 
-    def test_process_incoming_customer_claim_accepted(self):
+    @patch('odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util.L10nClEdiUtilMixin._get_cl_current_strftime')
+    def test_process_incoming_customer_claim_accepted(self, get_cl_current_strftime):
+        get_cl_current_strftime.return_value = '2019-10-24T20:00:00'
         l10n_latam_document_type = self.env['l10n_latam.document.type'].search([
             ('code', '=', '33'),
             ('country_id.code', '=', 'CL')
@@ -329,16 +337,17 @@ class TestFetchmailServer(TestL10nClEdiCommon):
             invoice_form.partner_id = self.partner_sii
             invoice_form.l10n_latam_document_number = '0301'
             invoice_form.l10n_latam_document_type_id = l10n_latam_document_type
+            invoice_form.invoice_date = '2019-10-23'
             with invoice_form.invoice_line_ids.new() as invoice_line_form:
                 invoice_line_form.product_id = self.product_a
                 invoice_line_form.quantity = 1
                 invoice_line_form.price_unit = 518732.7731
 
         move = invoice_form.save()
-        move.l10n_cl_dte_status = 'accepted'
         # Since the new creation of the account move name, the name must by force to avoid errors
         move.name = 'FAC 000301'
         move._post(soft=False)
+        move.l10n_cl_dte_status = 'accepted'
 
         att_name = 'incoming_commercial_accept.xml'
         att_content = misc.file_open(os.path.join('l10n_cl_edi', 'tests', 'fetchmail_dtes', att_name)).read()
@@ -348,7 +357,9 @@ class TestFetchmailServer(TestL10nClEdiCommon):
 
         self.assertEqual(move.l10n_cl_dte_acceptation_status, 'accepted')
 
-    def test_process_incoming_customer_claim_rejected(self):
+    @patch('odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util.L10nClEdiUtilMixin._get_cl_current_strftime')
+    def test_process_incoming_customer_claim_rejected(self, get_cl_current_strftime):
+        get_cl_current_strftime.return_value = '2019-10-24T20:00:00'
         l10n_latam_document_type = self.env['l10n_latam.document.type'].search([
             ('code', '=', '34'),
             ('country_id.code', '=', 'CL')
@@ -357,17 +368,18 @@ class TestFetchmailServer(TestL10nClEdiCommon):
             invoice_form.partner_id = self.partner_sii
             invoice_form.l10n_latam_document_number = '254'
             invoice_form.l10n_latam_document_type_id = l10n_latam_document_type
-
+            invoice_form.invoice_date = '2019-10-23'
             with invoice_form.invoice_line_ids.new() as invoice_line_form:
                 invoice_line_form.product_id = self.product_a
                 invoice_line_form.quantity = 1
                 invoice_line_form.price_unit = 2398053.78
+                invoice_line_form.tax_ids.clear() # there shouldn't be any taxes applied for document type 34
 
         move = invoice_form.save()
-        move.l10n_cl_dte_status = 'accepted'
         # Since the new creation of the account move name, the name must by force to avoid errors
         move.name = 'FNA 000254'
         move._post(soft=False)
+        move.l10n_cl_dte_status = 'accepted'
 
         att_name = 'incoming_commercial_reject.xml'
         att_content = misc.file_open(os.path.join('l10n_cl_edi', 'tests', 'fetchmail_dtes', att_name)).read()

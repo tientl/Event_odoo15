@@ -4,17 +4,16 @@
 # 
 # Translators:
 # Tai, 2021
-# Phuc Tran Thanh <phuctran.odoo@gmail.com>, 2021
 # sao sang <saosangmo@yahoo.com>, 2021
-# Thang Duong Bao <nothingctrl@gmail.com>, 2021
 # Martin Trigaux, 2021
 # fanha99 <fanha99@hotmail.com>, 2021
-# thanhnguyen.icsc <thanhnguyen.icsc@gmail.com>, 2021
+# Nancy Momoland <thanhnguyen.icsc@gmail.com>, 2021
 # Duy BQ <duybq86@gmail.com>, 2021
 # Trinh Tran Thi Phuong <trinhttp@trobz.com>, 2021
 # Dung Nguyen Thi <dungnt@trobz.com>, 2021
 # Dao Nguyen <trucdao.uel@gmail.com>, 2021
 # Trần Hà <tranthuha13590@gmail.com>, 2021
+# Vo Thanh Thuy, 2022
 # 
 msgid ""
 msgstr ""
@@ -22,7 +21,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Trần Hà <tranthuha13590@gmail.com>, 2021\n"
+"Last-Translator: Vo Thanh Thuy, 2022\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,39 +32,39 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__open_ticket_count
 msgid "# Open Tickets"
-msgstr ""
+msgstr "# Vé mở"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_count
 msgid "# Ratings"
-msgstr ""
+msgstr "# Đánh giá"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_policy_count
 msgid "# SLA Policy"
-msgstr ""
+msgstr "# Chính sách SLA"
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_1
 msgid "2 days to start"
-msgstr ""
+msgstr "2 ngày để bắt đầu"
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_2
 msgid "7 days to finish"
-msgstr ""
+msgstr "7 ngày để hoàn thành"
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "<b class=\"tip_title\">Tip: Create tickets from incoming emails</b>"
-msgstr ""
+msgstr "<b class=\"tip_title\">Mẹo: Tạo vé từ email đến</b>"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "<b>Drag &amp; drop</b> the card to change the stage of your ticket."
-msgstr ""
+msgstr "<b>Kéo &amp; thả</b> thẻ để thay đổi giai đoạn của vé."
 
 #. module: helpdesk
 #. openerp-web
@@ -76,6 +75,9 @@ msgid ""
 "    Use <b>@ mentions</b> to ping a colleague \n"
 "    or <b># mentions</b> to contact a group of people."
 msgstr ""
+"<b>Tạo ghi chú</b> cho liên lạc nội bộ (bạn sẽ chỉ gửi thông báo cho những người bạn gắn thẻ). \n"
+"    Sử dụng <b>@ nhắc tên</b> để thông báo cho một đồng nghiệp \n"
+"    hoặc <b># nhắc tên</b> để liên lạc với một nhóm."
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.rating_ticket_request_email_template
@@ -138,6 +140,63 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object.rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object.rating_get_partner_id()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; margin:0;\">\n"
+"    <tbody>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\">\n"
+"                Xin chào <t t-out=\"partner.name or ''\">Brandon Freeman</t>,<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                Xin chào,<br/>\n"
+"            </t>\n"
+"            Xin bạn vui lòng dành chút thời gian đánh giá dịch vụ liên quan tới vé hỗ trợ \"<strong t-out=\"object.name or ''\">Chân bàn không cân bằng</strong>\"\n"
+"            <t t-if=\"object.rating_get_rated_partner_id().name\">\n"
+"                được phân công cho <strong t-out=\"object.rating_get_rated_partner_id().name or ''\">Mitchell Admin</strong>.<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                .<br/>\n"
+"            </t>\n"
+"        </td></tr>\n"
+"        <tr><td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"o_mail_notification\" style=\"width:100%; margin: 32px 0px 32px 0px;\">\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <strong>Hãy cho chúng tôi biết cảm nghĩ của bạn về dịch vụ của chúng tôi</strong><br/>\n"
+"                    <span style=\"text-color: #888888\">(bấm vào một trong các biểu tượng mặt người này)</span>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"                        <tr>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/5\">\n"
+"                                    <img alt=\"Satisfied\" src=\"/rating/static/src/img/rating_5.png\" title=\"Hài lòng\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/3\">\n"
+"                                    <img alt=\"Okay\" src=\"/rating/static/src/img/rating_3.png\" title=\"OK\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/1\">\n"
+"                                    <img alt=\"Dissatisfied\" src=\"/rating/static/src/img/rating_1.png\" title=\"Không hài lòng\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td></tr>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            Chúng tôi trân trọng phản hồi của bạn vì nhờ đó chúng tôi luôn có thể cải tiến dịch vụ.\n"
+"            <br/><span style=\"margin: 0px 0px 0px 0px; font-size: 12px; opacity: 0.5; color: #454748;\">Khảo sát khách hàng này được gửi đi vì vé hỗ trợ của bạn đã được chuyển sang giai đoạn <b t-out=\"object.stage_id.name or ''\">Đang thực hiện</b></span>\n"
+"        </td></tr>\n"
+"    </tbody>\n"
+"    </table>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.solved_ticket_request_email_template
@@ -153,6 +212,16 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    Thưa <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">quý khách hàng</t>,<br/><br/>\n"
+"    Tin nhắn tự động này nhằm mục đích thông báo rằng chúng tôi đã đóng vé hỗ trợ của quý khách (tham chiếu <t t-out=\"object.id or ''\">15</t>).\n"
+"    Chúng tôi hi vọng dịch vụ của chúng tôi đáp ứng được mong đợi của quý khách. \n"
+"    Nếu có câu hỏi hoặc phản hồi, hãy trả lời thư này hoặc mở lại vé của quý khách.<br/><br/>\n"
+"    Xin chân thành cảm ơn.<br/>\n"
+"    Trân trọng,<br/><br/>\n"
+"    <t t-out=\"object.team_id.name or 'Helpdesk'\">Đội hỗ trợ</t>.\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -177,12 +246,30 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    Kính gửi <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">quý khách hàng</t>,<br/><br/>\n"
+"    Yêu cầu của quý khách\n"
+"    <t t-if=\"object.get_portal_url()\">\n"
+"        <a t-attf-href=\"/my/ticket/{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or ''\"/>\n"
+"    </t>\n"
+"    đã được nhận và đang được kiểm tra bởi đội xử lý <t t-out=\"object.team_id.name or ''\">Chân bàn không cân bằng</t>.\n"
+"    Mã tham chiếu của quý khách là <t t-out=\"object.id or ''\">15</t>.<br/>\n"
+"\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\">Xem vé</a><br/>\n"
+"    </div>\n"
+"\n"
+"    Để thêm bình luận, hãy trả lời thư này.<br/><br/>\n"
+"\n"
+"    Trân trọng,<br/><br/>\n"
+"    <t t-out=\"object.team_id.name or 'Helpdesk'\">Đội hỗ trợ</t>.\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<em class=\"font-weight-normal text-muted\">Tickets in stage:</em>"
-msgstr ""
-"<em class=\"font-weight-normal text-muted\">Thẻ hỗ trợ theo giai đoạn:</em>"
+msgstr "<em class=\"font-weight-normal text-muted\">Vé ở giai đoạn:</em>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -192,7 +279,7 @@ msgstr "<em class=\"text-muted\"><small>Không có mô tả</small></em>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
-msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
+msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Quản lý\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -210,6 +297,9 @@ msgid ""
 "                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_percentage_satisfaction', '&lt;', 33), ('rating_percentage_satisfaction', '&gt;=', 65)]}\" title=\"Okay\"/>\n"
 "                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" attrs=\"{'invisible': [('rating_percentage_satisfaction', '&gt;', 32)]}\" title=\"Dissatisfied\"/>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" attrs=\"{'invisible': [('rating_percentage_satisfaction', '<', 66)]}\" title=\"Hài lòng\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_percentage_satisfaction', '&lt;', 33), ('rating_percentage_satisfaction', '&gt;=', 65)]}\" title=\"Ok\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_percentage_satisfaction', '<', 33), ('rating_percentage_satisfaction', '/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -218,6 +308,9 @@ msgid ""
 "Servers</i> feature in the <i>General Settings</i> and indicate an <i>alias "
 "domain</i>"
 msgstr ""
+"<i class=\"fa fa-lightbulb-o\" role=\"img\"/> Bật tính năng <i>Máy chủ email"
+" tùy chỉnh</i> trong <i>Cài đặt chung</i> và chỉ định một <i>tên miền bí "
+"danh</i>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -238,17 +331,17 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<small>#</small>"
-msgstr ""
+msgstr "<small>#</small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "<small><b>Close this ticket</b></small>"
-msgstr "<small><b>Đóng yêu cầu này</b></small>"
+msgstr "<small><b>Đóng vé này</b></small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "<span class=\"o_field_widget o_readonly_modifier\">Working Hours</span>"
-msgstr ""
+msgstr "<span class=\"o_field_widget o_readonly_modifier\">Giờ làm việc</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -257,16 +350,19 @@ msgid ""
 "                                    Satisfaction\n"
 "                                </span>"
 msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                                    Hài lòng\n"
+"                                </span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_partner_form_inherit_helpdesk
 msgid "<span class=\"o_stat_text\"> Tickets</span>"
-msgstr "<span class=\"o_stat_text\"> Tickets</span>"
+msgstr "<span class=\"o_stat_text\"> Vé</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<span>days of inactivity</span>"
-msgstr ""
+msgstr "<span>ngày không hoạt động</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -296,12 +392,12 @@ msgstr "<strong class=\"col-lg-2\">Báo cáo về</strong>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>After</strong>"
-msgstr ""
+msgstr "<strong>Sau</strong>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>Alias </strong>"
-msgstr ""
+msgstr "<strong>Bí danh </strong>"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_defaults
@@ -309,13 +405,13 @@ msgid ""
 "A Python dictionary that will be evaluated to provide default values when "
 "creating new records for this alias."
 msgstr ""
-"Một thư viện Python mà sẽ được biểu thị/đánh giá để cung cấp các giá trị mặc"
-" định khi tạo mới các bản ghi cho bí danh này."
+"Một từ điển Python sẽ được đánh giá để cung cấp giá trị mặc định khi tạo hồ "
+"sơ mới cho bí danh này. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__description
 msgid "About Team"
-msgstr "Giới thiệu team"
+msgstr "Giới thiệu đội"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_warning
@@ -326,7 +422,7 @@ msgstr "Cảnh báo truy cập"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_needaction
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_needaction
 msgid "Action Needed"
-msgstr "Hành động cần thiết"
+msgstr "Cần tác vụ"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__active
@@ -335,17 +431,17 @@ msgstr "Hành động cần thiết"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__active
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__active
 msgid "Active"
-msgstr "Có hiệu lực"
+msgstr "Đang hoạt động"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_ids
 msgid "Activities"
-msgstr "Các hoạt động"
+msgstr "Hoạt động"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Hành động ngoại lệ"
+msgstr "Thể hiện hoạt động ngoại lệ "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_state
@@ -371,12 +467,14 @@ msgid ""
 "Adapt your <b>pipeline</b> to your workflow by adding <b>stages</b> <i>(e.g."
 " Awaiting Customer Feedback, etc.).</i>"
 msgstr ""
+"Điều chỉnh <b>chu trình</b> công việc bằng cách thêm các <b>giai đoạn</b> "
+"<i>(e.g. Đang chờ phản hồi khách hàng, v.v.).</i>"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
 msgid ""
 "Adapt your pipeline to your workflow and track the progress of your tickets."
-msgstr ""
+msgstr "Điều chỉnh chu trình công việc và theo dõi tiến độ của vé."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -384,6 +482,7 @@ msgid ""
 "Add a description to help your coworkers understand the meaning and purpose "
 "of the stage."
 msgstr ""
+"Thêm mô tả để giúp đồng nghiệp hiểu ý nghĩa và mục đích của giai đoạn. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -393,22 +492,22 @@ msgstr "Thêm mô tả..."
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Add team members..."
-msgstr ""
+msgstr "Thêm thành viên..."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Add users..."
-msgstr ""
+msgstr "Thêm người dùng"
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_manager
 msgid "Administrator"
-msgstr "Người quản trị"
+msgstr "Quản trị viên"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "After-Sales"
-msgstr "Sau khi bán hàng"
+msgstr "Hậu mãi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_id
@@ -418,22 +517,22 @@ msgstr "Bí danh"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_contact
 msgid "Alias Contact Security"
-msgstr "An ninh về bí danh liên hệ"
+msgstr "Bảo mật bí danh liên hệ "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_name
 msgid "Alias Name"
-msgstr "Tên Alias"
+msgstr "Tên bí danh"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_domain
 msgid "Alias domain"
-msgstr "Tên miền Alias"
+msgstr "Tên miền bí danh"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__display_alias_name
 msgid "Alias email"
-msgstr ""
+msgstr "Email bí danh"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_model_id
@@ -453,22 +552,22 @@ msgstr "Tất cả"
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_menu_all
 msgid "All Tickets"
-msgstr "Tất cả thẻ hỗ trợ"
+msgstr "Tất cả vé"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__privacy__user
 msgid "All Users"
-msgstr ""
+msgstr "Tất cả người dùng"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Allow customers to close their tickets"
-msgstr "Cho phép khách hàng đóng thẻ yêu cầu"
+msgstr "Cho phép khách hàng đóng vé của họ"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Allow your customers to close their own tickets"
-msgstr ""
+msgstr "Cho phép khách hàng đóng vé của chính họ"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -498,14 +597,14 @@ msgstr "Phân công cho tôi"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Assign new tickets to the right persons"
-msgstr ""
+msgstr "Phân công vé mới tới đúng người"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Assign the ticket to a <b>member of your team</b>."
-msgstr ""
+msgstr "Phân công vé tới <b>một thành viên của đội</b>."
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
@@ -523,7 +622,7 @@ msgstr "Đã phân công"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__user_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__user_id
 msgid "Assigned To"
-msgstr "Phân công cho"
+msgstr "Được phân công cho"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__user_id
@@ -545,7 +644,7 @@ msgstr "Người nhận"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Assignment &amp; Visibility"
-msgstr ""
+msgstr "Phân công &amp; Hiển thị"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__assign_method
@@ -558,12 +657,14 @@ msgid ""
 "At each stage, employees can block tickets or mark them as ready for the next step.\n"
 "                                You can customize the meaning of each state."
 msgstr ""
+"Ở mỗi giai đoạn, nhân viên có thể chặn vé hoặc đánh dấu là sẵn sàng cho bước kế tiếp.\n"
+"                                Bạn có thể tùy chỉnh ý nghĩa của mỗi trạng thái."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_attachment_count
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_attachment_count
 msgid "Attachment Count"
-msgstr "Số lượng tập tin đính kèm"
+msgstr "Số tệp đính kèm"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__template_id
@@ -571,7 +672,8 @@ msgid ""
 "Automated email sent to the ticket's customer when the ticket reaches this "
 "stage."
 msgstr ""
-"Email tự động được gửi cho khách hàng khi ticket đi đến giai đoạn này."
+"Email tự động được gửi tới khách hàng yêu cầu hỗ trợ khi vé đạt tới giai "
+"đoạn này."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_ticket
@@ -586,10 +688,10 @@ msgid ""
 "\tRandomly: randomly but everyone gets the same amount\n"
 "\tBalanced: to the person with the least amount of open tickets"
 msgstr ""
-"Phương pháp chỉ định tự động cho thẻ mới:\n"
-"\tBằng tay: Thủ công\n"
-"\tNgẫu nhiên: ngẫu nhiên nhưng mọi người đều nhận được số lượng như nhau\n"
-"\tCân bằng: cho người có ít thẻ mở nhất"
+"Phương pháp phân công tự động cho vé mới:\n"
+"\tThủ công: thực hiện thủ công\n"
+"\tNgẫu nhiên: ngẫu nhiên nhưng tất cả có lượng công việc như nhau\n"
+"\tCân đối: cho người có số vé mở ít nhất"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
@@ -608,14 +710,14 @@ msgstr "Mức độ hài lòng TB 7 ngày"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Avg 7 days"
-msgstr "Trung bình 7 ngày"
+msgstr "TB 7 ngày"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Avg Open Hours"
-msgstr "Giờ mở cửa trung bình"
+msgstr "Giờ mở TB"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
@@ -625,12 +727,12 @@ msgstr "Tệ"
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__balanced
 msgid "Balanced"
-msgstr "Cân bằng"
+msgstr "Cân đối"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Bill the time spent on your tickets to your customers"
-msgstr ""
+msgstr "Xuất hóa đơn thời gian xử lý vé hỗ trợ cho khách hàng"
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -660,7 +762,7 @@ msgstr ""
 #: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_9
 #, python-format
 msgid "Blocked"
-msgstr "Đã khóa"
+msgstr "Đã chặn"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_crm
@@ -680,7 +782,8 @@ msgstr "Đã hủy"
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_team_not_portal_show_rating_if_not_use_rating
 msgid "Cannot show ratings in portal if not using them"
-msgstr "Không thể hiển thị xếp hạng trong cổng nếu không sử dụng chúng"
+msgstr ""
+"Không thể hiển thị xếp hạng trong cổng nếu không sử dụng tính năng xếp hạng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -711,17 +814,17 @@ msgstr "Ngày đóng"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Close inactive tickets automatically"
-msgstr ""
+msgstr "Tự động đóng vé không hoạt động"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close the ticket"
-msgstr "Đóng yêu cầu"
+msgstr "Đóng vé"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close ticket"
-msgstr "Đóng yêu cầu"
+msgstr "Đóng vé"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -738,13 +841,13 @@ msgstr "Đã đóng"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #, python-format
 msgid "Closed Tickets"
-msgstr "Thẻ yêu cầu hỗ trợ đã đóng"
+msgstr "Vé đã đóng"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_7days_analysis
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_close_analysis
 msgid "Closed Tickets Analysis"
-msgstr "Phân tích thẻ hỗ trợ đã đóng"
+msgstr "Phân tích thẻ đã đóng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__closed_by_partner
@@ -755,7 +858,7 @@ msgstr "Đóng bởi đối tác"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "Closing Date"
-msgstr "Ngày đóng cửa"
+msgstr "Ngày đóng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__is_close
@@ -765,7 +868,7 @@ msgstr "Giai đoạn kết thúc"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Closure by Customers"
-msgstr ""
+msgstr "Đóng bởi khách"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag__color
@@ -792,12 +895,12 @@ msgstr "Bình luận"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__commercial_partner_id
 msgid "Commercial Entity"
-msgstr "Đối tác thương mại"
+msgstr "Thực thể thương mại"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_forum
 msgid "Community Forum"
-msgstr ""
+msgstr "Diễn đàn cộng đồng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__company_id
@@ -838,12 +941,12 @@ msgstr "Liên hệ"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_fsm
 msgid "Convert tickets into Field Service tasks"
-msgstr "Convert tickets into Field Service tasks"
+msgstr "Chuyển đổi vé thành nhiệm vụ Thực địa"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_coupons
 msgid "Coupons"
-msgstr "Phiếu khuyến mãi"
+msgstr "Phiếu giảm giá"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -858,12 +961,12 @@ msgstr "Tạo mẫu mới"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Create tickets by sending an email to an alias"
-msgstr ""
+msgstr "Tạo vé bằng cách gửi email tới bí danh"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_analysis_action
 msgid "Create tickets to get statistics on the performance of your teams."
-msgstr ""
+msgstr "Tạo vé để lấy thống kê về hiệu suất của đội"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -875,7 +978,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team_performance
 #: model_terms:ir.actions.act_window,help:helpdesk.rating_rating_action_helpdesk
 msgid "Create tickets to get statistics."
-msgstr "Tạo thẻ yêu cầu để lấy số liệu thống kê."
+msgstr "Tạo vé để lấy thống kê."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__create_date
@@ -920,7 +1023,7 @@ msgstr "Tiêu chí"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Current stage of this ticket"
-msgstr "Giai đoạn hiện tại của ticket này"
+msgstr "Giai đoạn hiện tại của vé này"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_bounced_content
@@ -959,12 +1062,12 @@ msgstr "Tên khách"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_phone
 msgid "Customer Phone"
-msgstr ""
+msgstr "SĐT khách hàng"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__access_url
 msgid "Customer Portal URL"
-msgstr "Đường link cổng thông tin khách hàng"
+msgstr "URL cổng thông tin khách hàng"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.rating_rating_action_helpdesk
@@ -1003,13 +1106,12 @@ msgid ""
 "Day to reach the stage of the SLA, without taking the working calendar into "
 "account"
 msgstr ""
-"Day to reach the stage of the SLA, without taking the working calendar into "
-"account"
+"Ngày để đạt đến giai đoạn SLA, mà không tính đến ngày làm việc theo lịch"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_exceeded_days
 msgid "Days to Reach SLA"
-msgstr ""
+msgstr "Ngày để đạt SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__deadline
@@ -1036,22 +1138,22 @@ msgstr "Mô tả"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Description for customer portal"
-msgstr "Miêu tả cho cổng thông tin khách hàng"
+msgstr "Mô tả cổng thông tin khách hàng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "Description of the policy..."
-msgstr "Miêu tả của chính tả..."
+msgstr "Mô tả chính sách..."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Description of the ticket..."
-msgstr "Mô tả về thẻ hỗ trợ..."
+msgstr "Mô tả vé..."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_digest_digest
 msgid "Digest"
-msgstr "Tiêu"
+msgstr "Tóm tắt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -1076,18 +1178,17 @@ msgstr "Tên hiển thị"
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
-"Không có quyền truy cập, bỏ qua dữ liệu này cho email thông báo của người "
-"dùng"
+"Không có quyền truy cập, bỏ qua dữ liệu này cho email tóm tắt của người dùng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Documentation"
-msgstr "Tài liệu"
+msgstr "Tài liệu hướng dẫn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__domain_user_ids
 msgid "Domain User"
-msgstr "Domain User"
+msgstr "Người dùng miền"
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_done
@@ -1097,7 +1198,7 @@ msgstr "Hoàn thành"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Dropdown menu"
-msgstr "Trình đơn thả xuống"
+msgstr "Menu thả xuống"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1112,7 +1213,7 @@ msgstr "Email"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_alias
 msgid "Email Alias"
-msgstr "Bí danh Email"
+msgstr "Bí danh email"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__template_id
@@ -1139,13 +1240,13 @@ msgstr "Email gửi tới"
 msgid ""
 "Emails sent to a Helpdesk Team alias generate tickets in your pipeline."
 msgstr ""
-"Các email được gửi đến alias của Nhóm trợ giúp sẽ tạo ra các thẻ trong luồng"
-" xử lý của bạn."
+"Email được gửi tới một bí danh của đội hỗ trợ sẽ tạo vé trong chu trình của "
+"bạn."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_slides
 msgid "Enable eLearning"
-msgstr "Cho phép học trực tuyến"
+msgstr "Bật eLearning"
 
 #. module: helpdesk
 #. openerp-web
@@ -1155,16 +1256,18 @@ msgid ""
 "Enter the <b>subject</b> of your ticket <br/><i>(e.g. Problem with my "
 "installation, Wrong order, etc.).</i>"
 msgstr ""
+"Nhập <b>tiêu đề</b> của vé <br/><i> (VD: Trục trặc khi lắp đặt, đơn hàng "
+"sai, v.v).</i>"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__exceeded_days
 msgid "Excedeed Working Days"
-msgstr "Ngày làm việc bắt buộc"
+msgstr "Vượt quá ngày làm việc"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__exclude_stage_ids
 msgid "Excluding Stages"
-msgstr ""
+msgstr "Không gồm giai đoạn"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__failed
@@ -1181,28 +1284,28 @@ msgstr "Chính sách SLA thất bại"
 #. module: helpdesk
 #: model:ir.filters,name:helpdesk.helpdesk_sla_report_analysis_filter_stage_failed
 msgid "Failed SLA Stage per Month"
-msgstr "Failed SLA Stage per Month"
+msgstr "Giai đoạn SLA thất bại mỗi tháng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_fsm
 msgid "Field Service"
-msgstr "Lĩnh vực dịch vụ"
+msgstr "Thực địa"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "First Assignment Date"
-msgstr "Ngày giao đầu tiên"
+msgstr "Ngày phân công đầu tiên"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__assign_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__assign_date
 msgid "First assignment date"
-msgstr "Ngày giao đầu tiên"
+msgstr "Ngày phân công đầu tiên"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__fold
 msgid "Folded in Kanban"
-msgstr "Đóng trong Kanban"
+msgstr "Thu gọn trong kanban"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -1210,8 +1313,7 @@ msgid ""
 "Follow this team to automatically track the events associated to tickets of "
 "this team."
 msgstr ""
-"Theo dõi nhóm này để tự động theo dõi các sự kiện liên quan đến ticket của "
-"nhóm này."
+"Theo dõi đội này để tự động theo dõi sự kiện liên quan tới vé của đội này."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1224,7 +1326,7 @@ msgstr "Đã theo dõi"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "Followed Teams"
-msgstr ""
+msgstr "Đội được theo dõi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_follower_ids
@@ -1241,7 +1343,7 @@ msgstr "Người theo dõi (Đối tác)"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Font biểu tượng ví dụ: fa-tasks"
+msgstr "Biểu tượng Font awesome v.d: fa-tasks"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -1256,23 +1358,23 @@ msgstr "Liên lạc với khách truy cập trang web của bạn"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Get tickets through an online form"
-msgstr ""
+msgstr "Nhận vé qua biểu mẫu trực tuyến"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Grant discounts or free products"
-msgstr ""
+msgstr "Cấp chiết khấu hoặc sản phẩm miễn phí"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__done
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket_report_analysis__kanban_state__done
 msgid "Green"
-msgstr "Xanh lá"
+msgstr "Xanh"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__legend_done
 msgid "Green Kanban Label"
-msgstr "Kanban nhãn màu xanh lá"
+msgstr "Nhãn kanban xanh"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__normal
@@ -1283,7 +1385,7 @@ msgstr "Màu xám"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__legend_normal
 msgid "Grey Kanban Label"
-msgstr "Kanban nhãn màu xám"
+msgstr "Nhãn kanban xám"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1299,12 +1401,12 @@ msgstr "Nhóm theo"
 #. module: helpdesk
 #: model:mail.activity.type,name:helpdesk.mail_act_helpdesk_handle
 msgid "Handle Ticket"
-msgstr "Xử lý thẻ"
+msgstr "Xử lý vé"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
 msgid "Happy"
-msgstr "Chúc mừng"
+msgstr "Hài lòng"
 
 #. module: helpdesk
 #. openerp-web
@@ -1321,18 +1423,18 @@ msgstr "Mặt vui vẻ"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_external_mail_server
 msgid "Has External Mail Server"
-msgstr "Has External Mail Server"
+msgstr "Có máy chủ thư bên ngoài"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_message
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Có tin nhắn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_reached_late
 msgid "Has SLA reached late"
-msgstr "Has SLA reached late"
+msgstr "Có SLA đạt được muộn"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.menu_helpdesk_root
@@ -1343,12 +1445,12 @@ msgstr "Hỗ trợ"
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_team_dashboard_action_main
 msgid "Helpdesk Overview"
-msgstr "Tổng quan hỗ trợ sau bán hàng"
+msgstr "Tổng quan hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla
 msgid "Helpdesk SLA Policies"
-msgstr "Cam kết chất lượng dịch vụ hỗ trợ khách"
+msgstr "Chính sách SLA hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_stage
@@ -1358,7 +1460,7 @@ msgstr "Giai đoạn hỗ trợ"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag
 msgid "Helpdesk Tags"
-msgstr "Từ khóa hỗ trợ"
+msgstr "Thẻ hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_team
@@ -1370,14 +1472,14 @@ msgstr "Từ khóa hỗ trợ"
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_search_inherit_helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_tree_inherit_helpdesk
 msgid "Helpdesk Team"
-msgstr "Nhóm hỗ trợ"
+msgstr "Đội hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_team_action
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__team_ids
 #: model:ir.ui.menu,name:helpdesk.helpdesk_team_menu
 msgid "Helpdesk Teams"
-msgstr "Nhóm hỗ trợ"
+msgstr "Đội hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket
@@ -1388,20 +1490,20 @@ msgstr "Thẻ hỗ trợ"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket_type
 msgid "Helpdesk Ticket Type"
-msgstr "Loại thẻ hỗ trợ"
+msgstr "Loại vé hỗ trợ"
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.ir_cron_auto_close_ticket_ir_actions_server
 #: model:ir.cron,cron_name:helpdesk.ir_cron_auto_close_ticket
 #: model:ir.cron,name:helpdesk.ir_cron_auto_close_ticket
 msgid "Helpdesk Ticket: Automatically close the tickets"
-msgstr ""
+msgstr "Vé hỗ trợ: Tự động đóng vé"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Helpdesk Tickets"
-msgstr "Thẻ hỗ trợ"
+msgstr "Vé hỗ trợ"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1416,7 +1518,7 @@ msgstr "Ưu tiên cao"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "High Priority ("
-msgstr "Độ ưu tiên cao ("
+msgstr "Ưu tiên cao ("
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__2
@@ -1424,22 +1526,22 @@ msgstr "Độ ưu tiên cao ("
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__priority__2
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket_report_analysis__priority__2
 msgid "High priority"
-msgstr "Độ ưu tiên cao"
+msgstr "Ưu tiên cao"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_open_hours
 msgid "Hours Open"
-msgstr ""
+msgstr "Số giờ mở"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_assignation_hours
 msgid "Hours to Assign"
-msgstr ""
+msgstr "Số giờ để phân công"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_close_hours
 msgid "Hours to Close"
-msgstr ""
+msgstr "Số giờ để đóng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__id
@@ -1460,8 +1562,7 @@ msgid ""
 "ID of the parent record holding the alias (example: project holding the task"
 " creation alias)"
 msgstr ""
-"ID của bản ghi cha mà chứa bí danh (ví dụ: dự án chứa bí danh để tạo nhiệm "
-"vụ)"
+"ID của hồ sơ gốc chứa bí danh (ví dụ: dự án chứa bí danh để tạo nhiệm vụ)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_exception_icon
@@ -1479,7 +1580,7 @@ msgstr "Biểu tượng để chỉ ra một hoạt động ngoại lệ."
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_needaction
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_unread
 msgid "If checked, new messages require your attention."
-msgstr "Nếu chọn, các tin nhắn mới yêu cầu sự có mặt của bạn."
+msgstr "Nếu chọn, các tin nhắn mới yêu cầu sự chú ý của bạn. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_has_error
@@ -1487,7 +1588,7 @@ msgstr "Nếu chọn, các tin nhắn mới yêu cầu sự có mặt của bạ
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_has_error
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Nếu đánh dấu thì một số thông điệp có lỗi."
+msgstr "Nếu đánh dấu, một số tin nhắn bị lỗi khi gửi. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__closed_by_partner
@@ -1495,8 +1596,8 @@ msgid ""
 "If checked, this means the ticket was closed through the customer portal by "
 "the customer."
 msgstr ""
-"Nếu được chọn, điều này có nghĩa là thẻ đã được khách hàng đóng qua cổng "
-"thông tin khách hàng."
+"Nếu đánh dấu, điều này nghĩa là khách hàng đã đóng vé qua cổng thông tin "
+"khách hàng."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_bounced_content
@@ -1504,8 +1605,8 @@ msgid ""
 "If set, this content will automatically be sent out to unauthorized users "
 "instead of the default message."
 msgstr ""
-"Nếu được cài, nội dung này sẽ tự động được gửi đến người dùng chưa xác thực "
-"thay vì thông báo mặc định."
+"Nếu được đặt, nội dung này sẽ tự động được gửi đến người dùng chưa được cấp "
+"quyền thay vì tin nhắn mặc định."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__time
@@ -1517,7 +1618,7 @@ msgstr "Trong"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "In #{kanban_getcolorname(record.color.raw_value)}"
-msgstr "Trong #{kanban_getcolorname(record.color.raw_value)}"
+msgstr "Có màu #{kanban_getcolorname(record.color.raw_value)}"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
@@ -1525,9 +1626,9 @@ msgid ""
 "In Channel: You can create a new ticket by typing /helpdesk [ticket title]. "
 "You can search ticket by typing /helpdesk_search [Keyword1],[Keyword2],."
 msgstr ""
-"Trong Kênh: Bạn có thể tạo một vé mới bằng cách nhập /helpdesk [tiêu đề "
-"ticket]. Bạn có thể tìm kiếm ticket bằng cách nhập /helpdesk_search "
-"[Keyword1], [Keyword2],."
+"Trong kênh: Bạn có thể tạo một vé mới bằng cách gõ /helpdesk [tiêu đề vé]. "
+"Bạn có thể tìm kiếm vé bằng cách gõ /helpdesk_search [Từ khóa 1], [Từ khóa "
+"2],."
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -1558,17 +1659,17 @@ msgstr ""
 #: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_9
 #, python-format
 msgid "In Progress"
-msgstr "Đang thực hiện"
+msgstr "Đang tiến hành"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__from_stage_ids
 msgid "In Stages"
-msgstr ""
+msgstr "Ở giai đoạn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Inactive Period(days)"
-msgstr ""
+msgstr "Giai đoạn không hoạt động (ngày)"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__from_stage_ids
@@ -1576,17 +1677,19 @@ msgid ""
 "Inactive tickets in these stages will be automatically closed. Leave empty "
 "to take into account all the stages from the team."
 msgstr ""
+"Vé không hoạt động trong các giai đoạn này sẽ tự động đóng. Để trống để tính"
+" đến tất cả các giai đoạn của đội."
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__privacy__invite
 msgid "Invited Users"
-msgstr ""
+msgstr "Người dùng được mời"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_is_follower
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_is_follower
 msgid "Is Follower"
-msgstr "Trở thành người theo dõi"
+msgstr "Là người theo dõi"
 
 #. module: helpdesk
 #: model:helpdesk.ticket.type,name:helpdesk.type_incident
@@ -1596,48 +1699,48 @@ msgstr "Vấn đề"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Issue credits notes"
-msgstr ""
+msgstr "Phát hành ghi chú tín dụng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_blocked
 msgid "Kanban Blocked Explanation"
-msgstr "Giải thích về việc khóa ở Kanban"
+msgstr "Giải thích kanban bị chặn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_normal
 msgid "Kanban Ongoing Explanation"
-msgstr "Kanban đang thực hiện giải thích"
+msgstr "Giải thích kanban đang diễn ra"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__kanban_state
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__kanban_state
 msgid "Kanban State"
-msgstr "Giai đoạn Kanban"
+msgstr "Trạng thái kanban"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_done
 msgid "Kanban Valid Explanation"
-msgstr "Giải thích hợp lệ của Kanban"
+msgstr "Giải thích kanban hợp lệ"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed_value
 msgid "Kpi Helpdesk Tickets Closed Value"
-msgstr "Giá trị KPI hỗ trợ của các thẻ đã đóng"
+msgstr "Giá trị KPI vé hỗ trợ đã đóng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "Last 3 months"
-msgstr "3 tháng gần đây"
+msgstr "3 tháng qua"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "Last 30 days"
-msgstr "30 ngày gần đây"
+msgstr "30 ngày qua"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "Last 7 days"
-msgstr "7 ngày gần đây"
+msgstr "7 ngày qua"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla____last_update
@@ -1706,12 +1809,12 @@ msgstr "Phản hồi mới nhất"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Latest Rating: Dissatisfied"
-msgstr ""
+msgstr "Đánh giá mới nhất: Không hài lòng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Latest Rating: Okay"
-msgstr ""
+msgstr "Đánh giá mới nhất: OK"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1721,14 +1824,14 @@ msgstr "Đánh giá mới nhất: Hài lòng"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Let your customers answer each other's questions on a forum"
-msgstr ""
+msgstr "Cho phép khách hàng trả lời câu hỏi của nhau trên diễn đàn"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's create your first <b>ticket</b>."
-msgstr ""
+msgstr "Hãy tạo <b>vé</b> đầu tiên của bạn."
 
 #. module: helpdesk
 #. openerp-web
@@ -1738,23 +1841,25 @@ msgid ""
 "Let's go back to the <b>kanban view</b> to have an overview of your next "
 "tickets."
 msgstr ""
+"Hãy quay lại <b>dạng xem kanban</b> để có cái nhìn tổng quan về vé tiếp "
+"theo."
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's view your <b>team's tickets</b>."
-msgstr ""
+msgstr "Hãy xem <b>vé của đội</b>."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__email_cc
 msgid "List of cc from incoming emails."
-msgstr "Danh sách cc từ email nhận vào."
+msgstr "Danh sách cc từ email đến. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
 msgid "Live Chat"
-msgstr "Chat Trực tuyến"
+msgstr "Live Chat"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1762,7 +1867,7 @@ msgstr "Chat Trực tuyến"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Low Priority"
-msgstr ""
+msgstr "Ưu tiên thấp"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__1
@@ -1770,7 +1875,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__priority__1
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket_report_analysis__priority__1
 msgid "Low priority"
-msgstr "Độ ưu tiên thấp"
+msgstr "Ưu tiên thấp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_main_attachment_id
@@ -1783,17 +1888,17 @@ msgstr "Tệp đính kèm chính"
 msgid ""
 "Make sure tickets are handled in a timely manner by using SLA Policies.<br>"
 msgstr ""
-"Đảm bảo rằng thẻ được xử lý kịp thời bằng cách sử dụng Chính sách SLA.<br>"
+"Đảm bảo rằng vé được xử lý kịp thời bằng cách sử dụng Chính sách SLA.<br>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Make sure tickets are handled on time"
-msgstr ""
+msgstr "Bảo đảm xử lý vé đúng thời hạn"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "Make sure tickets are handled on time by using SLA Policies.<br>"
-msgstr ""
+msgstr "Bảo đảm xử lý vé đúng thời hạn bằng cách sử dụng chính sách SLA.<br>"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__manual
@@ -1803,7 +1908,7 @@ msgstr "Thủ công"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__medium_id
 msgid "Medium"
-msgstr "Kênh trung gian"
+msgstr "Phương tiện"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1811,13 +1916,13 @@ msgstr "Kênh trung gian"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Medium Priority"
-msgstr ""
+msgstr "Ưu tiên trung bình"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_has_error
 msgid "Message Delivery error"
-msgstr "Thông báo gửi đi gặp lỗi"
+msgstr "Gửi tin nhắn bị lỗi"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -1828,7 +1933,7 @@ msgstr "Lịch sử tin nhắn và liên lạc"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_ids
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_ids
 msgid "Messages"
-msgstr "Thông báo"
+msgstr "Tin nhắn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__priority
@@ -1841,7 +1946,7 @@ msgstr "Độ ưu tiên tối thiểu"
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__stage_id
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_status__sla_stage_id
 msgid "Minimum stage a ticket needs to reach in order to satisfy this SLA."
-msgstr "Giai đoạn tối thiểu mà một thẻ cần phải đạt được để đáp ứng SLA này."
+msgstr "Giai đoạn tối thiểu mà một vé cần phải đạt được để đáp ứng SLA này."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_ir_module_module
@@ -1851,54 +1956,54 @@ msgstr "Mô đun"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__to_stage_id
 msgid "Move to Stage"
-msgstr ""
+msgstr "Chuyển tới giai đoạn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Hạn chót hoạt động"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Failed Tickets"
-msgstr "Thẻ thất bại của tôi"
+msgstr "Vé thất bại của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Failed Tickets"
-msgstr "Thẻ thất bại ưu tiên cao của tôi"
+msgstr "Vé thất bại ưu tiên cao của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Tickets"
-msgstr "Thẻ ưu tiên cao của tôi"
+msgstr "Vé ưu tiên cao của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Tickets Analysis"
-msgstr "Phân tích thẻ ưu tiên cao của tôi"
+msgstr "Phân tích vé ưu tiên cao của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Open Tickets"
-msgstr "Các thẻ tôi đang xử lý"
+msgstr "Các vé đang mở của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Open Tickets Analysis"
-msgstr "Phân tích thẻ tôi đang xử lý"
+msgstr "Phân tích vé đang mở của tôi"
 
 #. module: helpdesk
 #. openerp-web
@@ -1911,12 +2016,12 @@ msgstr "Hiệu suất của tôi"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "My Teams"
-msgstr ""
+msgstr "Đội của tôi"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "My Ticket"
-msgstr "Thẻ của tôi"
+msgstr "Vé của tôi"
 
 #. module: helpdesk
 #. openerp-web
@@ -1928,28 +2033,28 @@ msgstr "Thẻ của tôi"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 #, python-format
 msgid "My Tickets"
-msgstr "Thẻ của tôi"
+msgstr "Vé của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Failed Tickets"
-msgstr "Thẻ khẩn cấp thất bại của tôi"
+msgstr "Vé khẩn cấp thất bại của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Tickets"
-msgstr "Thẻ khẩn cấp của tôi"
+msgstr "Vé khẩn cấp của tôi"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Tickets Analysis"
-msgstr "Phân tích thẻ khẩn cấp của tôi"
+msgstr "Phân tích vé khẩn cấp của tôi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__name
@@ -1984,17 +2089,17 @@ msgstr "Mới nhất"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Sự kiện lịch hoạt động kế tiếp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Hạn chót cho hành động kế tiếp"
+msgstr "Hạn chót hoạt động kế tiếp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_summary
 msgid "Next Activity Summary"
-msgstr "Tóm tắt hoạt động tiếp theo"
+msgstr "Tóm tắt hoạt động kế tiếp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_type_id
@@ -2005,7 +2110,7 @@ msgstr "Kiểu hoạt động kế tiếp"
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "No SLA policies found. Let's create one!"
-msgstr "Không tìm thấy chính sách SLA. Hãy tạo một cái!"
+msgstr "Không tìm thấy chính sách SLA. Hãy tạo một chính sách!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -2031,12 +2136,12 @@ msgstr "Chưa có đánh giá"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
 msgid "No stages found. Let's create one!"
-msgstr "Không tìm thấy giai đoạn nào. Hãy tạo một cái!"
+msgstr "Không tìm thấy giai đoạn nào. Hãy tạo một giai đoạn!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "No tags found. Let's create one!"
-msgstr "Không tìm thấy thẻ. Hãy tạo một cái!"
+msgstr "Không tìm thấy thẻ. Hãy tạo một thẻ!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_action
@@ -2047,7 +2152,7 @@ msgstr "Không tìm thấy đội nào"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
 msgid "No tickets found"
-msgstr "Không tìm thấy thẻ"
+msgstr "Không tìm thấy vé"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -2055,24 +2160,24 @@ msgstr "Không tìm thấy thẻ"
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_unassigned
 msgid "No tickets found. Let's create one!"
-msgstr "Không tìm thấy thẻ. Hãy tạo một cái!"
+msgstr "Không tìm thấy vé. Hãy tạo một vé!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "No types found. Let's create one!"
-msgstr "Không tìm thấy loại nào. Hãy tạo một cái!"
+msgstr "Không tìm thấy loại nào. Hãy tạo một loại!"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "None"
-msgstr "Không dùng"
+msgstr "Không"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_needaction_counter
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Số lượng hành động"
+msgstr "Số tác vụ"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error_counter
@@ -2084,30 +2189,30 @@ msgstr "Số lỗi"
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_needaction_counter
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr "Số thông báo cần xử lý"
+msgstr "Số tin nhắn cần xử lý"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_has_error_counter
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Số lượng tin gửi đi bị lỗi"
+msgstr "Số tin nhắn gửi đi bị lỗi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_count
 msgid "Number of other tickets from the same partner"
-msgstr ""
+msgstr "Số lượng vé khác của cùng một đối tác"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_unread_counter
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_unread_counter
 msgid "Number of unread messages"
-msgstr "Số tin chưa đọc"
+msgstr "Số tin nhắn chưa đọc"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__ongoing
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_status__status__ongoing
 msgid "Ongoing"
-msgstr "Đang tiến hành"
+msgstr "Đang diễn ra"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__ticket_type_id
@@ -2115,8 +2220,8 @@ msgid ""
 "Only apply the SLA to a specific ticket type. If left empty it will apply to"
 " all types."
 msgstr ""
-"Chỉ áp dụng SLA cho một loại ticket cụ thể. Nếu để trống nó sẽ áp dụng cho "
-"tất cả các loại."
+"Chỉ áp dụng SLA cho một loại vé cụ thể. Nếu để trống, sẽ áp dụng cho tất cả "
+"các loại."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__tag_ids
@@ -2124,8 +2229,8 @@ msgid ""
 "Only apply the SLA to tickets with specific tags. If left empty it will "
 "apply to all tags."
 msgstr ""
-"Only apply the SLA to tickets with specific tags. If left empty it will "
-"apply to all tags."
+"Chỉ áp dụng SLA cho vé có gắn thẻ nhất định. Nếu để trống, sẽ áp dụng cho "
+"tất cả thẻ."
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2139,7 +2244,7 @@ msgstr "Mở"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "Open Tickets"
-msgstr "Thẻ mở"
+msgstr "Vé mở"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_open_hours
@@ -2154,9 +2259,9 @@ msgid ""
 "attached, even if they did not reply to it. If set, this will disable the "
 "creation of new records completely."
 msgstr ""
-"ID tuỳ chọn của một chủ đề/bản ghi (thread) mà tất cả các thông điệp gửi đến"
-" sẽ được gắn/đính vào, thậm chí khi không có người trả lời. Nếu được thiết "
-"lập, điều này sẽ vô hiệu hoàn toàn việc tạo mới bản ghi."
+"ID tùy chọn của một luồng (hồ sơ) tập hợp tất cả tin nhắn nhận được, thậm "
+"chí nếu đó là tin nhắn không có phản hồi. Nếu đặt, việc này sẽ tắt hoàn toàn"
+" tạo hồ sơ mới. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
@@ -2166,7 +2271,7 @@ msgstr "Sự hài lòng của khách hàng"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 msgid "Our Ratings"
-msgstr "Xếp hạng của tôi"
+msgstr "Đánh giá của chúng tôi"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__legend_blocked
@@ -2175,8 +2280,8 @@ msgid ""
 "Override the default value displayed for the blocked state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
-"Ghi đè giá trị mặc định được hiển thị cho trạng thái phong toả trên menu lựa"
-" chọn (selection) ở kanban, khi một nhiệm vụ hoặc phát sinh ở giai đoạn đó."
+"Ghi đè giá trị mặc định được hiển thị cho trạng thái bị chặn cho lựa chọn "
+"kanban, khi nhiệm vụ hoặc sự cố ở giai đoạn đó."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__legend_done
@@ -2185,9 +2290,8 @@ msgid ""
 "Override the default value displayed for the done state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
-"Ghi đè giá trị mặc định được hiển thị cho trạng thái hoàn thành trên menu "
-"lựa chọn (selection) ở kanban, khi một nhiệm vụ hoặc phát sinh ở giai đoạn "
-"đó."
+"Ghi đè giá trị mặc định được hiển thị cho trạng thái hoàn thành cho lựa chọn"
+" kanban khi nhiệm vụ hoặc sự cố ở giai đoạn đó."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__legend_normal
@@ -2196,9 +2300,8 @@ msgid ""
 "Override the default value displayed for the normal state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
-"Ghi đè giá trị mặc định được hiển thị cho trạng thái bình thường trên menu "
-"lựa chọn (selection) ở kanban, khi một nhiệm vụ hoặc phát sinh ở giai đoạn "
-"đó."
+"Ghi đè giá trị mặc định được hiển thị cho trạng thái bình thường cho lựa "
+"chọn kanban, khi nhiệm vụ hoặc sự cố ở giai đoạn đó."
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_menu_team_dashboard
@@ -2208,17 +2311,17 @@ msgstr "Tổng quan"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_user_id
 msgid "Owner"
-msgstr "Người phụ trách"
+msgstr "Người sở hữu"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_parent_model_id
 msgid "Parent Model"
-msgstr "Mô hình cha"
+msgstr "Mô hình gốc"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_parent_thread_id
 msgid "Parent Record Thread ID"
-msgstr "Parent Record Thread ID"
+msgstr "ID luồng hồ sơ gốc"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_parent_model_id
@@ -2227,19 +2330,19 @@ msgid ""
 " necessarily the model given by alias_model_id (example: project "
 "(parent_model) and task (model))"
 msgstr ""
-"Parent model giữ bí danh. Model giữ tham chiếu bí danh không nhất thiết là "
-"model được đưa ra bởi alias_model_id (ví dụ: project (parent_model) và task "
-"(model))"
+"Mô hình gốc chứa bí danh này. Mô hình chứa tham chiếu bí danh không nhất "
+"thiết phải là mô hình đưa ra bởi alias_model_id (Ví dụ: dự án (parent_model)"
+" và nhiệm vụ (model))"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_ids
 msgid "Partner Tickets"
-msgstr ""
+msgstr "Vé đối tác"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
 msgid "Percentage of happy ratings"
-msgstr "Phần trăm mức độ hài lòng"
+msgstr "Phần trăm đánh giá hài lòng"
 
 #. module: helpdesk
 #. openerp-web
@@ -2247,7 +2350,7 @@ msgstr "Phần trăm mức độ hài lòng"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Percentage of tickets that were closed without failing any SLAs."
-msgstr ""
+msgstr "Phần trăm vé được đóng mà không vi phạm bất kỳ SLA nào."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2264,7 +2367,7 @@ msgstr "Phân tích hiệu suất"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Period of inactivity after which tickets will be automatically closed."
-msgstr ""
+msgstr "Giai đoạn không hoạt động mà sau đó vé sẽ tự động đóng."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -2274,7 +2377,7 @@ msgstr "Điện thoại"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Plan onsite interventions"
-msgstr ""
+msgstr "Kế hoạch can thiệp tại chỗ"
 
 #. module: helpdesk
 #. openerp-web
@@ -2292,9 +2395,9 @@ msgid ""
 "- followers: only followers of the related document or members of following channels\n"
 msgstr ""
 "Chính sách cho phép đăng tin nhắn lên tài liệu sử dụng cổng email.\n"
-"- mọi người: Mọi người có thể đăng\n"
-"- đối tác: Chỉ các đối tác đã xác thực\n"
-"- người theo dõi: Chỉ những người ở trong danh sách dõi theo của tài liệu hoặc thành viên của các kênh sau đây\n"
+"- mọi người: mọi người có thể đăng\n"
+"- đối tác: chỉ các đối tác đã xác thực\n"
+"- người theo dõi: chỉ những người theo dõi của tài liệu liên quan hoặc thành viên của kênh đang theo dõi\n"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_url
@@ -2313,12 +2416,12 @@ msgstr "Độ ưu tiên"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__portal_show_rating
 msgid "Public Rating"
-msgstr ""
+msgstr "Đánh giá công cộng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Publish this team's ratings on your website"
-msgstr "Công khai xếp hạng của nhóm này trên trang web của bạn"
+msgstr "Đăng điểm đánh giá của đội này trên website"
 
 #. module: helpdesk
 #: model:helpdesk.ticket.type,name:helpdesk.type_question
@@ -2335,7 +2438,7 @@ msgstr "Ngẫu nhiên"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Rated Tickets"
-msgstr ""
+msgstr "Vé được đánh giá"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_ids
@@ -2345,7 +2448,7 @@ msgstr "Đánh giá"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__rating_last_value
 msgid "Rating (/5)"
-msgstr ""
+msgstr "Đánh giá (/5)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_avg
@@ -2360,7 +2463,7 @@ msgstr "Đánh giá phản hồi cuối cùng"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_last_image
 msgid "Rating Last Image"
-msgstr "Ảnh đánh giá mới nhất"
+msgstr "Đánh giá ảnh cuối cùng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_last_value
@@ -2375,19 +2478,19 @@ msgstr "Đánh giá độ hài lòng"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_count
 msgid "Rating count"
-msgstr "Đánh giá"
+msgstr "Số đánh giá"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_ids
 msgid "Ratings"
-msgstr "Xếp hạng"
+msgstr "Đánh giá"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_tree
 msgid "Reach Stage"
-msgstr "Giai đoạn tiếp cận"
+msgstr "Đạt tới giai đoạn"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__reached
@@ -2438,7 +2541,7 @@ msgstr "Lí do đánh giá"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_force_thread_id
 msgid "Record Thread ID"
-msgstr "Record Thread ID"
+msgstr "ID luồng hồ sơ"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__blocked
@@ -2449,7 +2552,7 @@ msgstr "Đỏ"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__legend_blocked
 msgid "Red Kanban Label"
-msgstr "Nhãn đỏ Kanban"
+msgstr "Nhãn kanban đỏ"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
@@ -2460,7 +2563,7 @@ msgstr "Tham chiếu"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Reference"
-msgstr "Mã phiếu"
+msgstr "Tham chiếu"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_refund_posted
@@ -2468,7 +2571,7 @@ msgstr "Mã phiếu"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_refund_posted
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_refund_posted
 msgid "Refund Posted"
-msgstr ""
+msgstr "Đã hoàn tiền"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_credit_notes
@@ -2478,7 +2581,7 @@ msgstr "Hoàn tiền"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Reinvoice the time spent on ticket through tasks."
-msgstr "Tính phí dựa trên thời gian hỗ trợ thông qua các công việc."
+msgstr "Xuất lại hóa đơn thời gian hỗ trợ thông qua nhiệm vụ."
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_repair
@@ -2491,7 +2594,7 @@ msgstr "Sửa chữa"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_repair_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_repair_done
 msgid "Repair Done"
-msgstr ""
+msgstr "Sửa chữa hoàn tất"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_repairs
@@ -2519,12 +2622,12 @@ msgstr "Khôi phục"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_return_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_return_done
 msgid "Return Done"
-msgstr ""
+msgstr "Hoàn trả hoàn tất"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Return faulty products"
-msgstr ""
+msgstr "Hoàn trả sản phẩm lỗi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_returns
@@ -2543,7 +2646,7 @@ msgstr "SLA"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "SLA Deadline"
-msgstr "SLA Deadline"
+msgstr "Thời hạn SLA"
 
 #. module: helpdesk
 #. openerp-web
@@ -2555,12 +2658,12 @@ msgstr "SLA Deadline"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 #, python-format
 msgid "SLA Failed"
-msgstr "SLA Thất bại"
+msgstr "SLA thất bại"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "SLA Issues"
-msgstr "SLA Issues"
+msgstr "Sự cố SLA"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_sla_action
@@ -2588,18 +2691,18 @@ msgstr "Mô tả chính sách SLA"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_reached_datetime
 msgid "SLA Reached Date"
-msgstr "SLA Reached Date"
+msgstr "Ngày đạt SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_stage_id
 msgid "SLA Stage"
-msgstr "SLA Stage"
+msgstr "Giai đoạn SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_status_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA Status"
-msgstr "SLA Status"
+msgstr "Trạng thái SLA"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_sla_report_analysis_action
@@ -2609,12 +2712,12 @@ msgstr "SLA Status"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_pivot
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA Status Analysis"
-msgstr "SLA Status Analysis"
+msgstr "Phân tích trạng thái SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_failed
 msgid "SLA Status Failed"
-msgstr "SLA Status Failed"
+msgstr "Trạng thái SLA thất bại"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -2622,7 +2725,7 @@ msgstr "SLA Status Failed"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "SLA Success"
-msgstr "SLA Success"
+msgstr "SLA thành công"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -2630,13 +2733,13 @@ msgstr "SLA Success"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "SLA in Progress"
-msgstr "SLA in Progress"
+msgstr "SLA đang thực hiện"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_tree
 msgid "SLAs"
-msgstr "SLAs"
+msgstr "SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_sms_error
@@ -2660,7 +2763,7 @@ msgstr "Nhân viên kinh doanh"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Sample"
-msgstr "Hàng mẫu"
+msgstr "Mẫu"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2677,7 +2780,7 @@ msgstr "Lưu trang này và tải lại để kích hoạt tính năng."
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Save this ticket and the modifications you've made to it."
-msgstr "Lưu vé này và các sửa đổi bạn đã thực hiện cho nó."
+msgstr "Lưu vé này và các sửa đổi bạn đã thực hiện đối với vé."
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2688,7 +2791,7 @@ msgstr "Tìm <span class=\"nolabel\"> (trong Nội dung)</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 msgid "Search SLA Policies"
-msgstr "Tìm chính sách SLA"
+msgstr "Tìm kiếm chính sách SLA"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2712,18 +2815,18 @@ msgstr "Tìm trong tin nhắn"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Reference"
-msgstr "Tìm kiếm trong phần tham chiếu"
+msgstr "Tìm kiếm trong tham chiếu"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Stage"
-msgstr "Tìm kiếm trong Giai đoạn"
+msgstr "Tìm kiếm trong giai đoạn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_token
 msgid "Security Token"
-msgstr "Mã bảo mật"
+msgstr "Mã token bảo mật"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -2735,7 +2838,7 @@ msgstr "Xem độ hài lòng của khách hàng"
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Select the <b>customer</b> of your ticket."
-msgstr ""
+msgstr "Chọn <b>khách hàng</b> của vé."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2745,14 +2848,14 @@ msgstr "Tự phục vụ"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Send broken products for repair"
-msgstr ""
+msgstr "Gửi sản phẩm hỏng đi sửa chữa"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__sequence
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sequence
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_type__sequence
 msgid "Sequence"
-msgstr "Quy tắc mã"
+msgstr "Trình tự"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_service
@@ -2762,12 +2865,12 @@ msgstr "Dịch vụ"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Set an Email Template on Stages"
-msgstr ""
+msgstr "Đặt mẫu email cho các giai đoạn"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Settings"
-msgstr "Thiết lập"
+msgstr "Cài đặt "
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.model_helpdesk_ticket_action_share
@@ -2782,12 +2885,12 @@ msgstr "Chia sẻ bài thuyết trình, video và tổ chức thành các khóa 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_use_sla
 msgid "Show SLA Policies"
-msgstr "Xem chính sách SLA"
+msgstr "Hiển thị chính sách SLA"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Show all records which has next action date is before today"
-msgstr "Hiển thị tất cả dữ liệu có ngày xử lý tiếp theo trước ngày hôm nay"
+msgstr "Hiển thị tất cả hồ sơ có ngày tác vụ kế tiếp trước hôm nay"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__sla_id
@@ -2810,8 +2913,8 @@ msgid ""
 "Specific team that uses this stage. Other teams will not be able to see or "
 "use this stage."
 msgstr ""
-"Các đội/kênh cụ thể mà sử dụng giai đoạn này. Các đội/kênh khác sẽ không thể"
-" thấy hoặc sử dụng giai đoạn này."
+"Đội cụ thể sử dụng giai đoạn này. Các đội khác sẽ không thể nhìn thấy hoặc "
+"sử dụng giai đoạn này. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2835,7 +2938,7 @@ msgstr "Giai đoạn được thay đổi"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Stage Description and States Meaning"
-msgstr ""
+msgstr "Mô tả giai đoạn và ý nghĩa trạng thái"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -2848,6 +2951,8 @@ msgid ""
 "Stage to which inactive tickets will be automatically moved once the period "
 "of inactivity is reached."
 msgstr ""
+"Trạng thái mà vé không hoạt động sẽ được tự động chuyển khi đã đạt tới thời "
+"lượng không hoạt động."
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_stage_action
@@ -2862,8 +2967,8 @@ msgid ""
 "Stages the team will use. This team's tickets will only be able to be in "
 "these stages."
 msgstr ""
-"Các giai đoạn nhóm sẽ sử dụng. Thẻ của nhóm này sẽ chỉ có thể ở trong các "
-"giai đoạn này."
+"Các giai đoạn đội sẽ sử dụng. Vé của đội này sẽ chỉ có thể ở những giai đoạn"
+" này."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status
@@ -2876,7 +2981,7 @@ msgstr "Trạng thái"
 #. module: helpdesk
 #: model:ir.filters,name:helpdesk.helpdesk_sla_report_analysis_filter_status_per_deadline
 msgid "Status Per Deadline"
-msgstr "Trạng thái mỗi thời hạn"
+msgstr "Trạng thái mỗi hạn chót"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_state
@@ -2887,8 +2992,8 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "Trạng thái dựa trên hoạt động\n"
-"Quá hạn: Ngày đến hạn phải được chuyển\n"
-"Hôm nay: Hôm nay là ngày phải thực hiện\n"
+"Quá hạn: Đã quá hạn chót\n"
+"Hôm nay: Hôm nay là ngày hoạt động\n"
 "Kế hoạch: Các hoạt động trong tương lai."
 
 #. module: helpdesk
@@ -2925,7 +3030,7 @@ msgstr "Chính sách SLA thành công"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tag_view_tree
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_type_view_tree
 msgid "Tag"
-msgstr "Tag"
+msgstr "Thẻ"
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_tag_name_uniq
@@ -2939,12 +3044,12 @@ msgstr "Tên thẻ đã tồn tại!"
 #: model:ir.ui.menu,name:helpdesk.helpdesk_tag_menu
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tag_view_form
 msgid "Tags"
-msgstr "Từ khóa"
+msgstr "Thẻ"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "Tags are perfect for organizing your tickets."
-msgstr ""
+msgstr "Thẻ là các tuyệt vời để sắp xếp các vé hỗ trợ."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -2954,7 +3059,7 @@ msgstr "Mục tiêu"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_rating
 msgid "Target Customer Rating"
-msgstr "Mục tiêu về đánh giá của khách hàng"
+msgstr "Mục tiêu đánh giá của khách hàng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__stage_id
@@ -2965,22 +3070,22 @@ msgstr "Giai đoạn mục tiêu"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_success
 msgid "Target Success Rate"
-msgstr "Mục tiêu cho tỉ lệ thành công"
+msgstr "Mục tiêu tỉ lệ thành công"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_closed
 msgid "Target Tickets to Close"
-msgstr "Mục tiêu thẻ phải đóng"
+msgstr "Mục tiêu vé cần đóng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Task in progress. Click to block or set as done."
-msgstr "Nhiệm vụ đang thực hiện. Ấn để khóa hoặc chọn như đã hoàn tất."
+msgstr "Nhiệm vụ đang thực hiện. Bấm để chặn hoặc đặt là xong. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Task is blocked. Click to unblock or set as done."
-msgstr "Nhiệm vụ đã khóa. Ấn để mở nó hoặc chọn như đã hoàn tất."
+msgstr "Nhiệm vụ đã chặn. Bấm để bỏ chặn hoặc đặt là xong. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__team_id
@@ -2997,7 +3102,7 @@ msgstr "Đội"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__member_ids
 msgid "Team Members"
-msgstr "Các thành viên trong đội"
+msgstr "Thành viên đội"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__visibility_member_ids
@@ -3026,8 +3131,8 @@ msgid ""
 "Teams regroup tickets for people sharing the same expertise or from the same"
 " area."
 msgstr ""
-"Các đội dùng để tập hợp các thẻ cho những người có cùng kiến thức chuyên môn"
-" hoặc từ cùng khu vực."
+"Các đội nhóm lại vé cho những người có cùng chuyên môn hoặc từ cùng một khu "
+"vực."
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.email_template_action_helpdesk
@@ -3040,13 +3145,13 @@ msgid ""
 "The amount of time the ticket spends in this stage will not be taken into "
 "account when evaluating the status of the SLA Policy."
 msgstr ""
-"Khoảng thời gian mà thẻ sử dụng trong giai đoạn này sẽ không được tính đến "
-"khi đánh giá trạng thái của Chính sách SLA."
+"Khoảng thời gian mà vé sử dụng trong giai đoạn này sẽ không được tính đến khi đánh giá trạng thái của chính sách SLA.\n"
+" "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__sla_deadline
 msgid "The closest deadline of all SLA applied on this ticket"
-msgstr "Thời hạn gần nhất của tất cả SLA được áp dụng trên vé này"
+msgstr "Hạn chót gần nhất của tất cả SLA áp dụng cho vé này"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_model_id
@@ -3055,9 +3160,9 @@ msgid ""
 " email that does not reply to an existing record will cause the creation of "
 "a new record of this model (e.g. a Project Task)"
 msgstr ""
-"Model (kiểu tài liệu Odoo) mà bí danh này ứng với nó. Bất kỳ tin nhắn email "
-"nào không phản hồi lại một bản ghi có sẵn sẽ tự động tạo một bản ghi mới cho"
-" model này (vd: tạo mới một nhiệm vụ dự án nếu model là project.task)"
+"Mô hình (Kiểu tài liệu Odoo) mà bí danh này tương tác. Bất kỳ email nào nhận"
+" được mà không trả lời một hồ sơ cụ thể sẽ tạo ra hồ sơ mới trong mô hình "
+"này. (ví dụ: Nhiệm vụ dự án) "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_name
@@ -3065,8 +3170,8 @@ msgid ""
 "The name of the email alias, e.g. 'jobs' if you want to catch emails for "
 "<jobs@example.odoo.com>"
 msgstr ""
-"Tên của bí danh email, vd 'vieclam' nếu bạn muốn bắt tin nhắn gửi đến địa "
-"chỉ email <vieclam@vidu.odoo.com>"
+"Tên của bí danh email, ví dụ: 'jobs' nếu bạn muốn nhận email gửi đến địa chỉ"
+" <jobs@example.odoo.com>"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_user_id
@@ -3076,31 +3181,31 @@ msgid ""
 "the sender (From) address, or will use the Administrator account if no "
 "system user is found for that address."
 msgstr ""
-"Chủ sở hữu của các bản ghi được tạo khi nhận email trên bí danh này. Nếu "
-"trường nàykhông được đặt, hệ thống sẽ cố gắng tìm đúng chủ sở hữu dựa "
-"trênđịa chỉ người gửi (Từ) hoặc sẽ sử dụng tài khoản quản trị viên nếu không"
-" cóngười dùng hệ thống nào được tìm thấy cho địa chỉ đó."
+"Người sở hữu của các hồ sơ được tạo khi nhận email gửi tới bí danh này. Nếu "
+"trường này không được đặt, hệ thống sẽ cố gắng tìm đúng người sở hữu dựa vào"
+" địa chỉ người gửi (Từ), hoặc sẽ dùng tài khoản Quản trị viên nếu không tìm "
+"thấy người dùng hệ thống nào cho địa chỉ đó. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "The team does not allow ticket closing through portal"
-msgstr "Đội không cho phép đóng thẻ qua cổng"
+msgstr "Đội không cho phép đóng vé qua cổng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "There are currently no Ticket for your account."
-msgstr "Hiện tại không có thẻ nào cho tài khoản của bạn."
+msgstr "Hiện tại không có vé nào cho tài khoản của bạn."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
 msgid "There are no ratings yet."
-msgstr "Không có xếp hạng nào."
+msgstr "Chưa có đánh giá nào."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
 msgid "This"
-msgstr "Đây"
+msgstr "Đây là"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__partner_ids
@@ -3108,17 +3213,20 @@ msgid ""
 "This SLA Policy will apply to any tickets from the selected customers. Leave"
 " empty to apply this SLA Policy to any ticket without distinction."
 msgstr ""
+"Chính sách SLA này sẽ áp dụng cho bất kỳ vé nào từ những khách hàng được "
+"chọn. Để trống để áp dụng chính sách SLA này cho bất kỳ vé nào mà không cần "
+"phân biệt."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__assign_hours
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__close_hours
 msgid "This duration is based on the working calendar of the team"
-msgstr "Thời lượng này dựa trên lịch làm việc của nhóm"
+msgstr "Thời lượng này dựa trên lịch làm việc của đội"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__open_hours
 msgid "This duration is not based on the working calendar of the team"
-msgstr "Thời lượng này không dựa trên lịch làm việc của nhóm"
+msgstr "Thời lượng này không dựa trên lịch làm việc của đội"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__campaign_id
@@ -3126,13 +3234,15 @@ msgid ""
 "This is a name that helps you keep track of your different campaign efforts,"
 " e.g. Fall_Drive, Christmas_Special"
 msgstr ""
-"Đây là cái tên giúp bạn kiểm soát giữa các chiến dịch marketing khác nhau: "
-"ví dụ Chiến dịch mùa thu, Sự kiện đặc biệt dịp Giáng sinh"
+"Đây là tên giúp bạn theo dõi các chiến dịch tiếp thị khác nhau: ví dụ "
+"Fall_Drive, Christmas_Special   "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__medium_id
 msgid "This is the method of delivery, e.g. Postcard, Email, or Banner Ad"
-msgstr "Đây là phương thức như Thẻ bưu điện, Email hoặc Banner quảng cáo"
+msgstr ""
+"Đây là phương thức truyền đạt, ví dụ như bưu thiệp, email hoặc banner quảng "
+"cáo"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__source_id
@@ -3146,7 +3256,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_helpdesk_timesheet
 msgid "This requires to have project module installed."
-msgstr ""
+msgstr "Yêu cầu phải cài đạt mô-đun dự án."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__fold
@@ -3154,13 +3264,13 @@ msgid ""
 "This stage is folded in the kanban view when there are no records in that "
 "stage to display."
 msgstr ""
-"Giai đoạn này sẽ hiện thị đóng ở giao diện Kanban khi không có bản ghi nào "
-"thuộc giai đoạn này để hiển thị."
+"Giai đoạn này được thu gọn trong dạng xem kanban khi không có hồ sơ trong "
+"giai đoạn này để hiển thị. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "This step is done. Click to block or set in progress."
-msgstr "Đây là bước hoàn tất. Bấm vào khóa hoặc chuyển trạng thái."
+msgstr "Bước này đã hoàn tất. Bấm để chặn hoặc đặt là đang tiến hành."
 
 #. module: helpdesk
 #. openerp-web
@@ -3181,7 +3291,7 @@ msgstr "Ba sao, điểm tối đa"
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_search_inherit_helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_tree_inherit_helpdesk
 msgid "Ticket"
-msgstr "Thẻ hỗ trợ"
+msgstr "Vé"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_dashboard
@@ -3189,101 +3299,101 @@ msgstr "Thẻ hỗ trợ"
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket_report_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_analysis
 msgid "Ticket Analysis"
-msgstr "Phân tích thẻ"
+msgstr "Phân tích vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
 msgid "Ticket Closed"
-msgstr "Thẻ đã đóng"
+msgstr "Vé đã đóng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__ticket_count
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "Số vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__create_date
 msgid "Ticket Create Date"
-msgstr "Ngày tạo thẻ"
+msgstr "Ngày tạo vé"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_new
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_new
 msgid "Ticket Created"
-msgstr "Thẻ đã tạo"
+msgstr "Vé đã tạo"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_deadline
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_deadline
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "Ticket Deadline"
-msgstr "Thời hạn thẻ"
+msgstr "Hạn chót vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_failed
 msgid "Ticket Failed"
-msgstr "Thẻ thất bại"
+msgstr "Vé đã thất bại"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Ticket ID"
-msgstr "ID Thẻ"
+msgstr "ID vé"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_rated
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_rated
 msgid "Ticket Rated"
-msgstr "Thẻ đã đánh giá"
+msgstr "Vé đã đánh giá"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla_status
 msgid "Ticket SLA Status"
-msgstr "Trạng thái SLA thẻ"
+msgstr "Trạng thái SLA vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_stage_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_stage_id
 msgid "Ticket Stage"
-msgstr "Trạng thái thẻ"
+msgstr "Giai đoạn vé"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_stage
 msgid "Ticket Stage Changed"
-msgstr "Trạng thái thẻ đã đổi"
+msgstr "Trạng thái vé đã đổi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_type_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_type_id
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "Ticket Type"
-msgstr "Loại thẻ"
+msgstr "Loại vé"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Ticket closed by the customer"
-msgstr "Thẻ đã đóng bởi khách hàng"
+msgstr "Vé đã đóng bởi khách hàng"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_ticket_new
 msgid "Ticket created"
-msgstr "Thẻ đã tạo"
+msgstr "Vé đã tạo"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.rating_ticket_request_email_template
 msgid "Ticket: Rating Request (requires rating enabled on team)"
-msgstr ""
+msgstr "Vé: Yêu cầu đánh giá (yêu cầu bật đánh giá cho đội)"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.new_ticket_request_email_template
 msgid "Ticket: Reception Acknowledgment"
-msgstr ""
+msgstr "Vé: Xác nhận đã nhận được vé"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.solved_ticket_request_email_template
 msgid "Ticket: Solved"
-msgstr ""
+msgstr "Vé: Đã giải quyết"
 
 #. module: helpdesk
 #. openerp-web
@@ -3311,7 +3421,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 #, python-format
 msgid "Tickets"
-msgstr "Thẻ"
+msgstr "Vé"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu
@@ -3319,33 +3429,33 @@ msgstr "Thẻ"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_cohort
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_analysis
 msgid "Tickets Analysis"
-msgstr ""
+msgstr "Phân tích vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed
 msgid "Tickets Closed"
-msgstr "Thẻ đã đóng"
+msgstr "Vé đã đóng"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Tickets Closed Avg 7 Days"
-msgstr "Thẻ đã đóng TB 7 ngày"
+msgstr "Vé đã đóng TB 7 ngày"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Tickets Closed Today"
-msgstr "Thẻ đã đóng hôm nay"
+msgstr "Vé đã đóng hôm nay"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis_closed
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Tickets Search"
-msgstr "Tìm thẻ"
+msgstr "Tìm vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__is_close
@@ -3353,18 +3463,18 @@ msgid ""
 "Tickets in this stage are considered as done. This is used notably when "
 "computing SLAs and KPIs on tickets."
 msgstr ""
-"Thẻ trong giai đoạn này được xem là xong. Được sử dụng khi tính toán SLA và "
-"KPI trên thẻ."
+"Vé trong giai đoạn này được coi là đã xong. Được sử dụng khi tính toán SLA "
+"và KPI cho vé."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__priority
 msgid "Tickets under this priority will not be taken into account."
-msgstr "Thẻ theo độ ưu tiên này sẽ không được tính đến."
+msgstr "Vé ở chế độ ưu tiên này sẽ không được tính đến."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Time Billing"
-msgstr ""
+msgstr "Thời gian xuất hóa đơn"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_close_hours
@@ -3381,17 +3491,17 @@ msgstr "Thời gian để phân công lần đầu (giờ)"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__time
 msgid "Time to reach given stage based on ticket creation date"
-msgstr ""
+msgstr "Thời gian để đạt được giai đoạn đã cho dựa trên ngày tạo vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_timesheet
 msgid "Timesheets"
-msgstr "Thời gian biểu"
+msgstr "Bảng chấm công"
 
 #. module: helpdesk
 #: model:digest.tip,name:helpdesk.digest_tip_helpdesk_0
 msgid "Tip: Create tickets from incoming emails"
-msgstr "Mẹo: Tạo thẻ từ email đến"
+msgstr "Mẹo: Tạo vé từ email đến"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -3402,6 +3512,8 @@ msgid ""
 "To get things done, use activities and statuses on tickets. <br>\n"
 "                Chat in real-time or by email to collaborate efficiently."
 msgstr ""
+"Để hoàn thành công việc, sử dụng hoạt động và trạng thái cho vé <br>\n"
+"                Chat trực tiếp hoặc qua email để hợp tác hiệu quả hơn."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
@@ -3409,6 +3521,8 @@ msgid ""
 "To get things done, use activities and statuses on tickets.<br>\n"
 "                Chat in real-time or by email to collaborate efficiently."
 msgstr ""
+"Để hoàn thành công việc, sử dụng hoạt động và trạng thái cho vé.<br>\n"
+"                Chat trực tiếp hoặc qua email để hợp tác hiệu quả hơn."
 
 #. module: helpdesk
 #. openerp-web
@@ -3432,17 +3546,17 @@ msgstr "Mức độ hài lòng hôm nay"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track &amp; Bill Time"
-msgstr ""
+msgstr "Theo dõi &amp; xuất hóa đơn thời gian"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track customer satisfaction on tickets"
-msgstr ""
+msgstr "Theo dõi độ hài lòng của khách hàng về vé"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track the time spent on tickets"
-msgstr ""
+msgstr "Theo dõi thời gian sử dụng cho vé"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_twitter
@@ -3474,18 +3588,18 @@ msgstr "Tên đã tồn tại !"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "Loại hoạt động ngoại lệ trên hồ sơ."
+msgstr "Kiểu  hoạt động ngoại lệ trên hồ sơ."
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_type_action
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_type_menu
 msgid "Types"
-msgstr "Types"
+msgstr "Kiểu"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "Types are perfect for categorizing your tickets."
-msgstr ""
+msgstr "Loại là cách hoàn hảo để phân loại vé."
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -3502,14 +3616,14 @@ msgstr "Chưa được giao"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis_closed
 msgid "Unassigned Tickets"
-msgstr "Các thẻ chưa phân công"
+msgstr "Vé chưa phân công"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_unread
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_unread
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Unread Messages"
-msgstr "Tin chưa đọc"
+msgstr "Tin nhắn chưa đọc"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_unread_counter
@@ -3520,7 +3634,7 @@ msgstr "Bộ đếm tin chưa đọc"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__upcoming_sla_fail_tickets
 msgid "Upcoming SLA Fail Tickets"
-msgstr "Các thẻ SLA thất bại tiếp theo"
+msgstr "Vé sắp thất bại SLA"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__3
@@ -3546,32 +3660,32 @@ msgstr "Khẩn cấp ("
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Use <b>activities</b> to organize your daily work."
-msgstr "Dùng <b>các công việc</b> để sắp xếp công việc hàng ngày của bạn."
+msgstr "Sử dụng <b>hoạt động</b> để sắp xếp công việc hằng ngày."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_coupons
 msgid "Use Coupons"
-msgstr "Dùng phiếu giám giá"
+msgstr "Dùng phiếu giảm giá"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_credit_notes
 msgid "Use Credit Notes"
-msgstr "Use Credit Notes"
+msgstr "Sử dụng ghi chú tín dụng"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_rating
 msgid "Use Customer Ratings"
-msgstr ""
+msgstr "Sử dụng khách hàng đánh giá"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_repairs
 msgid "Use Repairs"
-msgstr "Dùng sửa chữa"
+msgstr "Sử dụng sửa chữa"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_returns
 msgid "Use Returns"
-msgstr "Dùng trả hàng"
+msgstr "Sử dụng trả hàng"
 
 #. module: helpdesk
 #. openerp-web
@@ -3581,6 +3695,8 @@ msgid ""
 "Use the chatter to <b>send emails</b> and communicate efficiently with your customers. \n"
 "    Add new people to the followers' list to make them aware of the progress of this ticket."
 msgstr ""
+"Dùng cửa sổ chat để <b>gửi email</b> và giao tiếp hiệu quả với khách hàng.\n"
+"    Thêm người mới vào danh sách người theo dõi để họ biết được tiến trình của vé này."
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_user
@@ -3595,12 +3711,12 @@ msgstr "Người dùng"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__privacy
 msgid "Users Assign"
-msgstr ""
+msgstr "Phân công người dùng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Users to whom this team will be visible"
-msgstr ""
+msgstr "Những người sẽ nhìn thấy đội này"
 
 #. module: helpdesk
 #: model:helpdesk.team,name:helpdesk.helpdesk_team3
@@ -3615,13 +3731,13 @@ msgid ""
 "Want to <b>boost your customer satisfaction</b>?<br/><i>Click Helpdesk to "
 "start.</i>"
 msgstr ""
-"Muốn <b>gia tăng mức độ hài lòng của khách hàng</b>?<br/><i>Bấm vào Helpdesk"
-" để bắt đầu.</i>"
+"Muốn <b>gia tăng mức độ hài lòng của khách hàng</b>?<br/><i>Bấm vào Hỗ trợ "
+"để bắt đầu.</i>"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_website
 msgid "Website"
-msgstr "Trang web"
+msgstr "Website"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_form
@@ -3632,13 +3748,13 @@ msgstr "Biểu mẫu website"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__website_message_ids
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__website_message_ids
 msgid "Website Messages"
-msgstr "Thông báo Website"
+msgstr "Tin nhắn website"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__website_message_ids
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__website_message_ids
 msgid "Website communication history"
-msgstr "Lịch sử thông tin liên lạc website"
+msgstr "Lịch sử liên lạc website"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3647,9 +3763,9 @@ msgid ""
 "balanced assignation, tickets are assigned to the user with the least amount"
 " of open tickets."
 msgstr ""
-"Với sự phân công ngẫu nhiên, mọi người dùng đều nhận được số lượng ticket "
-"ngang nhau. Với sự phân công cân bằng, ticket được chỉ định cho người dùng "
-"với số lượng ticket đang mở ít nhất."
+"Với phân công ngẫu nhiên, mọi người dùng có cùng một số lượng vé như nhau. "
+"Với phân công cân đối, vé được phân công cho người dùng có số lượng vé mở ít"
+" nhất."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__resource_calendar_id
@@ -3662,13 +3778,13 @@ msgid ""
 "Working days exceeded for reached SLAs compared with deadline. Positive "
 "number means the SLA was eached after the deadline."
 msgstr ""
-"Đã vượt quá số ngày làm việc đối với SLA đạt được so với thời hạn. Số dương "
-"nghĩa là SLA đã bị xóa sau thời hạn."
+"Đã vượt quá số ngày làm việc để đạt được SLA so với hạn chót. Số dương nghĩa"
+" là đạt được SLA sau hạn chót."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__resource_calendar_id
 msgid "Working hours used to determine the deadline of SLA Policies."
-msgstr ""
+msgstr "Giờ làm việc được sử dụng để xác định hạn chót của chính sách SLA."
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_closed_not_zero
@@ -3681,17 +3797,17 @@ msgstr "Bạn không thể có mục tiêu âm"
 #: model_terms:ir.actions.act_window,help:helpdesk.action_upcoming_sla_fail_all_tickets
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_sla
 msgid "You completed all your tickets on time."
-msgstr "Bạn đã hoàn thành tất cả các thẻ của mình đúng hạn."
+msgstr "Bạn đã hoàn thành tất cả các vé của mình đúng hạn."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "e.g. Close urgent tickets within 36 hours"
-msgstr "vd. Đóng các ticket khẩn cấp trong vòng 36 giờ"
+msgstr "VD: Đóng các vé khẩn cấp trong vòng 36 giờ"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "e.g. Customer Care"
-msgstr ""
+msgstr "VD: Chăm sóc khách hàng"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3701,17 +3817,17 @@ msgstr "eLearning"
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "generate tickets in your pipeline."
-msgstr "tạo vé trong luồng xử lý của bạn."
+msgstr "tạo vé trong chu trình của bạn."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
 msgid "has been created from ticket:"
-msgstr ""
+msgstr "đã được tạo từ vé:"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "team search"
-msgstr "tìm team"
+msgstr "tìm đội"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.rating_ticket_request_email_template
@@ -3719,9 +3835,11 @@ msgid ""
 "{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
 "}}: Service Rating Request"
 msgstr ""
+"{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
+"}}: Yêu cầu đánh giá dịch vụ"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.new_ticket_request_email_template
 #: model:mail.template,subject:helpdesk.solved_ticket_request_email_template
 msgid "{{ object.display_name }}"
-msgstr ""
+msgstr "{{ object.display_name }}"

@@ -9,20 +9,17 @@
             <xpath expr="//form" position="inside">
                 <group>
                     <group>
-                        <field name="l10n_cl_is_text_correction" attrs="{'invisible': [['refund_method', '!=', 'refund']]}"/>
-                        <field name="l10n_cl_edi_reference_doc_code" readonly="1" force_save="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="l10n_cl_is_text_correction" attrs="{'invisible': ['|', ('refund_method', '!=', 'refund'),
+                                                                                            ('country_code', '!=', 'CL')]}"/>
+                        <field name="l10n_cl_edi_reference_doc_code" readonly="1" force_save="1"
+                               attrs="{'invisible': [('country_code', '!=', 'CL')]}"/>
                     </group>
                     <group attrs="{'invisible': [['l10n_cl_edi_reference_doc_code', '!=', '2']]}">
                         <field name="l10n_cl_original_text"/>
                         <field name="l10n_cl_corrected_text"/>
                     </group>
                 </group>
-            </xpath>
-             <xpath expr="//field[@name='l10n_latam_document_type_id']" position="attributes">
-                <attribute name="attrs">{'invisible': True}</attribute>
-            </xpath>
-            <xpath expr="//field[@name='reason']" position="attributes">
-                <attribute name="attrs">{'required': True}</attribute>
             </xpath>
         </field>
     </record>

@@ -508,7 +508,10 @@ const UserAgent = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
     _sendNotification(title, content) {
         if (
             window.Notification &&
-            window.Notification.permission === 'granted'
+            window.Notification.permission === 'granted' &&
+            // Only send notifications in master tab, so that the user doesn't
+            // get a notification for every open tab.
+            this.call('bus_service', 'isMasterTab')
         ) {
             return new window.Notification(title, {
                 body: content,
@@ -768,7 +771,6 @@ const UserAgent = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
             method: 'search_read',
             domain: [['user_ids', '!=', false]].concat(domain),
             fields: ['id', 'display_name'],
-            limit: 1,
         });
         if (!contacts.length) {
             contacts = await this._rpc({
@@ -776,7 +778,6 @@ const UserAgent = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
                 method: 'search_read',
                 domain: domain,
                 fields: ['id', 'display_name'],
-                limit: 1,
             });
         }
         /* Fallback if inviteSession.remoteIdentity.uri.type didn't give the correct country prefix
@@ -792,7 +793,6 @@ const UserAgent = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
                     ['sanitized_mobile', '=like', '%'+lastSixDigitsNumber],
                 ],
                 fields: ['id', 'display_name'],
-                limit: 1,
             });
         }
         const incomingCallParams = { number };
@@ -811,7 +811,7 @@ const UserAgent = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
         this._isOutgoing = false;
         this._updateCallState(CALL_STATE.RINGING_CALL);
         this._audioIncomingRingtone.currentTime = 0;
-        if (this.PLAY_MEDIA) {
+        if (this.PLAY_MEDIA && this.call('bus_service', 'isMasterTab')) {
             this._audioIncomingRingtone.play().catch(() => {});
         }
         this._notification = this._sendNotification('Odoo', content);

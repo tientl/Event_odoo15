@@ -2,16 +2,26 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields, api, _, _lt
+from .supplementary_unit_codes import SUPPLEMENTARY_UNITS_TO_COMMODITY_CODES as SUPP_TO_COMMODITY
 
 _merchandise_export_code = {
     'BE': '29',
-    'FR': '21'
+    'FR': '21',
+    'NL': '7',
 }
 
 _merchandise_import_code = {
     'BE': '19',
-    'FR': '11'
+    'FR': '11',
+    'NL': '6',
 }
+
+_unknown_country_code = {
+    'BE': 'QU',
+    'NL': 'QV',
+}
+
+_qn_unknown_individual_vat_country_codes = ('FI', 'SE', 'SK', 'DE', 'AT')
 
 class IntrastatReport(models.AbstractModel):
     _name = 'account.intrastat.report'
@@ -28,18 +38,30 @@ class IntrastatReport(models.AbstractModel):
     ]
     filter_intrastat_extended = True
 
+    def print_xlsx(self, options):
+        return super().print_xlsx({**options, 'country_format': 'code'})
+
     def _get_filter_journals(self):
         #only show sale/purchase journals
         return self.env['account.journal'].search([('company_id', 'in', self.env.companies.ids or [self.env.company.id]), ('type', 'in', ('sale', 'purchase'))], order="company_id, name")
 
+    def _show_region_code(self):
+        """Return a bool indicating if the region code is to be displayed for the country concerned in this localisation."""
+        # TO OVERRIDE
+        return True
+
     def _get_columns_name(self, options):
         columns = [
             {'name': ''},
-            {'name': _('Date')},
             {'name': _('System')},
             {'name': _('Country Code')},
             {'name': _('Transaction Code')},
-            {'name': _('Region Code')},
+        ]
+        if self._show_region_code():
+            columns += [
+                {'name': _('Region Code')},
+            ]
+        columns += [
             {'name': _('Commodity Code')},
             {'name': _('Type')},
             {'name': _('Origin Country')},
@@ -52,19 +74,24 @@ class IntrastatReport(models.AbstractModel):
             ]
         columns += [
             {'name': _('Weight')},
-            {'name': _('Quantity')},
+            {'name': _('Supplementary Units')},
             {'name': _('Value'), 'class': 'number'},
         ]
         return columns
 
     @api.model
     def _create_intrastat_report_line(self, options, vals):
-        caret_options = 'account.invoice.%s' % (vals['invoice_type'] in ('in_invoice', 'in_refund') and 'in' or 'out')
+        # This is so that full country names are displayed when in the UI, and the 2-digit iso codes are used when 'code' is in the options
+        country_column = 'country_code' if options.get('country_format') == 'code' else 'country_name'
+        origin_country_column = 'intrastat_product_origin_country' if options.get('country_format') == 'code' else 'intrastat_product_origin_country_name'
 
         columns = [{'name': c} for c in [
-            vals['invoice_date'], vals['system'], vals['country_code'], vals['trans_code'],
-            vals['region_code'], vals['commodity_code'], vals['type'],
-            vals['intrastat_product_origin_country'], vals['partner_vat'],
+            vals['system'], vals[country_column], vals['transaction_code'],
+        ]]
+        if self._show_region_code():
+            columns.append({'name': vals['region_code']})
+        columns += [{'name': c} for c in [
+            vals['commodity_code'], vals['type'], vals[origin_country_column], vals['partner_vat'],
         ]]
         if options.get('intrastat_extended'):
             columns += [{'name': c} for c in [
@@ -73,12 +100,12 @@ class IntrastatReport(models.AbstractModel):
             ]]
 
         columns += [{'name': c} for c in [
-            vals['weight'], vals['quantity'], self.format_value(vals['value'])
+            vals['weight'], vals['supplementary_units'], self.format_value(vals['value'])
         ]]
 
         return {
             'id': vals['id'],
-            'caret_options': caret_options,
+            'caret_options': 'account.move',
             'model': 'account.move.line',
             'name': vals['invoice_number'],
             'columns': columns,
@@ -117,13 +144,16 @@ class IntrastatReport(models.AbstractModel):
                 row_number() over () AS sequence,
                 CASE WHEN inv.move_type IN ('in_invoice', 'out_refund') THEN %(import_merchandise_code)s ELSE %(export_merchandise_code)s END AS system,
                 country.code AS country_code,
+                country.name AS country_name,
                 company_country.code AS comp_country_code,
-                CASE WHEN inv_line.intrastat_transaction_id IS NULL THEN '1' ELSE transaction.code END AS transaction_code,
+                transaction.code AS transaction_code,
                 company_region.code AS region_code,
                 code.code AS commodity_code,
                 inv_line.id AS id,
                 prodt.id AS template_id,
                 prodt.categ_id AS category_id,
+                inv_line.product_uom_id AS uom_id,
+                inv_line_uom.category_id AS uom_category_id,
                 inv.id AS invoice_id,
                 inv.currency_id AS invoice_currency_id,
                 inv.name AS invoice_number,
@@ -133,7 +163,6 @@ class IntrastatReport(models.AbstractModel):
                 comp_incoterm.code AS company_incoterm,
                 inv_transport.code AS invoice_transport,
                 comp_transport.code AS company_transport,
-                CASE WHEN inv_line.intrastat_transaction_id IS NULL THEN '1' ELSE transaction.code END AS trans_code,
                 CASE WHEN inv.move_type IN ('in_invoice', 'out_refund') THEN 'Arrival' ELSE 'Dispatch' END AS type,
                 ROUND(
                     prod.weight * inv_line.quantity / (
@@ -149,14 +178,13 @@ class IntrastatReport(models.AbstractModel):
                     CASE WHEN inv_line_uom.category_id IS NULL OR inv_line_uom.category_id = prod_uom.category_id
                     THEN inv_line_uom.factor ELSE 1 END
                 ) AS quantity,
+                inv_line.quantity AS line_quantity,
                 CASE WHEN inv_line.price_subtotal = 0 THEN inv_line.price_unit * inv_line.quantity ELSE inv_line.price_subtotal END AS value,
-                CASE WHEN inv_line.intrastat_product_origin_country_id IS NULL
-                     THEN \'QU\'  -- If you don't know the country of origin of the goods, as an exception you may replace the country code by "QU".
-                     ELSE product_country.code
-                END AS intrastat_product_origin_country,
-                CASE WHEN partner_country.id IS NULL
-                     THEN \'QV999999999999\'  -- For VAT numbers of companies outside the European Union, for example in the case of triangular trade, you always have to use the code "QV999999999999".
-                     ELSE partner.vat
+                COALESCE(product_country.code, %(unknown_country_code)s) AS intrastat_product_origin_country,
+                product_country.name AS intrastat_product_origin_country_name,
+                CASE WHEN partner.vat IS NOT NULL THEN partner.vat
+                     WHEN partner.vat IS NULL AND partner.is_company IS FALSE THEN %(unknown_individual_vat)s
+                     ELSE 'QV999999999999'
                 END AS partner_vat
                 '''
         from_ = '''
@@ -185,7 +213,7 @@ class IntrastatReport(models.AbstractModel):
         where = '''
                 inv.state = 'posted'
                 AND inv_line.display_type IS NULL
-                AND NOT inv_line.quantity = 0
+                AND (NOT inv_line.price_subtotal = 0 OR inv_line.price_unit * inv_line.quantity != 0)
                 AND inv.company_id = %(company_id)s
                 AND company_country.id != country.id
                 AND country.intrastat = TRUE AND (country.code != 'GB' OR inv.date < '2021-01-01')
@@ -196,7 +224,7 @@ class IntrastatReport(models.AbstractModel):
                 AND inv.move_type IN %(invoice_types)s
                 AND NOT inv_line.exclude_from_invoice_tab
                 '''
-        order = 'inv.invoice_date DESC'
+        order = 'inv.invoice_date DESC, inv_line.id'
         params = {
             'company_id': self.env.company.id,
             'import_merchandise_code': _merchandise_import_code.get(self.env.company.country_id.code, '29'),
@@ -205,6 +233,8 @@ class IntrastatReport(models.AbstractModel):
             'date_to': date_to,
             'journal_ids': tuple(journal_ids),
             'weight_category_id': self.env['ir.model.data']._xmlid_to_res_id('uom.product_uom_categ_kgm'),
+            'unknown_individual_vat': 'QN999999999999' if self.env.company.country_id.code in _qn_unknown_individual_vat_country_codes else 'QV999999999999',
+            'unknown_country_code': _unknown_country_code.get(self.env.company.country_id.code, 'QV'),
         }
         if with_vat:
             where += ' AND partner.vat IS NOT NULL '
@@ -239,6 +269,10 @@ class IntrastatReport(models.AbstractModel):
                 category_id = self.env['product.category'].browse(vals['category_id'])
                 vals['commodity_code'] = category_id.search_intrastat_code().code
 
+            # set transaction_code default value if none (this is overridden in account_intrastat_expiry)
+            if not vals['transaction_code']:
+                vals['transaction_code'] = 1
+
             # Check the currency.
             currency_id = self.env['res.currency'].browse(vals['invoice_currency_id'])
             company_currency_id = self.env.company.currency_id
@@ -265,6 +299,7 @@ class IntrastatReport(models.AbstractModel):
 
         self._cr.execute(query, params)
         query_res = self._cr.dictfetchall()
+        query_res = self._fill_supplementary_units(query_res)
 
         # Create lines
         lines = []
@@ -290,3 +325,57 @@ class IntrastatReport(models.AbstractModel):
     @api.model
     def _get_report_name(self):
         return _('Intrastat Report')
+
+    def _get_report_country_code(self, options):
+        return self.env.company.account_fiscal_country_id.code or None
+
+    def _fill_supplementary_units(self, query_results):
+        """ Although the default measurement provided is the weight in kg, some commodities require a supplementary unit
+        in the report.
+
+            e.g. Livestock are measured p/st, which is to say per animal.
+                 Bags of plastic artificial teeth (code 90212110) are measured 100 p/st, which is
+                 per hundred teeth.
+                 Code 29372200 Halogenated derivatives of corticosteroidal hormones are measured in grams... obviously.
+
+        Since there is not always 1-to-1 mapping between these supplementary units, this function tries to occupy the field
+        with the most accurate / relevant value, based on the available odoo units of measure. When the customer does not have
+        inventory installed, or has left the UoM otherwise undefined, the default 'unit' UoM is used. In this case the quantity
+        is used as the supplementary unit.
+        """
+
+        supp_unit_dict = {
+            'p/st': {'uom_id': self.env.ref('uom.product_uom_unit'), 'factor': 1},
+            'pa': {'uom_id': self.env.ref('uom.product_uom_unit'), 'factor': 2},
+            '100 p/st': {'uom_id': self.env.ref('uom.product_uom_unit'), 'factor': 100},
+            '1000 p/st': {'uom_id': self.env.ref('uom.product_uom_unit'), 'factor': 1000},
+            'g': {'uom_id': self.env.ref('uom.product_uom_gram'), 'factor': 1},
+            'm': {'uom_id': self.env.ref('uom.product_uom_meter'), 'factor': 1},
+            'l': {'uom_id': self.env.ref('uom.product_uom_litre'), 'factor': 1},
+        }
+
+        # Transform the dictionary to the form Commodity code -> Supplementary unit name
+        commodity_to_supp_code = {}
+        for key in SUPP_TO_COMMODITY:
+            commodity_to_supp_code.update({v: key for v in SUPP_TO_COMMODITY[key]})
+
+        for vals in query_results:
+            commodity_code = vals['commodity_code']
+            supp_code = commodity_to_supp_code.get(commodity_code)
+            supp_unit = supp_unit_dict.get(supp_code)
+            if not supp_code or not supp_unit:
+                vals['supplementary_units'] = None
+                continue
+
+            # If the supplementary unit is undefined here, the best we can do is
+            uom_id, uom_category_id = vals['uom_id'], vals['uom_category_id']
+
+            if uom_id == supp_unit['uom_id'].id:
+                vals['supplementary_units'] = vals['line_quantity'] / supp_unit['factor']
+            else:
+                if uom_category_id == supp_unit['uom_id'].category_id.id:
+                    vals['supplementary_units'] = self.env['uom.uom'].browse(uom_id)._compute_quantity(vals['line_quantity'], supp_unit['uom_id']) / supp_unit['factor']
+                else:
+                    vals['supplementary_units'] = None
+
+        return query_results

@@ -4,24 +4,25 @@
 
         <template id="worksheet_custom_page">
                 <div class="page">
-                    <div class="d-flex flex-wrap">
-                        <div class="d-flex flex-wrap pt-3 col-6 flex-column align-items-start">
+                    <div class="row">
+                        <div t-attf-class="{{'col-6' if report_type == 'pdf' else 'col-md-6 col-12'}}">
                             <t t-foreach="doc.user_ids" t-as="user">
-                                <div class="pr-2 align-top"><strong>Worker: </strong></div>
-                                <div class="align-top" t-esc="user" t-options='{
-                                    "widget": "contact",
-                                    "fields": ["name", "address", "phone", "email"]
-                                    }'/>
+                                <div class="mb-3">
+                                    <div><strong>Workers: </strong></div>
+                                    <div t-esc="user" t-options='{
+                                                "widget": "contact",
+                                                "fields": ["name", "address", "phone", "email"]
+                                            }'/>
+                                </div>
                             </t>
                         </div>
-                        <div t-attf-class="{{'d-flex pl-3 col-6' if doc.user_ids else ''}} flex-wrap py-3 pr-3 flex-column align-items-start">
+                        <div t-attf-class="{{('col-6' if report_type == 'pdf' else 'col-md-6 col-12') + ' mb-3'}}">
                             <t t-if="doc.partner_id">
-                                <div class="pr-2 align-top"><strong>Customer: </strong></div>
-                                <div class="align-top"><t t-esc="doc.partner_id" t-options='{
-                                                            "widget": "contact",
-                                                            "fields": ["name", "address", "phone", "email"]
-                                                            }'/>
-                                </div>
+                                <div><strong>Customer: </strong></div>
+                                <div t-esc="doc.partner_id" t-options='{
+                                    "widget": "contact",
+                                    "fields": ["name", "address", "phone", "email"]
+                                }'/>
                             </t>
                         </div>
                     </div>
@@ -30,7 +31,7 @@
                         <t t-set='is_uom_day' t-value='doc.timesheet_ids._is_timesheet_encode_uom_day()'/>
                         <t t-if="doc.allow_timesheets and doc.timesheet_ids">
                             <h2>Timesheets</h2>
-                            <div class="table-responsive-sm">
+                            <div t-attf-class="#{'table-responsive-sm' if report_type != 'pdf' else ''}">
                             <table class="table table-sm o_main_table">
                                 <thead>
                                     <tr>

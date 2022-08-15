@@ -23,7 +23,7 @@ SANDBOX_API_URL = 'https://test-api.service.hmrc.gov.uk'
 PRODUCTION_API_URL = 'https://api.service.hmrc.gov.uk'
 if DEBUG:
     HMRC_CLIENT_ID = 'dTdANDSeX4fiw63DicmUaAVQDSMa'
-    PROXY_SERVER = 'https://www.test.odoo.com'
+    PROXY_SERVER = 'https://iap-services-test.odoo.com'
 else:
     HMRC_CLIENT_ID = 'GqJgi8Hal1hsEwbG6rY6i9Ag1qUa'
     PROXY_SERVER = 'https://onlinesync.odoo.com'

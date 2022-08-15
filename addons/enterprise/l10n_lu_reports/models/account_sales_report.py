@@ -258,11 +258,11 @@ class ECSalesReport(models.AbstractModel):
             cperiodmonth = int(cperiod) * 3 if ctype[-1] == 'T' else int(cperiod)
             dperiod = int(month) if month else quarter * 3 - 2
             if int(cyear) > int(year) or cperiodmonth >= dperiod and int(cyear) == int(year):
-                raise ValidationError(_("Some problems with the comparison declarations occured. "
+                raise ValidationError(_("Some problems with the comparison declarations occurred. "
                                         "The comparison declarations must refer to earlier periods."))
 
         # L & T
-        if 'L' in intrastat_codes or 'T' in intrastat_codes:
+        if ('L' in intrastat_codes or 'T' in intrastat_codes) and (xml_data['l_lines'] or xml_data['t_lines']):
             declaration_type = month and 'TVA_LICM' or 'TVA_LICT'
             form = {'declaration_type': declaration_type, 'tables': [], 'field_values': {}}
             # L declaration
@@ -292,7 +292,7 @@ class ECSalesReport(models.AbstractModel):
             forms.append(form)
 
         # S
-        if 'S' in intrastat_codes:
+        if 'S' in intrastat_codes and xml_data['s_lines']:
             declaration_type = month and 'TVA_PSIM' or 'TVA_PSIT'
             form = {'declaration_type': declaration_type, 'tables': [], 'field_values': {}}
             mapping = {'total': '04', 'country': '01', 'vat': '02', 'amount': '03'}

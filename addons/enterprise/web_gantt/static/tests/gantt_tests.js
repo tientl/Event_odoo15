@@ -4613,5 +4613,39 @@ document.createElement("a").classList.contains
             unpatchDate();
         }
     );
+
+    QUnit.test('add record in empty gantt', async function (assert) {
+        assert.expect(1);
+
+        this.data.tasks.records = [];
+        this.data.tasks.fields.stage_id.domain = "[('id', '!=', False)]";
+
+        var gantt = await createView({
+            View: GanttView,
+            model: 'tasks',
+            data: this.data,
+            arch: '<gantt date_start="start" date_stop="stop" />',
+            archs: {
+                'tasks,false,form': `
+                    <form>
+                        <field name="stage_id" widget="statusbar"/>
+                        <field name="project_id"/>
+                        <field name="start"/>
+                        <field name="stop"/>
+                    </form>
+                `,
+            },
+            viewOptions: {
+                initialDate: initialDate,
+            },
+            groupBy: ['project_id'],
+        });
+
+        await testUtils.dom.triggerMouseEvent(gantt.$('.o_gantt_cell[data-date="2018-12-10 00:00:00"] .o_gantt_cell_add'), "click");
+        await testUtils.nextTick();
+
+        assert.strictEqual($('.modal').length, 1, 'There should be one modal opened');
+        gantt.destroy();
+    });
 });
 });

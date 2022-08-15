@@ -139,3 +139,27 @@ class TestL10nClEdiCommon(AccountEdiTestCommon):
             'l10n_latam_document_type_id': l10n_latam_document_type_110.id,
             'status': 'in_use',
         })
+
+        caf34_254_file = caf_file_template.replace('<TD></TD>', '<TD>34</TD>').replace(
+            '<RNG><D>001</D><H>100</H></RNG>', '<RNG><D>001</D><H>300</H></RNG>')
+        cls.caf_34_254 = cls.env['l10n_cl.dte.caf'].sudo().create({
+            'filename': 'FoliosSII7620122432921201910221946.xml',
+            'caf_file': base64.b64encode(caf34_254_file.encode('utf-8')),
+            'l10n_latam_document_type_id': cls.env['l10n_latam.document.type'].search([
+                ('code', '=', '34'),
+                ('country_id.code', '=', 'CL')
+            ]).id,
+            'status': 'in_use',
+        })
+
+        caf33_301_file = caf_file_template.replace('<TD></TD>', '<TD>33</TD>').replace(
+            '<RNG><D>001</D><H>100</H></RNG>', '<RNG><D>001</D><H>310</H></RNG>')
+        cls.caf_33_301 = cls.env['l10n_cl.dte.caf'].sudo().create({
+            'filename': 'FoliosSII7620122431921201910221946.xml',
+            'caf_file': base64.b64encode(caf33_301_file.encode('utf-8')),
+            'l10n_latam_document_type_id': cls.env['l10n_latam.document.type'].search([
+                ('code', '=', '33'),
+                ('country_id.code', '=', 'CL')
+            ]).id,
+            'status': 'in_use',
+        })

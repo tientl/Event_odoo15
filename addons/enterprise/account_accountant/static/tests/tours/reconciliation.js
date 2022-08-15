@@ -57,11 +57,13 @@ Tour.register('bank_statement_reconciliation', {
         },
         {
             content: "Search for 'in_invoice_2'",
+            extra_trigger: '.o_reconciliation_line:nth-child(1) .match .cell_label:contains("BILL"):not(:contains("partner_b"))',
             trigger: '.o_reconciliation_line:nth-child(1) .match .match_controls .filter',
             run: 'text 180'
         },
         {
             content: "Select the line corresponding to 'in_invoice_2'",
+            extra_trigger: '.o_reconciliation_line:nth-child(1) .match tr:only-child',
             trigger: '.o_reconciliation_line:nth-child(1) .o_notebook .cell_left:contains("180.00")'
         },
         {

@@ -35,6 +35,24 @@ class AccountingReport(models.AbstractModel):
     _name = 'account.accounting.report'
     _description = 'Accounting Report Helper'
 
+    _depends = {
+        'account.move.line': [
+            'id',
+            'move_id',
+            'name',
+            'account_id',
+            'journal_id',
+            'company_id',
+            'currency_id',
+            'analytic_account_id',
+            'display_type',
+            'date',
+            'debit',
+            'credit',
+            'balance',
+        ],
+    }
+
     total_line = True  # add a grand total line at the end of the report
 
     # Common account.move.line fields
@@ -80,21 +98,7 @@ class AccountingReport(models.AbstractModel):
         """.format(self._get_move_line_fields())
 
     def _get_move_line_fields(self, aml_alias="account_move_line"):
-        return ', '.join('%s.%s' % (aml_alias, field) for field in (
-            'id',
-            'move_id',
-            'name',
-            'account_id',
-            'journal_id',
-            'company_id',
-            'currency_id',
-            'analytic_account_id',
-            'display_type',
-            'date',
-            'debit',
-            'credit',
-            'balance',
-        ))
+        return ', '.join('%s.%s' % (aml_alias, field) for field in self._depends['account.move.line'])
 
     # COLUMN/CELL FORMATTING ###################################################
     # ##########################################################################

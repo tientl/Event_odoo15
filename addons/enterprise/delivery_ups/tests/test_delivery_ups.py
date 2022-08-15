@@ -187,3 +187,79 @@ class TestDeliveryUPS(TransactionCase):
 
         delivery_order.button_validate()
         self.assertEqual(delivery_order.state, 'done', 'Shipment state should be done.')
+
+    def test_04_backorder_and_track_number(self):
+        """ Suppose a two-steps delivery with 2 x Product A and 2 x Product B.
+        For the Pick step, process a first picking (PICK01) with 2 x Product A
+        and a backorder (PICK02) with 2 x Product B
+        For the Out step, process a first picking (OUT01) with 1 x Product A
+        and a backorder (OUT02) with 1 x Product A and 2 x Product B
+        This test ensures that:
+            - OUT01 and OUT02 have their own tracking reference
+            - The tracking reference of PICK01 is defined with the one of OUT01 and OUT02
+            - The tracking reference of PICK02 is defined with the one of OUT02
+        """
+        def process_picking(picking):
+            action = picking.button_validate()
+            wizard = Form(self.env[action['res_model']].with_context(action['context']))
+            wizard.save().process()
+
+        warehouse = self.env['sale.order']._default_warehouse_id()
+        warehouse.delivery_steps = 'pick_ship'
+        stock_location = warehouse.lot_stock_id
+
+        carrier = self.env.ref('delivery_ups.delivery_carrier_ups_us')
+        carrier.write({'ups_default_service_type': '08', 'ups_package_dimension_unit': 'IN'})
+        carrier.ups_default_package_type_id.write({'height': '1', 'width': '1', 'packaging_length': '1'})
+
+        product_a, product_b = self.env['product.product'].create([{
+            'name': p_name,
+            'weight': 1,
+        } for p_name in ['Product A', 'Product B']])
+
+        so_form = Form(self.env['sale.order'])
+        so_form.partner_id = self.agrolait
+        with so_form.order_line.new() as line:
+            line.product_id = product_a
+            line.product_uom_qty = 2
+        with so_form.order_line.new() as line:
+            line.product_id = product_b
+            line.product_uom_qty = 2
+        so = so_form.save()
+
+        # Add UPS shipping
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': so.id,
+            'default_carrier_id': carrier.id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        choose_delivery_carrier.update_price()
+        choose_delivery_carrier.button_confirm()
+
+        so.action_confirm()
+        pick01 = so.picking_ids.filtered(lambda p: p.location_id == stock_location)
+        out01 = so.picking_ids - pick01
+
+        # First step with 2 x Product A
+        pick01.move_lines.filtered(lambda m: m.product_id == product_a).quantity_done = 2
+        process_picking(pick01)
+        # First step with 2 x Product B
+        pick02 = pick01.backorder_ids
+        process_picking(pick02)
+
+        # Second step with 1 x Product A
+        out01.move_lines.filtered(lambda m: m.product_id == product_a).quantity_done = 1
+        process_picking(out01)
+        out02 = out01.backorder_ids
+        self.assertTrue(out01.carrier_tracking_ref)
+        self.assertFalse(out02.carrier_tracking_ref)
+        self.assertEqual(pick01.carrier_tracking_ref, out01.carrier_tracking_ref)
+        self.assertFalse(pick02.carrier_tracking_ref)
+
+        # Second step with 1 x Product A + 2 x Product B
+        process_picking(out02)
+        self.assertTrue(out01.carrier_tracking_ref)
+        self.assertTrue(out02.carrier_tracking_ref)
+        self.assertNotEqual(out01.carrier_tracking_ref, out02.carrier_tracking_ref)
+        self.assertEqual(pick01.carrier_tracking_ref, out01.carrier_tracking_ref + ',' + out02.carrier_tracking_ref)
+        self.assertEqual(pick02.carrier_tracking_ref, out02.carrier_tracking_ref)

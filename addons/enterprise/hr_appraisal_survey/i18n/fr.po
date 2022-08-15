@@ -10,6 +10,8 @@
 # Nancy Bolognesi <nb@microcom.ca>, 2021
 # Melanie Bernard <mbe@odoo.com>, 2021
 # Geoffrey_GMF <gmf@odoo.com>, 2021
+# Cécile Collart <cco@odoo.com>, 2021
+# Camille Dantinne <cmd@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -17,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Geoffrey_GMF <gmf@odoo.com>, 2021\n"
+"Last-Translator: Camille Dantinne <cmd@odoo.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,6 +79,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p/>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p/>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_2
@@ -85,6 +89,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p> </p>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p> </p>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_4
@@ -140,6 +146,41 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Cher <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,\n"
+"                        <br/><br/>\n"
+"                        Un retour d'évaluation a été demandé à propos de<t t-out=\"object.appraisal_id.employee_id.name or 'this'\">ceci</t>.\n"
+"                        <br/>\n"
+"                        Veuillez prendre le temps de remplir l'enquête.\n"
+"                        <br/><br/>\n"
+"                        Merci !\n"
+"                        <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    Voir l'évaluation\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"background-color:#F8F8F8;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">Évaluation annuelle.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                            <a t-att-href=\"object.get_start_url()\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                <t t-if=\"object.survey_id.certification\">\n"
+"                                    Commencer la certification\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    Commencer l'enquête\n"
+"                                </t>\n"
+"                            </a>\n"
+"                        </div>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
@@ -499,7 +540,7 @@ msgstr "Initiative et autonomie"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "Est Editeur"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__lang

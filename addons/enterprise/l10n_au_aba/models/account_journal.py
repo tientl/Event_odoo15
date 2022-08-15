@@ -42,4 +42,6 @@ class AccountJournal(models.Model):
 
     def _default_outbound_payment_methods(self):
         res = super()._default_outbound_payment_methods()
-        return res | self.env.ref('l10n_au_aba.account_payment_method_aba_ct')
+        if self._is_payment_method_available('aba_ct'):
+            res |= self.env.ref('l10n_au_aba.account_payment_method_aba_ct')
+        return res

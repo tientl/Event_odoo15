@@ -49,7 +49,7 @@ class ResConfigSettings(models.TransientModel):
                 # Storing project id for generate token
                 ir_params_sudo.set_param('odoo_ocn.project_id', project_id)
             except Exception as e:
-                _logger.error('An error occured while contacting the ocn server: %s', e.args[0])
+                _logger.error('An error occurred while contacting the ocn server: %s', e.args[0])
         return project_id
 
     @api.model
@@ -73,7 +73,7 @@ class ResConfigSettings(models.TransientModel):
         try:
             result = iap_tools.iap_jsonrpc(self._get_endpoint() + '/iap/ocn/register_device', params=values)
         except Exception as e:
-            _logger.error('An error occured while contacting the ocn server: %s', e.args[0])
+            _logger.error('An error occurred while contacting the ocn server: %s', e.args[0])
 
         if result:
             self.env.user.partner_id.ocn_token = result

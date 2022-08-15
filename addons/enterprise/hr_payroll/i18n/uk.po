@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
-"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,6 +32,24 @@ msgstr "К-сть розрахункових листів"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "К-сть розрахункових листів"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
+"%s:\n"
+"- Співробітник: %s\n"
+"- Контракт: %s\n"
+"- Зарплата: %s\n"
+"- Правило зарплати: %s (%s)\n"
+"- Помилка: %s"
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -60,17 +78,17 @@ msgstr ""
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "-> Report"
-msgstr ""
+msgstr "-> Звіт"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_contract_view_kanban
 msgid "/ Hour"
-msgstr ""
+msgstr "/ Год."
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_contract_view_kanban
 msgid "/ Month"
-msgstr ""
+msgstr "/ Міс."
 
 #. module: hr_payroll
 #: model:hr.salary.rule,name:hr_payroll.hr_salary_rule_13th_month_salary
@@ -98,6 +116,9 @@ msgid ""
 "<span class=\"text-muted\">Set a specific department if you wish to select "
 "all the employees from this department (and subdepartments) at once.</span>"
 msgstr ""
+"<span class=\"text-muted\">Встановіть конкретний відділ, якщо ви бажаєте "
+"вибрати всіх співробітників з цього відділу (і підвідділів) "
+"одночасно.</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
@@ -137,7 +158,7 @@ msgstr ""
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_resource_calendar_view_form
 msgid "<span> %</span>"
-msgstr ""
+msgstr "<span> %</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_resource_calendar_view_form
@@ -242,6 +263,15 @@ msgid ""
 "</tbody></table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; margin:0px auto;\"><tbody>\n"
+"    <tr><td valign=\"top\" style=\"text-align: left; font-size: 14px;\">\n"
+"        Шановний(а) <t t-esc=\"object.employee_id.name\"/>, новий зарплатний лист доступний для вас.<br/><br/>\n"
+"        Знайдіть PDF у вашому порталі співробітника.<br/><br/>\n"
+"        Гарного дня,<br/>\n"
+"        Команда HR\n"
+"    </td></tr>\n"
+"</tbody></table>\n"
+"            "
 
 #. module: hr_payroll
 #: model:ir.model.constraint,message:hr_payroll.constraint_hr_work_entry_type_is_unforeseen_is_leave
@@ -274,7 +304,7 @@ msgstr "Активно"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__active_amount
 msgid "Active Amount"
-msgstr ""
+msgstr "Активна сума"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__activity_ids
@@ -345,12 +375,12 @@ msgstr "Тип суми"
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__paid_amount
 msgid "Amount already paid."
-msgstr ""
+msgstr "Сума вже сплачена."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__monthly_amount
 msgid "Amount to pay each month."
-msgstr ""
+msgstr "Сума до сплати кожного місяця."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__active_amount
@@ -358,6 +388,8 @@ msgid ""
 "Amount to pay for this month, Monthly Amount or less depending on the "
 "Remaining Amount."
 msgstr ""
+"Сума до сплати цього місяця, місячна сума або менше в залежності від суми, "
+"що залишилася."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure__schedule_pay__annually
@@ -371,6 +403,7 @@ msgid ""
 "Another refund payslip with the same amount has been found. Do you want to "
 "create a new one ?"
 msgstr ""
+"Знайдено ще один платіжний лист із такою ж сумою. Ви хочете створити новий?"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_line__appears_on_payslip
@@ -390,7 +423,7 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__date_estimated_end
 msgid "Approximated end date."
-msgstr ""
+msgstr "Приблизна дата завершення."
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_form
@@ -403,14 +436,14 @@ msgstr "Заархівовано"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__assignment_amount
 msgid "Assigment of Salary"
-msgstr ""
+msgstr "Призначення зарплати"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__assignment
 #, python-format
 msgid "Assignment of Salary"
-msgstr ""
+msgstr "Призначення зарплати"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -419,6 +452,9 @@ msgid ""
 "At least one previous negative net could be reported on this payslip for <a "
 "href=\"#\" data-oe-model=\"%s\" data-oe-id=\"%s\">%s</a>"
 msgstr ""
+"У цій платіжній квитанції може бути зазначено принаймні один попередній "
+"негативний результат <a href=\"#\" data-oe-model=\"%s\" data-oe-"
+"id=\"%s\">%s</a>"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__message_attachment_count
@@ -437,7 +473,7 @@ msgstr "Назва додатку"
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__attachment
 #, python-format
 msgid "Attachment of Salary"
-msgstr ""
+msgstr "Прикріплення зарплати"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
@@ -472,12 +508,12 @@ msgstr "Середній чистий оклад"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_report_view_tree
 msgid "Average of Basic Wage"
-msgstr ""
+msgstr "Середній базовий оклад"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_report_view_tree
 msgid "Average of Net Wage"
-msgstr ""
+msgstr "Середній чистий оклад"
 
 #. module: hr_payroll
 #: model:hr.salary.rule,name:hr_payroll.hr_salary_rule_worker_basic
@@ -546,7 +582,7 @@ msgstr "Розрахунки"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__calendar_changed
 msgid "Calendar Changed"
-msgstr ""
+msgstr "Календар змінено"
 
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.action_hr_payroll_cancel_payroll
@@ -574,6 +610,7 @@ msgstr "Неможливо скасувати сплачений розраху�
 #, python-format
 msgid "Cannot mark payslip as paid if not confirmed."
 msgstr ""
+"Неможливо позначити розрахунковий лист як оплачено, якщо не підтверджено."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payroll_edit_payslip_worked_days_line__code
@@ -582,6 +619,8 @@ msgid ""
 "Carefull, the Code is used in many references, changing it could lead to "
 "unwanted changes."
 msgstr ""
+"Обережно, код використовується в багатьох посиланнях, його зміна може "
+"призвести до небажаних змін."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__category_id
@@ -594,7 +633,7 @@ msgstr "Категорія"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_contract_search_inherit
 msgid "Change of Occupation"
-msgstr ""
+msgstr "Зміна професії"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
@@ -602,7 +641,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__child_support
 #, python-format
 msgid "Child Support"
-msgstr ""
+msgstr "Аліменти"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_rule_category__children_ids
@@ -729,7 +768,7 @@ msgstr "Тип контракту"
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_contract_history
 msgid "Contract history"
-msgstr ""
+msgstr "Історія контракту"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_index_form_view
@@ -800,7 +839,7 @@ msgstr "Створити платіж SEPA"
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.action_new_salary_attachment
 msgid "Create Salary Attachment"
-msgstr ""
+msgstr "Створити прикріплення зарплати"
 
 #. module: hr_payroll
 #: model_terms:ir.actions.act_window,help:hr_payroll.action_hr_contract_repository
@@ -871,7 +910,7 @@ msgstr "Валюта"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_work_entry_report_view_search
 msgid "Current month"
-msgstr ""
+msgstr "Поточний місяць"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_line_view_search_register
@@ -897,7 +936,7 @@ msgstr "Дата до"
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__date_end
 msgid "Date at which this assignment has been set as completed or cancelled."
-msgstr ""
+msgstr "Дата, на яку це завдання було визначено як виконане або скасовано."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_work_entry_type__round_days__full
@@ -1054,7 +1093,7 @@ msgstr "Виконаний лист"
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Double Holiday Pay"
-msgstr ""
+msgstr "Подвійна оплата за вихідні"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_work_entry_type__round_days_type__down
@@ -1184,7 +1223,7 @@ msgstr "Кінцева дата"
 #. module: hr_payroll
 #: model:ir.model.constraint,message:hr_payroll.constraint_hr_salary_attachment_check_dates
 msgid "End date may not be before the starting date."
-msgstr ""
+msgstr "Дата завершення може бути не раніше дати початку."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_index__display_warning
@@ -1202,7 +1241,7 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__date_estimated_end
 msgid "Estimated End Date"
-msgstr ""
+msgstr "Оцінена кінцева дата"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_line__partner_id
@@ -1261,7 +1300,7 @@ msgstr "Від"
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "From %s to %s"
-msgstr ""
+msgstr "Від %s до %s"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_resource_calendar_view_form
@@ -1347,32 +1386,32 @@ msgstr "Пів дня"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__has_message
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Є повідомлення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__has_negative_net_to_report
 msgid "Has Negative Net To Report"
-msgstr ""
+msgstr "Має негативну чисту суму для звіту"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__has_refund_slip
 msgid "Has Refund Slip"
-msgstr ""
+msgstr "Має розрахунок повернення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__has_similar_attachment
 msgid "Has Similar Attachment"
-msgstr ""
+msgstr "Має таке ж прикріплення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__has_similar_attachment_warning
 msgid "Has Similar Attachment Warning"
-msgstr ""
+msgstr "Має попередження такогож прикріплення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__has_total_amount
 msgid "Has Total Amount"
-msgstr ""
+msgstr "Має загальну суму"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__hourly_wage
@@ -1469,7 +1508,7 @@ msgstr ""
 #: code:addons/hr_payroll/static/src/xml/hr_contract_tree_views.xml:0
 #, python-format
 msgid "Index Contracts"
-msgstr ""
+msgstr "Індексні контракти"
 
 #. module: hr_payroll
 #: model:ir.actions.act_window,name:hr_payroll.action_hr_payroll_index
@@ -1534,7 +1573,7 @@ msgstr "Реєструється"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__is_regular
 msgid "Is Regular"
-msgstr ""
+msgstr "Постійний"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__is_superuser
@@ -1684,7 +1723,7 @@ msgstr "Проведення розрахункового листа?"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
 msgid "Made by Odoo with ❤️"
-msgstr ""
+msgstr "Зроблено Odoo з ❤️"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__message_main_attachment_id
@@ -1695,13 +1734,13 @@ msgstr "Основне прикріплення"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_attachment_view_form
 msgid "Mark as Completed"
-msgstr ""
+msgstr "Позначити як завершено"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Mark as paid"
-msgstr ""
+msgstr "Позначити як оплачено"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_rule__condition_range_max
@@ -1750,7 +1789,7 @@ msgstr "Щомісяця"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__monthly_amount
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_attachment_view_tree
 msgid "Monthly Amount"
-msgstr ""
+msgstr "Місячна сума"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure_type__wage_type__monthly
@@ -1760,7 +1799,7 @@ msgstr "Фіксований місячний оклад"
 #. module: hr_payroll
 #: model:ir.model.constraint,message:hr_payroll.constraint_hr_salary_attachment_check_monthly_amount
 msgid "Monthly amount must be strictly positive."
-msgstr ""
+msgstr "Місячна сума має бути строго позитивна."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__my_activity_date_deadline
@@ -1793,22 +1832,22 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__negative_net_to_report_amount
 msgid "Negative Net To Report Amount"
-msgstr ""
+msgstr "Негативна чиста сума до звіту"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__negative_net_to_report_display
 msgid "Negative Net To Report Display"
-msgstr ""
+msgstr "Відображення негативної чистої суми до звіту"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__negative_net_to_report_message
 msgid "Negative Net To Report Message"
-msgstr ""
+msgstr "Повідомлення негативної чистої суми до звіту"
 
 #. module: hr_payroll
 #: model:mail.activity.type,name:hr_payroll.mail_activity_data_hr_payslip_negative_net
 msgid "Negative Net to Report"
-msgstr ""
+msgstr "Негативна чиста сума до звіту"
 
 #. module: hr_payroll
 #: model:hr.salary.rule.category,name:hr_payroll.NET
@@ -1818,7 +1857,7 @@ msgstr "Чистий"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_view_kanban
 msgid "Net -"
-msgstr ""
+msgstr "Чистий оклад -"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
@@ -1844,12 +1883,12 @@ msgstr "Новий"
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "New Payslip"
-msgstr ""
+msgstr "Новий розрахунковий лист"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Наступна подія календаря дій"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__activity_date_deadline
@@ -1894,6 +1933,8 @@ msgid ""
 "Note: There are previous payslips with a negative amount for a total of %s "
 "to report."
 msgstr ""
+"Примітка: Є попередні платіжні листи з від’ємною сумою на загальну суму %s "
+"до звіту."
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_category_form
@@ -2002,7 +2043,7 @@ msgstr "Оплачено"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__paid_amount
 msgid "Paid Amount"
-msgstr ""
+msgstr "Оплачена сума"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_report__work_type__2
@@ -2117,19 +2158,19 @@ msgstr "Зарплата з платежем SEPA"
 #: model:ir.cron,cron_name:hr_payroll.ir_cron_generate_payslip_pdfs
 #: model:ir.cron,name:hr_payroll.ir_cron_generate_payslip_pdfs
 msgid "Payroll: Generate pdfs"
-msgstr ""
+msgstr "Зарплата: Створити pdf"
 
 #. module: hr_payroll
 #: model:mail.template,name:hr_payroll.mail_template_new_payslip
 msgid "Payroll: New Payslip"
-msgstr ""
+msgstr "Зарплата: Новий розрахунковий лист"
 
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.ir_cron_update_payroll_data_ir_actions_server
 #: model:ir.cron,cron_name:hr_payroll.ir_cron_update_payroll_data
 #: model:ir.cron,name:hr_payroll.ir_cron_update_payroll_data
 msgid "Payroll: Update data"
-msgstr ""
+msgstr "Зарплата: Оновити дату"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -2165,7 +2206,7 @@ msgstr "Розрахунок розрахункового листа"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__payslip_end_date
 msgid "Payslip End Date"
-msgstr ""
+msgstr "Кінцева дата розрахункового листа"
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_payslip_input
@@ -2221,7 +2262,7 @@ msgstr "Типи інших введень розрахункового лист
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__payslip_start_date
 msgid "Payslip Start Date"
-msgstr ""
+msgstr "Дата початку розрахункового листа"
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_payslip_worked_days
@@ -2295,7 +2336,7 @@ msgstr "Розрахунковий фонд заробітної плати ся
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Previous Negative Payslip to Report"
-msgstr ""
+msgstr "Попередній негативний платіжний лист для звіту"
 
 #. module: hr_payroll
 #. openerp-web
@@ -2314,7 +2355,7 @@ msgstr "Професійний податок"
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Prorated end-of-year bonus"
-msgstr ""
+msgstr "Пропорційна премія на кінець року"
 
 #. module: hr_payroll
 #: model:hr.salary.rule,name:hr_payroll.hr_salary_rule_providentfund1
@@ -2363,7 +2404,7 @@ msgstr "Щоквартально"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__queued_for_pdf
 msgid "Queued For Pdf"
-msgstr ""
+msgstr "У черзі для PDF"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_rule__condition_select__range
@@ -2384,18 +2425,20 @@ msgstr "Ставка (%)"
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.action_hr_payroll_recompute_whole_sheet
 msgid "Recompute Whole Sheet"
-msgstr ""
+msgstr "Переобчислити усю таблицю"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Recompute the payslip lines only, not the worked days / input lines"
 msgstr ""
+"Переобчисити лише рядки розрахункового листа, а не відпрацьовані "
+"дні/вставлені рядки"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "Recorded a new payment of %s."
-msgstr ""
+msgstr "Записаний новий платіж %s."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__number
@@ -2443,17 +2486,17 @@ msgstr "Відхилено"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__remaining_amount
 msgid "Remaining Amount"
-msgstr ""
+msgstr "Сума, що залишилась"
 
 #. module: hr_payroll
 #: model:ir.model.constraint,message:hr_payroll.constraint_hr_salary_attachment_check_remaining_amount
 msgid "Remaining amount must be positive."
-msgstr ""
+msgstr "Сума, що залишилась повинна бути позитивною."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__remaining_amount
 msgid "Remaining amount to be paid."
-msgstr ""
+msgstr "Сума, що залишилась, до оплати."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_structure__report_id
@@ -2548,30 +2591,30 @@ msgstr "Зарплатня"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_attachment_view_form
 #, python-format
 msgid "Salary Attachment"
-msgstr ""
+msgstr "Прикріплення зарплати"
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_salary_attachment_report
 msgid "Salary Attachment / Report"
-msgstr ""
+msgstr "Прикріплення зарплати / Звіт"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract_history__salary_attachment_count
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_employee__salary_attachment_count
 msgid "Salary Attachment Count"
-msgstr ""
+msgstr "Підрахунок прикріплень зарплати"
 
 #. module: hr_payroll
 #: model:ir.actions.act_window,name:hr_payroll.hr_salary_attachment_report_action
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_payroll_attachment_salary_report
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_attachment_report_view_pivot
 msgid "Salary Attachment Report"
-msgstr ""
+msgstr "Звіт прикріплень зарплати"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__salary_attachment_count
 msgid "Salary Attachment count"
-msgstr ""
+msgstr "Підрахунок прикріплень зарплати"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -2583,7 +2626,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 #, python-format
 msgid "Salary Attachments"
-msgstr ""
+msgstr "Прикріплення зарплати"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_category_form
@@ -2696,7 +2739,7 @@ msgstr "Пошук розрахункових листів"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_attachment_view_search
 msgid "Search Salary Attachment"
-msgstr ""
+msgstr "Пошук прикріплень зарплати"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_rule_filter
@@ -2746,10 +2789,10 @@ msgstr "Листи для підтвердження"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
-"Деякі частини календаря %s не покриваються жодним робочим записом. Будь "
-"ласка, заповніть розклад."
+"Деякі частини календаря %s не покривається жодним робочим записом. Завершіть"
+" планування. Часові інтервали для пошуку:%s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
@@ -2842,7 +2885,7 @@ msgstr "Категорія суми надбавок"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_work_entry_report_view_tree
 msgid "Sum of Days"
-msgstr ""
+msgstr "Сума днів"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip__country_code
@@ -2860,6 +2903,8 @@ msgid ""
 "The Work Entry checked as Unforeseen Absence will be counted in absenteeism "
 "at work report."
 msgstr ""
+"Робота, позначена як непередбачена відсутність, буде зарахована до звіту про"
+" відсутність на роботі."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payroll_edit_payslip_line__code
@@ -2887,13 +2932,13 @@ msgstr "Спосіб розрахунку для суми правила"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "Контракт, для якого застосувати це введення"
+msgid "The contract this input should be applied to"
+msgstr "Договір, до якого слід застосувати ці дані"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "Контракт, для якого застосувати ці робочі дні"
+msgid "The contract this worked days should be applied to"
+msgstr "До договору слід застосовувати ці відпрацьовані дні"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -2902,6 +2947,8 @@ msgid ""
 "The following employees have a contract outside of the payslip period:\n"
 "%s"
 msgstr ""
+"Перелічені нижче працівники мають контракт за межами періоду заробітної плати:\n"
+"%s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -2910,6 +2957,8 @@ msgid ""
 "The following values are not valid:\n"
 "%s"
 msgstr ""
+"Наступні значення недійсні:\n"
+"%s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_rule__condition_range_max
@@ -2934,12 +2983,13 @@ msgstr ""
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "The payslips should be in Draft or Waiting state."
-msgstr ""
+msgstr "Платіжні квитанції мають бути в стані «Чернотка» або «Очікування»."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_work_entry_type__unpaid_structure_ids
 msgid "The work entry won’t grant any money to employee in payslip."
 msgstr ""
+"Запис про роботу не надаватиме грошей працівнику в платіжній квитанції."
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3000,7 +3050,7 @@ msgstr "Цей звіт виконує аналіз у вашому розрах
 #. module: hr_payroll
 #: model_terms:ir.actions.act_window,help:hr_payroll.hr_work_entry_report_action
 msgid "This report performs analysis on your work entries."
-msgstr ""
+msgstr "Цей звіт виконує аналіз ваших робочих записів."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_rule__condition_range
@@ -3012,6 +3062,12 @@ msgstr ""
 "Використовується для розрахунку значення суми відсотком. У загальному "
 "застосовується для категорії basic але ви можете вказати код іншої категорії"
 " в нижньому реєстрі (hra, ma, lta, і т. д.)."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr "Часові інтервали для пошуку:%s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3037,7 +3093,7 @@ msgstr "До сплати"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
 msgid "To pay on"
-msgstr ""
+msgstr "Для оплати на"
 
 #. module: hr_payroll
 #: model_terms:ir.actions.act_window,help:hr_payroll.action_contribution_registers
@@ -3076,7 +3132,7 @@ msgstr "Всього робочих днів"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Total Working Hours"
-msgstr ""
+msgstr "Всього робочих годин"
 
 #. module: hr_payroll
 #: model:ir.model.constraint,message:hr_payroll.constraint_hr_salary_attachment_check_total_amount
@@ -3084,11 +3140,13 @@ msgid ""
 "Total amount must be strictly positive and greater than or equal to the "
 "monthly amount."
 msgstr ""
+"Загальна сума має бути строго позитивною та більшою або дорівнювати місячній"
+" сумі."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_attachment__total_amount
 msgid "Total amount to be paid."
-msgstr ""
+msgstr "Загальна сума до сплати."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip__sum_worked_hours
@@ -3149,7 +3207,7 @@ msgstr "Типи неоплачених робочих записів"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_work_entry_type__unpaid_structure_ids
 msgid "Unpaid in Structures Types"
-msgstr ""
+msgstr "Неоплачено у типах структур"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__message_unread
@@ -3221,7 +3279,7 @@ msgstr "Тип окладу"
 #: code:addons/hr_payroll/wizard/hr_payroll_index_wizard.py:0
 #, python-format
 msgid "Wage indexed by %.2f%% on %s"
-msgstr ""
+msgstr "Оклад індексовано %.2f%% на %s"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payslip__state__verify
@@ -3237,12 +3295,12 @@ msgstr "Повідомлення про попередження"
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "Warning, a similar attachment has been found."
-msgstr ""
+msgstr "Попередження, схоже вкладення знайдено."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_work_entry_type__round_days_type
 msgid "Way of rounding the work entry type."
-msgstr ""
+msgstr "Тип способу округлення робочого запису."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__website_message_ids
@@ -3268,11 +3326,13 @@ msgid ""
 "When the work entry is displayed in the payslip, the value is rounded "
 "accordingly."
 msgstr ""
+"Коли в розрахунковому листі відображається робочий запис, значення "
+"відповідно округляється."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract__calendar_changed
 msgid "Whether the previous or next contract has a different schedule or not"
-msgstr ""
+msgstr "Чи має попередній чи наступний контракт інший графік чи ні"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payroll_index__description
@@ -3301,17 +3361,17 @@ msgstr "Робочі записи"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_work_entry_report_view_search
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_work_entry_report_view_tree
 msgid "Work Entries Analysis"
-msgstr ""
+msgstr "Аналіз робочих записів"
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_work_entry_report
 msgid "Work Entries Analysis Report"
-msgstr ""
+msgstr "Звіт аналізу робочих записів"
 
 #. module: hr_payroll
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_work_entry_report
 msgid "Work Entry Analysis"
-msgstr ""
+msgstr "Аналіз робочих записів"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_worked_days_line__work_entry_type_id
@@ -3389,44 +3449,32 @@ msgstr "Графік робочого часу"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Неправильна базова відсоткова ставка або кількість визначено для правила оплати праці %s (%s).\n"
-"Помилка: %s"
+msgid "Wrong percentage base or quantity defined for:"
+msgstr "Неправильна відсоткова база або кількість, визначена для:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Неправильний код python, визначений для правила зарплати %s (%s).\n"
-"Помилка: %s"
+msgid "Wrong python code defined for:"
+msgstr "Неправильно код python зазначений для:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Невірна умова python вказана у правилі %s (%s)."
+msgid "Wrong python condition defined for:"
+msgstr "Неправильна умова Python визначена для:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Неправильну кількість визначено для правила оплати праці %s (%s).\n"
-"Помилка: %s"
+msgid "Wrong quantity defined for:"
+msgstr "Неправильна кількість зазначена для:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Невірна умова діапазону вказана у правилі %s (%s)."
+msgid "Wrong range condition defined for:"
+msgstr "Неправильна умова діапазону визначена для:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3453,13 +3501,14 @@ msgstr ""
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "You cannot delete a running salary attachment!"
-msgstr ""
+msgstr "Ви не можете видалити запущене прикріплення зарплати!"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "You cannot valide a payslip on which the contract is cancelled"
 msgstr ""
+"Ви не можете підтвердити платіжну квитанцію, за якою договір розірвано"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_index_wizard.py:0
@@ -3498,27 +3547,27 @@ msgstr "дні"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
 msgid "e.g. April 2021"
-msgstr ""
+msgstr "напр., квітень 2021"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_structure_type_view_form
 msgid "e.g. Employee"
-msgstr ""
+msgstr "напр., Співробітник"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_form
 msgid "e.g. Net"
-msgstr ""
+msgstr "напр., Чистий оклад"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_salary_rule_form
 msgid "e.g. Net Salary"
-msgstr ""
+msgstr "напр., Чиста зарплата"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_employee_grade_form
 msgid "e.g. Regular Pay"
-msgstr ""
+msgstr "напр., Регулярний платіж"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
@@ -3534,3 +3583,4 @@ msgstr "результат буде впливати на змінну"
 #: model:mail.template,subject:hr_payroll.mail_template_new_payslip
 msgid "{{ object.employee_id.name }}, a new payslip is available for you"
 msgstr ""
+"{{ object.employee_id.name }}, для вас доступний новий розрахунковий лист"

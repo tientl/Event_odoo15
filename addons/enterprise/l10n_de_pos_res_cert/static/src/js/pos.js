@@ -55,7 +55,6 @@ odoo.define('l10n_de_pos_res_cert.pos', function(require) {
                     });
                 } catch (error) {
                     this.set_synch('disconnected');
-                    error.source = 'l10n_de_odoo_restaurant';
                     throw error;
                 }
             }
@@ -85,8 +84,8 @@ odoo.define('l10n_de_pos_res_cert.pos', function(require) {
                 }
                 if (fiskalyError) {
                     this.set_synch('disconnected');
-                    fiskalyError.source = 'fiskaly'; //
-                    throw fiskalyError; // So that the promise reject something for the _handleFailedPushForInvoice
+                    fiskalyError.code = 'fiskaly';
+                    throw fiskalyError;
                 }
             }
 

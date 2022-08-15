@@ -126,7 +126,7 @@ class AccountOnlineLink(models.Model):
     name = fields.Char(help="Institution Name", readonly=True)
     client_id = fields.Char(help="Represent a link for a given user towards a banking institution", readonly=True)
     refresh_token = fields.Char(help="Token used to sign API request, Never disclose it", readonly=True, groups="base.group_system")
-    access_token = fields.Char(help="Token used to access API.", readonly=True, groups="account.group_account_manager")
+    access_token = fields.Char(help="Token used to access API.", readonly=True, groups="account.group_account_user")
     provider_data = fields.Char(help="Information needed to interract with third party provider", readonly=True)
 
     ##########################
@@ -337,6 +337,7 @@ class AccountOnlineLink(models.Model):
             resp_json = self._fetch_odoo_fin('/proxy/v1/accounts', data)
             for acc in resp_json.get('accounts', []):
                 acc['account_online_link_id'] = self.id
+                acc.pop('currency_code', '')  # We now return the currency code along the other accounts' info. But this field won't exist before v16, so it will be unused until then.
                 accounts[str(acc.get('online_identifier'))] = acc
             if not resp_json.get('next_data'):
                 break

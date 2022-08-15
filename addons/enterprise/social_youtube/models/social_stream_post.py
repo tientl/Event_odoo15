@@ -105,7 +105,7 @@ class SocialStreamPostYoutube(models.Model):
         )
 
         if not response.ok:
-            self.account_id.sudo().write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(response.json())
 
     def _youtube_comment_fetch(self, next_page_token=False, count=20):
         self.ensure_one()

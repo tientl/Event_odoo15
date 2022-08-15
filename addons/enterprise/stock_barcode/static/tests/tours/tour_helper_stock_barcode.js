@@ -26,6 +26,16 @@ function getLine (description) {
     return $res;
 }
 
+function getSubline(selector) {
+    const $subline = $('.o_sublines .o_barcode_line' + selector);
+    if ($subline.length === 0) {
+        fail(`No subline was found for the selector "${selector}"`);
+    } else if($subline.length > 1) {
+        fail(`Multiple sublines were found for the selector "${selector}"`);
+    }
+    return $subline;
+}
+
 function triggerKeydown(eventKey, shiftkey=false) {
     document.querySelector('.o_barcode_client_action')
         .dispatchEvent(new window.KeyboardEvent('keydown', { bubbles: true, key: eventKey, shiftKey: shiftkey}));
@@ -118,21 +128,19 @@ function assertNextIsHighlighted (expected) {
 }
 
 function assertValidateVisible (expected) {
-    var $validate = $('.o_validate_page');
-    var current = (!$validate.length && !expected) || $validate.hasClass('o_hidden');
-    assert(!current, expected, 'Validate visible');
+    const validateButton = document.querySelector('.o_validate_page,.o_apply_page');
+    assert(Boolean(validateButton), expected, 'Validate visible');
 }
 
 function assertValidateEnabled (expected) {
-    var $validate = $('.o_validate_page');
-    var current = (!$validate.length && !expected) || $validate.prop('disabled');
-    assert(!current, expected, 'Validate enabled');
+    const validateButton = document.querySelector('.o_validate_page,.o_apply_page') || false;
+    assert(validateButton && !validateButton.hasAttribute('disabled'), expected, 'Validate enabled');
 }
 
 function assertValidateIsHighlighted (expected) {
-    var $validate = $('.o_validate_page');
-    var current = $validate.hasClass('btn-success');
-    assert(current, expected, 'Validate button is highlighted');
+    const validateButton = document.querySelector('.o_validate_page,.o_apply_page') || false;
+    const isHighlighted = validateButton && validateButton.classList.contains('btn-success');
+    assert(isHighlighted, expected, 'Validate button is highlighted');
 }
 
 function assertLinesCount(expected) {
@@ -172,8 +180,16 @@ function assertLineIsHighlighted ($line, expected) {
     assert($line.hasClass('o_highlight'), expected, 'line should be highlighted');
 }
 
-function assertLineQty($line, qty) {
-    assert($line[0].querySelector('.qty-done,.inventory_quantity').innerText, qty, 'line quantity is wrong');
+function assertLineQty($line, expectedQuantity) {
+    const lineNode = $line[0];
+    if (!lineNode) {
+        fail("Can't check the quantity: no line was given.");
+    } else if (!lineNode.classList.contains('o_barcode_line')) {
+        fail("Can't check the quantity: given element isn't a barcode line.");
+    }
+    const lineQuantity = lineNode.querySelector('.qty-done,.inventory_quantity').innerText;
+    expectedQuantity = String(expectedQuantity);
+    assert(lineQuantity, expectedQuantity, `Line's quantity is wrong`);
 }
 
 /**
@@ -267,6 +283,7 @@ return {
     assertValidateVisible: assertValidateVisible,
     fail: fail,
     getLine: getLine,
+    getSubline,
     pressShift: pressShift,
     releaseShift: releaseShift,
     triggerKeydown: triggerKeydown,

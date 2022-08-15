@@ -4,6 +4,10 @@
 from odoo import _, models, fields, api
 from odoo.http import request
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class SocialAccount(models.Model):
     """ A social.account represents an actual account on the related social.media.
@@ -139,3 +143,10 @@ class SocialAccount(models.Model):
                 media_names=', '.join(accounts_other_companies.mapped('media_id.name')),
                 company_names=', '.join(accounts_other_companies.mapped('company_id.name')),
             )
+
+    def _action_disconnect_accounts(self, disconnection_info=None):
+        _logger.warning("Social account disconnected: %s. Reason: %s",
+                        ", ".join(self.mapped("display_name")),
+                        disconnection_info or "Not provided",
+                        stack_info=True)
+        self.sudo().write({'is_media_disconnected': True})

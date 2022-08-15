@@ -12,13 +12,15 @@
                     <t t-set="is_task" t-value="line == doc.sale_line_id"/>
                     <t t-if="is_task">
                         <t t-set="final_subtotal" t-value="final_subtotal + line.delivered_price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                        <t t-set="final_total" t-value="final_total + line.delivered_price_total" groups="account.group_show_line_subtotals_tax_excluded"/>
+                        <t t-set="final_subtotal" t-value="final_subtotal + line.delivered_price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                        <t t-set="final_total" t-value="final_total + line.delivered_price_total" />
                         <t t-set="final_tax" t-value="final_tax + line.delivered_price_tax"/>
                         <t t-set="is_any_total_discount_line" t-value="is_any_total_discount_line or (line.discount and line.price_unit != 0 and line.delivered_price_total == 0)"/>
                     </t>
                     <t t-else="">
                         <t t-set="final_subtotal" t-value="final_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                        <t t-set="final_total" t-value="final_total + line.price_total" groups="account.group_show_line_subtotals_tax_excluded"/>
+                        <t t-set="final_subtotal" t-value="final_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                        <t t-set="final_total" t-value="final_total + line.price_total" />
                         <t t-set="final_tax" t-value="final_tax + line.price_tax"/>
                         <t t-set="is_any_total_discount_line" t-value="is_any_total_discount_line or (line.discount and line.price_unit != 0 and line.price_total == 0)"/>
                     </t>

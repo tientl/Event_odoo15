@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# Friederike Fasterling-Nesselbosch, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:18+0000\n"
 "PO-Revision-Date: 2021-09-14 12:41+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Friederike Fasterling-Nesselbosch, 2022\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,6 +29,11 @@ msgid ""
 "                            upon validation.\n"
 "                        </small>"
 msgstr ""
+"<small class=\"text-muted form-text\">\n"
+"                            Una copia del mandato sarà inviata per e-mail al\n"
+"<span name=\"o_sdd_partner_email\"/>\n"
+"momento della convalida.\n"
+"                        </small>"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
@@ -224,7 +230,7 @@ msgstr ""
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "Both the phone number and the verification code are required."
-msgstr ""
+msgstr "Sia il numero di telefono che il codice di verifica sono necessari."
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
@@ -241,7 +247,7 @@ msgstr "Contatto"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Could not send the verification code."
-msgstr ""
+msgstr "Impossibile inviare il codice di verifica."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__currency_id
@@ -252,7 +258,7 @@ msgstr "Valuta"
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Direct Debit: %s"
-msgstr ""
+msgstr "Addebito diretto: %s"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_mandate_form
@@ -278,13 +284,13 @@ msgstr "Movimento contabile"
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Missing Signature. Please fill your name and signature."
-msgstr ""
+msgstr "Firma mancante. Si prega di compilare il nome e la firma."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Missing or invalid IBAN."
-msgstr ""
+msgstr "IBAN mancante o non valido."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
@@ -320,7 +326,7 @@ msgstr "Numero di telefono"
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Phone Verification"
-msgstr ""
+msgstr "Verifica del telefono"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__provider
@@ -332,13 +338,13 @@ msgstr "Fornitore"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Re-send SMS"
-msgstr ""
+msgstr "Reinviare SMS"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Restricted to countries in the SEPA zone. Forbidden countries: %s"
-msgstr ""
+msgstr "Limitato ai paesi della zona SEPA. Paesi vietati: %s"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_sdd_mandate
@@ -369,7 +375,7 @@ msgstr ""
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "SEPA Direct Debit: Validation Notification"
-msgstr ""
+msgstr "Addebito diretto SEPA: Notifica di convalida"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_credits
@@ -393,13 +399,15 @@ msgstr "Impossibile inviare il messaggio SMS, credito non sufficiente."
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "SMS verification is disabled."
-msgstr ""
+msgstr "La verifica SMS è disabilitata."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_token.py:0
 #, python-format
 msgid "Saved payment methods cannot be restored once they have been archived."
 msgstr ""
+"I metodi di pagamento salvati non possono essere ripristinati una volta che "
+"sono stati archiviati."
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
@@ -433,23 +441,24 @@ msgstr "Firmato il"
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "Signed online on"
-msgstr ""
+msgstr "Firmato online il"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__provider
 msgid "The Payment Service Provider to use with this acquirer"
 msgstr ""
+"Il fornitore di servizi di pagamento da utilizzare con questo acquirente"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The bank account of the journal is not a valid IBAN."
-msgstr ""
+msgstr "Il conto bancario del giornale non è un IBAN valido."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_on
 msgid "The date of the signature"
-msgstr ""
+msgstr "La data della firma"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -464,91 +473,91 @@ msgstr ""
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The mandate is invalid."
-msgstr ""
+msgstr "Il mandato non è valido."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The mandate owner and customer do not match."
-msgstr ""
+msgstr "Il proprietario del mandato e il cliente non corrispondono."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was signed by %s."
-msgstr ""
+msgstr "Il mandato è stato firmato da %s."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was verified with phone number %s."
-msgstr ""
+msgstr "Il mandato è stato verificato con il numero di telefono %s."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The name and signature must be provided."
-msgstr ""
+msgstr "Il nome e la firma devono essere forniti."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_by
 msgid "The name of the signer"
-msgstr ""
+msgstr "Il nome del firmatario"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number does not match."
-msgstr ""
+msgstr "Il numero di telefono non corrisponde."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The phone number must be provided and verified."
-msgstr ""
+msgstr "Il numero di telefono deve essere fornito e verificato."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number should be in international format."
-msgstr ""
+msgstr "Il numero di telefono deve essere in formato internazionale."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__phone_number
 msgid "The phone number used for verification by SMS code"
-msgstr ""
+msgstr "Il numero di telefono utilizzato per la verifica tramite codice SMS"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The token is not linked to a mandate."
-msgstr ""
+msgstr "Il token non è legato a un mandato."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The transaction is not linked to a token."
-msgstr ""
+msgstr "La transazione non è legata a un token."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The verification code does not match."
-msgstr ""
+msgstr "Il codice di verifica non corrisponde."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "This mandate has already been verified."
-msgstr ""
+msgstr "Questo mandato è già stato verificato."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Unknown mandate ID."
-msgstr ""
+msgstr "ID di mandato sconosciuta."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__verification_code
@@ -566,17 +575,17 @@ msgstr "Verificato"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "We are not able to process your payment."
-msgstr ""
+msgstr "Non siamo in grado di elaborare il tuo pagamento."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
 msgid "Whether a signature is required to create a new mandate."
-msgstr ""
+msgstr "Se è necessaria una firma per creare un nuovo mandato."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Whether phone numbers must be verified by an SMS code."
-msgstr ""
+msgstr "Se i numeri di telefono devono essere verificati da un codice SMS."
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
@@ -592,6 +601,8 @@ msgid ""
 "Your SEPA Direct Debit Mandate with {{ "
 "object.payment_journal_id.company_id.name }}"
 msgstr ""
+"Mandato di addebito diretto SEPA con {{ "
+"object.payment_journal_id.company_id.name }}"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -610,4 +621,4 @@ msgstr "Il tuo codice di conferma è %s"
 #. module: payment_sepa_direct_debit
 #: model:mail.template,report_name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "{{ (object.name or '').replace('/','_') }}"
-msgstr ""
+msgstr "{{ (object.name or '').replace('/','_') }}"

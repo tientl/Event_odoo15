@@ -6,15 +6,15 @@
 # Martin Trigaux, 2021
 # Yenthe Van Ginneken <yenthespam@gmail.com>, 2021
 # Odoo Experts Consultants <consultants@odooexperts.nl>, 2021
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2021
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2021\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,6 +34,24 @@ msgstr "# Loonstrook"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Loonstroken"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
+"%s:\n"
+"- Werknemer: %s\n"
+"- Contract: %s\n"
+"- Loonstrook: %s\n"
+"- Salarisregel: %s (%s)\n"
+"- Fout: %s"
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -318,7 +336,7 @@ msgstr "Voeg een nieuwe salarisstructuur toe"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Add an internal note..."
-msgstr "Voeg interne notitie toe..."
+msgstr "Voeg een interne notitie toe..."
 
 #. module: hr_payroll
 #: model:res.groups,name:hr_payroll.group_hr_payroll_manager
@@ -2099,12 +2117,12 @@ msgstr "Salaris - technisch: werkinvoer resetten"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_pivot
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_search
 msgid "Payroll Analysis"
-msgstr "Loonstroken analyse"
+msgstr "Loonstrokenanalyse"
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_hr_payroll_report
 msgid "Payroll Analysis Report"
-msgstr "Loonstrook analyse rapport"
+msgstr "Loonstrookanalyse rapport"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
@@ -2771,10 +2789,10 @@ msgstr "Te bevestigen loonstroken"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
-"Een deel van de kalender van %s wordt niet gedekt door een werkinschrijving."
-" Maak het schema compleet."
+"Een deel van de kalender van %s wordt niet gedekt door een werkboeking. "
+"Graag het schema invullen. Tijdsintervallen om naar te zoeken: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
@@ -2914,13 +2932,13 @@ msgstr "De berekeningsmethode voor de regel bedrag."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "Het contract waarvoor deze input wordt toegepast."
+msgid "The contract this input should be applied to"
+msgstr "Het contract waarop deze invoer moet worden toegepast"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "Het contract waarvoor deze gewerkte dagen gelden."
+msgid "The contract this worked days should be applied to"
+msgstr "Het contract waarop deze gewerkte dagen moet worden toegepast:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3042,6 +3060,12 @@ msgstr ""
 "Dit wordt gebruikt om de veldwaardes van % te berekenen. Normaliter is dit "
 "standaard, maar je kunt ook categorie veldcodes in kleine letters gebruiken "
 "als variabele naam (hra, ma, lta, etc.) en de variabele basic."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr "Tijdsintervallen om naar te zoeken:%s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3420,44 +3444,32 @@ msgstr "Werktijden"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Foutieve basispercentage of hoeveelheid opgegeven voor salarisregel %s (%s)\n"
-"Fout: %s"
+msgid "Wrong percentage base or quantity defined for:"
+msgstr "Verkeerde basispercentage of hoeveelheid gedefinieerd voor:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Foutieve Python code voor salarisregel %s (%s).\n"
-"Fout: %s"
+msgid "Wrong python code defined for:"
+msgstr "Verkeerde python-code gedefinieerd voor:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Foutieve python voorwaarde gedefinieerd voor salarisregel %s (%s)."
+msgid "Wrong python condition defined for:"
+msgstr "Verkeerde python-voorwaarde gedefinieerd voor:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Foutieve hoeveelheid ingesteld voor salarisregel %s (%s).\n"
-"Fout: %s"
+msgid "Wrong quantity defined for:"
+msgstr "Verkeerde hoeveelheid gedefinieerd voor:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Verkeerde bereikvoorwaarde gedefinieerd voor salarisregel %s (%s)."
+msgid "Wrong range condition defined for:"
+msgstr "Verkeerde bereikvoorwaarde gedefinieerd voor:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

@@ -4,8 +4,9 @@ import logging
 import re
 from random import randint
 
-from odoo import _, fields, models
+from odoo import SUPERUSER_ID, _, fields, models
 from odoo.exceptions import ValidationError
+
 
 _logger = logging.getLogger(__name__)
 
@@ -113,4 +114,4 @@ class SDDMandate(models.Model):
 
         template = self.env.ref('payment_sepa_direct_debit.mail_template_sepa_notify_validation')
         self.write({'state': 'active', 'verified': True})
-        template.send_mail(self.id)
+        template.with_user(SUPERUSER_ID).send_mail(self.id)

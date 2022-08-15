@@ -141,8 +141,8 @@ odoo.define('web_grid.GridRenderer', function (require) {
          * @returns {Boolean}
          */
         get showNoContentHelp() {
-            const state = Array.isArray(this.props.data) ? this.props.data[0] : this.props.data;
-            return state.rows[0] === undefined && !!this.props.noContentHelp;
+            const stateRow = Array.isArray(this.props.data) ? this.props.data.find(data => data.rows[0]) : this.props.data.rows[0];
+            return stateRow === undefined && !!this.props.noContentHelp;
         }
 
         //----------------------------------------------------------------------
@@ -314,24 +314,6 @@ odoo.define('web_grid.GridRenderer', function (require) {
             if (value !== undefined) {
                 this._cellEdited(path, value, doneCallback);
             }
-        }
-        /**
-         * @private
-         * @param {CustomEvent} ev
-         */
-        _onUpdateValueTemporary(ev) {
-            const value = ev.detail.value;
-            const path = ev.detail.path;
-            const cell_path = path.split('.');
-            const grid_path = cell_path.slice(0, -3);
-            const row_path = grid_path.concat(['rows'], cell_path.slice(-2, -1));
-            const col_path = grid_path.concat(['cols'], cell_path.slice(-1));
-            this.trigger('cell-edited-temporary', {
-                cell_path,
-                row_path,
-                col_path,
-                value
-            });
         }
         /**
          * Hover the column in which the mouse is.

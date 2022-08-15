@@ -30,9 +30,25 @@ class AccountDebitNote(models.TransientModel):
             return self.env['l10n_latam.document.type'].search([('code', '=', '111'), ('country_id.code', '=', "CL")], limit=1)
         return self.env['l10n_latam.document.type'].search([('code', '=', '56'), ('country_id.code', '=', "CL")], limit=1)
 
-    def _is_tax(self, account):
-        return len(self.env['account.tax.repartition.line'].search(
-            [['account_id', '=', account.id], ['repartition_type', '=', 'tax']])) > 0
+    def _get_opposite_tax_tag(self, line):
+        # If we are making a debit note over a credit note, we need to use the reverse or opposite tax tag, for the
+        # tax line and for the base line. get_tax_tags do the job, provided you pass the False value as the first
+        # argument of the method.
+        # the approach of getting the tax tags from the repartition line works only for the tax line and not for
+        # the base line, since there is no repartition line for the base line.
+        if line.tax_line_id:
+            return [[6, 0, line.tax_line_id.get_tax_tags(False, 'tax').ids]]
+        elif line.account_id.user_type_id.type not in ['receivable', 'payable']:
+            return [[6, 0, line.tax_ids.get_tax_tags(False, 'base').ids]]
+        return [[5]]
+
+    def _get_repartition_line(self, line):
+        if line.tax_repartition_line_id.refund_tax_id:
+            # for credit notes (refund) as originating document, we need to get the opposite repartition line
+            return line.tax_repartition_line_id.refund_tax_id.invoice_repartition_line_ids.filtered(
+                lambda x: x.repartition_type == line.tax_repartition_line_id.repartition_type)
+        # otherwise, the repartition line is the same as the originating doc (invoice for example)
+        return line.tax_repartition_line_id
 
     def _prepare_default_values(self, move):
         # I would like to add the following line, because there is no case where you need to copy the lines
@@ -58,16 +74,7 @@ class AccountDebitNote(models.TransientModel):
             # if we make this with traditional "with_context(internal_type='debit_note').copy(default=default_values)
             # the values will appear negative in the debit note
             default_values['line_ids'] = [[5, 0]]
-            tax_amount = sum([(taxes.price_unit if taxes.move_id.move_type in [
-                'out_refund', 'in_refund'] else -taxes.price_unit) for taxes in move.line_ids.filtered(
-                lambda x: self._is_tax(x.account_id))])
-            for line in move.line_ids:
-                if self._is_tax(line.account_id):
-                    # if we have a line with a tax, there will be an unbalanced move entry. We must leave the tax
-                    # apart and let the tax calculation to happen during the post
-                    continue
-                price_unit = abs(tax_amount) - abs(line.price_unit) if line.account_id.user_type_id.type in [
-                    'receivable', 'payable'] else line.price_unit
+            for line in move.line_ids.filtered(lambda x: not x.display_type):
                 default_values['line_ids'].append([0, 0, {
                     'product_id': line.product_id.id,
                     'account_id': line.account_id.id,
@@ -75,11 +82,13 @@ class AccountDebitNote(models.TransientModel):
                     'analytic_tag_ids': [[6, 0, line.analytic_tag_ids.ids]],
                     'name': line.name,
                     'quantity': line.quantity,
-                    'price_unit': price_unit,
+                    'price_unit': line.price_unit,
                     'exclude_from_invoice_tab': line.move_id.is_invoice() and (line.account_id.user_type_id.type in [
-                        'receivable', 'payable'] or self._is_tax(line.account_id)),
+                        'receivable', 'payable'] or line.tax_line_id),
+                    'tax_repartition_line_id': self._get_repartition_line(line).id,
                     'tax_ids': [[6, 0, line.tax_ids.ids]],
-                    'tax_tag_ids': [[6, 0, line.tax_tag_ids.ids]], }, ])
+                    'tax_tag_ids': self._get_opposite_tax_tag(line),
+                }, ])
         elif self.l10n_cl_edi_reference_doc_code == '2':
             default_values['line_ids'] = [[5, 0], [0, 0, {
                 'account_id': move.journal_id.default_account_id.id,

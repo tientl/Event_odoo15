@@ -6,6 +6,11 @@
                 <t t-foreach="docs" t-as="employee">
                     <t t-call="web.external_layout">
                         <div class="page">
+                            <div class="row border border-top-0">
+                                <div class="col-12 text-center text-uppercase font-weight-bold">
+                                    <h1>Fiche 281.10 Revenus <span t-esc="data['f2002_inkomstenjaar']"/></h1>
+                                </div>
+                            </div>
                             <div class="row border">
                                 <div class="col-4 border-right">
                                     <strong>1. Nr.</strong> <span t-esc="employee.id"/>
@@ -27,70 +32,15 @@
                                     <strong>4. Bénéficiaire:</strong><br/>
                                     <span t-esc="data['f2013_naam']"/><br/>
                                     <span t-esc="data['f2015_adres']"/><br/>
-                                    <span t-esc="data['f2016_postcodebelgisch']"/>,
+                                    <span t-if="'f2016_postcodebelgisch' in data" t-esc="data['f2016_postcodebelgisch']"/>,
                                     <span t-esc="data['employee_city']"/><br/>
                                 </div>
                             </div>
                             <div class="row border border-top-0">
-                                <div class="col-12 text-center text-uppercase font-weight-bold">
-                                    Fiche 281.10 Revenus <span t-esc="data['f2002_inkomstenjaar']"/>
-                                </div>
-                            </div>
-                            <div class="row border border-top-0">
-                                <div class="col-5 border-right">
-                                    <strong>5. Situation de famille</strong>
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="font-weight-bold">
-                                            <tr>
-                                                <th>Cjt.</th>
-                                                <th>Enf.</th>
-                                                <th>Autres</th>
-                                                <th>Divers</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><span t-esc="data['f2020_echtgenote']"/></td>
-                                                <td><span t-esc="data['f2021_aantalkinderen']"/></td>
-                                                <td><span t-esc="data['f2022_anderentlaste']"/></td>
-                                                <td><span t-esc="data['f2023_diverse']"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span t-esc="0 if not data['f2024_echtgehandicapt'] else H"/></td>
-                                                <td style="background-color: black;"></td>
-                                                <td style="background-color: black;"></td>
-                                                <td><span t-esc="0 if not data['f2026_verkrghandicap'] else H"/></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
                                 <div class="col-7">
                                     <div class="row">
-                                        <div class="col border-bottom">
-                                            <strong>6. Etat Civil:</strong> 
-                                            <t t-if="data['f2019_burgerlijkstand'] == '1'">
-                                                <span>Célibataire</span>
-                                            </t>
-                                            <t t-if="data['f2019_burgerlijkstand'] == '2'">
-                                                <span>Marié/Cohabitant Légal</span>
-                                            </t>
-                                            <t t-if="data['f2019_burgerlijkstand'] == '3'">
-                                                <span>Veuf</span>
-                                            </t>
-                                            <t t-if="data['f2019_burgerlijkstand'] == '4'">
-                                                <span>Divorcé</span>
-                                            </t>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col border-bottom">
-                                            <strong>7. N° commission paritaire:</strong>
-                                            <span t-esc="data['f10_2100_nrparitaircomite']"/><br/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col">
-                                            <strong>8. N° national:</strong>
+                                            <strong>5. N° national:</strong>
                                             <span t-esc="data['f2011_nationaalnr']"/><br/>
                                         </div>
                                     </div>
@@ -100,7 +50,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-9">
-                                            <span class="text-left text-uppercase font-weight-bold">9. REMUNERATION (autres que visées sous 13, 14 a et 15a)</span>
+                                            <span class="text-left text-uppercase font-weight-bold">6. REMUNERATION (autres que visées sous 10, 11a et 12a)</span>
                                         </div>
                                         <div class="col-1 text-right">
                                             <strong>Code</strong>
@@ -132,30 +82,30 @@
                                         <div class="col-11 font-weight-bold offset-1">d) Options sur actions</div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-6 font-weight-bold offset-2">1° Attribuées en 2020</div>
+                                        <div class="col-6 font-weight-bold offset-2">1° Attribuées en 2021</div>
                                         <div class="col-4 text-right"><span t-esc="data['f10_2082_bedrag']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-6 font-weight-bold offset-2">2° Attribuées avant 2020</div>
+                                        <div class="col-6 font-weight-bold offset-2">2° Attribuées avant 2021</div>
                                         <div class="col-4 text-right"><span t-esc="data['f10_2083_bedrag']"/></div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-6 font-weight-bold offset-2">* pourcentage(s)</div>
-                                        <div class="col-4 text-right"><span t-esc="data['f10_2083_bedrag']"/></div>
+                                        <div class="col-4 text-right"><span t-esc="data['f10_2106_percentages']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-6 font-weight-bold offset-2">* Options attribuées par une société étrangère ne possédant pas d’établissement en Belgique</div>
+                                        <div class="col-6 font-weight-bold offset-2">* Options attribuées par une société étrangère ne possédant pas d'établissement en Belgique</div>
                                         <div class="col-4 text-right">
-                                            <t t-if="data['f10_2039_optiebuitvennoots']">
+                                            <t t-if="data['f10_2039_optiebuitvennoots'] != '0'">
                                                 <span>Oui</span>
                                             </t>
-                                            <t t-if="not data['f10_2039_optiebuitvennoots']">
+                                            <t t-if="data['f10_2039_optiebuitvennoots'] == '0'">
                                                 <span>Non</span>
                                             </t>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">A. Total: (9a + 9b + 9c + 9d, 1° + 9d, 2°)</div>
+                                        <div class="col-8 font-weight-bold offset-1">A. Total: (6a + 6b + 6c + 6d, 1° + 6d, 2°)</div>
                                         <div class="col-1 text-right">250</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2062_totaal']"/></div>
                                     </div>
@@ -165,21 +115,21 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">10. Revenus taxables distrinctement</span>
+                                            <span class="text-left text-uppercase font-weight-bold">7. Revenus taxables distrinctement</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">a) Pécule de vacances anticipé (autre que visé sous 14b et 15b): </div>
+                                        <div class="col-8 font-weight-bold offset-1">a) Pécule de vacances anticipé (autre que visé sous 11b et 12b): </div>
                                         <div class="col-1 text-right">251</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2063_vervroegdvakantieg']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">b) Arriérés (autres que visés sous 12b, 14c et 15c): </div>
+                                        <div class="col-8 font-weight-bold offset-1">b) Arriérés (autres que visés sous 9b, 11c et 12c): </div>
                                         <div class="col-1 text-right">252</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2064_afzbelachterstall']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">c) Indemnités de dédit (autres que visées sous 14d et 15d) et indemnités de reclassement:</div>
+                                        <div class="col-8 font-weight-bold offset-1">c) Indemnités de dédit (autres que visées sous 11d et 12d) et indemnités de reclassement:</div>
                                         <div class="col-1 text-right">308</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2065_opzeggingsreclasseringsverg']"/></div>
                                     </div>
@@ -194,7 +144,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">11. Timbres intempéries</span>
+                                            <span class="text-left text-uppercase font-weight-bold">8. Timbres intempéries</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -208,7 +158,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">12. Avantages non récurrents liés aux résultats</span>
+                                            <span class="text-left text-uppercase font-weight-bold">9. Avantages non récurrents liés aux résultats</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -227,7 +177,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">13. Imposable au taux de 33% :</span>
+                                            <span class="text-left text-uppercase font-weight-bold">10. Imposable au taux de 33% :</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -241,7 +191,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">14. Rémunérations obtenues par des sportifs dans le cadre de leur activité sportive :</span>
+                                            <span class="text-left text-uppercase font-weight-bold">11. Rémunérations obtenues par des sportifs dans le cadre de leur activité sportive :</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -270,7 +220,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">15. Rémunérations obtenues par des arbitres de compétitions sportives pour leurs prestations arbitrales, ou par des formateurs, des entraîneurs et des accompagnateurs pour leur activité au profit de sportifs :</span>
+                                            <span class="text-left text-uppercase font-weight-bold">12. Rémunérations obtenues par des arbitres de compétitions sportives pour leurs prestations arbitrales, ou par des formateurs, des entraîneurs et des accompagnateurs pour leur activité au profit de sportifs :</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -299,11 +249,11 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">16. PC Privé</span>
+                                            <span class="text-left text-uppercase font-weight-bold">13. PC Privé</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">Montant de l’intervention de l’employeur</div>
+                                        <div class="col-8 font-weight-bold offset-1">Montant de l'intervention de l'employeur</div>
                                         <div class="col-1 text-right">240</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2130_privatepc']"/></div>
                                     </div>
@@ -313,7 +263,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">17. Intervention dans les frais de déplacement :</span>
+                                            <span class="text-left text-uppercase font-weight-bold">14. Intervention dans les frais de déplacement :</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -336,11 +286,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2088_andervervoermiddel']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-9 font-weight-bold offset-1">d) Allocation de mobilité « Cash for Car »</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2176_cashforcar']"/></div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">Total: (17a + 17b + 17c + 17d)</div>
+                                        <div class="col-8 font-weight-bold offset-1">Total: (14a + 14b + 14c)</div>
                                         <div class="col-1 text-right">254</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2077_totaal']"/></div>
                                     </div>
@@ -350,11 +296,11 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">18. Fonds d’Impulsion</span>
+                                            <span class="text-left text-uppercase font-weight-bold">15. Fonds d'Impulsion</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">Prime du Fonds d’Impulsion pour la médecine générale obtenue par un médecin généraliste agréé pour s’installer dans une zone « prioritaire »</div>
+                                        <div class="col-8 font-weight-bold offset-1">Prime du Fonds d'Impulsion pour la médecine générale obtenue par un médecin généraliste agréé pour s'installer dans une zone « prioritaire »</div>
                                         <div class="col-1 text-right">267</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2066_impulsfund']"/></div>
                                     </div>
@@ -364,7 +310,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">19. Retenues pour pensions complémentaires</span>
+                                            <span class="text-left text-uppercase font-weight-bold">16. Retenues pour pensions complémentaires</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -396,11 +342,11 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">20. Rémunérations pour heures supplémentaires dans l’horeca qui entrent en ligne de compte pour l’exonération</span>
+                                            <span class="text-left text-uppercase font-weight-bold">17. Rémunérations pour heures supplémentaires dans l'horeca qui entrent en ligne de compte pour l'exonération</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">a) auprès d’employeurs qui n’utilisent pas le système de caisse enregistreuse</div>
+                                        <div class="col-8 font-weight-bold offset-1">a) auprès d'employeurs qui n'utilisent pas le système de caisse enregistreuse</div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-7 font-weight-bold offset-2">1° Rémunérations ordinaires</div>
@@ -408,7 +354,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2061_bedragoveruren300horeca']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">Nombre d’heures supplémentaires</div>
+                                        <div class="col-7 font-weight-bold offset-2">Nombre d'heures supplémentaires</div>
                                         <div class="col-1 text-right">336</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2167_aantaloveruren300horeca']"/></div>
                                     </div>
@@ -418,12 +364,12 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2111_achterstalloveruren300horeca']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">Nombre d’heures supplémentaires</div>
+                                        <div class="col-7 font-weight-bold offset-2">Nombre d'heures supplémentaires</div>
                                         <div class="col-1 text-right">338</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2168_achterstallaantaloveruren300horeca']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">b) auprès d’employeurs qui utilisent le système de caisse enregistreuse</div>
+                                        <div class="col-8 font-weight-bold offset-1">b) auprès d'employeurs qui utilisent le système de caisse enregistreuse</div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-7 font-weight-bold offset-2">1° Rémunérations ordinaires</div>
@@ -431,7 +377,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2143_bedragoveruren360horeca']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">Nombre d’heures supplémentaires</div>
+                                        <div class="col-7 font-weight-bold offset-2">Nombre d'heures supplémentaires</div>
                                         <div class="col-1 text-right">396</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2169_aantaloveruren360horeca']"/></div>
                                     </div>
@@ -441,7 +387,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2165_achterstalloveruren360horeca']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">Nombre d’heures supplémentaires</div>
+                                        <div class="col-7 font-weight-bold offset-2">Nombre d'heures supplémentaires</div>
                                         <div class="col-1 text-right">398</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2170_achterstallaantaloveruren360horeca']"/></div>
                                     </div>
@@ -451,32 +397,40 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">21. Heures supplémentaires qui donnent droit à un sursalaire</span>
+                                            <span class="text-left text-uppercase font-weight-bold">18. Heures supplémentaires qui donnent droit à un sursalaire</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">a) Nombre total d’heures supplémentaires effectivement prestées</div>
+                                        <div class="col-8 font-weight-bold offset-1">a) Nombre total d'heures supplémentaires effectivement prestées</div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">1° qui entrent en ligne de compte pour la limite jusqu’ à 180 heure</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2118_aantaloveruren']"/></div>
+                                        <div class="col-8 font-weight-bold offset-2">1° qui entrent en ligne de compte pour la limite jusqu'à 180 heure</div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">2° qui entrent en ligne de compte pour la limite jusqu’ à 180 heures (Construction avec système d’enregistrement</div>
+                                        <div class="col-6 font-weight-bold offset-3">a) dans le secteur de la construction avec système d'enregistrement</div>
+                                        <div class="col-1 text-right">305</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2142_aantaloveruren180']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">Total (21.a,1° + 21.a,2°)</div>
-                                        <div class="col-1 text-right">305</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2129_totaaloverwerktoeslag']"/></div>
+                                        <div class="col-8 font-weight-bold offset-3">b) dans les autres secteurs</div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-7 font-weight-bold offset-2">3° qui entrent en ligne de compte pour la limite jusqu’ à 360 heures (*) </div>
+                                        <div class="col-5 font-weight-bold offset-4">- effectivement prestées jusqu'au 30.06.2021 inclus</div>
+                                        <div class="col-1 text-right">312</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2132_amountovertime180firstsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-5 font-weight-bold offset-4">- effectivement prestées à partir du 01.07.2021</div>
+                                        <div class="col-1 text-right">313</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2118_amountovertime180secondsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-2">3° qui entrent en ligne de compte pour la limite jusqu' à 360 heures (*) </div>
                                         <div class="col-1 text-right">317</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2110_aantaloveruren360']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">b) Base de calcul du sursalaire relatif aux heures donnant droit à une réduction de :</div>
+                                        <div class="col-8 font-weight-bold offset-1">b) Base de calcul du sursalaire relatif aux heures supplémentaires donnant droit à une réduction de :</div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-7 font-weight-bold offset-2">66,81 %</div>
@@ -484,7 +438,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2067_rechtvermindering66_81']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">Nombre d’heures</div>
+                                        <div class="col-8 font-weight-bold offset-2">Nombre d'heures</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2095_aantaluren']"/></div>
                                     </div>
                                     <div class="row border-bottom">
@@ -493,7 +447,7 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2068_rechtvermindering57_75']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">Nombre d’heures</div>
+                                        <div class="col-8 font-weight-bold offset-2">Nombre d'heures</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2097_aantaluren']"/></div>
                                     </div>
                                 </div>
@@ -502,18 +456,56 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">22. Rémunérations qui entrent en ligne de compte pour l’exonération pour les heures supplémentaires volontaires prestées en raison de la pandémie du COVID-19 du 01.04 au 30.06.2020 inclus auprès d’employeurs appartenant aux secteurs critiques et/ou du 01.10 au 31.12.2020 auprès d’employeurs appartenant aux secteurs cruciaux</span>
+                                            <span class="text-left text-uppercase font-weight-bold">19. Rémunérations qui entrent en ligne de compte pour l'exonération pour heures supplémentaires volontaires</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">a) Rémunérations</div>
-                                        <div class="col-1 text-right">306</div>
+                                        <div class="col-8 font-weight-bold offset-1">a) Prestées en 2021 dans le cadre de la lutte contre la COVID-19 et/ou dans le cadre du plan de relance</div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-2">1) Rémunération</div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-3">- pour heures supplémentaires prestées entre le 01.01.2021 et le 30.09.2021 inclus auprès d’employeurs appartenant aux secteurs cruciaux</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2190_covidovertimeremunerationfirstsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-3">- pour heures supplémentaires prestées entre le 01.07.2021 et le 31.12.2021 dans le cadre du plan de relance</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2191_covidovertimeremunerationsecondsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-6 font-weight-bold offset-3">TOTAL</div>
+                                        <div class="col-1 text-right">310</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2135_amountpaidforvolontarysuplementaryhourscovid']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-1">b) Nombre d’heures prestées et payées en 2020</div>
+                                        <div class="col-8 font-weight-bold offset-2">2) Heures supplémentaires</div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-3">- prestées du 01.01.2021 au 30.09.2021 inclus auprès d’employeurs appartenant aux secteurs cruciaux</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2192_covidovertimehoursfirstsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-3">- prestées du 01.07.2021 au 31.12.2021 inclus dans le cadre du plan de relance</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2193_covidovertimehourssecondsemester']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-6 font-weight-bold offset-3">TOTAL</div>
+                                        <div class="col-1 text-right">311</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2194_covidovertimehourstotal']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-1">b) prestées en 2020 dans le cadre de la lutte contre la COVID-19 auprès d’employeurs appartenant aux secteurs critiques et/ou auprès d’employeurs appartenant aux secteurs cruciaux</div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-2">1) Rémunération</div>
+                                        <div class="col-1 text-right">306</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2196_covidovertimeremuneration2020']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-7 font-weight-bold offset-2">2) heures supplémentaires prestées en 2020 mais payées en 2021</div>
                                         <div class="col-1 text-right">307</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2057_volontarysuplmentaryhourscovid']"/></div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2195_covidovertimehours2020']"/></div>
                                     </div>
                                 </div>
                             </div>
@@ -521,15 +513,15 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">23. Précompte professionnel</span>
+                                            <span class="text-left text-uppercase font-weight-bold">20. Précompte professionnel</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-9 font-weight-bold offset-1">a) basé sur les revenus reçus de l’employeur</div>
+                                        <div class="col-9 font-weight-bold offset-1">a) basé sur les revenus reçus de l'employeur</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2131_bedrijfsvoorheffingvanwerkgever']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-9 font-weight-bold offset-1">b) basé sur les revenus reçus d’une société étrangère liée</div>
+                                        <div class="col-9 font-weight-bold offset-1">b) basé sur les revenus reçus d'une société étrangère liée</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2133_bedrijfsvoorheffingbuitenlvenverbondenwerkgever']"/></div>
                                     </div>
                                     <div class="row border-bottom">
@@ -543,7 +535,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">24. Cotisations spéciales pour la sécurité sociale</span>
+                                            <span class="text-left text-uppercase font-weight-bold">21. Cotisations spéciales pour la sécurité sociale</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -557,7 +549,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">25. Personnel du secteur public sans contrat de travail</span>
+                                            <span class="text-left text-uppercase font-weight-bold">22. Personnel du secteur public sans contrat de travail</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -578,7 +570,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">26. Bonus à l’emploi</span>
+                                            <span class="text-left text-uppercase font-weight-bold">23. Bonus à l'emploi</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -592,7 +584,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">27. Renseignements divers</span>
+                                            <span class="text-left text-uppercase font-weight-bold">24. Renseignements divers</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -610,12 +602,20 @@
                                         <div class="col-11 font-weight-bold offset-1">b) Dépenses propres à l'employeur</div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2078_eigenkosten']"/></div>
+                                        <div class="col-8 font-weight-bold offset-2">- remboursements forfaitaires sur base de normes sérieuses</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2031_compensationwithstandards']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Indemnité totale</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2031_vermelding']"/></div>
+                                        <div class="col-8 font-weight-bold offset-2">- remboursements forfaitaires en absence de normes sérieuses</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2078_compensationamountwithoutstandards']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-2">- remboursements sur base de justificatifs</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2033_compensationwithdocuments']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-2">- indemnité de mobilité</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2084_mobiliteitsvergoedi']"/></div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-11 font-weight-bold offset-1">c) Pourboires</div>
@@ -629,6 +629,10 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2113_forfaitrsz']"/></div>
                                     </div>
                                     <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-2">Montant</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2073_tipamount']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
                                         <div class="col-11 font-weight-bold offset-1">d) Travailleurs frontaliers</div>
                                     </div>
                                     <div class="row border-bottom">
@@ -636,64 +640,46 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2090_outborderdays']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">e) Revenus exonérés perçus en exécution d’un contrat de travail flexi-job</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
+                                        <div class="col-9 font-weight-bold offset-1">e) Revenus exonérés perçus en exécution d'un contrat de travail flexi-job</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2166_flexi_job']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">f) Prime bénéficiaire</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
+                                        <div class="col-9 font-weight-bold offset-1">f) Prime bénéficiaire</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2177_winstpremies']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">g) Allocation de mobilité « Cash for Car »</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2178_cashforcartotaal']"/></div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">h) Budget de mobilité: montant total</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
+                                        <div class="col-9 font-weight-bold offset-1">g) Budget de mobilité: montant total</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2134_totaalbedragmobiliteitsbudget']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">i) Convention de premier emploi : supplément compensatoire</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
+                                        <div class="col-9 font-weight-bold offset-1">h) Convention de premier emploi : supplément compensatoire</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2179_startersjob']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">j) Pompier volontaire et agent volontaire de la Protection civile allocations payées</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* Montant</div>
+                                        <div class="col-9 font-weight-bold offset-1">i) Pompier volontaire et agent volontaire de la Protection civile allocations payées</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2180_onkostenbrandweerenambulanciers']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">k) Job d’étudiant</div>
+                                        <div class="col-11 font-weight-bold offset-1">j) Job d'étudiant</div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-8 font-weight-bold offset-2">* montant total de toutes les rémunérations payées dans le cadre d'un contrat d'occupation d'étudiant</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2136_amountcontractofstudent']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">* rémunérations spécifiques pour les prestations pendant les deuxième et quatrième trimestres 2020 </div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2137_otheramountstudent']"/></div>
+                                        <div class="col-8 font-weight-bold offset-2">* rémunérations spécifiques payées en 2021 pour les prestations du premier au troisième trimestres 2021 inclus et/ou pour des prestations effectuées pendant les deuxième et quatrième trimestres 2020</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2137_amountstudent2020oruntilthirdquarter2021']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">l) Chèques consommation</div>
+                                        <div class="col-11 font-weight-bold offset-1">k) Chèques consommation</div>
                                     </div>
                                     <div class="row border-bottom">
                                         <div class="col-8 font-weight-bold offset-2">* montant total de toutes les rémunérations payées dans le cadre d'un contrat d'occupation d'étudiant</div>
                                         <div class="col-2 text-right"><span t-esc="data['f10_2138_chequesofconsumptions']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-9 font-weight-bold offset-1">o) Prime Corona</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2198_coronabonus']"/></div>
                                     </div>
                                 </div>
                             </div>
@@ -701,7 +687,7 @@
                                 <div class="col-12">
                                     <div class="row border-bottom">
                                         <div class="col-12">
-                                            <span class="text-left text-uppercase font-weight-bold">28. Rémunérations et autres avantages reçus d’une société étrangère liée</span>
+                                            <span class="text-left text-uppercase font-weight-bold">25. Rémunérations et autres avantages reçus d'une société étrangère liée</span>
                                         </div>
                                     </div>
                                     <div class="row border-bottom">
@@ -766,20 +752,6 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2037_vergoedingkosten']"/></div>
                                     </div>
                                     <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">* Mention : INTERV./INT.</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">Montant</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2079_tussenkomstintr']"/></div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-11 font-weight-bold offset-1">* Mention : INDEMNITES DE DETACHEMENT</div>
-                                    </div>
-                                    <div class="row border-bottom">
-                                        <div class="col-8 font-weight-bold offset-2">Montant</div>
-                                        <div class="col-2 text-right"><span t-esc="data['f10_2080_detacheringsvergoed']"/></div>
-                                    </div>
-                                    <div class="row border-bottom">
                                         <div class="col-11 font-weight-bold offset-1">* Mention : INDEMNITE DE MOBILITE</div>
                                     </div>
                                     <div class="row border-bottom">
@@ -787,6 +759,31 @@
                                         <div class="col-2 text-right"><span t-esc="data['f10_2084_mobiliteitsvergoedi']"/></div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row border border-top-0">
+                                <div class="col-12">
+                                    <div class="row border-bottom">
+                                        <div class="col-10">
+                                            <span class="text-left text-uppercase font-weight-bold">26. Travailleur saisonnier étranger dans l’agriculture et l’horticulture soumis au précompte professionnel libératoire</span>
+                                        </div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2038_seasonalworker']"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row border border-top-0">
+                                <div class="col-12">
+                                    <div class="row border-bottom">
+                                        <div class="col-10">
+                                            <span class="text-left text-uppercase font-weight-bold">27. Cadre ou chercheur étranger</span>
+                                        </div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2034_ex']"/></div>
+                                    </div>
+                                    <div class="row border-bottom">
+                                        <div class="col-8 font-weight-bold offset-2">Indemnité de détachement</div>
+                                        <div class="col-2 text-right"><span t-esc="data['f10_2080_detacheringsvergoed']"/></div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </t>

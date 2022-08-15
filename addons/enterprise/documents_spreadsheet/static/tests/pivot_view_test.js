@@ -2,6 +2,7 @@
 
 import { getBasicData } from "./spreadsheet_test_data";
 import {
+    createSpreadsheet,
     createSpreadsheetFromPivot,
     getCell,
     getCellContent,
@@ -10,12 +11,16 @@ import {
     getCellValue,
     getMerges,
     setCellContent,
+    waitForEvaluation,
 } from "./spreadsheet_test_utils";
 import { createWebClient, doAction } from "@web/../tests/webclient/helpers";
-import { click, nextTick } from "@web/../tests/helpers/utils";
+import { click, nextTick, legacyExtraNextTick, patchWithCleanup } from "@web/../tests/helpers/utils";
+import { modal } from "web.test_utils"
+
 import { makeView } from "@web/../tests/views/helpers";
 import { dialogService } from "@web/core/dialog/dialog_service";
 import { registry } from "@web/core/registry";
+import { session } from "@web/session";
 import {
     toggleMenu,
     toggleMenuItem,
@@ -26,6 +31,8 @@ import * as legacyRegistry from "web.Registry";
 import * as RamStorage from "web.RamStorage";
 import * as AbstractStorageService from "web.AbstractStorageService";
 import { spreadsheetService } from "../src/actions/spreadsheet/spreadsheet_service";
+import spreadsheet from "../src/js/o_spreadsheet/o_spreadsheet_extended";
+const { cellMenuRegistry } = spreadsheet.registries;
 
 const { module, test } = QUnit;
 
@@ -166,7 +173,7 @@ test("Add pivot: date grouping", async (assert) => {
 });
 
 test("Add pivot: no date groupings", async (assert) => {
-    assert.expect(6);
+    assert.expect(8);
     const { model } = await createSpreadsheetFromPivot({
         pivotView: {
             arch: `
@@ -175,6 +182,24 @@ test("Add pivot: no date groupings", async (assert) => {
                 <field name="foo" type="row"/>
                 <field name="probability" type="measure"/>
             </pivot>`,
+            mockRPC: function (route, args) {
+                if(args.method === "search_read" && args.model === "product"){
+                    assert.deepEqual(
+                        args.kwargs,
+                        {
+                            context: {
+                                active_test: false,
+                                lang: "en",
+                                tz: "taht",
+                                uid: 7,
+                            },
+                            domain: [["id", "in", [37, 41]]],
+                            fields: ["id"],
+                        },
+                        "RPC arguments should be correct"
+                    );
+                }
+            }
         }
     });
     assert.equal(getCellFormula(model, "A3"), `=PIVOT.HEADER("1","product_id","37")`);
@@ -638,6 +663,31 @@ test("groupby week is sorted", async (assert) => {
     assert.strictEqual(getCellFormula(model, "A4"), `=PIVOT.HEADER("1","date:week","43/2016")`);
     assert.strictEqual(getCellFormula(model, "A5"), `=PIVOT.HEADER("1","date:week","49/2016")`);
     assert.strictEqual(getCellFormula(model, "A6"), `=PIVOT.HEADER("1","date:week","50/2016")`);
+});
+
+test("groupby quarter is sorted", async (assert) => {
+    assert.expect(4);
+
+    let data = getBasicData();
+    data.partner.records[0].date = "2016-01-02";
+    data.partner.records[1].date = "2016-05-02";
+    data.partner.records[2].date = "2016-09-02";
+    data.partner.records[3].date = "2017-01-02";
+    const { model } = await createSpreadsheetFromPivot({
+        pivotView: {
+            data,
+            arch: `
+            <pivot string="Partners">
+                <field name="foo" type="col"/>
+                <field name="date" interval="quarter" type="row"/>
+                <field name="probability" type="measure"/>
+            </pivot>`,
+        },
+    });
+    assert.strictEqual(getCellFormula(model, "A3"), `=PIVOT.HEADER("1","date:quarter","1/2016")`);
+    assert.strictEqual(getCellFormula(model, "A4"), `=PIVOT.HEADER("1","date:quarter","2/2016")`);
+    assert.strictEqual(getCellFormula(model, "A5"), `=PIVOT.HEADER("1","date:quarter","3/2016")`);
+    assert.strictEqual(getCellFormula(model, "A6"), `=PIVOT.HEADER("1","date:quarter","1/2017")`);
 });
 
 test("Can save a pivot in a new spreadsheet", async (assert) => {
@@ -1106,12 +1156,12 @@ test("Can remove a pivot with undo after editing a cell", async function (assert
 test("Get value from pivot with a non-loaded cache", async function (assert) {
     assert.expect(3);
     const { model } = await createSpreadsheetFromPivot();
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     assert.equal(getCellValue(model, "C3"), 15);
     model.getters.waitForPivotDataReady("1", { force: true });
     model.dispatch("EVALUATE_CELLS", { sheetId: model.getters.getActiveSheetId() });
     assert.equal(getCellValue(model, "C3"), "Loading...");
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     assert.equal(getCellValue(model, "C3"), 15);
 });
 
@@ -1123,6 +1173,121 @@ test("Format header correctly works with non-existing field", async function (as
     await nextTick();
     assert.equal(getCellValue(model, "G10"), "non-existing");
     assert.equal(getCellValue(model, "G11"), "(Undefined)");
+});
+
+test("user related context is not saved in the spreadsheet", async function (assert) {
+    const context = {
+        allowed_company_ids: [15],
+        default_stage_id: 5,
+        search_default_stage_id: 5,
+        tz: "bx",
+        lang: "FR",
+        uid: 4,
+    };
+    const testSession = {
+        uid: 4,
+        user_companies: {
+            allowed_companies: { 15: { id: 15, name: "Hermit" } },
+            current_company: 15,
+        },
+        user_context: context,
+    };
+    patchWithCleanup(session, testSession);
+    const { model, env } = await createSpreadsheetFromPivot();
+    assert.deepEqual(env.services.user.context, context, "context is used for spreadsheet action");
+    assert.deepEqual(
+        model.exportData().pivots[1].context,
+        {
+            default_stage_id: 5,
+            search_default_stage_id: 5,
+        },
+        "user related context is not stored in context"
+    );
+});
+
+test("user context is combined with pivot context to fetch data", async function (assert) {
+    const context = {
+        allowed_company_ids: [15],
+        default_stage_id: 5,
+        search_default_stage_id: 5,
+        tz: "bx",
+        lang: "FR",
+        uid: 4,
+    };
+    const testSession = {
+        uid: 4,
+        user_companies: {
+            allowed_companies: {
+                15: { id: 15, name: "Hermit" },
+                16: { id: 16, name: "Craft" },
+            },
+            current_company: 15,
+        },
+        user_context: context,
+    };
+    const spreadsheetData = {
+        pivots: {
+            1: {
+                id: 1,
+                colGroupBys: ["foo"],
+                domain: [],
+                measures: [{ field: "probability", operator: "avg" }],
+                model: "partner",
+                rowGroupBys: ["bar"],
+                context: {
+                    allowed_company_ids: [16],
+                    default_stage_id: 9,
+                    search_default_stage_id: 90,
+                    tz: "nz",
+                    lang: "EN",
+                    uid: 40,
+                },
+            },
+        },
+    };
+    const data = getBasicData();
+    data["documents.document"].records.push({
+        id: 45,
+        raw: JSON.stringify(spreadsheetData),
+        name: "Spreadsheet",
+        handler: "spreadsheet",
+    });
+    const expectedFetchContext = {
+        allowed_company_ids: [15],
+        default_stage_id: 9,
+        search_default_stage_id: 90,
+        tz: "bx",
+        lang: "FR",
+        uid: 4,
+    };
+    patchWithCleanup(session, testSession);
+    await createSpreadsheet({
+        data,
+        spreadsheetId: 45,
+        mockRPC: function (route, { model, method, kwargs }) {
+            if (model !== "partner") {
+                return;
+            }
+            switch (method) {
+                case "search_read":
+                    assert.step("search_read");
+                    assert.deepEqual(
+                        kwargs.context,
+                        {
+                            ...expectedFetchContext,
+                            active_test: false,
+                        },
+                        "search_read"
+                    );
+                    break;
+                case "read_group":
+                    assert.step("read_group");
+                    assert.deepEqual(kwargs.context, expectedFetchContext, "read_group");
+                    break;
+            }
+        },
+    });
+    assert.verifySteps(["read_group", "search_read", "search_read"]);
 });
 
 test("Add pivot with grouping on a many2many", async function (assert) {
@@ -1168,4 +1333,58 @@ test("Add pivot with grouping on a many2many", async function (assert) {
     assert.equal(getCellContent(model, "B1"), `=PIVOT.HEADER("1","product_id","37")`);
     assert.equal(getCellContent(model, "C1"), `=PIVOT.HEADER("1","product_id","41")`);
     assert.equal(getCellContent(model, "D1"), `=PIVOT.HEADER("1")`);
+});
+
+test("Can reopen a sheet after see records", async function (assert) {
+    assert.expect(1);
+
+    // Create a first spreadsheet with a pivot
+    const { webClient, model } = await createSpreadsheetFromPivot({
+        pivotView: {
+            archs: {
+                "partner,false,pivot": `
+                    <pivot string="Partners">
+                        <field name="probability" type="measure"/>
+                    </pivot>`,
+                "partner,false,list": `<List/>`,
+                "partner,false,search": `<Search/>`,
+            },
+            mockRPC: function(route, args) {
+                if (route === "/web/action/load") {
+                    return { id: args.action_id, type: "ir.actions.act_window_close" };
+                }
+                if (args.model === "documents.document") {
+                    switch (args.method) {
+                        case "get_spreadsheets_to_display":
+                            return [{ id: 3, name: "My Spreadsheet" }];
+                    }
+                }
+            },
+        },
+    });
+    await waitForEvaluation(model);
+    // Insert a second pivot in the newly created spreadsheet
+    await click(document.body.querySelector(".o_back_button"));
+    await click(document.body.querySelector(".o_pivot_add_spreadsheet"));
+    await click(document.body.querySelector(".modal-content select"));
+    document.body
+        .querySelector(".modal-content option[value='3']")
+        .setAttribute("selected", "selected");
+    await modal.clickButton("Confirm");
+    await waitForEvaluation(window.o_spreadsheet.__DEBUG__.model);
+    // Go the the list view and go back, a third pivot should not be opened
+    model.dispatch("SELECT_CELL", { col: 1, row: 2 });
+    const root = cellMenuRegistry.getAll().find((item) => item.id === "see records");
+    const env = {
+        ...webClient.env,
+        getters: model.getters,
+        dispatch: model.dispatch,
+        services: model.config.evalContext.env.services,
+    };
+    await root.action(env);
+    await nextTick();
+    await click(document.body.querySelector(".o_back_button"));
+    await nextTick();
+    await legacyExtraNextTick();
+    assert.strictEqual(window.o_spreadsheet.__DEBUG__.model.getters.getPivotIds().length, 2);
 });

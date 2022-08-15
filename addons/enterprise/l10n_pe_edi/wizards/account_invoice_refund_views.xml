@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="account.view_account_move_reversal"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='journal_id']" position="after">
-                <field name="l10n_pe_edi_refund_reason" widget="selection"/>
+                <field name="country_code" invisible="1"/>
+                <field name="l10n_pe_edi_refund_reason" widget="selection" attrs="{'invisible': [('country_code', '!=', 'PE')]}"/>
             </xpath>
             <xpath expr="//field[@name='journal_id']" position="attributes">
                 <attribute name="domain">[('type', '=', 'sale')]</attribute>

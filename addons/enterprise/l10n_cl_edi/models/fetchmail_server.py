@@ -35,8 +35,8 @@ class FetchmailServer(models.Model):
                            'site in the section: "ACTUALIZACION DE DATOS DEL CONTRIBUYENTE", "Mail Contacto SII"\n'
                            'and "Mail Contacto Empresas".')
     l10n_cl_last_uid = fields.Integer(
-        string='Last message UID (CL)', default=1,
-        help='This value is pointing to the number of the last message unread by odoo '
+        string='Last read message ID (CL)', default=1,
+        help='This value is pointing to the number of the last message read by odoo '
              'in the inbox. This value will be updated by the system during its normal'
              'operation.')
 
@@ -71,9 +71,9 @@ class FetchmailServer(models.Model):
 
                     # To leave the mail in the state in which they were.
                     if 'Seen' not in data[1].decode('UTF-8'):
-                        imap_server.uid('STORE', uid, '+FLAGS', '\\Seen')
+                        imap_server.uid('STORE', uid, '+FLAGS', '(\\Seen)')
                     else:
-                        imap_server.uid('STORE', uid, '-FLAGS', '\\Seen')
+                        imap_server.uid('STORE', uid, '-FLAGS', '(\\Seen)')
 
                     # See details in message_process() in mail_thread.py
                     if isinstance(message, xmlrpclib.Binary):
@@ -82,7 +82,7 @@ class FetchmailServer(models.Model):
                         message = message.encode('utf-8')
                     msg_txt = email.message_from_bytes(message, policy=email.policy.SMTP)
                     try:
-                        self._process_incoming_email(msg_txt)
+                        server._process_incoming_email(msg_txt)
                         new_max_uid = max(new_max_uid, int(uid))
                         self._cr.commit()
                     except Exception:
@@ -519,12 +519,15 @@ class FetchmailServer(models.Model):
             price_unit = float(dte_line.findtext(
                 './/ns0:PrcItem', default=dte_line.findtext('.//ns0:MontoItem', namespaces=XML_NAMESPACES),
                 namespaces=XML_NAMESPACES))
+            discount = float(dte_line.findtext('.//ns0:DescuentoPct', default=0, namespaces=XML_NAMESPACES))\
+                       or (float(dte_line.findtext('.//ns0:DescuentoMonto', default=0, namespaces=XML_NAMESPACES)) / (price_unit * quantity) * 100
+                           if price_unit * quantity != 0 else 0)
             values = {
                 'product': product,
                 'name': product.name if product else dte_line.findtext('.//ns0:NmbItem', namespaces=XML_NAMESPACES),
                 'quantity': quantity,
                 'price_unit': price_unit,
-                'discount': float(dte_line.findtext('.//ns0:DescuentoPct', default=0, namespaces=XML_NAMESPACES)),
+                'discount': discount,
                 'default_tax': False
             }
             if (dte_xml.findtext('.//ns0:TasaIVA', namespaces=XML_NAMESPACES) is not None and

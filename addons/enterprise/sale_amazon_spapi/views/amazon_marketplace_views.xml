@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="amazon_marketplace_view_tree_inherit" model="ir.ui.view">
+        <field name="name">amazon.marketplace.tree.inherit</field>
+        <field name="model">amazon.marketplace</field>
+        <field name="inherit_id" ref="sale_amazon.amazon_marketplace_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="amazon_marketplace_view_form_inherit" model="ir.ui.view">
+        <field name="name">amazon.marketplace.form.inherit</field>
+        <field name="model">amazon.marketplace</field>
+        <field name="inherit_id" ref="sale_amazon.amazon_marketplace_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='api_ref']" position="after">
+                <field name="region"/>
+                <field name="seller_central_url"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

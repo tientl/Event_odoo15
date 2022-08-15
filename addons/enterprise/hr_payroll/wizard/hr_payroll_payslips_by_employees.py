@@ -59,6 +59,10 @@ class HrPayslipEmployees(models.TransientModel):
                 time_intervals_str = "\n - ".join(['', *["%s -> %s" % (s[0], s[1]) for s in outside._items]])
                 raise UserError(_("Some part of %s's calendar is not covered by any work entry. Please complete the schedule. Time intervals to look for:%s") % (contract.employee_id.name, time_intervals_str))
 
+    def _filter_contracts(self, contracts):
+        # Could be overriden to avoid having 2 'end of the year bonus' payslips, etc.
+        return contracts
+
     def compute_sheet(self):
         self.ensure_one()
         if not self.env.context.get('active_id'):
@@ -132,7 +136,7 @@ class HrPayslipEmployees(models.TransientModel):
 
         default_values = Payslip.default_get(Payslip.fields_get())
         payslips_vals = []
-        for contract in contracts:
+        for contract in self._filter_contracts(contracts):
             values = dict(default_values, **{
                 'name': _('New Payslip'),
                 'employee_id': contract.employee_id.id,

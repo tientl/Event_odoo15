@@ -4,7 +4,7 @@
 import re
 
 from odoo import api, fields, models, _
-from odoo.tools import html_escape, plaintext2html
+from odoo.tools import html_escape, is_html_empty, plaintext2html
 
 
 class HelpdeskTeam(models.Model):
@@ -58,6 +58,8 @@ class MailChannel(models.Model):
                 list_value = key[1:]
                 description = ''
                 for message in self.message_ids.sorted(key=lambda r: r.id):
+                    if is_html_empty(message.body):
+                        continue
                     name = message.author_id.name or 'Anonymous'
                     description += '%s: ' % name + '%s\n' % re.sub('<[^>]*>', '', message.body)
                 team = self.env['helpdesk.team'].search([('use_website_helpdesk_livechat', '=', True)], order='sequence', limit=1)

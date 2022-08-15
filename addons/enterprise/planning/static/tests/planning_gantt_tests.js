@@ -160,6 +160,48 @@ odoo.define("planning.planning_gantt_tests.js", function (require) {
             gantt.destroy();
         });
 
+        QUnit.test('open a dialog to add a new task', async function (assert) {
+            assert.expect(4);
+
+            const gantt = await createView({
+                View: PlanningGanttView,
+                model: 'task',
+                data: this.data,
+                arch: '<gantt default_scale="day" date_start="start" date_stop="stop"/>',
+                archs: {
+                    'task,false,form': '<form>' +
+                            '<field name="name"/>' +
+                            '<field name="start"/>' +
+                            '<field name="stop"/>' +
+                        '</form>',
+                },
+                mockRPC: function (route, args) {
+                    if (args.method === 'onchange') {
+                        const today = moment().startOf('date');
+                        const todayStr = today.format("YYYY-MM-DD 23:59:59");
+                        assert.strictEqual(args.kwargs.context.default_stop, todayStr, "default stop date should have 24 hours difference");
+                    }
+                    return this._super.apply(this, arguments);
+                },
+                translateParameters: {
+                    date_format: "%Y-%m-%d",
+                    time_format: "%H:%M:%S",
+                }
+            });
+            await testUtils.dom.click(gantt.$el.find('.o_gantt_button_add'));
+            // check that the dialog is opened with prefilled fields
+            assert.containsOnce($('.o_dialog_container'), '.modal', 'There should be one modal opened');
+            const today = moment().startOf('date');
+            let todayStr = today.format("YYYY-MM-DD 00:00:00");
+            assert.strictEqual($('.o_field_widget[name=start] .o_input').val(), todayStr,
+                'the start date should be the start of the focus month');
+            todayStr = today.format("YYYY-MM-DD 23:59:59");
+            assert.strictEqual($('.o_field_widget[name=stop] .o_input').val(), todayStr,
+                'the end date should be the end of the focus month');
+
+            gantt.destroy();
+        });
+
         QUnit.test("gantt view collapse and expand empty rows in multi groupby", async function (assert) {
             assert.expect(9);
 

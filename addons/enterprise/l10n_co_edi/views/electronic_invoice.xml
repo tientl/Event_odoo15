@@ -23,6 +23,41 @@
 
             </TIM>
         </template>
+        <template id="tii_section">
+            <t t-foreach="tax_details['invoice_line_tax_details'][line]['tax_details']" t-as="group">
+                <t t-set="tax" t-value="tax_details['invoice_line_tax_details'][line]['tax_details'][group]" />
+                <TII t-foreach="tax['group_tax_details']" t-as="group_tax_details">
+                    <t t-set="IIM_2" t-value="abs(group_tax_details['tax_amount_currency'])"/>
+                    <t t-set="IIM_4" t-value="abs(group_tax_details['tax_amount_currency'] * 100 / 15) if tax['l10n_co_edi_type'].code == '05' else abs(group_tax_details['base_amount_currency'])"/>
+                    <t t-set="IIM_6" t-value="'15' if tax['l10n_co_edi_type'].code == '05' else tax['tax'].amount"/>
+                    <TII_1 t-out="format_monetary(IIM_2, invoice.currency_id)"/>
+                    <TII_2 t-out="invoice.currency_id.name"/>
+                    <TII_3 t-out="'true' if tax['l10n_co_edi_type'].retention else 'false'"/>
+                    <TII_4 t-if="tax['tax'].amount_type != 'fixed'" t-out="'%.3f'% ((float(IIM_6) / 100 * float(IIM_4)) - IIM_2)"/>
+                    <TII_5 t-out="invoice.currency_id.name"/>
+                    <IIM>
+                        <IIM_1 t-out="tax['l10n_co_edi_type'].code"/>
+                        <IIM_2 t-out="format_monetary(IIM_2, invoice.currency_id)"/>
+                        <IIM_3 t-out="invoice.currency_id.name"/>
+                        <IIM_4 t-out="format_monetary(IIM_4, invoice.currency_id)"/>
+                        <IIM_5 t-out="invoice.currency_id.name"/>
+                        <t t-if="tax['tax'].amount_type == 'fixed'">
+                            <IIM_7 t-out="'1'"/>
+                            <IIM_8 t-out="'BO' if tax['l10n_co_edi_type'].code == '22' else '94'"/>
+                            <IIM_9 t-out="tax['tax'].amount"/>
+                            <IIM_10 t-out="invoice.currency_id.name"/>
+                        </t>
+                        <t t-else="">
+                            <IIM_6 t-out="abs(float(IIM_6))"/>
+                            <IIM_7/>
+                            <IIM_8/>
+                            <IIM_9/>
+                            <IIM_10/>
+                        </t>
+                    </IIM>
+                </TII>
+            </t>
+        </template>
         <template id="electronic_invoice_body">
             <ENC>
                 <ENC_1 t-out="invoice._l10n_co_edi_get_electronic_invoice_type()"/>
@@ -35,7 +70,7 @@
                 <ENC_8 t-out="validation_time"/>
                 <ENC_9 t-out="edi_type"/>
                 <ENC_10 t-out="invoice.currency_id.name"/>
-                <ENC_15 t-out="len(invoice.invoice_line_ids)"/>
+                <ENC_15 t-out="len(invoice.invoice_line_ids.filtered(lambda line: not line.display_type))"/>
                 <ENC_16 t-out="invoice.invoice_date_due"/>
                 <ENC_17 t-out="invoice.l10n_co_edi_attachment_url"/>
                 <ENC_20 t-out="'2' if invoice.company_id.l10n_co_edi_test_mode else '1'"/>
@@ -315,7 +350,7 @@
                     <FE1_5 t-out="format_monetary(invoice.amount_total, invoice.currency_id)"/>
 
                     <t t-set="ft1_counter" t-value="1"/>
-                    <FT1 t-foreach="invoice.invoice_line_ids" t-as="line">
+                    <FT1 t-foreach="invoice.invoice_line_ids.filtered(lambda line: not line.display_type)" t-as="line">
                         <FT1_1 t-out="ft1_counter"/>
                         <FT1_2 t-out="format_monetary(line.price_subtotal, invoice.currency_id)"/>
                         <FT1_3 t-out="format_monetary(line.price_unit, invoice.currency_id)"/>
@@ -364,39 +399,9 @@
                         <IDE_8 t-out="invoice.currency_id.name"/>
                         <IDE_10>1</IDE_10>
                     </IDE>
-                    <t t-foreach="tax_details['invoice_line_tax_details'][line]['tax_details']" t-as="group">
-                        <t t-set="tax" t-value="tax_details['invoice_line_tax_details'][line]['tax_details'][group]" />
-                        <TII t-foreach="tax['group_tax_details']" t-as="group_tax_details">
-                            <t t-set="IIM_2" t-value="abs(group_tax_details['tax_amount_currency'])"/>
-                            <t t-set="IIM_4" t-value="abs(group_tax_details['tax_amount_currency'] * 100 / 15) if tax['l10n_co_edi_type'].code == '05' else abs(group_tax_details['base_amount_currency'])"/>
-                            <t t-set="IIM_6" t-value="'15' if tax['l10n_co_edi_type'].code == '05' else tax['tax'].amount"/>
-                            <TII_1 t-out="format_monetary(IIM_2, invoice.currency_id)"/>
-                            <TII_2 t-out="invoice.currency_id.name"/>
-                            <TII_3 t-out="'true' if tax['l10n_co_edi_type'].retention else 'false'"/>
-                            <TII_4 t-if="tax['tax'].amount_type != 'fixed'" t-out="'%.3f'% ((float(IIM_6) / 100 * float(IIM_4)) - IIM_2)"/>
-                            <TII_5 t-out="invoice.currency_id.name"/>
-                            <IIM>
-                                <IIM_1 t-out="tax['l10n_co_edi_type'].code"/>
-                                <IIM_2 t-out="format_monetary(IIM_2, invoice.currency_id)"/>
-                                <IIM_3 t-out="invoice.currency_id.name"/>
-                                <IIM_4 t-out="format_monetary(IIM_4, invoice.currency_id)"/>
-                                <IIM_5 t-out="invoice.currency_id.name"/>
-                                <t t-if="tax['tax'].amount_type == 'fixed'">
-                                    <IIM_7 t-out="'1'"/>
-                                    <IIM_8 t-out="'BO' if tax['l10n_co_edi_type'].code == '22' else '94'"/>
-                                    <IIM_9 t-out="tax['tax'].amount"/>
-                                    <IIM_10 t-out="invoice.currency_id.name"/>
-                                </t>
-                                <t t-else="">
-                                    <IIM_6 t-out="abs(float(IIM_6))"/>
-                                    <IIM_7/>
-                                    <IIM_8/>
-                                    <IIM_9/>
-                                    <IIM_10/>
-                                </t>
-                            </IIM>
-                        </TII>
-                    </t>
+
+                    <t t-call="l10n_co_edi.tii_section"/>
+
                     <IAE>
                         <t t-set="product_code" t-value="line._l10n_co_edi_get_product_code()"/>
                         <IAE_1 t-out="product_code[0]"/>

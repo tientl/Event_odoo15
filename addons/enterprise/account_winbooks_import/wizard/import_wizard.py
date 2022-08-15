@@ -4,6 +4,7 @@
 import base64
 import collections
 import io
+import itertools
 import logging
 import os
 import zipfile
@@ -11,19 +12,12 @@ import re
 from datetime import datetime, timedelta
 from tempfile import TemporaryDirectory
 
-from os import listdir
-from os.path import isfile, join
+from dbfread import DBF
 
 from odoo import models, fields, _
 from odoo.exceptions import UserError, RedirectWarning
 
 _logger = logging.getLogger(__name__)
-
-try:
-    from dbfread import DBF
-except ImportError:
-    DBF = None
-    _logger.warning('dbfread library not found, Winbooks Import features disabled. If you plan to use it, please install the dbfread library from https://pypi.org/project/dbfread/')
 
 
 class WinbooksImportWizard(models.TransientModel):
@@ -34,7 +28,7 @@ class WinbooksImportWizard(models.TransientModel):
     only_open = fields.Boolean('Import only open years', help="Years closed in Winbooks are likely to have incomplete data. The counter part of incomplete entries will be set in a suspense account", default=True)
     suspense_code = fields.Char(string="Suspense Account Code", help="This is the code of the account in which you want to put the counterpart of unbalanced moves. This might be an account from your Winbooks data, or an account that you created in Odoo before the import.")
 
-    def import_partner_info(self, file_dir, files):
+    def _import_partner_info(self, dbf_records):
         """Import information related to partner from *_table*.dbf files.
         The data in those files is the title, language, payment term and partner
         category.
@@ -49,22 +43,21 @@ class WinbooksImportWizard(models.TransientModel):
         category_data = {}
         ResPartnerTitle = self.env['res.partner.title']
         ResPartnerCategory = self.env['res.partner.category']
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if rec.get('TTYPE') == 'CIVILITY':
-                    shortcut = rec.get('TID')
-                    title = ResPartnerTitle.search([('shortcut', '=', shortcut)], limit=1)
-                    if not title:
-                        title = ResPartnerTitle.create({'shortcut': shortcut, 'name': rec.get('TDESC')})
-                    civility_data[shortcut] = title.id
-                elif rec.get('TTYPE').startswith('CAT'):
-                    category = ResPartnerCategory.search([('name', '=', rec.get('TDESC'))], limit=1)
-                    if not category:
-                        category = ResPartnerCategory.create({'name': rec.get('TDESC')})
-                    category_data[rec.get('TID')] = category.id
+        for rec in dbf_records:
+            if rec.get('TTYPE') == 'CIVILITY':
+                shortcut = rec.get('TID')
+                title = ResPartnerTitle.search([('shortcut', '=', shortcut)], limit=1)
+                if not title:
+                    title = ResPartnerTitle.create({'shortcut': shortcut, 'name': rec.get('TDESC')})
+                civility_data[shortcut] = title.id
+            elif rec.get('TTYPE').startswith('CAT'):
+                category = ResPartnerCategory.search([('name', '=', rec.get('TDESC'))], limit=1)
+                if not category:
+                    category = ResPartnerCategory.create({'name': rec.get('TDESC')})
+                category_data[rec.get('TID')] = category.id
         return civility_data, category_data
 
-    def import_partner(self, file_dir, files, civility_data, category_data, account_data):
+    def _import_partner(self, dbf_records, civility_data, category_data, account_data):
         """Import partners from *_csf*.dbf files.
         The data in those files is the partner details, its type, its category,
         bank informations, and central accounts.
@@ -78,72 +71,94 @@ class WinbooksImportWizard(models.TransientModel):
         ResPartner = self.env['res.partner']
         ResPartnerBank = self.env['res.partner.bank']
         partner_data_dict = {}
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if not rec.get('NUMBER'):
-                    continue
-                partner = ResPartner.search([('ref', '=', rec.get('NUMBER'))], limit=1)
-                if partner:
-                    partner_data[rec.get('NUMBER')] = partner.id
-                if not partner:
-                    vatcode = rec.get('VATNUMBER') and rec.get('COUNTRY') and (rec.get('COUNTRY') + rec.get('VATNUMBER').replace('.', ''))
-                    if not rec.get('VATNUMBER') or not rec.get('COUNTRY') or not ResPartner.simple_vat_check(rec.get('COUNTRY').lower(), vatcode):
-                        vatcode = ''
-                    data = {
-                        'ref': rec.get('NUMBER'),
-                        'name': rec.get('NAME1'),
-                        'street': rec.get('ADRESS1'),
-                        'country_id': ResCountry.search([('code', '=', rec.get('COUNTRY'))], limit=1).id,
-                        'city': rec.get('CITY'),
-                        'street2': rec.get('ADRESS2'),
-                        'vat': vatcode,
-                        'phone': rec.get('TELNUMBER'),
-                        'zip': rec.get('ZIPCODE') and ''.join([n for n in rec.get('ZIPCODE') if n.isdigit()]),
-                        'email': rec.get('EMAIL'),
-                        'active': not rec.get('ISLOCKED'),
-                        'title': civility_data.get(rec.get('CIVNAME1'), False),
-                        'category_id': [(6, 0, [category_data.get(rec.get('CATEGORY'))])] if category_data.get(rec.get('CATEGORY')) else False
-                    }
-                    if partner_data_dict.get(rec.get('IBANAUTO') or 'num' + rec.get('NUMBER')):
-                        for key, value in partner_data_dict[rec.get('IBANAUTO') or 'num' + rec.get('NUMBER')].items():
-                            if value:  # Winbooks has different partners for customer/supplier. Here we merge the data of the 2
-                                data[key] = value
-                    if rec.get('NAME2'):
+        partners_by_iban = collections.defaultdict(set)
+        for rec in dbf_records:
+            if not rec.get('NUMBER'):
+                continue
+            partner = ResPartner.search([('ref', '=', rec.get('NUMBER'))], limit=1)
+            if partner:
+                partner_data[rec.get('NUMBER')] = partner.id
+            if not partner:
+                vatcode = rec.get('VATNUMBER') and rec.get('COUNTRY') and (rec.get('COUNTRY') + rec.get('VATNUMBER').replace('.', ''))
+                if not rec.get('VATNUMBER') or not rec.get('COUNTRY') or not ResPartner.simple_vat_check(rec.get('COUNTRY').lower(), vatcode):
+                    vatcode = ''
+                data = {
+                    'ref': rec.get('NUMBER'),
+                    'name': rec.get('NAME1'),
+                    'street': rec.get('ADRESS1'),
+                    'country_id': ResCountry.search([('code', '=', rec.get('COUNTRY'))], limit=1).id,
+                    'city': rec.get('CITY'),
+                    'street2': rec.get('ADRESS2'),
+                    'vat': vatcode,
+                    'phone': rec.get('TELNUMBER'),
+                    'zip': rec.get('ZIPCODE') and ''.join([n for n in rec.get('ZIPCODE') if n.isdigit()]),
+                    'email': rec.get('EMAIL'),
+                    'active': not rec.get('ISLOCKED'),
+                    'title': civility_data.get(rec.get('CIVNAME1'), False),
+                    'category_id': [(6, 0, [category_data.get(rec.get('CATEGORY'))])] if category_data.get(rec.get('CATEGORY')) else False
+                }
+                if partner_data_dict.get(rec.get('NUMBER')):
+                    for key, value in partner_data_dict[rec.get('NUMBER')].items():
+                        if value:  # Winbooks has different partners for customer/supplier. Here we merge the data of the 2
+                            data[key] = value
+                if rec.get('NAME2'):
+                    data.update({
+                        'child_ids': [(0, 0, {'name': rec.get('NAME2'), 'title': civility_data.get(rec.get('CIVNAME2'), False)})]
+                    })
+                # manage the bank account of the partner
+                partners_by_iban[rec.get('IBANAUTO')].add((rec.get('NUMBER'), rec.get('NAME1')))
+                if rec.get('IBANAUTO') and len(partners_by_iban[rec.get('IBANAUTO')]) == 1:
+                    partner_bank = ResPartnerBank.search([('acc_number', '=', rec.get('IBANAUTO'))], limit=1)
+                    if partner_bank:
+                        data['bank_ids'] = [(4, partner_bank.id)]
+                    else:
+                        bank = ResBank.search([('name', '=', rec.get('BICAUTO'))], limit=1)
+                        if not bank:
+                            bank = ResBank.create({'name': rec.get('BICAUTO')})
                         data.update({
-                            'child_ids': [(0, 0, {'name': rec.get('NAME2'), 'title': civility_data.get(rec.get('CIVNAME2'), False)})]
+                            'bank_ids': [(0, 0, {
+                                'acc_number': rec.get('IBANAUTO'),
+                                'bank_id': bank.id
+                            })],
                         })
-                    # manage the bank account of the partner
-                    if rec.get('IBANAUTO'):
-                        partner_bank = ResPartnerBank.search([('acc_number', '=', rec.get('IBANAUTO'))], limit=1)
-                        if partner_bank:
-                            data['bank_ids'] = [(4, partner_bank.id)]
-                        else:
-                            bank = ResBank.search([('name', '=', rec.get('BICAUTO'))], limit=1)
-                            if not bank:
-                                bank = ResBank.create({'name': rec.get('BICAUTO')})
-                            data.update({
-                                'bank_ids': [(0, 0, {
-                                    'acc_number': rec.get('IBANAUTO'),
-                                    'bank_id': bank.id
-                                })],
-                            })
-                    # manage the default payable/receivable accounts for the partner
-                    if rec.get('CENTRAL'):
-                        if rec.get('TYPE') == '1':
-                            data['property_account_receivable_id'] = account_data[rec.get('CENTRAL')]
-                        else:
-                            data['property_account_payable_id'] = account_data[rec.get('CENTRAL')]
+                # manage the default payable/receivable accounts for the partner
+                if rec.get('CENTRAL'):
+                    if rec.get('TYPE') == '1':
+                        data['property_account_receivable_id'] = account_data[rec.get('CENTRAL')]
+                    else:
+                        data['property_account_payable_id'] = account_data[rec.get('CENTRAL')]
 
-                    partner_data_dict[rec.get('IBANAUTO') or 'num' + rec.get('NUMBER')] = data
-                    if len(partner_data_dict) % 100 == 0:
-                        _logger.info("Advancement: {}".format(len(partner_data_dict)))
+                partner_data_dict[rec.get('NUMBER')] = data
+                if len(partner_data_dict) % 100 == 0:
+                    _logger.info("Advancement: %s", len(partner_data_dict))
 
+        shared_iban = {
+            iban: partners
+            for iban, partners in partners_by_iban.items()
+            if len(partners) > 1 and iban
+        }
+        if shared_iban:
+            message = _(
+                "The following banks were used for multiple partners in Winbooks, which is "
+                "not allowed in Odoo. The bank number has been only set on one of each group:\n%s",
+                "\n".join(
+                    "%(bank)s : %(partners)s" % {
+                        'bank': iban,
+                        'partners': ', '.join("[%s] %s" % p for p in partners),
+                    }
+                    for iban, partners in shared_iban.items()
+                )
+            )
+            if self.env.context.get('winbooks_import_hard_fail', True):
+                raise UserError(message)
+            else:
+                _logger.info(message)
         partner_ids = ResPartner.create(partner_data_dict.values())
         for partner in partner_ids:
             partner_data[partner.ref] = partner.id
         return partner_data
 
-    def import_account(self, file_dir, files, journal_data):
+    def _import_account(self, dbf_records):
         """Import accounts from *_acf*.dbf files.
         The data in those files are the type, name, code and currency of the
         account as well as wether it is used as a default central account for
@@ -181,7 +196,6 @@ class WinbooksImportWizard(models.TransientModel):
         account_data = {}
         account_central = {}
         account_tax = {}
-        recs = []
         grouped = collections.defaultdict(list)
         AccountAccount = self.env['account.account']
         ResCurrency = self.env['res.currency']
@@ -204,11 +218,8 @@ class WinbooksImportWizard(models.TransientModel):
             {'min': 700, 'max': 822, 'id': 'account.data_account_type_revenue'},
             {'min': 822, 'max': 860, 'id': 'account.data_account_type_expenses'},
         ]
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                recs.append(rec)
-        for item in recs:
-            grouped[item.get('TYPE')].append(item)
+        for rec in dbf_records:
+            grouped[rec.get('TYPE')].append(rec)
         rec_number_list = []
         account_data_list = []
         journal_centered_list = []
@@ -234,7 +245,7 @@ class WinbooksImportWizard(models.TransientModel):
                         try:
                             account_code = int(rec.get('NUMBER')[:3])
                         except Exception:
-                            _logger.warning(_('%s is not a valid account number for %s.') % (rec.get('NUMBER'), rec.get('NAME11')))
+                            _logger.warning('%s is not a valid account number for %s.', rec.get('NUMBER'), rec.get('NAME11'))
                             account_code = 300  # set Current Asset by default for deprecated accounts
                         for account_type in account_types:
                             if account_code in range(account_type['min'], account_type['max']):
@@ -252,7 +263,7 @@ class WinbooksImportWizard(models.TransientModel):
                         is_deprecated_list.append(rec.get('ISLOCKED'))
 
                         if len(account_data_list) % 100 == 0:
-                            _logger.info("Advancement: {}".format(len(account_data_list)))
+                            _logger.info("Advancement: %s", len(account_data_list))
         account_ids = AccountAccount.create(account_data_list)
         for account, rec_number, journal_centred, is_deprecated in zip(account_ids, rec_number_list, journal_centered_list, is_deprecated_list):
             account_data[rec_number] = account.id
@@ -264,14 +275,14 @@ class WinbooksImportWizard(models.TransientModel):
                 account_deprecated_ids += account
         return account_data, account_central, account_deprecated_ids, account_tax
 
-    def post_process_account(self, account_data, vatcode_data, account_tax):
+    def _post_process_account(self, account_data, vatcode_data, account_tax):
         """Post process the accounts after the taxes creation to add the taxes
         on the accounts"""
         for account, vat in account_tax.items():
             if vat in vatcode_data:
                 self.env['account.account'].browse(account_data[account]).write({'tax_ids': [(4, vatcode_data[vat])]})
 
-    def import_journal(self, file_dir, files):
+    def _import_journal(self, dbf_records):
         """Import journals from *_dbk*.dbf files.
         The data in those files are the name, code and type of the journal.
         :return: a dictionary whose keys are the Winbooks journal references and
@@ -287,39 +298,26 @@ class WinbooksImportWizard(models.TransientModel):
         }
         journal_data = {}
         AccountJournal = self.env['account.journal']
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if not rec.get('DBKID'):
-                    continue
-                journal = AccountJournal.search(
-                    [('code', '=', rec.get('DBKID')), ('company_id', '=', self.env.company.id)], limit=1)
-                if not journal:
-                    if rec.get('DBKTYPE') == '4':
-                        journal_type = 'bank' if 'IBAN' in rec.get('DBKOPT') else 'cash'
-                    else:
-                        journal_type = journal_types.get(rec.get('DBKTYPE'), 'general')
-                    data = {
-                        'name': rec.get('DBKDESC'),
-                        'code': rec.get('DBKID'),
-                        'type': journal_type,
-                    }
-                    journal = AccountJournal.create(data)
-                journal_data[rec.get('DBKID')] = journal.id
+        for rec in dbf_records:
+            if not rec.get('DBKID'):
+                continue
+            journal = AccountJournal.search(
+                [('code', '=', rec.get('DBKID')), ('company_id', '=', self.env.company.id)], limit=1)
+            if not journal:
+                if rec.get('DBKTYPE') == '4':
+                    journal_type = 'bank' if 'IBAN' in rec.get('DBKOPT') else 'cash'
+                else:
+                    journal_type = journal_types.get(rec.get('DBKTYPE'), 'general')
+                data = {
+                    'name': rec.get('DBKDESC'),
+                    'code': rec.get('DBKID'),
+                    'type': journal_type,
+                }
+                journal = AccountJournal.create(data)
+            journal_data[rec.get('DBKID')] = journal.id
         return journal_data
 
-    def find_file(self, name, path):
-        attachments = []
-        for root, dirs, files in os.walk(path):
-            for file_name in files:
-                if name in file_name and '.xml' not in file_name.lower():
-                    attachments.append(os.path.join(root, file_name))
-        return attachments
-
-    def import_move(self, file_dir, files, scanfiles, account_data, journal_data, partner_data, vatcode_data, param_data):
-        _logger.warning("`import_move` is deprecated, use `_import_move` instead")
-        self._import_move(file_dir, files, scanfiles, account_data, {}, journal_data, partner_data, vatcode_data, param_data)
-
-    def _import_move(self, file_dir, files, scanfiles, account_data, account_central, journal_data, partner_data, vatcode_data, param_data):
+    def _import_move(self, dbf_records, pdffiles, account_data, account_central, journal_data, partner_data, vatcode_data, param_data):
         """Import the journal entries from *_act*.dfb and @scandbk.zip files.
         The data in *_act*.dfb files are related to the moves and the data in
         @scandbk.zip files are the attachments.
@@ -332,13 +330,9 @@ class WinbooksImportWizard(models.TransientModel):
         if not self.only_open and not suspense_account:
             raise UserError(_("The code for the Suspense Account you entered doesn't match any account"))
         counter_part_created = False
-        for file_name in scanfiles:
-            with zipfile.ZipFile(join(file_dir, file_name), 'r') as scan_zip:
-                scan_zip.extractall(file_dir)
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if rec.get('BOOKYEAR') and rec.get('DOCNUMBER') != '99999999':
-                    recs.append(rec)
+        for rec in dbf_records:
+            if rec.get('BOOKYEAR') and rec.get('DOCNUMBER') != '99999999':
+                recs.append(rec)
         result = [dict(tupleized) for tupleized in set(tuple(item.items()) for item in recs)]
         grouped = collections.defaultdict(list)
         for item in result:
@@ -471,26 +465,26 @@ class WinbooksImportWizard(models.TransientModel):
 
             # Link all to the move
             move_data_dict['line_ids'] = move_line_data_list
-            attachment = '%s_%s_%s' % (key[1], key[4], key[0])
-            pdf_file = self.find_file(attachment, file_dir)
-            pdf_file_list.append(pdf_file)
+            attachment_key = '%s_%s_%s' % (key[1], key[4], key[0])
+            pdf_files = {name: fd for name, fd in pdffiles.items() if attachment_key in name}
+            pdf_file_list.append(pdf_files)
             move_data_list.append(move_data_dict)
 
             if len(move_data_list) % 100 == 0:
-                _logger.info("Advancement: {}".format(len(move_data_list)))
+                _logger.info("Advancement: %s", len(move_data_list))
 
         _logger.info("Creating moves")
         move_ids = self.env['account.move'].create(move_data_list)
         move_ids._post()
         _logger.info("Creating attachments")
-        for move, pdf_file in zip(move_ids, pdf_file_list):
-            if pdf_file:
+        for move, pdf_files in zip(move_ids, pdf_file_list):
+            if pdf_files:
                 attachment_ids = []
-                for pdf in pdf_file:
+                for name, fd in pdf_files.items():
                     attachment_data = {
-                        'name': pdf.split('/')[-1],
+                        'name': name.split('/')[-1],
                         'type': 'binary',
-                        'datas': base64.b64encode(open(pdf, "rb").read()),
+                        'datas': base64.b64encode(fd.read()),
                         'res_model': move._name,
                         'res_id': move.id,
                         'res_name': move.name
@@ -504,16 +498,25 @@ class WinbooksImportWizard(models.TransientModel):
                 lines.with_context(no_exchange_difference=True).reconcile()
             except UserError as ue:
                 if len(lines.account_id) > 1:
-                    _logger.warning('Winbooks matching number {} uses multiple accounts: {}. Lines with that number have not been reconciled in Odoo.'.format(matching_number, ', '.join(lines.mapped('account_id.display_name'))))
+                    _logger.warning(
+                        'Winbooks matching number %s uses multiple accounts: %s. '
+                        'Lines with that number have not been reconciled in Odoo.',
+                        matching_number,
+                        ', '.join(lines.mapped('account_id.display_name')),
+                    )
                 elif not lines.account_id.reconcile:
-                    _logger.info("{} {} has reconciled lines, changing the config".format(lines.account_id.code, lines.account_id.name))
+                    _logger.info(
+                        "%s %s has reconciled lines, changing the config",
+                        lines.account_id.code,
+                        lines.account_id.name,
+                    )
                     lines.account_id.reconcile = True
                     lines.with_context(no_exchange_difference=True).reconcile()
                 else:
                     raise ue
         return True
 
-    def import_analytic_account(self, file_dir, files):
+    def _import_analytic_account(self, dbf_records):
         """Import the analytic accounts from *_anf*.dbf files.
         :return: a dictionary whose keys are the Winbooks analytic account
         references and the values the analytic account ids in Odoo.
@@ -521,45 +524,43 @@ class WinbooksImportWizard(models.TransientModel):
         _logger.info("Import Analytic Accounts")
         analytic_account_data = {}
         AccountAnalyticAccount = self.env['account.analytic.account']
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if not rec.get('NUMBER'):
-                    continue
-                analytic_account = AccountAnalyticAccount.search(
-                    [('code', '=', rec.get('NUMBER')), ('company_id', '=', self.env.company.id)], limit=1)
-                if not analytic_account:
-                    data = {
-                        'code': rec.get('NUMBER'),
-                        'name': rec.get('NAME1'),
-                        'active': not rec.get('INVISIBLE')
-                    }
-                    analytic_account = AccountAnalyticAccount.create(data)
-                analytic_account_data[rec.get('NUMBER')] = analytic_account.id
+        for rec in dbf_records:
+            if not rec.get('NUMBER'):
+                continue
+            analytic_account = AccountAnalyticAccount.search(
+                [('code', '=', rec.get('NUMBER')), ('company_id', '=', self.env.company.id)], limit=1)
+            if not analytic_account:
+                data = {
+                    'code': rec.get('NUMBER'),
+                    'name': rec.get('NAME1'),
+                    'active': not rec.get('INVISIBLE')
+                }
+                analytic_account = AccountAnalyticAccount.create(data)
+            analytic_account_data[rec.get('NUMBER')] = analytic_account.id
         return analytic_account_data
 
-    def import_analytic_account_line(self, file_dir, files, analytic_account_data, account_data):
+    def _import_analytic_account_line(self, dbf_records, analytic_account_data, account_data):
         """Import the analytic lines from the *_ant*.dbf files.
         """
         _logger.info("Import Analytic Account Lines")
         analytic_line_data_list = []
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                data = {
-                    'date': rec.get('DATE', False),
-                    'name': rec.get('COMMENT'),
-                    'amount': abs(rec.get('AMOUNTEUR')),
-                    'account_id': analytic_account_data.get(rec.get('ZONANA1')),
-                    'general_account_id': account_data.get(rec.get('ACCOUNTGL'))
-                }
-                if data.get('account_id'):
-                    analytic_line_data_list.append(data)
-                if rec.get('ZONANA2'):
-                    new_analytic_line = data.copy()
-                    new_analytic_line['account_id'] = analytic_account_data.get(rec.get('ZONANA2'))
-                    analytic_line_data_list.append(new_analytic_line)
+        for rec in dbf_records:
+            data = {
+                'date': rec.get('DATE', False),
+                'name': rec.get('COMMENT'),
+                'amount': abs(rec.get('AMOUNTEUR')),
+                'account_id': analytic_account_data.get(rec.get('ZONANA1')),
+                'general_account_id': account_data.get(rec.get('ACCOUNTGL'))
+            }
+            if data.get('account_id'):
+                analytic_line_data_list.append(data)
+            if rec.get('ZONANA2'):
+                new_analytic_line = data.copy()
+                new_analytic_line['account_id'] = analytic_account_data.get(rec.get('ZONANA2'))
+                analytic_line_data_list.append(new_analytic_line)
         self.env['account.analytic.line'].create(analytic_line_data_list)
 
-    def import_vat(self, file_dir, files, account_central):
+    def _import_vat(self, dbf_records, account_central):
         """Import the taxes from *codevat.dbf files.
         The data in thos files are the amount, type, including, account and tags
         of the taxes.
@@ -591,50 +592,49 @@ class WinbooksImportWizard(models.TransientModel):
 
         data_list = []
         code_list = []
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                treelib[rec.get('TREELEVEL')] = rec.get('TREELIB1')
-                if not rec.get('USRCODE1'):
-                    continue
-                tax_name = " ".join([treelib[x] for x in [rec.get('TREELEVEL')[:i] for i in range(2, len(rec.get('TREELEVEL')) + 1, 2)]])
-                tax = AccountTax.search([('company_id', '=', self.env.company.id), ('name', '=', tax_name),
-                                         ('type_tax_use', '=', 'sale' if rec.get('CODE')[0] == '2' else 'purchase')], limit=1)
-                if tax.amount != rec.get('RATE') if rec.get('TAXFORM') else 0.0:
-                    tax.amount = rec.get('RATE') if rec.get('TAXFORM') else 0.0
-                if tax:
-                    vatcode_data[rec.get('CODE')] = tax.id
-                else:
-                    data = {
-                        'amount_type': 'percent',
-                        'name': tax_name,
-                        'company_id': self.env.company.id,
-                        'amount': rec.get('RATE') if rec.get('TAXFORM') else 0.0,
-                        'type_tax_use': 'sale' if rec.get('CODE')[0] == '2' else 'purchase',
-                        'price_include': False if rec.get('TAXFORM') or rec.get('BASFORM') == 'BAL' else True,
-                        'refund_repartition_line_ids': [
-                            (0, 0, {'repartition_type': 'base', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('BASE_CN')), 'company_id': self.env.company.id}),
-                            (0, 0, {'repartition_type': 'tax', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('TAX_CN')), 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCCN1'), False)}),
-                        ],
-                        'invoice_repartition_line_ids': [
-                            (0, 0, {'repartition_type': 'base', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('BASE_INV')), 'company_id': self.env.company.id}),
-                            (0, 0, {'repartition_type': 'tax', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('TAX_INV')), 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCINV1'), False)}),
-                        ],
-                    }
-                    if rec.get('ACCCN2'):
-                        data['refund_repartition_line_ids'] += [(0, 0, {'repartition_type': 'tax', 'factor_percent': -100.0, 'tag_ids': [], 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCCN2'), False)})]
-                    if rec.get('ACCINV2'):
-                        data['invoice_repartition_line_ids'] += [(0, 0, {'repartition_type': 'tax', 'factor_percent': -100.0, 'tag_ids': [], 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCINV2'), False)})]
-                    data_list.append(data)
-                    code_list.append(rec.get('CODE'))
+        for rec in sorted(dbf_records, key=lambda rec: len(rec.get('TREELEVEL'))):
+            treelib[rec.get('TREELEVEL')] = rec.get('TREELIB1')
+            if not rec.get('USRCODE1'):
+                continue
+            tax_name = " ".join([treelib[x] for x in [rec.get('TREELEVEL')[:i] for i in range(2, len(rec.get('TREELEVEL')) + 1, 2)]])
+            tax = AccountTax.search([('company_id', '=', self.env.company.id), ('name', '=', tax_name),
+                                        ('type_tax_use', '=', 'sale' if rec.get('CODE')[0] == '2' else 'purchase')], limit=1)
+            if tax.amount != rec.get('RATE') if rec.get('TAXFORM') else 0.0:
+                tax.amount = rec.get('RATE') if rec.get('TAXFORM') else 0.0
+            if tax:
+                vatcode_data[rec.get('CODE')] = tax.id
+            else:
+                data = {
+                    'amount_type': 'percent',
+                    'name': tax_name,
+                    'company_id': self.env.company.id,
+                    'amount': rec.get('RATE') if rec.get('TAXFORM') else 0.0,
+                    'type_tax_use': 'sale' if rec.get('CODE')[0] == '2' else 'purchase',
+                    'price_include': False if rec.get('TAXFORM') or rec.get('BASFORM') == 'BAL' else True,
+                    'refund_repartition_line_ids': [
+                        (0, 0, {'repartition_type': 'base', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('BASE_CN')), 'company_id': self.env.company.id}),
+                        (0, 0, {'repartition_type': 'tax', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('TAX_CN')), 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCCN1'), False)}),
+                    ],
+                    'invoice_repartition_line_ids': [
+                        (0, 0, {'repartition_type': 'base', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('BASE_INV')), 'company_id': self.env.company.id}),
+                        (0, 0, {'repartition_type': 'tax', 'factor_percent': 100.0, 'tag_ids': get_tags(rec.get('TAX_INV')), 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCINV1'), False)}),
+                    ],
+                }
+                if rec.get('ACCCN2'):
+                    data['refund_repartition_line_ids'] += [(0, 0, {'repartition_type': 'tax', 'factor_percent': -100.0, 'tag_ids': [], 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCCN2'), False)})]
+                if rec.get('ACCINV2'):
+                    data['invoice_repartition_line_ids'] += [(0, 0, {'repartition_type': 'tax', 'factor_percent': -100.0, 'tag_ids': [], 'company_id': self.env.company.id, 'account_id': account_central.get(rec.get('ACCINV2'), False)})]
+                data_list.append(data)
+                code_list.append(rec.get('CODE'))
 
-                    if len(data_list) % 100 == 0:
-                        _logger.info("Advancement: {}".format(len(data_list)))
-            tax_ids = AccountTax.create(data_list)
-            for tax_id, code in zip(tax_ids, code_list):
-                vatcode_data[code] = tax_id.id
+                if len(data_list) % 100 == 0:
+                    _logger.info("Advancement: %s", len(data_list))
+        tax_ids = AccountTax.create(data_list)
+        for tax_id, code in zip(tax_ids, code_list):
+            vatcode_data[code] = tax_id.id
         return vatcode_data
 
-    def import_param(self, file_dir, files):
+    def _import_param(self, dbf_records):
         """Import parameters from *_param.dbf files.
         The data in those files is the open or closed state of financial years
         in Winbooks.
@@ -643,23 +643,23 @@ class WinbooksImportWizard(models.TransientModel):
         param_data = {}
         param_data['openyears'] = []
         param_data['period_date'] = {}
-        for file_name in files:
-            for rec in DBF(join(file_dir, file_name), encoding='latin').records:
-                if not rec.get('ID'): continue
-                id = rec.get('ID')
-                value = rec.get('VALUE')
-                # only the lines with status 'open' are known to be complete/without unbalanced entries
-                search = re.search(r'BOOKYEAR(\d+).STATUS', id)
-                if search and search.group(1) and value.lower() == 'open':
-                    param_data['openyears'].append(int(search.group(1)))
-                # winbooks has 3 different dates on a line : the move date, the move line date, and the period
-                # here we get the different periods as it is what matters for the reports
-                search = re.search(r'BOOKYEAR(\d+).PERDATE', id)
-                if search and search.group(1):
-                    param_data['period_date'][int(search.group(1))] = [datetime.strptime(value[i*8:(i+1)*8], '%d%m%Y').date() for i in range(int(len(value)/8))]
+        for rec in dbf_records:
+            if not rec.get('ID'):
+                continue
+            rec_id = rec.get('ID')
+            value = rec.get('VALUE')
+            # only the lines with status 'open' are known to be complete/without unbalanced entries
+            search = re.search(r'BOOKYEAR(\d+).STATUS', rec_id)
+            if search and search.group(1) and value.lower() == 'open':
+                param_data['openyears'].append(int(search.group(1)))
+            # winbooks has 3 different dates on a line : the move date, the move line date, and the period
+            # here we get the different periods as it is what matters for the reports
+            search = re.search(r'BOOKYEAR(\d+).PERDATE', rec_id)
+            if search and search.group(1):
+                param_data['period_date'][int(search.group(1))] = [datetime.strptime(value[i*8:(i+1)*8], '%d%m%Y').date() for i in range(int(len(value)/8))]
         return param_data
 
-    def post_import(self, account_deprecated_ids):
+    def _post_import(self, account_deprecated_ids):
         account_deprecated_ids.write({'deprecated': True})  # We can't set it before because of a constraint in aml's create
 
     def import_winbooks_file(self):
@@ -667,8 +667,6 @@ class WinbooksImportWizard(models.TransientModel):
         models are the journals, the accounts, the taxes, the journal entries,
         and the analytic account and lines.
         """
-        if not DBF:
-            raise UserError(_('dbfread library not found, Winbooks Import features disabled. If you plan to use it, please install the dbfread library from https://pypi.org/project/dbfread/'))
         if not self.env.company.country_id:
             action = self.env.ref('base.action_res_company_form')
             raise RedirectWarning(_('Please define the country on your company.'), action.id, _('Company Settings'))
@@ -677,35 +675,81 @@ class WinbooksImportWizard(models.TransientModel):
             raise RedirectWarning(_('You should install a Fiscal Localization first.'), action.id,  _('Accounting Settings'))
         self = self.with_context(active_test=False)
         with TemporaryDirectory() as file_dir:
-            zip_ref = zipfile.ZipFile(io.BytesIO(base64.decodebytes(self.zip_file)))
-            zip_ref.extractall(file_dir)
-            child_zip = [s for s in listdir(file_dir) if "@cie@" in s.lower() and '.zip' in s.lower()]
-            if child_zip:
-                with zipfile.ZipFile(join(file_dir, child_zip[0]), 'r') as child_zip_ref:
-                    child_zip_ref.extractall(file_dir)
-            onlyfiles = [f for f in listdir(file_dir) if isfile(join(file_dir, f))]
-            csffile = [s for s in onlyfiles if "_csf.dbf" in s.lower()]
-            acffile = [s for s in onlyfiles if "_acf.dbf" in s.lower()]
-            actfile = [s for s in onlyfiles if "_act.dbf" in s.lower()]
-            antfile = [s for s in onlyfiles if "_ant.dbf" in s.lower()]
-            anffile = [s for s in onlyfiles if "_anf.dbf" in s.lower()]
-            tablefile = [s for s in onlyfiles if "_table.dbf" in s.lower()]
-            vatfile = [s for s in onlyfiles if "_codevat.dbf" in s.lower()]
-            dbkfile = [s for s in onlyfiles if "dbk" in s.lower() and s.lower().endswith('.dbf')]
-            scanfile = [s for s in onlyfiles if "@scandbk" in s.lower() and s.lower().endswith('.zip')]
-            paramfile = [s for s in onlyfiles if "_param.dbf" in s.lower()]
-            param_data = self.import_param(file_dir, paramfile)
-            journal_data = self.import_journal(file_dir, dbkfile)
-            account_data, account_central, account_deprecated_ids, account_tax = self.import_account(file_dir, acffile, journal_data)
-            vatcode_data = self.import_vat(file_dir, vatfile, account_central)
-            self.post_process_account(account_data, vatcode_data, account_tax)
-            civility_data, category_data = self.import_partner_info(file_dir, tablefile)
-            partner_data = self.import_partner(file_dir, csffile, civility_data, category_data, account_data)
-            self._import_move(file_dir, actfile, scanfile, account_data, account_central, journal_data, partner_data, vatcode_data, param_data)
-            analytic_account_data = self.import_analytic_account(file_dir, anffile)
-            self.import_analytic_account_line(file_dir, antfile, analytic_account_data, account_data)
-            self.post_import(account_deprecated_ids)
-            _logger.info("Completed")
-            self.env.company.sudo().set_onboarding_step_done('account_onboarding_winbooks_state')
-            self.env.company.sudo().set_onboarding_step_done('account_setup_coa_state')
+            def get_dbfrecords(filterfunc):
+                return itertools.chain.from_iterable(
+                    DBF(os.path.join(file_dir, file), encoding='latin').records
+                    for file in [s for s in dbffiles if filterfunc(s)]
+                )
+
+            # the main zip is only a container for other sub zips
+            with zipfile.ZipFile(io.BytesIO(base64.decodebytes(self.zip_file))) as zip_ref:
+                sub_zips = [
+                    filename
+                    for filename in zip_ref.namelist()
+                    if filename.lower().endswith('.zip')
+                ]
+                zip_ref.extractall(file_dir, members=sub_zips)
+
+            # @cie@ sub zip file contains all the data
+            cie_zip_name = next(filename for filename in sub_zips if "@cie@" in filename.lower())
+            with zipfile.ZipFile(os.path.join(file_dir, cie_zip_name), 'r') as child_zip_ref:
+                dbffiles = [
+                    filename
+                    for filename in child_zip_ref.namelist()
+                    if filename.lower().endswith('.dbf')
+                ]
+                child_zip_ref.extractall(file_dir, members=dbffiles)
+
+            # @scandbk@ zip file contains all the attachments
+            pdffiles = {}
+            scan_zip_names = [filename for filename in sub_zips if "@scandbk" in filename.lower()]
+            try:
+                for scan_zip_name in scan_zip_names:
+                    with zipfile.ZipFile(os.path.join(file_dir, scan_zip_name), 'r') as scan_zip:
+                        _pdffiles = [
+                            filename
+                            for filename in scan_zip.namelist()
+                            if filename.lower().endswith('.pdf')
+                        ]
+                        scan_zip.extractall(file_dir, members=_pdffiles)
+                        for filename in _pdffiles:
+                            pdffiles[filename] = open(os.path.join(file_dir, filename), "rb")
+
+                # load all the records
+                param_recs = get_dbfrecords(lambda file: file.lower().endswith("_param.dbf"))
+                param_data = self._import_param(param_recs)
+
+                dbk_recs = get_dbfrecords(lambda file: "dbk" in file.lower() and file.lower().endswith('.dbf'))
+                journal_data = self._import_journal(dbk_recs)
+
+                acf_recs = get_dbfrecords(lambda file: file.lower().endswith("_acf.dbf"))
+                account_data, account_central, account_deprecated_ids, account_tax = self._import_account(acf_recs)
+
+                vat_recs = get_dbfrecords(lambda file: file.lower().endswith("_codevat.dbf"))
+                vatcode_data = self._import_vat(vat_recs, account_central)
+
+                self._post_process_account(account_data, vatcode_data, account_tax)
+
+                table_recs = get_dbfrecords(lambda file: file.lower().endswith("_table.dbf"))
+                civility_data, category_data = self._import_partner_info(table_recs)
+
+                csf_recs = get_dbfrecords(lambda file: file.lower().endswith("_csf.dbf"))
+                partner_data = self._import_partner(csf_recs, civility_data, category_data, account_data)
+
+                act_recs = get_dbfrecords(lambda file: file.lower().endswith("_act.dbf"))
+                self._import_move(act_recs, pdffiles, account_data, account_central, journal_data, partner_data, vatcode_data, param_data)
+
+                anf_recs = get_dbfrecords(lambda file: file.lower().endswith("_anf.dbf"))
+                analytic_account_data = self._import_analytic_account(anf_recs)
+
+                ant_recs = get_dbfrecords(lambda file: file.lower().endswith("_ant.dbf"))
+                self._import_analytic_account_line(ant_recs, analytic_account_data, account_data)
+
+                self._post_import(account_deprecated_ids)
+                _logger.info("Completed")
+                self.env.company.sudo().set_onboarding_step_done('account_onboarding_winbooks_state')
+                self.env.company.sudo().set_onboarding_step_done('account_setup_coa_state')
+            finally:
+                for fd in pdffiles.values():
+                    fd.close()
         return True

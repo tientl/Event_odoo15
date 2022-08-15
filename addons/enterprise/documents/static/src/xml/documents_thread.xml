@@ -9,7 +9,7 @@
 
     <t t-name="DocumentViewer.ContentWithPdfSplit" t-extend="DocumentViewer.Content">
         <t t-jquery=".o_download_btn" t-operation="before">
-            <a t-if="!widget.openPdfManager and widget.activeAttachment.fileType === 'application/pdf'" href="#" class="o_documents_pdf_manager_button o_documents_split_pdf_area o_document_viewer_topbar_button btn" title="Split PDF">
+            <a t-if="!widget.openPdfManager and widget.activeAttachment.fileType === 'application/pdf' and !widget._isLocked" href="#" class="o_documents_pdf_manager_button o_documents_split_pdf_area o_document_viewer_topbar_button btn" title="Split PDF">
                 <i class="fa fa-fw fa-scissors" role="img" aria-label="Split PDF"/>
                 <span class="d-none d-md-inline ml-2">Split PDF</span>
             </a>

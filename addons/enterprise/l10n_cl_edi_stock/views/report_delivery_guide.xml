@@ -131,13 +131,13 @@
                                         <span t-field="o.sale_id.client_order_ref"/>
                                     </td>
                                     <td class="text-left" name="td_reference_doc_type">
-                                        <span>Orden de compra</span>
+                                        <span>Purchase Order</span>
                                     </td>
                                     <td class="text-left" name="td_reference_code">
                                         <span>801</span>
                                     </td>
                                     <td class="text-left" name="td_reference_reason">
-                                        <span>Orden de compra del cliente</span>
+                                        <span>Customer Purchase Order</span>
                                     </td>
                                     <td class="text-left" name="td_reference_date">
                                         <span t-esc="o.sale_id.date_order.date()" t-options="{'widget': 'date'}"/>
@@ -157,14 +157,14 @@
                 <t t-if="barcode_stamp">
                     <img class="img-fluid" t-attf-src="data:image/*;base64,{{barcode_stamp}}"/>
                     <p t-att-style="'color: %s;' % o.company_id.primary_color" class="text-center small">
-                        Timbre Electrónico SII
+                        Electronic Stamp SII
                         <br/>
-                        Resolución Nº:
+                        Resolution Nº:
                         <span t-field="o.company_id.l10n_cl_dte_resolution_number"/>
-                        de Fecha:
+                        from Date:
                         <span t-field="o.company_id.l10n_cl_dte_resolution_date" t-field-options='{"widget": "date"}'/>
                         <br/>
-                        Verifique documento en www.sii.cl
+                        Verify the document on www.sii.cl
                     </p>
                 </t>
             </div>
@@ -196,8 +196,8 @@
                                         <th class="text-right">
                                             <strong>Quantity</strong>
                                         </th>
-                                        <th groups="uom.group_uom">>
-                                            <strong>Un Med</strong>
+                                        <th groups="uom.group_uom">
+                                            <strong>UoM</strong>
                                         </th>
                                         <th name="unit_price" class="text-right" t-if="has_unit_price">
                                             <strong>Unit Price</strong>
@@ -214,7 +214,7 @@
                                 <tbody>
                                     <t t-set="total_line_amounts" t-value="prepared_amounts.get('total_line_amounts', {})"/>
                                     <t t-set="float_repr" t-value="prepared_amounts['float_repr']"/>
-                                    <t t-foreach="o.move_lines" t-as="line">
+                                    <t t-foreach="o.move_lines.filtered(lambda x: x.quantity_done > 0)" t-as="line">
                                         <t t-set="line_amounts" t-value="total_line_amounts.get(line, {})"/>
                                         <tr>
                                             <td>

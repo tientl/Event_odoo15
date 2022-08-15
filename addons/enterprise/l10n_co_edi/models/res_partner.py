@@ -46,7 +46,7 @@ class ResPartner(models.Model):
             'id_document': '',
             'id_card': '12',
             'passport': '41',
-            'foreign_id_card': '22',
+            'foreign_id_card': '42',
             'external_id': '50',
             'residence_document': 'O-99',
             'civil_registration': '11',

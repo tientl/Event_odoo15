@@ -15,6 +15,7 @@
                 <field name="tracking" invisible="1" />
                 <field name="product_uom_category_id" invisible="1" />
                 <field name="picking_code" invisible="1"/>
+                <field name="picking_id" invisible="1"/>
                 <div class="col-12 d-flex align-items-baseline">
                     <i class="fa fa-fw fa-lg fa-tags mr-3" title="Product"/>
                     <field name="product_id" placeholder="Product"
@@ -68,7 +69,8 @@
                 </div>
                 <div class="col-12 col-md-6 my-2 d-flex align-items-baseline">
                     <i class="fa fa-fw fa-lg fa-long-arrow-right mr-3" title="Destination Package"/>
-                    <field name="result_package_id" placeholder="Destination Package"/>
+                    <field name="result_package_id" placeholder="Destination Package"
+                    context="{'picking_id': picking_id}"/>
                 </div>
             </div>
             <div class="row" groups="stock.group_tracking_owner">

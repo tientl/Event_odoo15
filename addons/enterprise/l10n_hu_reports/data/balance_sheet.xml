@@ -1,0 +1,1132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Balance sheet version A -->
+    <record id="l10n_hu_balance_sheet" model="account.financial.html.report">
+        <field name="name">Mérleg változat A</field>
+        <field name="comparison" eval="True"/>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="parent_id" ref="l10n_hu.hu_reports_menu"/>
+        <field name="country_id" ref="base.hu"/>
+    </record>
+
+    <!-- A. FIXED ASSETS -->
+    <record id="l10n_hu_balance_sheet_A" model="account.financial.html.report.line">
+        <field name="name">A. BEFEKTETETT ESZKÖZÖK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_A</field>
+        <field name="formulas">hu_A_I + hu_A_II + hu_A_III</field>
+    </record>
+        <!-- I. Intangible assets -->
+        <record id="l10n_hu_balance_sheet_A_I" model="account.financial.html.report.line">
+            <field name="name">I. Immateriális javak</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_A"/>
+            <field name="code">hu_A_I</field>
+            <field name="formulas">hu_A_I_1 + hu_A_I_2 + hu_A_I_3 + hu_A_I_4 + hu_A_I_5 + hu_A_I_6 + hu_A_I_7</field>
+        </record>
+            <!-- 1. Activation value of foundation reorganization -->
+            <record id="l10n_hu_balance_sheet_A_I_1" model="account.financial.html.report.line">
+                <field name="name">1. Alapítás-átszervezés aktivált értéke</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '111%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Activated value of experimental development -->
+            <record id="l10n_hu_balance_sheet_A_I_2" model="account.financial.html.report.line">
+                <field name="name">2. Kísérleti fejlesztés aktivált értéke</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '112%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Property rights -->
+            <record id="l10n_hu_balance_sheet_A_I_3" model="account.financial.html.report.line">
+                <field name="name">3. Vagyoni értékű jogok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '113%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. Intellectual Property -->
+            <record id="l10n_hu_balance_sheet_A_I_4" model="account.financial.html.report.line">
+                <field name="name">4. Szellemi termékek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '114%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Business or goodwill -->
+            <record id="l10n_hu_balance_sheet_A_I_5" model="account.financial.html.report.line">
+                <field name="name">5. Üzleti vagy cégérték</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '115%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Advances on intangible assets -->
+            <record id="l10n_hu_balance_sheet_A_I_6" model="account.financial.html.report.line">
+                <field name="name">6. Immateriális javakra adott előlegek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '351%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 7. Value adjustments in respect of intangible assets -->
+            <record id="l10n_hu_balance_sheet_A_I_7" model="account.financial.html.report.line">
+                <field name="name">7. Immateriális javak értékhelyesbítése</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_I"/>
+                <field name="code">hu_A_I_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '117%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- I. Intangible assets [END] -->
+
+        <!-- II. Fixed assets -->
+        <record id="l10n_hu_balance_sheet_A_II" model="account.financial.html.report.line">
+            <field name="name">II. Tárgyi eszközök</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_A"/>
+            <field name="code">hu_A_II</field>
+            <field name="formulas">hu_A_II_1 + hu_A_II_2 + hu_A_II_3 + hu_A_II_4 + hu_A_II_5 + hu_A_II_6 + hu_A_II_7</field>
+        </record>
+            <!-- 1. Real estate and related property rights -->
+            <record id="l10n_hu_balance_sheet_A_II_1" model="account.financial.html.report.line">
+                <field name="name">1. Ingatlanok és a kapcsolódó vagyoni értékű jogok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_1</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '129%'),
+                                            '|', ('account_id.code', '=like', '128%'),
+                                                 ('account_id.code', '=like', '12%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Technical equipment, machines, vehicles -->
+            <record id="l10n_hu_balance_sheet_A_II_2" model="account.financial.html.report.line">
+                <field name="name">2. Műszaki berendezések, gépek, járművek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_2</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '139%'),
+                                            '|', ('account_id.code', '=like', '138%'),
+                                                 ('account_id.code', '=like', '13%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Other equipment, facilities, vehicles -->
+            <record id="l10n_hu_balance_sheet_A_II_3" model="account.financial.html.report.line">
+                <field name="name">3. Egyéb berendezések, felszerelések, járművek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_3</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '149%'),
+                                            '|', ('account_id.code', '=like', '148%'),
+                                                 ('account_id.code', '=like', '14%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. Breeding animals -->
+            <record id="l10n_hu_balance_sheet_A_II_4" model="account.financial.html.report.line">
+                <field name="name">4. Tenyészállatok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_4</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '159%'),
+                                            '|', ('account_id.code', '=like', '158%'),
+                                                 ('account_id.code', '=like', '15%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Investments, renovations -->
+            <record id="l10n_hu_balance_sheet_A_II_5" model="account.financial.html.report.line">
+                <field name="name">5. Beruházások, felújítások</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_5</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '168%'), ('account_id.code', '=like', '16%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Advances on investments -->
+            <record id="l10n_hu_balance_sheet_A_II_6" model="account.financial.html.report.line">
+                <field name="name">6. Beruházásokra adott előlegek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '352%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 7. Value adjustments in respect of property, plant and equipment -->
+            <record id="l10n_hu_balance_sheet_A_II_7" model="account.financial.html.report.line">
+                <field name="name">7. Tárgyi eszközök értékhelyesbítése</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_II"/>
+                <field name="code">hu_A_II_7</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '127%'),
+                                            '|', ('account_id.code', '=like', '137%'),
+                                            '|', ('account_id.code', '=like', '147%'),
+                                                 ('account_id.code', '=like', '157%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- II. Fixed assets [END] -->
+
+        <!-- III. Fixed financial assets -->
+        <record id="l10n_hu_balance_sheet_A_III" model="account.financial.html.report.line">
+            <field name="name">III. Befektetett pénzügyi eszközök</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_A"/>
+            <field name="code">hu_A_III</field>
+            <field name="formulas">hu_A_III_1 + hu_A_III_2 + hu_A_III_3 + hu_A_III_4 + hu_A_III_5 + hu_A_III_6 + hu_A_III_7 + hu_A_III_8 + hu_A_III_9 + hu_A_III_10</field>
+        </record>
+            <!-- 1. Permanent interest in an associate -->
+            <record id="l10n_hu_balance_sheet_A_III_1" model="account.financial.html.report.line">
+                <field name="name">1. Tartós részesedés kapcsolt vállalkozásban</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_1</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '171%'), ('account_id.code', '=like', '179%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Long-term loan in an affiliated company -->
+            <record id="l10n_hu_balance_sheet_A_III_2" model="account.financial.html.report.line">
+                <field name="name">2. Tartósan adott kölcsön kapcsolt vállalkozásban</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_2</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '191%'), ('account_id.code', '=like', '199%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Permanent significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_A_III_3" model="account.financial.html.report.line">
+                <field name="name">3. Tartós jelentős tulajdoni részesedés</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_3</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '172%'), ('account_id.code', '=like', '179%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. A long-term loan granted to an undertaking with a significant shareholding  -->
+            <record id="l10n_hu_balance_sheet_A_III_4" model="account.financial.html.report.line">
+                <field name="name">4. Tartósan adott kölcsön jelentős tulajdoni részesedési viszonyban álló vállalkozásban</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_4</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '192%'), ('account_id.code', '=like', '199%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Other long-term loans -->
+            <record id="l10n_hu_balance_sheet_III_5" model="account.financial.html.report.line">
+                <field name="name">5. Egyéb tartósan adott kölcsön</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_5</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '173%'), ('account_id.code', '=like', '179%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Long - term loan in another shareholding company -->
+            <record id="l10n_hu_balance_sheet_A_III_6" model="account.financial.html.report.line">
+                <field name="name">6. Tartósan adott kölcsön egyéb részesedési viszonyban álló vállalkozásban</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_6</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '193%'), ('account_id.code', '=like', '199%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 7. Other long-term loans -->
+            <record id="l10n_hu_balance_sheet_A_III_7" model="account.financial.html.report.line">
+                <field name="name">7. Egyéb tartósan adott kölcsön</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_7</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '194%'), ('account_id.code', '=like', '199%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 8. Long-term debt security -->
+            <record id="l10n_hu_balance_sheet_A_III_8" model="account.financial.html.report.line">
+                <field name="name">8. Tartós hitelviszonyt megtestesítő értékpapír</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_8</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '189%'), ('account_id.code', '=like', '18%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 9. Value adjustments in respect of financial assets -->
+            <record id="l10n_hu_balance_sheet_A_III_9" model="account.financial.html.report.line">
+                <field name="name">9. Befektetett pénzügyi eszközök értékhelyesbítése</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_9</field>
+                <field name="domain" eval="[('account_id.code', '=like', '177%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 10. Valuation differences on financial assets -->
+            <record id="l10n_hu_balance_sheet_A_III_10" model="account.financial.html.report.line">
+                <field name="name">10. Befektetett pénzügyi eszközök értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_A_III"/>
+                <field name="code">hu_A_III_10</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '178%'), ('account_id.code', '=like', '188%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- III. Fixed financial assets [END] -->
+    <!-- A. FIXED ASSETS [END] -->
+
+    <!-- B. CURRENT ASSETS -->
+    <record id="l10n_hu_balance_sheet_B" model="account.financial.html.report.line">
+        <field name="name">B. FORGÓESZKÖZÖK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_B</field>
+        <field name="formulas">hu_B_I + hu_B_II + hu_B_III + hu_B_IV</field>
+    </record>
+        <!-- I. Inventories -->
+        <record id="l10n_hu_balance_sheet_B_I" model="account.financial.html.report.line">
+            <field name="name">I. Készletek</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_B"/>
+            <field name="code">hu_B_I</field>
+            <field name="formulas">hu_B_I_1 + hu_B_I_2 + hu_B_I_3 + hu_B_I_4 + hu_B_I_5 + hu_B_I_6</field>
+        </record>
+            <!-- 1. Materials -->
+            <record id="l10n_hu_balance_sheet_B_I_1" model="account.financial.html.report.line">
+                <field name="name">1. Anyagok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_1</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '21%'),
+                                                 ('account_id.code', '=like', '22%'),
+                                            '!',
+                                                '|', ('account_id.code', '=like', '228%'),
+                                                     ('account_id.code', '=like', '229%')
+                ]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Work in progress and semi-finished products -->
+            <record id="l10n_hu_balance_sheet_B_I_2" model="account.financial.html.report.line">
+                <field name="name">2. Befejezetlen termelés és félkész termékek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_2</field>
+                <field name="domain" eval="['&amp;', ('account_id.code', 'not like', '239%'),
+                                            '&amp;', ('account_id.code', 'not like', '238%'),
+                                                     ('account_id.code', '=like', '23%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Adult, fattening and other animals -->
+            <record id="l10n_hu_balance_sheet_B_I_3" model="account.financial.html.report.line">
+                <field name="name">3. Növendék-, hízó- és egyéb állatok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_3</field>
+                <field name="domain" eval="['&amp;', ('account_id.code', 'not like', '249%'),
+                                            '&amp;', ('account_id.code', 'not like', '248%'),
+                                                     ('account_id.code', '=like', '24%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. Finished products -->
+            <record id="l10n_hu_balance_sheet_B_I_4" model="account.financial.html.report.line">
+                <field name="name">4. Késztermékek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_4</field>
+                <field name="domain" eval="['&amp;', ('account_id.code', 'not like', '259%'),
+                                            '&amp;', ('account_id.code', 'not like', '258%'),
+                                                     ('account_id.code', '=like', '25%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Goods -->
+            <record id="l10n_hu_balance_sheet_B_I_5" model="account.financial.html.report.line">
+                <field name="name">5. Áruk</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_5</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '26%'),
+                                            '|', ('account_id.code', '=like', '27%'),
+                                                 ('account_id.code', '=like', '28%'),
+                                            '!',
+                                                '|', ('account_id.code', '=like', '264%'),
+                                                '|', ('account_id.code', '=like', '265%'),
+                                                '|', ('account_id.code', '=like', '269%'),
+                                                '|', ('account_id.code', '=like', '279%'),
+                                                '|', ('account_id.code', '=like', '288%'),
+                                                     ('account_id.code', '=like', '289%'),
+                ]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Advances on stocks -->
+            <record id="l10n_hu_balance_sheet_B_I_6" model="account.financial.html.report.line">
+                <field name="name">6. Készletekre adott előlegek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_I"/>
+                <field name="code">hu_B_I_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '353%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- I. Inventories [END] -->
+
+        <!-- II. Demands -->
+        <record id="l10n_hu_balance_sheet_B_II" model="account.financial.html.report.line">
+            <field name="name">II. Követelések</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_B"/>
+            <field name="code">hu_B_II</field>
+            <field name="formulas">hu_B_II_1 + hu_B_II_2 + hu_B_II_3 + hu_B_II_4 + hu_B_II_5 + hu_B_II_6 + hu_B_II_7 + hu_B_II_8</field>
+        </record>
+            <!-- 1. Receivables from goods and services (customers) -->
+            <record id="l10n_hu_balance_sheet_B_II_1" model="account.financial.html.report.line">
+                <field name="name">1. Követelések áruszállításból és szolgáltatásból (vevők)</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_1</field>
+                <field name="domain" eval="['&amp;', ('account_id.code', 'not like', '319%'),
+                                            '&amp;', ('account_id.code', 'not like', '315%'),
+                                                     ('account_id.code', '=like', '31%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Receivables from an associate -->
+            <record id="l10n_hu_balance_sheet_B_II_2" model="account.financial.html.report.line">
+                <field name="name">2. Követelések kapcsolt vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '321%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Receivables from a company with a significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_B_II_3" model="account.financial.html.report.line">
+                <field name="name">3. Követelések jelentős tulajdoni részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '322%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. Receivables from other participating interests -->
+            <record id="l10n_hu_balance_sheet_B_II_4" model="account.financial.html.report.line">
+                <field name="name">4. Követelések egyéb részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_4</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '339%'), ('account_id.code', '=like', '33%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Promissory notes -->
+            <record id="l10n_hu_balance_sheet_B_II_5" model="account.financial.html.report.line">
+                <field name="name">5. Váltókövetelések</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_5</field>
+                <field name="domain" eval="['&amp;', ('account_id.code', 'not like', '349%'),
+                                            '&amp;', ('account_id.code', 'not like', '345%'),
+                                                     ('account_id.code', '=like', '34%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Other receivables -->
+            <record id="l10n_hu_balance_sheet_B_II_6" model="account.financial.html.report.line">
+                <field name="name">6. Egyéb követelések</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_6</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '369%'), ('account_id.code', '=like', '36%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 7. Valuation difference of receivables -->
+            <record id="l10n_hu_balance_sheet_B_II_7" model="account.financial.html.report.line">
+                <field name="name">7. Követelések értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '318%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 8. Positive valuation difference on derivative transactions -->
+            <record id="l10n_hu_balance_sheet_B_II_8" model="account.financial.html.report.line">
+                <field name="name">8. Származékos ügyletek pozitív értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_II"/>
+                <field name="code">hu_B_II_8</field>
+                <field name="domain" eval="[('account_id.code', '=like', '367%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- II. Demands [END] -->
+
+        <!-- III. Securities -->
+        <record id="l10n_hu_balance_sheet_B_III" model="account.financial.html.report.line">
+            <field name="name">III. Értékpapírok</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_B"/>
+            <field name="code">hu_B_III</field>
+            <field name="formulas">hu_B_III_1 + hu_B_III_2 + hu_B_III_3 + hu_B_III_4 + hu_B_III_5 + hu_B_III_6</field>
+        </record>
+            <!-- 1. Participation in an associate -->
+            <record id="l10n_hu_balance_sheet_B_III_1" model="account.financial.html.report.line">
+                <field name="name">1. Részesedés kapcsolt vállalkozásban</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_1</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '3719%'), ('account_id.code', '=like', '371%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_B_III_2" model="account.financial.html.report.line">
+                <field name="name">2. Jelentős tulajdoni részesedés</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_2</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '3729%'), ('account_id.code', '=like', '372%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Other equity -->
+            <record id="l10n_hu_balance_sheet_B_III_3" model="account.financial.html.report.line">
+                <field name="name">3. Egyéb részesedés</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_3</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '3739%'), ('account_id.code', '=like', '373%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 4. Own shares, own shares -->
+            <record id="l10n_hu_balance_sheet_B_III_4" model="account.financial.html.report.line">
+                <field name="name">4. Saját részvények, saját üzletrészek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_4</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '3749%'), ('account_id.code', '=like', '374%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 5. Debt securities held for trading -->
+            <record id="l10n_hu_balance_sheet_B_III_5" model="account.financial.html.report.line">
+                <field name="name">5. Forgatási célú hitelviszonyt megtestesítő értékpapírok</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_5</field>
+                <field name="domain" eval="[('account_id.code', 'not like', '3759%'), ('account_id.code', '=like', '375%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 6. Valuation difference of securities -->
+            <record id="l10n_hu_balance_sheet_B_III_6" model="account.financial.html.report.line">
+                <field name="name">6. Értékpapírok értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_III"/>
+                <field name="code">hu_B_III_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '378%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- III. Securities [END] -->
+
+        <!-- IV. Funds -->
+        <record id="l10n_hu_balance_sheet_B_IV" model="account.financial.html.report.line">
+            <field name="name">IV. Pénzeszközök</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_B"/>
+            <field name="code">hu_B_IV</field>
+            <field name="domain" eval="[('account_id.code', '=like', '38%')]"/>
+            <field name="formulas">sum</field>
+        </record>
+            <!-- 1. Cashier's checks, checks -->
+            <record id="l10n_hu_balance_sheet_B_IV_1" model="account.financial.html.report.line">
+                <field name="name">1. Pénztár, csekkek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_IV"/>
+                <field name="code">hu_B_IV_1</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '381%'),
+                                            '|', ('account_id.code', '=like', '382%'),
+                                                 ('account_id.code', '=like', '383%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Bank deposits -->
+            <record id="l10n_hu_balance_sheet_B_IV_2" model="account.financial.html.report.line">
+                <field name="name">2. Bankbetétek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_B_IV"/>
+                <field name="code">hu_B_IV_2</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '384%'),
+                                            '|', ('account_id.code', '=like', '385%'),
+                                            '|', ('account_id.code', '=like', '386%'),
+                                                 ('account_id.code', '=like', '389%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+        <!-- IV. Funds [END] -->
+    <!-- B. CURRENT ASSETS [END] -->
+
+    <!-- C. DEFINITIVE ACCOUNTS -->
+    <record id="l10n_hu_balance_sheet_C" model="account.financial.html.report.line">
+        <field name="name">C. AKTÍV IDŐBELI ELHATÁROLÁSOK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_C</field>
+        <field name="domain" eval="[('account_id.code', '=like', '39%')]"/>
+        <field name="formulas">sum</field>
+    </record>
+            <!-- 1. Accruals and deferrals -->
+            <record id="l10n_hu_balance_sheet_C_1" model="account.financial.html.report.line">
+                <field name="name">1. Bevételek aktív időbeli elhatárolása</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_C"/>
+                <field name="code">hu_C_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '391%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 2. Accrual of costs and expenses -->
+            <record id="l10n_hu_balance_sheet_C_2" model="account.financial.html.report.line">
+                <field name="name">2. Költségek, ráfordítások aktív időbeli elhatárolása</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_C"/>
+                <field name="code">hu_C_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '392%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 3. Deferred expenses -->
+            <record id="l10n_hu_balance_sheet_C_3" model="account.financial.html.report.line">
+                <field name="name">3. Halasztott ráfordítások</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_C"/>
+                <field name="code">hu_C_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '393%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+    <!-- C. DEFINITIVE ACCOUNTS [END] -->
+
+    <!-- TOTAL ASSETS -->
+    <record id="l10n_hu_balance_sheet_total_assets" model="account.financial.html.report.line">
+        <field name="name">ESZKÖZÖK ÖSSZESEN</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_total_assets</field>
+        <field name="formulas">hu_A + hu_B + hu_C</field>
+    </record>
+
+    <!-- D. EQUITY -->
+    <record id="l10n_hu_balance_sheet_D" model="account.financial.html.report.line">
+        <field name="name">D. SAJÁT TŐKE</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_D</field>
+        <field name="formulas">hu_D_I + hu_D_II + hu_D_III + hu_D_IV + hu_D_V + hu_D_VI + hu_D_VII</field>
+    </record>
+        <!-- I. Subscribed capital -->
+        <record id="l10n_hu_balance_sheet_D_I" model="account.financial.html.report.line">
+            <field name="name">I. Jegyzett tőke</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_I</field>
+            <field name="domain" eval="[('account_id.code', '=like', '411%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+            <!-- Of which: repurchased equity at nominal value -->
+            <record id="l10n_hu_balance_sheet_D_I_details" model="account.financial.html.report.line">
+                <field name="name">Ebből: visszavásárolt tulajdoni részesedés névértéken</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_D_I"/>
+                <field name="code">hu_D_I_details</field>
+                <field name="domain" eval="[('account_id.code', '=like', '373%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+        <!-- II. Subscribed but not yet paid-in capital (-) -->
+        <record id="l10n_hu_balance_sheet_D_II" model="account.financial.html.report.line">
+            <field name="name">II. Jegyzett, de még be nem fizetett tőke (-)</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_II</field>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '323%'),
+                                        '|', ('account_id.code', '=like', '324%'),
+                                        '|', ('account_id.code', '=like', '332%'),
+                                             ('account_id.code', '=like', '333%')]"/>
+            <field name="formulas">sum</field>
+        </record>
+
+        <!-- III. Capital reserve -->
+        <record id="l10n_hu_balance_sheet_D_III" model="account.financial.html.report.line">
+            <field name="name">III. Tőketartalék</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_III</field>
+            <field name="domain" eval="[('account_id.code', '=like', '412%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <!-- IV. Profit reserve -->
+        <record id="l10n_hu_balance_sheet_D_IV" model="account.financial.html.report.line">
+            <field name="name">IV. Eredménytartalék</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_IV</field>
+            <field name="domain" eval="[('account_id.code', '=like', '413%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <!-- V. Reserved reserve -->
+        <record id="l10n_hu_balance_sheet_D_V" model="account.financial.html.report.line">
+            <field name="name">V. Lekötött tartalék</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_V</field>
+            <field name="domain" eval="[('account_id.code', '=like', '414%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <!-- VI. Valuation reserve -->
+        <record id="l10n_hu_balance_sheet_D_VI" model="account.financial.html.report.line">
+            <field name="name">VI. Értékelési tartalék</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_VI</field>
+            <field name="domain" eval="[('account_id.code', '=like', '417%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+            <!-- 1. Value adjustment valuation reserve -->
+            <record id="l10n_hu_balance_sheet_D_VI_1" model="account.financial.html.report.line">
+                <field name="name">1. Értékhelyesbítés értékelési tartaléka</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+                <field name="code">hu_D_VI_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '4171%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 2. Fair value measurement reserve -->
+            <record id="l10n_hu_balance_sheet_D_VI_2" model="account.financial.html.report.line">
+                <field name="name">2. Valós értékelés értékelési tartaléka</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+                <field name="code">hu_D_VI_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '4172%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+        <!-- VII. Profit after tax -->
+        <record id="l10n_hu_balance_sheet_D_VII" model="account.financial.html.report.line">
+            <field name="name">VII. Adózott eredmény</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_D"/>
+            <field name="code">hu_D_VII</field>
+            <field name="domain" eval="[('account_id.code', '=like', '419%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+    <!-- D. EQUITY [END] -->
+
+    <!-- E. PROVISIONS -->
+    <record id="l10n_hu_balance_sheet_E" model="account.financial.html.report.line">
+        <field name="name">E. CÉLTARTALÉKOK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_E</field>
+        <field name="domain" eval="[('account_id.code', '=like', '42%')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+            <!-- 1. Provision for contingent liabilities -->
+            <record id="l10n_hu_balance_sheet_E_1" model="account.financial.html.report.line">
+                <field name="name">1. Céltartalék a várható kötelezettségekre</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_E"/>
+                <field name="code">hu_E_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '421%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 2. Provision for future expenses -->
+            <record id="l10n_hu_balance_sheet_E_2" model="account.financial.html.report.line">
+                <field name="name">2. Céltartalék a jövőbeni költségekre</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_E"/>
+                <field name="code">hu_E_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '422%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 3. Other provisions -->
+            <record id="l10n_hu_balance_sheet_E_3" model="account.financial.html.report.line">
+                <field name="name">3. Egyéb céltartalék</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_E"/>
+                <field name="code">hu_E_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '429%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+    <!-- E. PROVISIONS [END] -->
+
+    <!-- F. OBLIGATIONS -->
+    <record id="l10n_hu_balance_sheet_F" model="account.financial.html.report.line">
+        <field name="name">F. KÖTELEZETTSÉGEK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_F</field>
+        <field name="formulas">hu_F_I + hu_F_II + hu_F_III</field>
+    </record>
+        <!-- I. Subordinated liabilities -->
+        <record id="l10n_hu_balance_sheet_F_I" model="account.financial.html.report.line">
+            <field name="name">I. Hátrasorolt kötelezettségek</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_F"/>
+            <field name="code">hu_F_I</field>
+            <field name="domain" eval="[('account_id.code', '=like', '43%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+            <!-- 1. Subordinated liabilities to an associate -->
+            <record id="l10n_hu_balance_sheet_F_I_1" model="account.financial.html.report.line">
+                <field name="name">1. Hátrasorolt kötelezettségek kapcsolt vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_I"/>
+                <field name="code">hu_F_I_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '431%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+             <!-- 2. Subordinated liabilities to an enterprise that has a significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_F_I_2" model="account.financial.html.report.line">
+                <field name="name">2. Hátrasorolt kötelezettségek jelentős tulajdoni részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_I"/>
+                <field name="code">hu_F_I_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '432%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 3. Subordinated liabilities to other participating interests -->
+            <record id="l10n_hu_balance_sheet_F_I_3" model="account.financial.html.report.line">
+                <field name="name">3. Hátrasorolt kötelezettségek egyéb részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_I"/>
+                <field name="code">hu_F_I_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '433%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 4. Subordinated liabilities to other enterprise -->
+            <record id="l10n_hu_balance_sheet_F_I_4" model="account.financial.html.report.line">
+                <field name="name">4. Hátrasorolt kötelezettségek egyéb gazdálkodóval szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_I"/>
+                <field name="code">hu_F_I_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '434%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+        <!-- I. Subordinated liabilities [END] -->
+
+        <!-- II. Long-term liabilities -->
+        <record id="l10n_hu_balance_sheet_F_II" model="account.financial.html.report.line">
+            <field name="name">II. Hosszú lejáratú kötelezettségek</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_F"/>
+            <field name="code">hu_F_II</field>
+            <field name="domain" eval="[('account_id.code', '=like', '44%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+            <!-- 1. Loans received for long-term -->
+            <record id="l10n_hu_balance_sheet_F_II_1" model="account.financial.html.report.line">
+                <field name="name">1. Hosszú lejáratra kapott kölcsönök</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '441%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 2. Convertible and convertible bonds -->
+            <record id="l10n_hu_balance_sheet_F_II_2" model="account.financial.html.report.line">
+                <field name="name">2. Átváltoztatható és átváltozó kötvények</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '442%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 3. Debts from bond issues -->
+            <record id="l10n_hu_balance_sheet_F_II_3" model="account.financial.html.report.line">
+                <field name="name">3. Tartozások kötvénykibocsátásból</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '443%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 4. Investment and development loans -->
+            <record id="l10n_hu_balance_sheet_F_II_4" model="account.financial.html.report.line">
+                <field name="name">4. Beruházási és fejlesztési hitelek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '444%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 5. Other long-term loans -->
+            <record id="l10n_hu_balance_sheet_F_II_5" model="account.financial.html.report.line">
+                <field name="name">5. Egyéb hosszú lejáratú hitelek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '445%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 6. Long-term liabilities to an associate -->
+            <record id="l10n_hu_balance_sheet_F_II_6" model="account.financial.html.report.line">
+                <field name="name">6. Tartós kötelezettségek kapcsolt vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '446%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 7. Long-term liabilities to companies with significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_F_II_7" model="account.financial.html.report.line">
+                <field name="name">7. Tartós kötelezettségek jelentős tulajdoni részesedési viszonyban lévő vállalkozásokkal szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '447%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 8. Non-current liabilities to other participating interests -->
+            <record id="l10n_hu_balance_sheet_F_II_8" model="account.financial.html.report.line">
+                <field name="name">8. Tartós kötelezettségek egyéb részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_8</field>
+                <field name="domain" eval="[('account_id.code', '=like', '448%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 9. Other long-term liabilities -->
+            <record id="l10n_hu_balance_sheet_F_II_9" model="account.financial.html.report.line">
+                <field name="name">9. Egyéb hosszú lejáratú kötelezettségek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_II"/>
+                <field name="code">hu_F_II_9</field>
+                <field name="domain" eval="[('account_id.code', '=like', '449%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+        <!-- II. Long-term liabilities [END] -->
+
+        <!-- III. Short-term liabilities -->
+        <record id="l10n_hu_balance_sheet_F_III" model="account.financial.html.report.line">
+            <field name="name">III. Rövid lejáratú kötelezettségek</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_hu_balance_sheet_F"/>
+            <field name="code">hu_F_III</field>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '45%'),
+                                        '|', ('account_id.code', '=like', '46%'),
+                                             ('account_id.code', '=like', '47%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+            <!-- 1. Short-term loans -->
+            <record id="l10n_hu_balance_sheet_F_III_1" model="account.financial.html.report.line">
+                <field name="name">1. Rövid lejáratú kölcsönök</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '451%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: convertible and convertible bonds -->
+                <record id="l10n_hu_balance_sheet_F_III_1_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: az átváltoztatható és átváltozó kötvények</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_hu_balance_sheet_F_III_1"/>
+                    <field name="code">hu_F_III_1_details</field>
+                </record>
+
+            <!-- 2. Short-term loans -->
+            <record id="l10n_hu_balance_sheet_F_III_2" model="account.financial.html.report.line">
+                <field name="name">2. Rövid lejáratú hitelek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '452%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 3. Advances received from customers -->
+            <record id="l10n_hu_balance_sheet_F_III_3" model="account.financial.html.report.line">
+                <field name="name">3. Vevőktől kapott előlegek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '453%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 4. Liabilities from goods and services (suppliers) -->
+            <record id="l10n_hu_balance_sheet_F_III_4" model="account.financial.html.report.line">
+                <field name="name">4. Kötelezettségek áruszállításból és szolgáltatásból (szállítók)</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_4</field>
+                <field name="domain" eval="['|', ('account_id.code', '=like', '454%'),
+                                            '|', ('account_id.code', '=like', '455%'),
+                                                 ('account_id.code', '=like', '456%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 5. Accounts payable -->
+            <record id="l10n_hu_balance_sheet_F_III_5" model="account.financial.html.report.line">
+                <field name="name">5. Váltótartozások</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '456%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 6. Current liabilities to an associate -->
+            <record id="l10n_hu_balance_sheet_F_III_6" model="account.financial.html.report.line">
+                <field name="name">6. Rövid lejáratú kötelezettségek kapcsolt vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '457%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 7. Current liabilities to enterprises with significant ownership interest -->
+            <record id="l10n_hu_balance_sheet_F_III_7" model="account.financial.html.report.line">
+                <field name="name">7. Rövid lejáratú kötelezettségek jelentős tulajdoni részesedési viszonyban lévő vállalkozásokkal szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '458%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 8. Other current liabilities. vis-à-vis a related undertaking -->
+            <record id="l10n_hu_balance_sheet_F_III_8" model="account.financial.html.report.line">
+                <field name="name">8. Rövid lejáratú kötelezettségek egyéb részesedési viszonyban lévő vállalkozással szemben</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_8</field>
+                <field name="domain" eval="[('account_id.code', '=like', '459%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 9. Other current liabilities -->
+            <record id="l10n_hu_balance_sheet_F_III_9" model="account.financial.html.report.line">
+                <field name="name">9. Egyéb rövid lejáratú kötelezettségek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_9</field>
+                <field name="domain" eval="[('account_id.code', '=like', '476%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 10. Valuation difference on liabilities -->
+            <record id="l10n_hu_balance_sheet_F_III_10" model="account.financial.html.report.line">
+                <field name="name">10. Kötelezettségek értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_10</field>
+                <field name="domain" eval="[('account_id.code', '=like', '4796%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 11. Negative valuation difference on derivative transactions -->
+            <record id="l10n_hu_balance_sheet_F_III_11" model="account.financial.html.report.line">
+                <field name="name">11. Származékos ügyletek negatív értékelési különbözete</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_F_III"/>
+                <field name="code">hu_F_III_11</field>
+                <field name="domain" eval="[('account_id.code', '=like', '478%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+        <!-- III. Short-term liabilities [END] -->
+    <!-- F. OBLIGATIONS [END] -->
+
+    <!-- G. LIABILITIES -->
+    <record id="l10n_hu_balance_sheet_G" model="account.financial.html.report.line">
+        <field name="name">G. PASSZÍV IDŐBELI ELHATÁROLÁSOK</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_G</field>
+        <field name="domain" eval="[('account_id.code', '=like', '48%')]"/>
+        <field name="formulas">-sum</field>
+    </record>
+            <!-- 1. Accruals and deferrals -->
+            <record id="l10n_hu_balance_sheet_G_1" model="account.financial.html.report.line">
+                <field name="name">1. Bevételek passzív időbeli elhatárolása</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_G"/>
+                <field name="code">hu_G_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '481%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 2. Accruals and deferrals of costs and expenses -->
+            <record id="l10n_hu_balance_sheet_G_2" model="account.financial.html.report.line">
+                <field name="name">2. Költségek, ráfordítások passzív időbeli elhatárolása</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_G"/>
+                <field name="code">hu_G_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '482%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 3. Deferred income -->
+            <record id="l10n_hu_balance_sheet_G_3" model="account.financial.html.report.line">
+                <field name="name">3. Halasztott bevételek</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_hu_balance_sheet_G"/>
+                <field name="code">hu_G_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '483%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+    <!-- G. LIABILITIES [END] -->
+
+    <!-- TOTAL RESOURCES -->
+    <record id="l10n_hu_balance_sheet_total_resources" model="account.financial.html.report.line">
+        <field name="name">FORRÁSOK ÖSSZESEN</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_hu_balance_sheet"/>
+        <field name="code">hu_total_resources</field>
+        <field name="formulas">hu_D + hu_E + hu_F + hu_G</field>
+    </record>
+</odoo>

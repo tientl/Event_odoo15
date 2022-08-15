@@ -67,12 +67,19 @@ class HrContract(models.Model):
         for contract in self:
             contract.is_origin_contract_template = contract.origin_contract_id and not contract.origin_contract_id.employee_id
 
+    def _get_yearly_cost_sacrifice_ratio(self):
+        return 1.0 - self.holidays / 231.0
+
+    def _get_yearly_cost_sacrifice_fixed(self):
+        return 0.0
+
     def _get_yearly_cost(self, inverse=False):
         self.ensure_one()
-        ratio = (1.0 - self.holidays / 231.0)
+        ratio = self._get_yearly_cost_sacrifice_ratio()
+        fixed = self._get_yearly_cost_sacrifice_fixed()
         if inverse:
-            return (self._get_advantages_costs() + self._get_salary_costs_factor() * self.wage_with_holidays) / ratio
-        return self.final_yearly_costs * ratio
+            return (self._get_advantages_costs() + self._get_salary_costs_factor() * self.wage_with_holidays + fixed) / ratio
+        return self.final_yearly_costs * ratio - fixed
 
     def _is_salary_sacrifice(self):
         self.ensure_one()
@@ -90,10 +97,17 @@ class HrContract(models.Model):
     def _inverse_wage_with_holidays(self):
         for contract in self:
             if contract._is_salary_sacrifice():
+                if abs(contract.final_yearly_costs - contract._get_yearly_cost(inverse=True)) <= 0.10:
+                    # Small convertion errors issuing when setting the final_yearly_costs
+                    # The wage (Monetary) is rounded and could lead to a small amount diff
+                    # when setting the wage with holidays, that will re-trigger the final_yearly_costs
+                    # computation
+                    continue
                 contract.final_yearly_costs = contract._get_yearly_cost(inverse=True)
                 contract.wage = contract._get_gross_from_employer_costs(contract.final_yearly_costs)
             else:
-                contract.wage = contract.wage_with_holidays
+                if contract.wage != contract.wage_with_holidays:
+                    contract.wage = contract.wage_with_holidays
 
     def _get_advantage_description(self, advantage, new_value=None):
         self.ensure_one()
@@ -112,7 +126,7 @@ class HrContract(models.Model):
 
     @api.model
     def _advantage_black_list(self):
-        return set(MAGIC_COLUMNS + ['wage_with_holidays', 'wage_on_signature'])
+        return set(MAGIC_COLUMNS + ['wage_with_holidays', 'wage_on_signature', 'active'])
 
     @api.model
     def _advantage_white_list(self):
@@ -133,7 +147,10 @@ class HrContract(models.Model):
 
     @api.onchange('final_yearly_costs')
     def _onchange_final_yearly_costs(self):
-        self.wage = self._get_gross_from_employer_costs(self.final_yearly_costs)
+        final_yearly_costs = self.final_yearly_costs
+        self.wage = self._get_gross_from_employer_costs(final_yearly_costs)
+        self.env.remove_to_compute(self._fields['final_yearly_costs'], self)
+        self.final_yearly_costs = final_yearly_costs
 
     @api.depends('final_yearly_costs')
     def _compute_monthly_yearly_costs(self):

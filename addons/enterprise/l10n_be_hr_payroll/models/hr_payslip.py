@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta, MO, SU
 from dateutil import rrule
 from collections import defaultdict
 from datetime import date, timedelta
-from odoo.tools import float_round, date_utils
+from odoo.tools import float_round, date_utils, ormcache
 from odoo.exceptions import UserError
 from odoo.addons.l10n_be_hr_payroll.models.hr_contract import EMPLOYER_ONSS
 
@@ -58,6 +58,20 @@ class Payslip(models.Model):
                         'input_type_id': self.env.ref('l10n_be_hr_payroll.input_double_holiday_european_leave_deduction').id,
                     })]})
         return res
+
+    @ormcache('self.employee_id', 'self.date_from', 'self.date_to', 'tuple([self.env.context.get("salary_simulation", False)])')
+    def _get_period_contracts(self):
+        # Returns all the employee contracts over the same payslip period, to avoid
+        # double remunerations for some line codes
+        self.ensure_one()
+        if self.env.context.get('salary_simulation'):
+            return self.contract_id.id
+        contracts = self.employee_id._get_contracts(
+            self.date_from,
+            self.date_to,
+            states=['open', 'close']
+        ).sorted('date_start')
+        return contracts.ids
 
     @api.depends('worked_days_line_ids.number_of_hours', 'worked_days_line_ids.is_paid', 'worked_days_line_ids.is_credit_time')
     def _compute_worked_hours(self):
@@ -328,19 +342,22 @@ class Payslip(models.Model):
             'compute_termination_withholding_rate': compute_termination_withholding_rate,
             'compute_impulsion_plan_amount': compute_impulsion_plan_amount,
             'compute_onss_restructuring': compute_onss_restructuring,
+            'compute_representation_fees': compute_representation_fees,
+            'compute_serious_representation_fees': compute_serious_representation_fees,
+            'compute_volatile_representation_fees': compute_volatile_representation_fees,
             'EMPLOYER_ONSS': EMPLOYER_ONSS,
         })
         return res
 
     def _compute_number_complete_months_of_work(self, date_from, date_to, contracts):
-        invalid_days_by_months = defaultdict(dict)
+        invalid_days_by_year = defaultdict(lambda: defaultdict(dict))
         for day in rrule.rrule(rrule.DAILY, dtstart=date_from, until=date_to):
-            invalid_days_by_months[day.month][day.date()] = True
+            invalid_days_by_year[day.year][day.month][day.date()] = True
 
         for contract in contracts:
             # In case the 1rst/2nd days are saturday/sunday, be kinder on the
             # notion of complete months
-            if contract.date_start.day <= 3:
+            if contract.date_start.day <= 7:
                 contract_start = contract.date_start + relativedelta(day=1)
             else:
                 contract_start = contract.date_start
@@ -356,10 +373,11 @@ class Payslip(models.Model):
                     out_of_schedule = False
                 elif day.weekday() not in work_days:
                     out_of_schedule = False
-                invalid_days_by_months[day.month][day] &= out_of_schedule
+                invalid_days_by_year[day.year][day.month][day] &= out_of_schedule
 
         complete_months = [
             month
+            for year, invalid_days_by_months in invalid_days_by_year.items()
             for month, days in invalid_days_by_months.items()
             if not any(days.values())
         ]
@@ -378,10 +396,18 @@ class Payslip(models.Model):
         # If any day in the month is not covered by the contract dates coverage
         # the entire month is not taken into account for the proratization
         contracts = self.employee_id.contract_ids.filtered(lambda c: c.state not in ['draft', 'cancel'] and c.structure_type_id == self.struct_id.type_id)
-        if not contracts or not self.contract_id.first_contract_date:
+        first_contract_date = self.contract_id.employee_id._get_first_contract_date(no_gap=False)
+        if not contracts or not first_contract_date:
+            return 0.0
+        # Only employee with at least 6 months of XP can benefit from the 13th month bonus
+        # aka employee who started before the 7th of July (to avoid issues when the month starts
+        # with holidays / week-ends, etc)
+        if first_contract_date.year == self.date_from.year and \
+                ((first_contract_date.month == 7 and first_contract_date.day > 7) \
+                or (first_contract_date.month > 7)):
             return 0.0
 
-        date_from = self.contract_id.first_contract_date
+        date_from = first_contract_date
         date_to = self.date_to + relativedelta(day=31)
 
         basic = self.contract_id._get_contract_wage()
@@ -396,15 +422,22 @@ class Payslip(models.Model):
             # 2. Deduct absences
             presence_prorata = self._compute_presence_prorata(date_from, date_to, contracts)
 
+        # Could happen for contracts with gaps
+        if n_months < 6:
+            return 0.0
+
         fixed_salary = basic * n_months / 12 * presence_prorata
 
         force_avg_variable_revenues = self.input_line_ids.filtered(lambda l: l.code == 'VARIABLE')
         if force_avg_variable_revenues:
             avg_variable_revenues = force_avg_variable_revenues[0].amount
         else:
-            avg_variable_revenues = self.with_context(
-                variable_revenue_date_from=self.date_from + relativedelta(months=-1)
-            )._get_last_year_average_variable_revenues()
+            if not n_months:
+                avg_variable_revenues = 0
+            else:
+                avg_variable_revenues = self.with_context(
+                    variable_revenue_date_from=self.date_from + relativedelta(months=-1)
+                )._get_last_year_average_variable_revenues()
         return fixed_salary + avg_variable_revenues
 
     def _get_paid_amount_warrant(self):
@@ -435,15 +468,19 @@ class Payslip(models.Model):
                 presence_prorata = self._compute_presence_prorata(date_from, date_to, contracts)
             fixed_salary = basic * n_months / 12 * presence_prorata
         else:
+            n_months = 12
             fixed_salary = basic
 
         force_avg_variable_revenues = self.input_line_ids.filtered(lambda l: l.code == 'VARIABLE')
         if force_avg_variable_revenues:
             avg_variable_revenues = force_avg_variable_revenues[0].amount
         else:
-            avg_variable_revenues = self.with_context(
-                variable_revenue_date_from=self.date_from + relativedelta(months=-1)
-            )._get_last_year_average_variable_revenues()
+            if not n_months:
+                avg_variable_revenues = 0
+            else:
+                avg_variable_revenues = self.with_context(
+                    variable_revenue_date_from=self.date_from + relativedelta(months=-1)
+                )._get_last_year_average_variable_revenues()
         return fixed_salary + avg_variable_revenues
 
     def _get_paid_amount(self):
@@ -577,23 +614,40 @@ def compute_withholding_taxes(payslip, categories, worked_days, inputs):
         return float_round(value / 12.0, precision_rounding=0.01, rounding_method='DOWN')
 
     employee = payslip.contract_id.employee_id
+    contract = payslip.contract_id
+    date_from = payslip.dict.date_from
     # PART 1: Withholding tax amount computation
     withholding_tax_amount = 0.0
 
     taxable_amount = categories.GROSS  # Base imposable
-    # YTI TODO: master: Move this into another rule (like benefit in kind)
+
+    threshold = payslip.env['hr.rule.parameter']._get_parameter_from_code(
+        'pricate_car_taxable_threshold',
+        date=payslip.date_to,
+        raise_if_not_found=False) or 410
+    transport_amount = 0
     if payslip.contract_id.transport_mode_private_car:
-        threshold = payslip.env['hr.rule.parameter']._get_parameter_from_code(
-            'pricate_car_taxable_threshold',
-            date=payslip.date_to,
-            raise_if_not_found=False)
-        if threshold is None:
-            threshold = 410  # 2020 value
-        contract = payslip.contract_id
-        private_car_reimbursed_amount = contract.with_context(
+        transport_amount = contract.with_context(
             payslip_date=payslip.date_from)._get_private_car_reimbursed_amount(contract.km_home_work)
-        if private_car_reimbursed_amount > (threshold / 12):
-            taxable_amount += private_car_reimbursed_amount - (threshold / 12)
+        ratio = 1.0 / 12.0
+        # Private Car is added after PP, add the part exceeding the exempted part
+        if transport_amount and transport_amount > threshold * ratio:
+            taxable_amount += transport_amount - (threshold * ratio)
+    elif contract.transport_mode_car and not payslip.is_outside_contract:
+        if 'vehicle_id' in payslip.dict:
+            transport_amount = payslip.dict.vehicle_id._get_car_atn(date=date_from)
+        else:
+            transport_amount = contract.car_atn
+        # Introduced in May 2022
+        if date_from.year < 2022:
+            ratio = 0
+        elif date_from == 2022:
+            ratio = 1.0 / 8.0
+        else:
+            ratio = 1.0 / 12.0
+        # Car ATN is already in GROSS, only remove the exempted part
+        if transport_amount and transport_amount >= threshold * ratio:
+            taxable_amount -= threshold * ratio
     lower_bound = taxable_amount - taxable_amount % 15
 
     # yearly_gross_revenue = Revenu Annuel Brut
@@ -667,36 +721,56 @@ def compute_withholding_taxes(payslip, categories, worked_days, inputs):
     return - max(withholding_tax_amount, 0.0)
 
 def compute_special_social_cotisations(payslip, categories, worked_days, inputs):
+    def find_rate(x, rates):
+        for low, high, rate, basis, min_amount, max_amount in rates:
+            if low <= x <= high:
+                return low, high, rate, basis, min_amount, max_amount
+        return 0, 0, 0, 0, 0, 0
+
     employee = payslip.contract_id.employee_id
     wage = categories.BASIC
-    result = 0.0
-    if not wage:
-        return result
-    if employee.resident_bool:
-        result = 0.0
-    elif employee.marital in ['divorced', 'single', 'widower'] or (employee.marital in ['married', 'cohabitant'] and employee.spouse_fiscal_status == 'without_income'):
-        if 0.01 <= wage <= 1095.09:
-            result = 0.0
-        elif 1095.10 <= wage <= 1945.38:
-            result = 0.0
-        elif 1945.39 <= wage <= 2190.18:
-            result = -min((wage - 1945.38) * 0.076, 18.60)
-        elif 2190.19 <= wage <= 6038.82:
-            result = -min(18.60 + (wage - 2190.18) * 0.011, 60.94)
-        else:
-            result = -60.94
-    elif employee.marital in ['married', 'cohabitant'] and employee.spouse_fiscal_status != 'without_income':
-        if 0.01 <= wage <= 1095.09:
-            result = 0.0
-        elif 1095.10 <= wage <= 1945.38:
-            result = -9.30
-        elif 1945.39 <= wage <= 2190.18:
-            result = -min(max((wage - 1945.38) * 0.076, 9.30), 18.60)
-        elif 2190.19 <= wage <= 6038.82:
-            result = -min(18.60 + (wage - 2190.18) * 0.011, 51.64)
-        else:
-            result = -51.64
-    return result
+    if not wage or employee.resident_bool:
+        return 0.0
+
+    RuleParameters = payslip.dict.env['hr.rule.parameter']
+    if employee.marital in ['divorced', 'single', 'widower'] or (employee.marital in ['married', 'cohabitant'] and employee.spouse_fiscal_status == 'without_income'):
+        # YTI TODO: could be dropped in master in favor to
+        # rates = payslip.rule_parameter('cp200_monss_isolated')
+        rates = RuleParameters._get_parameter_from_code(
+            'cp200_monss_isolated', payslip.dict.date_to, raise_if_not_found=False)
+        if not rates:
+            rates = [
+                (0.00, 1945.38, 0.00, 0.00, 0.00, 0.00),
+                (1945.39, 2190.18, 0.076, 0.00, 0.00, 18.60),
+                (2190.19, 6038.82, 0.011, 18.60, 0.00, 60.94),
+                (6038.83, 999999999.00, 1.000, 60.94, 0.00, 60.94),
+            ]
+        low, dummy, rate, basis, min_amount, max_amount = find_rate(wage, rates)
+        return -min(max(basis + (wage - low + 0.01) * rate, min_amount), max_amount)
+
+    if employee.marital in ['married', 'cohabitant'] and employee.spouse_fiscal_status != 'without_income':
+        # YTI TODO: could be dropped in master in favor to
+        # rates = payslip.rule_parameter('cp200_monss_couple')
+        rates = RuleParameters._get_parameter_from_code(
+            'cp200_monss_couple', payslip.dict.date_to, raise_if_not_found=False)
+        if not rates:
+            rates = [
+                (0.00, 1095.09, 0.00, 0.00, 0.00, 0.00),
+                (1095.10, 1945.38, 0.00, 9.30, 9.30, 9.30),
+                (1945.39, 2190.18, 0.076, 0.00, 9.30, 18.60),
+                (2190.19, 6038.82, 0.011, 18.60, 0.00, 51.64),
+                (6038.83, 999999999.00, 1.000, 51.64, 51.64, 51.64),
+            ]
+        low, dummy, rate, basis, min_amount, max_amount = find_rate(wage, rates)
+        if isinstance(max_amount, tuple):
+            if employee.spouse_fiscal_status in ['high_income', 'low_income']:
+                # conjoint avec revenus professionnels
+                max_amount = max_amount[0]
+            else:
+                # conjoint sans revenus professionnels
+                max_amount = max_amount[1]
+        return -min(max(basis + (wage - low + 0.01) * rate, min_amount), max_amount)
+    return 0.0
 
 def compute_ip(payslip, categories, worked_days, inputs):
     contract = payslip.contract_id
@@ -964,3 +1038,58 @@ def compute_onss_restructuring(payslip, categories, worked_days, inputs):
     if 0 <= number_of_months <= 6:
         return amount * ratio
     return 0
+
+def compute_representation_fees(payslip, categories, worked_days, inputs):
+    contract = payslip.contract_id
+    if not categories.BASIC:
+        result = 0
+    else:
+        calendar = contract.resource_calendar_id
+        days_per_week = calendar._get_days_per_week()
+        incapacity_attendances = calendar.attendance_ids.filtered(lambda a: a.work_entry_type_id.code == 'LEAVE281')
+        if incapacity_attendances:
+            incapacity_hours = sum((attendance.hour_to - attendance.hour_from) for attendance in incapacity_attendances)
+            incapacity_hours = incapacity_hours / 2 if calendar.two_weeks_calendar else incapacity_hours
+            incapacity_rate = (1 - incapacity_hours / calendar.hours_per_week) if calendar.hours_per_week else 0
+            work_time_rate = contract.resource_calendar_id.work_time_rate * incapacity_rate
+        else:
+            work_time_rate = contract.resource_calendar_id.work_time_rate
+
+        threshold = 0 if (worked_days.OUT and worked_days.OUT.number_of_hours) else 279.31
+        if days_per_week and contract.representation_fees > threshold:
+            # Only part of the representation costs are pro-rated because certain costs are fully
+            # covered for the company (teleworking costs, mobile phone, internet, etc., namely:
+            # - 144.31 € (Tax, since 2021 - coronavirus)
+            # - 30 € (internet)
+            # - 25 € (phone)
+            # - 80 € (car management fees)
+            # = Total € 279.31
+            # Legally, they are not prorated according to the occupancy fraction.
+            # In summary, those who select amounts of for example 150 € and 250 €, have nothing pro-rated
+            # because the amounts are covered in an irreducible way.
+            # For those who have selected the maximum of 399 €, there is therefore only the share of
+            # +-120 € of representation expenses which is then subject to prorating.
+
+            # Credit time, but with only half days (otherwise it's taken into account)
+            if contract.time_credit and work_time_rate and work_time_rate < 100 and days_per_week == 5:
+                total_amount = threshold + (contract.representation_fees - threshold) * work_time_rate / 100
+            # Contractual part time
+            elif not contract.time_credit and work_time_rate < 100:
+                total_amount = threshold + (contract.representation_fees - threshold) * work_time_rate / 100
+            else:
+                total_amount = contract.representation_fees
+
+            if total_amount > threshold:
+                daily_amount = (total_amount - threshold) * 3 / 13 / days_per_week
+                result = max(0, total_amount - daily_amount * payslip.representation_fees_missing_days)
+        elif days_per_week:
+            result = contract.representation_fees
+        else:
+            result = 0
+    return result
+
+def compute_serious_representation_fees(payslip, categories, worked_days, inputs):
+    return min(compute_representation_fees(payslip, categories, worked_days, inputs), 279.31)
+
+def compute_volatile_representation_fees(payslip, categories, worked_days, inputs):
+    return max(compute_representation_fees(payslip, categories, worked_days, inputs) - 279.31, 0)

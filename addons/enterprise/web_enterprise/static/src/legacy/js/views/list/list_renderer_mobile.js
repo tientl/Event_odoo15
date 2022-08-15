@@ -21,6 +21,8 @@ ListRenderer.include({
         this._super(...arguments);
         this.longTouchTimer = null;
         this.LONG_TOUCH_THRESHOLD = 400;
+        this._onClickCapture = this._onClickCapture.bind(this);
+        this._ignoreEventInSelectionMode = this._ignoreEventInSelectionMode.bind(this);
     },
 
     //--------------------------------------------------------------------------
@@ -81,6 +83,10 @@ ListRenderer.include({
             });
     },
 
+    _isInSelectionMode(ev) {
+        return !!this.selection.length;
+    },
+
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
@@ -129,12 +135,6 @@ ListRenderer.include({
      * @param ev
      */
     _onTouchStartSelectionMode(ev) {
-        if (this.selection.length) {
-            // in selection mode, only selection is allowed.
-            ev.preventDefault();
-            $(ev.currentTarget).find('.o_list_record_selector').click();
-            return;
-        }
         this.touchStartMs = Date.now();
         if (this.longTouchTimer === null) {
             this.longTouchTimer = setTimeout(() => {
@@ -142,6 +142,44 @@ ListRenderer.include({
                 this._resetLongTouchTimer();
             }, this.LONG_TOUCH_THRESHOLD);
         }
+    },
+
+    _ignoreEventInSelectionMode(ev) {
+        if (this._isInSelectionMode()) {
+            ev.stopPropagation();
+            ev.preventDefault();
+        }
+    },
+
+    _onClickCapture(ev) {
+        if (!this._isInSelectionMode()) {
+            return;
+        }
+        const currentRow = $(ev.target).closest('.o_data_row');
+
+        if (!currentRow.length) {
+            return;
+        }
+
+        if (!ev.target.classList.contains('o_list_record_selector')) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            $('.o_list_record_selector', currentRow).click();
+        }
+    },
+
+    _delegateEvents() {
+        this._super(...arguments);
+        this.$el[0].addEventListener('click', this._onClickCapture, { capture: true });
+        ['mouseover', 'mouseout'].forEach(name =>
+            this.$el[0].addEventListener(name, this._ignoreEventInSelectionMode, { capture: true }));
+    },
+
+    _undelegateEvents() {
+        this._super(...arguments);
+        this.$el[0].removeEventListener('click', this._onClickCapture, { capture: true });
+        ['mouseover', 'mouseout'].forEach(name =>
+            this.$el[0].removeEventListener(name, this._ignoreEventInSelectionMode, { capture: true }));
     },
 
 });

@@ -79,7 +79,7 @@
             <field name="name">Expenses</field>
             <field name="code">LEX</field>
             <field name="formulas">EXP + DEP</field>
-            <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'expense')]" />
+            <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'expense'), '!', ('account_id.user_type_id', '=', ref('account.data_account_type_direct_costs'))]" />
             <field name="parent_id" eval="False"/>
             <field name="sequence" eval="2"/>
             <field name="financial_report_id" ref="account_financial_report_profitandloss0"/>

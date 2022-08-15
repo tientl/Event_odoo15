@@ -207,7 +207,6 @@ class AccountBankReconciliationReport(models.AbstractModel):
             'level': 1,
             'unfolded': is_unfolded,
             'unfoldable': True,
-            'parent_id': 'current_balance_line',
         }
         report_lines += [section_report_line] + unfolded_lines
 
@@ -315,7 +314,6 @@ class AccountBankReconciliationReport(models.AbstractModel):
                 ]
 
             st_report_line = {
-                'id': res['id'],
                 'name': res['name'],
                 'columns': self._apply_groups([
                     {'name': format_date(self.env, res['date']), 'class': 'date'},
@@ -328,13 +326,21 @@ class AccountBankReconciliationReport(models.AbstractModel):
 
             residual_amount = monetary_columns[2]['no_format']
             if residual_amount > 0.0:
-                st_report_line['parent_id'] = 'plus_unreconciled_statement_lines'
+                st_report_line['parent_id'] = self._get_generic_line_id(
+                    None, None, markup='plus_unreconciled_statement_lines'
+                )
                 plus_total += residual_amount
                 plus_report_lines.append(st_report_line)
             else:
-                st_report_line['parent_id'] = 'less_unreconciled_statement_lines'
+                st_report_line['parent_id'] = self._get_generic_line_id(
+                    None, None, markup='less_unreconciled_statement_lines'
+                )
                 less_total += residual_amount
                 less_report_lines.append(st_report_line)
+            st_report_line['id'] = self._get_generic_line_id(
+                'account.bank.statement.line', res['id'],
+                parent_line_id=st_report_line['parent_id']
+            )
 
             is_parent_unfolded = unfold_all or st_report_line['parent_id'] in options['unfolded_lines']
             if not is_parent_unfolded:
@@ -389,13 +395,15 @@ class AccountBankReconciliationReport(models.AbstractModel):
         tables, where_clause, where_params = self.with_company(journal.company_id)._query_get(new_options, domain=[
             ('journal_id', '=', journal.id),
             ('account_id', 'in', accounts.ids),
-            ('payment_id.is_matched', '=', False)
+            ('full_reconcile_id', '=', False),
+            ('amount_residual_currency', '!=', 0.0)
         ])
 
         self._cr.execute('''
             SELECT
                 account_move_line.account_id,
                 account_move_line.payment_id,
+                account_move_line__move_id.id as move_id,
                 account_move_line.currency_id,
                 account_move_line__move_id.name,
                 account_move_line__move_id.ref,
@@ -411,6 +419,7 @@ class AccountBankReconciliationReport(models.AbstractModel):
             GROUP BY
                 account_move_line.account_id,
                 account_move_line.payment_id,
+                account_move_line__move_id.id,
                 account_move_line.currency_id,
                 account_move_line__move_id.name,
                 account_move_line__move_id.ref,
@@ -499,27 +508,35 @@ class AccountBankReconciliationReport(models.AbstractModel):
                     },
                 ]
 
+            model = 'account.payment' if res['payment_id'] else 'account.move'
             pay_report_line = {
-                'id': res['payment_id'],
                 'name': res['name'],
                 'columns': self._apply_groups([
                     {'name': format_date(self.env, res['date']), 'class': 'date'},
                     {'name': res['ref']},
                 ] + monetary_columns),
-                'model': 'account.payment',
-                'caret_options': 'account.payment',
+                'model': model,
+                'caret_options': model,
                 'level': 3,
             }
 
             residual_amount = monetary_columns[2]['no_format']
             if res['account_id'] in journal._get_journal_inbound_outstanding_payment_accounts().ids:
-                pay_report_line['parent_id'] = 'plus_unreconciled_payment_lines'
+                pay_report_line['parent_id'] = self._get_generic_line_id(
+                    None, None, markup='plus_unreconciled_payment_lines'
+                )
                 plus_total += residual_amount
                 plus_report_lines.append(pay_report_line)
             else:
-                pay_report_line['parent_id'] = 'less_unreconciled_payment_lines'
+                pay_report_line['parent_id'] = self._get_generic_line_id(
+                    None, None, markup='less_unreconciled_payment_lines'
+                )
                 less_total += residual_amount
                 less_report_lines.append(pay_report_line)
+            pay_report_line['id'] = self._get_generic_line_id(
+                model, res['payment_id'] or res['move_id'],
+                parent_line_id=pay_report_line['parent_id']
+            )
 
             is_parent_unfolded = unfold_all or pay_report_line['parent_id'] in options['unfolded_lines']
             if not is_parent_unfolded:

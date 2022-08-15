@@ -11,21 +11,21 @@
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-12">
                                             <p class="text-center font-weight-bold">
-                                                FICHE N° 281.50 (commissions, courtage, etc) - ANNEE <span t-esc="data['V0002']"/>
+                                                FORM N° 281.50 (commissions, brokerage, etc) - YEAR <span t-esc="data['V0002']"/>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-12" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                1. N° ..................
+                                                1. N° <t t-esc="data['F2009']"/>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-6 border-right border-dark" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                2. Nom (ou dénomination) et adresse du débiteur des revenus:
+                                                2. Name (or denomination) and address of the debtor of the income:
                                             </p>
                                             <br/>
                                             <p class="text-left border border-dark" style="padding-left: 2%">
@@ -37,12 +37,12 @@
                                             </p>
                                             <br/>
                                             <p class="text-left">
-                                                N° d'entreprise: <span t-esc="data['A1005']"/>
+                                                Enterprise N°: <span t-esc="data['A1005']"/>
                                             </p>
                                         </div>
                                         <div class="col-6" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                Nom, prénom (ou dénomination) et adresse du bénéficiaire des revenus:
+                                                Lastname, Firstname (or denomination) and address of the recipient of the income:
                                             </p>
                                             <br/>
                                             <p class="text-left border border-dark" style="padding-left: 2%">
@@ -50,20 +50,23 @@
                                                 <br/>
                                                 <span t-esc="data['F2015']"/> <!-- Partner Address -->
                                                 <br/>
-                                                <span t-esc="data['F2016']"/> <span t-esc="data['F2017']"/> <!-- Partner ZIP & City -->
-                                            </p>
-                                            <br/>
-                                            <p class="text-left">
-                                                N° d'entreprise ou n° national:
-                                                <t t-if="data['F50_2030'] == '1'">
-                                                    <span t-esc="data['F2011']"/>
+                                                <t t-if="data['F2016']">
+                                                    <span t-esc="data['F2016']"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <span t-esc="data['F50_2110']"/>
+                                                    <span t-esc="data['F2112']"/>
                                                 </t>
+                                                <span t-esc="data['F2017']"/> <!-- Partner ZIP & City -->
+                                                <br/>
+                                                <span t-esc="data['F2018_display']"/> <!-- Partner Country name -->
+                                            </p>
+                                            <br/>
+                                            <p class="text-left" t-if="data['F50_2030'] == '2'">
+                                                Enterprise N°:
+                                                <span t-esc="data['F50_2110_display']"/>
                                             </p>
                                             <p class="text-left" t-if="data['F50_2030'] == '1'">
-                                                Profession exercée:
+                                                Profession:
                                                 <span t-esc="data['F50_2107']"/>
                                             </p>
                                         </div>
@@ -76,22 +79,22 @@
                                         </div>
                                         <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-center">
-                                                Montant
+                                                Amount
                                             </p>
                                         </div>
                                     </div>
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-8 border-right border-dark" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                a) Commissions, courtages, ristournes commerciales, etc:
+                                                a) Commissions, brokerage, commercial discounts, etc:
                                                 <br/>
-                                                b) Honoraires ou vacations:
+                                                b) Fees or vacations:
                                                 <br/>
-                                                c) Avantages de toute nature (nature: ................)
+                                                c) Benefits in kind (nature : ................)
                                                 <br/>
-                                                d) Frais exposés pour compte du bénéficiaire:
+                                                d) Expenses incurred on behalf of the beneficiary:
                                                 <br/>
-                                                e) Total (voir aussi la rubriques f et g ci-après):
+                                                e) Total (see also in sections f and g below):
                                             </p>
                                         </div>
                                         <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
@@ -111,12 +114,13 @@
                                     </div>
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-8" style="padding-top: 1%; padding-bottom: 1%;">
-                                            f) Mentionner ici, le cas échéant, le montant compris à la rubrique e ci-avant se rapporte à des
-                                            indemnités versées à:
+                                            f) Enter here, if applicable, the amount included in item e
+                                            above relates to compensation paid to:
                                             <br/>
-                                            - des sportifs pour leurs prestations sportives:
+                                            - athletes for their sports performances:
                                             <br/>
-                                            - des formateurs, entraîneurs et accompagnateurs pour leur activité au profit de sportifs:
+                                            - trainers, coaches and accompaniers for their activity for the
+                                            benefit of the athletes:
                                         </div>
                                         <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-right">
@@ -131,23 +135,24 @@
                                     <div class="row border border-dark border-bottom-0">
                                         <div class="col-8" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                g) Si le montant indiqué à la rubrique e ci-avant ne coïncide pas avec le montant réellement payé en
+                                                g) If the amount indicated in item e above does not coincide with
+                                                the amount actually paid
                                                 <span t-esc="data['V0002']"/>,
-                                                inscrivez ci-contre le montant réellement payé en
+                                                enter the amount actually paid in
                                                 <span t-esc="data['V0002']"/>
-                                                (y compris, les sommes qui ont un rapport avec d'autres périodes imposables):
+                                                (including amounts that related to other taxable periods):
                                             </p>
                                         </div>
                                         <div class="col-4" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-right">
-                                                <span t-esc="data['F50_2065']"/>
+                                                <t t-esc="data['F50_2065_display']"/>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="row border border-dark">
                                         <div class="col-12" style="padding-top: 1%; padding-bottom: 1%;">
                                             <p class="text-left">
-                                                4. Commentaire: <span t-esc="data['F50_2099']"/>
+                                                4. Comments: <span t-esc="data['F50_2099']"/>
                                             </p>
                                         </div>
                                     </div>

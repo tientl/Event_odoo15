@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, api, _
+from odoo.tools.misc import get_lang
 
 from collections import defaultdict
 from itertools import accumulate
@@ -47,12 +48,12 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
 
     def _get_query(self, options, line_id):
         company_ids = tuple(self.env.companies.ids) if options.get('multi_company', False) else tuple(self.env.company.ids)
-        params = {'date_to': options['date']['date_to'], 'date_from': options['date']['date_from'], 'company_ids': company_ids}
+        params = {'date_to': options['date']['date_to'], 'date_from': options['date']['date_from'], 'company_ids': company_ids, 'lang': self.env.user.lang or get_lang(self.env).code}
         current = self._parse_line_id(line_id)
         params.update(current)
         select = """
             SELECT COALESCE(SUM(aml.balance), 0) as balance,
-                account.name as account_name,
+                COALESCE(NULLIF(ir_translation.value, ''), account.name) as account_name,
                 account.code as account_code,
                 category.id as category_id,
                 category.name as category_name,
@@ -71,7 +72,8 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
                 WHERE r2.date_from <= aml.date
                   AND c2.id = category.id
                 ORDER BY r2.date_from DESC LIMIT 1
-            )"""
+            )
+            LEFT JOIN ir_translation ON ir_translation.name = 'account.account,name' AND ir_translation.res_id = account.id AND ir_translation.type = 'model' AND ir_translation.lang = %(lang)s"""
         where = """
             WHERE aml.company_id in %(company_ids)s
               AND aml.date >= %(date_from)s AND aml.date <= %(date_to)s
@@ -85,7 +87,7 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         where += not options.get('all_entries') and """
               AND move.state = 'posted'""" or ""
         group_by = """
-            GROUP BY aml.account_id, account.id, category.id"""
+            GROUP BY aml.account_id, account.id, category.id, account_name"""
         group_by += options['multi_rate_in_period'] and ", rate.rate" or ""
         order_by = """
             ORDER BY category_code, account_code"""
@@ -100,16 +102,20 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         if len(split) > 2 and split[2] == 'account':
             current['account'] = int(split[3])
             if len(split) > 4 and split[4] == 'rate':
-                current['account_rate'] = float(split[5])
+                current['rate'] = float(split[5])
         return current
 
     def _build_line_id(self, current, parent=False):
         res = 'category_' + str(current['category'])
         if current.get('account'):
             res += '_account_' + str(current['account'])
-            if current.get('account_rate'):
-                res += '_rate_' + str(current['account_rate'])
+            if current.get('rate'):
+                res += '_rate_' + str(current['rate'])
         return '_'.join(res.split('_')[:-2]) if parent else res
+
+    def _get_applicable_rate(self, values):
+        # Hook to be overridden.
+        return values['account_rate']
 
     @api.model
     def _get_lines(self, options, line_id=None):
@@ -122,6 +128,7 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         if results:
             current = self._parse_line_id(line_id and '_'.join(line_id.split('_')[:-2]))
             for values in results:
+                values['rate'] = self._get_applicable_rate(values)
                 self._set_line(options, values, lines, current, totals)
         for line in lines:
             line['columns'][0] = {'name': self.format_value(totals[line['id']][0]), 'no_format': totals[line['id']][0]}
@@ -131,20 +138,20 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
     def _set_line(self, options, values, lines, current, totals):
         if values['category_id'] != current['category']:
             current['category'] = values['category_id']
-            current['account'] = current['account_rate'] = None
+            current['account'] = current['rate'] = None
             lines.append(self._get_category_line(options, values, current))
         if values['account_id'] != current.get('account'):
             current['account'] = values['account_id']
-            current['account_rate'] = None
+            current['rate'] = None
             if self._need_to_unfold(current, options, parent=True):
                 lines.append(self._get_account_line(options, values, current))
-        if options['multi_rate_in_period'] and values['account_rate'] != current.get('account_rate'):
-            current['account_rate'] = values['account_rate']
+        if options['multi_rate_in_period'] and values['rate'] != current.get('rate'):
+            current['rate'] = values['rate']
             if self._need_to_unfold(current, options, parent=True):
                 lines.append(self._get_rate_line(options, values, current))
         for id in ['_'.join(v) for v in accumulate(zip(*[iter(self._build_line_id(current).split('_'))]*2))]:
             totals[id][0] += values['balance']
-            totals[id][1] += values['balance'] * values['account_rate'] / 100
+            totals[id][1] += values['balance'] * values['rate'] / 100
 
     def _get_category_line(self, options, values, current):
         return {
@@ -178,7 +185,8 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         return {
             'id': self._build_line_id(current),
             'columns': [{'name': ''},
-                        {'name': ('%s %%' % values['account_rate']) if not options['multi_rate_in_period'] or (current.get('account_rate') is not None) else ''},
+                        {'name': ('%s %%' % values['rate']) if not options['multi_rate_in_period'] or (current.get('rate') is not None) else '',
+                         'no_format': values['rate']},
                         {'name': ''}],
             'parent_id': self._build_line_id(current, parent=True),
             'unfolded': self._need_to_unfold(current, options),

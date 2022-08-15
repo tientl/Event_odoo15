@@ -281,6 +281,7 @@ export default class FiltersPlugin extends spreadsheet.CorePlugin {
      */
     _updateFilterLabelInFormulas(currentLabel, newLabel) {
         const sheets = this.getters.getSheets();
+        currentLabel = currentLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         for (let sheet of sheets) {
             for (let cell of Object.values(this.getters.getCells(sheet.id))) {
                 if (cell.isFormula()) {

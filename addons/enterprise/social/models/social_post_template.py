@@ -82,6 +82,24 @@ class SocialPostTemplate(models.Model):
         for post in self:
             post.has_active_accounts = has_active_accounts
 
+    def _set_attachemnt_res_id(self):
+        """ Set res_id of created attachements, the many2many_binary widget
+        might create them without res_id, and if it's the case,
+        only the current user will be able to read the attachments
+        (other user will get an access error). """
+        for post in self:
+            if post.image_ids:
+                attachments = self.env['ir.attachment'].sudo().browse(post.image_ids.ids).filtered(
+                    lambda a: a.res_model == self._name and not a.res_id and a.create_uid.id == self._uid)
+                if attachments:
+                    attachments.write({'res_id': post.id})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(SocialPostTemplate, self).create(vals_list)
+        res._set_attachemnt_res_id()
+        return res
+
     def name_get(self):
         return [
             (record.id, record.message if len(record.message) < 50 else '%s...' % record.message[:47])

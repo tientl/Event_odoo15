@@ -3,8 +3,10 @@
 
 from .common import TestInterCompanyRulesCommonSOPO
 from odoo.tests import Form
+from odoo.tests import tagged
 
 
+@tagged('post_install', '-at_install')
 class TestInterCompanySaleToPurchase(TestInterCompanyRulesCommonSOPO):
 
     def _generate_draft_sale_order(self, company, partner, user):
@@ -12,9 +14,9 @@ class TestInterCompanySaleToPurchase(TestInterCompanyRulesCommonSOPO):
         sale_order = Form(self.env['sale.order'])
         sale_order.company_id = company
         sale_order.warehouse_id = company.warehouse_id
-        sale_order.user_id = user
         sale_order.pricelist_id = self.env['product.pricelist'].search([('id', '=', 1)])
         sale_order.partner_id = partner
+        sale_order.user_id = user
         sale_order.partner_invoice_id = partner
         sale_order.partner_shipping_id = partner
         sale_order = sale_order.save()
@@ -144,3 +146,33 @@ class TestInterCompanySaleToPurchase(TestInterCompanyRulesCommonSOPO):
         # Check purchase order is created in company B ( for company A )
         po = self.validate_generated_purchase_order(self.company_a, self.company_b)
         self.assertEqual(len(po.order_line), 2)
+
+    def test_04_inter_company_auto_validation(self):
+        """ Configure "Sale/Purchase" option and tick auto validation.
+        Find related purchase order to related company and confirm it.
+        """
+        # Create a product in 'Auto Purchase' to by in company B
+        my_service = self.env['product.product'].create({
+            'name': 'my service',
+            'type': 'service',
+            'service_to_purchase': True,
+            'seller_ids': [(0, 0, {'name': self.company_b.partner_id.id, 'price': 100, 'company_id': self.company_a.id})]
+        })
+
+        self.company_b.update({
+            'rule_type': 'sale_purchase',
+            'auto_validation': True,
+        })
+        # Generate sale order in company A for company B
+        partner_a = self.env['res.partner'].create({
+            'name': 'partner_a',
+            'company_id': False,
+        })
+        so = self._generate_draft_sale_order(self.company_a, partner_a, self.res_users_company_a)
+        so.order_line.product_id = my_service
+        so.order_line.product_uom = my_service.uom_id
+        so.with_user(self.res_users_company_a).action_confirm()
+        # Check purchase order is created in company B ( for company A )
+        purchase_order = self.env['purchase.order'].search([('partner_id', '=', self.company_b.partner_id.id)], limit=1)
+        self.assertTrue(purchase_order)
+        purchase_order.with_user(self.res_users_company_a).button_confirm()

@@ -6,6 +6,7 @@ import datetime
 import logging
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo import tools
 
@@ -21,16 +22,16 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
     # ----------------------------------------
 
     test_content = """
-        JournalCode	JournalLib	EcritureNum	EcritureDate	CompteNum	CompteLib	CompAuxNum	CompAuxLib	PieceRef	PieceDate	EcritureLib	Debit	Credit	EcritureLet	DateLet	ValidDate	Montantdevise	Idevise
-        ACH	ACHATS	ACH000001	20180808	62270000	FRAIS D'ACTES ET CONTENTIEUX			1	20180808	ACOMPTE FORMALITES ENTREPRISE	500,00	0,00			20190725		
-        ACH	ACHATS	ACH000001	20180808	44566000	TVA SUR AUTRES BIEN ET SERVICE			1	20180808	ACOMPTE FORMALITES ENTREPRISE	100,00	0,00	AA		20190725		
-        ACH	ACHATS	ACH000001	20180808	45500000	CPT COURANTS DE L ASSOCIE			1	20180808	ACOMPTE FORMALITES ENTREPRISE	0,00	600,00			20190725		
-        ACH	ACHATS	ACH000002	20180808	61320000	LOCATIONS PARTNER 01			2	20180808	DOMICILIATION	300,00	0,00			20190725		
-        ACH	ACHATS	ACH000002	20180808	44566000	TVA SUR AUTRES BIEN ET SERVICE			2	20180808	DOMICILIATION	60,00	0,00	AA		20190725		
-        ACH	ACHATS	ACH000002	20180808	45500000	CPT COURANTS DE L ASSOCIE			2	20180808	DOMICILIATION	0,00	360,00			20190725		
-        ACH	ACHATS	ACH000003	20180910	61320000	LOCATIONS PARTNER 01			3	20180910	PARTNER 01	41,50	0,00			20190725		
-        ACH	ACHATS	ACH000003	20180910	44566000	TVA SUR AUTRES BIEN ET SERVICE			3	20180910	PARTNER 01	8,30	0,00	AA		20190725		
-        ACH	ACHATS	ACH000003	20180910	40100000	FOURNISSEURS DIVERS	PARTNER01	PARTNER 01	3	20180910	PARTNER 01	0,00	49,80	AA		20190725		
+        JournalCode\tJournalLib\tEcritureNum\tEcritureDate\tCompteNum\tCompteLib\tCompAuxNum\tCompAuxLib\tPieceRef\tPieceDate\tEcritureLib\tDebit\tCredit\tEcritureLet\tDateLet\tValidDate\tMontantdevise\tIdevise
+        ACH\tACHATS\tACH000001\t20180808\t62270000\tFRAIS D'ACTES ET CONTENTIEUX\t\t\t1\t20180808\tACOMPTE FORMALITES ENTREPRISE\t500,00\t0,00\t\t\t20190725\t\t
+        ACH\tACHATS\tACH000001\t20180808\t44566000\tTVA SUR AUTRES BIEN ET SERVICE\t\t\t1\t20180808\tACOMPTE FORMALITES ENTREPRISE\t100,00\t0,00\tAA\t\t20190725\t\t
+        ACH\tACHATS\tACH000001\t20180808\t45500000\tCPT COURANTS DE L ASSOCIE\t\t\t1\t20180808\tACOMPTE FORMALITES ENTREPRISE\t0,00\t600,00\t\t\t20190725\t\t
+        ACH\tACHATS\tACH000002\t20180808\t61320000\tLOCATIONS PARTNER 01\t\t\t2\t20180808\tDOMICILIATION\t300,00\t0,00\t\t\t20190725\t\t
+        ACH\tACHATS\tACH000002\t20180808\t44566000\tTVA SUR AUTRES BIEN ET SERVICE\t\t\t2\t20180808\tDOMICILIATION\t60,00\t0,00\tAA\t\t20190725\t\t
+        ACH\tACHATS\tACH000002\t20180808\t45500000\tCPT COURANTS DE L ASSOCIE\t\t\t2\t20180808\tDOMICILIATION\t0,00\t360,00\t\t\t20190725\t\t
+        ACH\tACHATS\tACH000003\t20180910\t61320000\tLOCATIONS PARTNER 01\t\t\t3\t20180910\tPARTNER 01\t41,50\t0,00\t\t\t20190725\t\t
+        ACH\tACHATS\tACH000003\t20180910\t44566000\tTVA SUR AUTRES BIEN ET SERVICE\t\t\t3\t20180910\tPARTNER 01\t8,30\t0,00\tAA\t\t20190725\t\t
+        ACH\tACHATS\tACH000003\t20180910\t40100000\tFOURNISSEURS DIVERS\tPARTNER01\tPARTNER 01\t3\t20180910\tPARTNER 01\t0,00\t49,80\tAA\t\t20190725\t\t
     """
 
     # ----------------------------------------
@@ -65,7 +66,6 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
             'line_ids': [(0, 0, {
                 'company_id': cls.company_export.id,
                 'name': 'line-1',
-                'ref': 'ref-1',
                 'account_id': cls.company_data_2['default_account_receivable'].id,
                 'fec_matching_number': '1',
                 'credit': 0.0,
@@ -73,7 +73,6 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
             }), (0, 0, {
                 'company_id': cls.company_export.id,
                 'name': 'line-2',
-                'ref': 'ref-2',
                 'account_id': cls.company_data_2['default_account_tax_sale'].id,
                 'fec_matching_number': '2',
                 'credit': 100.30,
@@ -90,7 +89,6 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
             'line_ids': [(0, 0, {
                 'company_id': cls.company_export.id,
                 'name': 'line-3',
-                'ref': 'ref-3',
                 'account_id': cls.company_data_2['default_account_payable'].id,
                 'fec_matching_number': '3',
                 'credit': 65.15,
@@ -98,7 +96,6 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
             }), (0, 0, {
                 'company_id': cls.company_export.id,
                 'name': 'line-4',
-                'ref': 'ref-4',
                 'account_id': cls.company_data_2['default_account_expense'].id,
                 'fec_matching_number': '4',
                 'credit': 0.0,
@@ -113,6 +110,32 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
             'test_file': True,
             'export_type': 'nonofficial'
         }])
+
+        # Imbalanced moves test content -----------------------
+
+        # Start by splitting the content in matrices
+        matrix = [line.lstrip().split('\t') for line in cls.test_content.lstrip().split('\n') if line.lstrip()]
+
+        # To balance by day, change the move names to 9 different ones,
+        # so that its name cannot be used as grouping key
+        for idx, line in enumerate(matrix[1:]):
+            line[2] = "move_%s" % idx
+
+        def join_matrix(matrix):
+            return "\n".join(["\t".join(line) for line in matrix])
+
+        cls.test_content_imbalanced_day = join_matrix(matrix)
+
+        # To balance by month, change the move date of 2 move lines out of 3 of the same original move
+        # to another day, so that the day cannot be used as grouping key
+        for line in matrix[3:6]:
+            line[3] = "20180809"
+        cls.test_content_imbalanced_month = join_matrix(matrix)
+
+        # To make them unbalanceable, make one line belong to another month than any other line
+        # so that the month cannot be used as grouping key
+        matrix[6][3] = "20181010"
+        cls.test_content_imbalanced_none = join_matrix(matrix)
 
     def _attach_file_to_wizard(self, content, wizard=None):
         """ Create an attachment and bind it to the wizard and its log """
@@ -130,8 +153,8 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.wizard._import_files(['account.account'])
 
         account_codes = ('401000', '445660', '622700')
-        conditions = [('company_id', '=', self.company.id), ('code', 'in', account_codes)]
-        accounts = self.env['account.account'].search(conditions, order='code')
+        domain = [('company_id', '=', self.company.id), ('code', 'in', account_codes)]
+        accounts = self.env['account.account'].search(domain, order='code')
 
         payable_type = self.env.ref('account.data_account_type_payable')
         expenses_type = self.env.ref('account.data_account_type_expenses')
@@ -158,8 +181,8 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.wizard._import_files(['account.account', 'account.journal'])
 
         journal_codes = ('ACH', )
-        conditions = [('company_id', '=', self.company.id), ('code', 'in', journal_codes)]
-        journals = self.env['account.journal'].search(conditions, order='code')
+        domain = [('company_id', '=', self.company.id), ('code', 'in', journal_codes)]
+        journals = self.env['account.journal'].search(domain, order='code')
 
         expected_values = [{'name': 'FEC-ACHATS', 'type': 'general'}]
         self.assertRecordValues(journals, expected_values)
@@ -170,8 +193,8 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.wizard._import_files(['account.account', 'account.journal', 'res.partner'])
 
         partner_refs = ('PARTNER01', )
-        conditions = [('company_id', '=', self.company.id), ('ref', 'in', partner_refs)]
-        partners = self.env['res.partner'].search(conditions, order='ref')
+        domain = [('company_id', '=', self.company.id), ('ref', 'in', partner_refs)]
+        partners = self.env['res.partner'].search(domain, order='ref')
 
         expected_values = [{'name': 'PARTNER 01'}]
         self.assertRecordValues(partners, expected_values)
@@ -182,8 +205,8 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.wizard._import_files(['account.account', 'account.journal', 'res.partner', 'account.move'])
 
         move_names = ('ACH000001', 'ACH000002', 'ACH000003')
-        conditions = [('company_id', '=', self.company.id), ('name', 'in', move_names)]
-        moves = self.env['account.move'].search(conditions, order='name')
+        domain = [('company_id', '=', self.company.id), ('name', 'in', move_names)]
+        moves = self.env['account.move'].search(domain, order='name')
 
         journal = self.env['account.journal'].with_context(active_test=False).search([('code', '=', 'ACH')])
         expected_values = [{
@@ -215,8 +238,8 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.wizard._import_files(['account.account', 'account.journal', 'res.partner', 'account.move'])
 
         move_names = ('ACH000001', 'ACH000002', 'ACH000003')
-        conditions = [('company_id', '=', self.company.id), ('move_name', 'in', move_names)]
-        move_lines = self.env['account.move.line'].search(conditions, order='move_name, id')
+        domain = [('company_id', '=', self.company.id), ('move_name', 'in', move_names)]
+        move_lines = self.env['account.move.line'].search(domain, order='move_name, id')
         columns = ['name', 'credit', 'debit', 'fec_matching_number']
         lines = [
             ('ACOMPTE FORMALITES ENTREPRISE', 0.00, 500.00, False),
@@ -245,17 +268,17 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
 
         # Verify move_lines presence
         move_names = ('ACH000001', 'ACH000002', 'ACH000003')
-        conditions = [('company_id', '=', self.company.id), ('move_name', 'in', move_names)]
-        move_lines = self.env['account.move.line'].search(conditions, order='move_name, id')
+        domain = [('company_id', '=', self.company.id), ('move_name', 'in', move_names)]
+        move_lines = self.env['account.move.line'].search(domain, order='move_name, id')
 
         # Verify Reconciliation
-        conditions = [('company_id', '=', self.company.id), ('full_reconcile_id', '!=', False)]
-        move_lines = self.env['account.move.line'].search(conditions)
+        domain = [('company_id', '=', self.company.id), ('full_reconcile_id', '!=', False)]
+        move_lines = self.env['account.move.line'].search(domain)
         self.assertEqual(256, len(move_lines))
 
         # Verify Journal types
-        conditions = [('company_id', '=', self.company.id), ('name', '=', 'FEC-BQ 552')]
-        journal = self.env['account.journal'].search(conditions)
+        domain = [('company_id', '=', self.company.id), ('name', '=', 'FEC-BQ 552')]
+        journal = self.env['account.journal'].search(domain)
         self.assertEqual(journal.type, 'bank')
 
     def test_import_fec_export(self):
@@ -283,13 +306,65 @@ class AccountTestFecImport(AccountTestInvoicingCommon):
         self.assertRecordValues(new_moves, expected_values)
 
         # Verify moves lines data
-        columns = ['company_id', 'name', 'credit', 'debit', 'fec_matching_number', 'ref', 'account_id']
+        columns = ['company_id', 'name', 'credit', 'debit', 'fec_matching_number', 'account_id']
         lines_data = [
-            (self.company_export.id, 'line-1', 0.00, 100.30, '1', 'ref-1', self.company_data_2['default_account_receivable'].id,),
-            (self.company_export.id, 'line-2', 100.30, 0.00, '2', 'ref-2', self.company_data_2['default_account_tax_sale'].id, ),
-            (self.company_export.id, 'line-3', 65.15, 0.00, '3', 'ref-3', self.company_data_2['default_account_payable'].id, ),
-            (self.company_export.id, 'line-4', 0.00, 65.15, '4', 'ref-4', self.company_data_2['default_account_expense'].id, ),
+            (self.company_export.id, 'line-1', 0.00, 100.30, '1', self.company_data_2['default_account_receivable'].id),
+            (self.company_export.id, 'line-2', 100.30, 0.00, '2', self.company_data_2['default_account_tax_sale'].id),
+            (self.company_export.id, 'line-3', 65.15, 0.00, '3', self.company_data_2['default_account_payable'].id),
+            (self.company_export.id, 'line-4', 0.00, 65.15, '4', self.company_data_2['default_account_expense'].id),
         ]
         expected_values = [dict(zip(columns, line_data)) for line_data in lines_data]
         new_lines = new_moves.mapped("line_ids").sorted(key=lambda x: x.name)
         self.assertRecordValues(new_lines, expected_values)
+
+    def test_balance_moves_by_day(self):
+        """ Test that the imbalanced moves are correctly balanced with a grouping by day """
+
+        self._attach_file_to_wizard(self.test_content_imbalanced_day, self.wizard)
+        self.wizard._import_files(['account.account', 'account.journal', 'res.partner', 'account.move'])
+
+        domain = [('company_id', '=', self.company.id), ('move_name', 'in', ('ACH/20180808', 'ACH/20180910'))]
+        move_lines = self.env['account.move.line'].search(domain, order='move_name,name')
+
+        self.assertEqual(
+            move_lines.mapped(lambda line: (line.move_name, line.name)),
+            [
+                ('ACH/20180808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/20180808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/20180808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/20180808', 'DOMICILIATION'),
+                ('ACH/20180808', 'DOMICILIATION'),
+                ('ACH/20180808', 'DOMICILIATION'),
+                ('ACH/20180910', 'PARTNER 01'),
+                ('ACH/20180910', 'PARTNER 01'),
+                ('ACH/20180910', 'PARTNER 01'),
+            ])
+
+    def test_balance_moves_by_month(self):
+        """ Test that the imbalanced moves are correctly balanced with a grouping by month """
+
+        self._attach_file_to_wizard(self.test_content_imbalanced_month, self.wizard)
+        self.wizard._import_files(['account.account', 'account.journal', 'res.partner', 'account.move'])
+
+        domain = [('company_id', '=', self.company.id), ('move_name', 'in', ('ACH/201808', 'ACH/201809'))]
+        move_lines = self.env['account.move.line'].search(domain, order='move_name,name')
+        self.assertEqual(
+            move_lines.mapped(lambda line: (line.move_name, line.name)),
+            [
+                ('ACH/201808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/201808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/201808', 'ACOMPTE FORMALITES ENTREPRISE'),
+                ('ACH/201808', 'DOMICILIATION'),
+                ('ACH/201808', 'DOMICILIATION'),
+                ('ACH/201808', 'DOMICILIATION'),
+                ('ACH/201809', 'PARTNER 01'),
+                ('ACH/201809', 'PARTNER 01'),
+                ('ACH/201809', 'PARTNER 01'),
+            ])
+
+    def test_unbalanceable_moves(self):
+        """ Test that the imbalanced moves raise as they cannot be balanced by day/month """
+
+        self._attach_file_to_wizard(self.test_content_imbalanced_none, self.wizard)
+        with self.assertRaises(UserError):
+            self.wizard._import_files(['account.account', 'account.journal', 'res.partner', 'account.move'])

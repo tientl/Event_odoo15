@@ -12,7 +12,7 @@ from odoo.tools.translate import _
 from odoo.tools import groupby as groupbyelem
 from odoo.addons.portal.controllers import portal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
-from odoo.osv.expression import OR
+from odoo.osv.expression import OR, AND
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -27,11 +27,14 @@ class CustomerPortal(portal.CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
         if 'ticket_count' in counters:
             values['ticket_count'] = (
-                request.env['helpdesk.ticket'].search_count([])
+                request.env['helpdesk.ticket'].search_count(self._prepare_helpdesk_tickets_domain())
                 if request.env['helpdesk.ticket'].check_access_rights('read', raise_exception=False)
                 else 0
             )
         return values
+
+    def _prepare_helpdesk_tickets_domain(self):
+        return []
 
     def _ticket_get_page_view_values(self, ticket, access_token, **kwargs):
         values = {
@@ -43,6 +46,7 @@ class CustomerPortal(portal.CustomerPortal):
     @http.route(['/my/tickets', '/my/tickets/page/<int:page>'], type='http', auth="user", website=True)
     def my_helpdesk_tickets(self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, groupby='none', search_in='content', **kw):
         values = self._prepare_portal_layout_values()
+        domain = self._prepare_helpdesk_tickets_domain()
 
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
@@ -91,22 +95,23 @@ class CustomerPortal(portal.CustomerPortal):
 
             last_message_cust = []
             last_message_sup = []
-            for ticket_id in last_author_dict.keys():
+            ticket_ids = set(last_author_dict.keys()) & set(ticket_author_dict.keys())
+            for ticket_id in ticket_ids:
                 if last_author_dict[ticket_id] == ticket_author_dict[ticket_id]:
                     last_message_cust.append(ticket_id)
                 else:
                     last_message_sup.append(ticket_id)
 
             if filterby == 'last_message_cust':
-                domain = [('id', 'in', last_message_cust)]
+                domain = AND([domain, [('id', 'in', last_message_cust)]])
             else:
-                domain = [('id', 'in', last_message_sup)]
+                domain = AND([domain, [('id', 'in', last_message_sup)]])
 
         else:
-            domain = searchbar_filters[filterby]['domain']
+            domain = AND([domain, searchbar_filters[filterby]['domain']])
 
         if date_begin and date_end:
-            domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
+            domain = AND([domain, [('create_date', '>', date_begin), ('create_date', '<=', date_end)]])
 
         # search
         if search and search_in:
@@ -122,7 +127,7 @@ class CustomerPortal(portal.CustomerPortal):
                 search_domain = OR([search_domain, [('message_ids.body', 'ilike', search), ('message_ids.subtype_id', '=', discussion_subtype_id)]])
             if search_in in ('status', 'all'):
                 search_domain = OR([search_domain, [('stage_id', 'ilike', search)]])
-            domain += search_domain
+            domain = AND([domain, search_domain])
 
         # pager
         tickets_count = request.env['helpdesk.ticket'].search_count(domain)

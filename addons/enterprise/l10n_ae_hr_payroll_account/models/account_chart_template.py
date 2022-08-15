@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import ValidationError
-
-from odoo import models, _
+from odoo import models
 
 
 class AccountChartTemplate(models.Model):
@@ -36,7 +34,9 @@ class AccountChartTemplate(models.Model):
                 account = self.env['account.account'].search(
                     [('company_id', '=', company.id), ('code', 'like', '%s%%' % code)], limit=1)
                 if not account:
-                    raise ValidationError(_('No existing account for code %s', code))
+                    # we don't have all the necessary accounts, cannot continue
+                    # raise ValidationError(_('No existing account for code %s', code))
+                    return
                 accounts[code] = account
 
             journal = self.env['account.journal'].search([

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict, namedtuple
+from dateutil.relativedelta import relativedelta
 from math import log10
 
 from odoo import api, fields, models, _
@@ -54,15 +55,20 @@ class MrpProductionSchedule(models.Model):
         :rtype: dict
         """
         self.ensure_one()
+        # TODO remove in master (to prevent rename of args in stable)
+        date_start_str = date_start
+        date_stop_str = date_stop
+        date_start = fields.Date.from_string(date_start_str)
+        date_stop = fields.Date.from_string(date_stop_str)
         domain_moves = self._get_moves_domain(date_start, date_stop, 'outgoing')
-        moves = self.env['stock.move'].search_read(domain_moves, ['picking_id'])
-        picking_ids = [p['picking_id'][0] for p in moves if p['picking_id']]
+        moves_by_date = self._get_moves_and_date(domain_moves)
+        picking_ids = self._filter_moves(moves_by_date, date_start, date_stop).mapped('picking_id').ids
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'stock.picking',
             'views': [(False, 'list'), (False, 'form')],
             'view_mode': 'list,form',
-            'name': _('Actual Demand %s %s (%s - %s)') % (self.product_id.display_name, date_str, date_start, date_stop),
+            'name': _('Actual Demand %s %s (%s - %s)') % (self.product_id.display_name, date_str, date_start_str, date_stop_str),
             'target': 'current',
             'domain': [('id', 'in', picking_ids)],
         }
@@ -76,12 +82,19 @@ class MrpProductionSchedule(models.Model):
         :return: action values that open the forecast details wizard
         :rtype: dict
         """
+        # TODO remove in master
+        date_start_str = date_start
+        date_stop_str = date_stop
+        date_start = fields.Date.from_string(date_start_str)
+        date_stop = fields.Date.from_string(date_stop_str)
         domain_moves = self._get_moves_domain(date_start, date_stop, 'incoming')
-        move_ids = self.env['stock.move'].search(domain_moves).ids
+        moves_by_date = self._get_moves_and_date(domain_moves)
+        move_ids = self._filter_moves(moves_by_date, date_start, date_stop).ids
 
         rfq_domain = self._get_rfq_domain(date_start, date_stop)
-        purchase_order_line_ids = self.env['purchase.order.line'].search(rfq_domain).ids
-        name = _('Actual Replenishment %s %s (%s - %s)') % (self.product_id.display_name, date_str, date_start, date_stop)
+        purchase_order_by_date = self._get_rfq_and_planned_date(rfq_domain, date_start, date_stop)
+        purchase_order_line_ids = self._filter_rfq(purchase_order_by_date, date_start, date_stop).ids
+        name = _('Actual Replenishment %s %s (%s - %s)') % (self.product_id.display_name, date_str, date_start_str, date_stop_str)
 
         context = {
             'default_move_ids': move_ids,
@@ -536,6 +549,12 @@ class MrpProductionSchedule(models.Model):
             })
         return True
 
+    def _filter_moves(self, moves_by_date, date_start, date_stop):
+        return self.env['stock.move'].concat(*[m[0] for m in moves_by_date if m[1] >= date_start and m[1] <= date_stop])
+
+    def _filter_rfq(self, rfq_by_date_planned, date_start, date_stop):
+        return self.env['purchase.order.line'].concat(*[pl[0] for pl in rfq_by_date_planned if pl[1] >= date_start and pl[1] <= date_stop])
+
     def _get_procurement_extra_values(self, forecast_values):
         """ Extra values that could be added in the vals for procurement.
 
@@ -647,14 +666,20 @@ class MrpProductionSchedule(models.Model):
         before_date = date_range[-1][1]
         # Get quantity in RFQ
         rfq_domain = self._get_rfq_domain(after_date, before_date)
-        rfq_lines = self.env['purchase.order.line'].search(rfq_domain, order='date_planned')
-
+        rfq_lines_date_planned = self._get_rfq_and_planned_date(rfq_domain, after_date, before_date, order='date_planned')
+        rfq_lines_date_planned = sorted(rfq_lines_date_planned, key=lambda i: i[1])
         index = 0
-        for line in rfq_lines:
+        for (line, date_planned) in rfq_lines_date_planned:
+            # There are cases when we want to consider rfq_lines where their date_planned occurs before the after_date
+            # if lead times make their stock arrive at a relevant time. Therefore we need to ignore the lines that have
+            # date_planned + lead time < after_date
+            if date_planned < after_date:
+                continue
             # Skip to the next time range if the planned date is not in the
             # current time interval.
-            while not (date_range[index][0] <= line.date_planned.date() and
-                    date_range[index][1] >= line.date_planned.date()):
+
+            while not (date_range[index][0] <= date_planned and
+                       date_range[index][1] >= date_planned):
                 index += 1
             quantity = line.product_uom._compute_quantity(line.product_qty, line.product_id.uom_id)
             incoming_qty[date_range[index], line.product_id, line.order_id.picking_type_id.warehouse_id] += quantity
@@ -663,12 +688,13 @@ class MrpProductionSchedule(models.Model):
         # TODO: issue since it will use one search by move. Should use a
         # read_group with a group by location.
         domain_moves = self._get_moves_domain(after_date, before_date, 'incoming')
-        stock_moves = self.env['stock.move'].search(domain_moves, order='date')
+        stock_moves_and_date = self._get_moves_and_date(domain_moves)
+        stock_moves_and_date = sorted(stock_moves_and_date, key=lambda m: m[1])
         index = 0
-        for move in stock_moves:
+        for (move, date) in stock_moves_and_date:
             # Skip to the next time range if the planned date is not in the
             # current time interval.
-            while not (date_range[index][0] <= move.date.date() and date_range[index][1] >= move.date.date()):
+            while not (date_range[index][0] <= date and date_range[index][1] >= date):
                 index += 1
             key = (date_range[index], move.product_id, move.location_dest_id.warehouse_id)
             if move.state == 'done':
@@ -791,11 +817,12 @@ class MrpProductionSchedule(models.Model):
 
     def _get_moves_domain(self, date_start, date_stop, type):
         """ Return domain for incoming or outgoing moves """
+        if not self:
+            return [('id', '=', False)]
         location = type == 'incoming' and 'location_dest_id' or 'location_id'
         location_dest = type == 'incoming' and 'location_id' or 'location_dest_id'
-        return [
-            (location, 'child_of', self.mapped('warehouse_id.view_location_id').ids),
-            ('product_id', 'in', self.mapped('product_id').ids),
+        domain = []
+        common_domain = [
             ('state', 'not in', ['cancel', 'draft']),
             (location + '.usage', '!=', 'inventory'),
             '|',
@@ -805,9 +832,51 @@ class MrpProductionSchedule(models.Model):
                 '!',
                     (location_dest, 'child_of', self.mapped('warehouse_id.view_location_id').ids),
             ('is_inventory', '=', False),
-            ('date', '>=', date_start),
-            ('date', '<=', date_stop)
+            ('date', '<=', date_stop),
         ]
+        groupby_delay = defaultdict(list)
+        for schedule in self:
+            rules = schedule.product_id._get_rules_from_location(schedule.warehouse_id.lot_stock_id)
+            delay, dummy = rules.filtered(lambda r: r.action not in ['buy', 'manufacture'])._get_lead_days(schedule.product_id)
+            groupby_delay[delay].append((schedule.product_id, schedule.warehouse_id))
+        for delay in groupby_delay:
+            products, warehouses = zip(*groupby_delay[delay])
+            warehouses = self.env['stock.warehouse'].concat(*warehouses)
+            products = self.env['product.product'].concat(*products)
+            specific_domain = [
+                (location, 'child_of', warehouses.mapped('view_location_id').ids),
+                ('product_id', 'in', products.ids),
+                ('date', '>=', date_start - relativedelta(days=delay)),
+            ]
+            domain = OR([domain, AND([common_domain, specific_domain])])
+        return domain
+
+    @api.model
+    def _get_dest_moves_delay(self, move, delay=0):
+        if move.origin_returned_move_id:
+            return delay
+        elif not move.move_dest_ids:
+            return delay + move.rule_id.delay
+        else:
+            delays = []
+            additional_delay = move.rule_id.delay
+            for move_dest in move.move_dest_ids:
+                delays.append(self._get_dest_moves_delay(
+                    move_dest, delay=delay + additional_delay))
+            return max(delays)
+
+    def _get_moves_and_date(self, moves_domain, order=False):
+        moves = self.env['stock.move'].search(moves_domain, order=order)
+        res_moves = []
+        for move in moves:
+            if not move.move_dest_ids:
+                res_moves.append((move, fields.Date.to_date(move.date)))
+                continue
+            elif move.move_dest_ids:
+                delay = max(move.move_dest_ids.mapped(lambda m: self._get_dest_moves_delay(m)))
+                date = fields.Date.to_date(move.date) + relativedelta(days=delay)
+                res_moves.append((move, date))
+        return res_moves
 
     def _get_outgoing_qty(self, date_range):
         """ Get the outgoing quantity from existing moves.
@@ -822,12 +891,18 @@ class MrpProductionSchedule(models.Model):
 
         domain_moves = self._get_moves_domain(after_date, before_date, 'outgoing')
         domain_moves = AND([domain_moves, [('raw_material_production_id', '=', False)]])
-        stock_moves = self.env['stock.move'].search(domain_moves, order='date')
+        stock_moves_by_date = self._get_moves_and_date(domain_moves)
+        stock_moves_by_date = sorted(stock_moves_by_date, key=lambda m: m[1])
         index = 0
-        for move in stock_moves:
+        for (move, date) in stock_moves_by_date:
+            # There are cases when we want to consider moves where their (scheduled) date occurs before the after_date
+            # if lead times make their stock delivery at a relevant time. Therefore we need to ignore the lines that have
+            # date + lead time < after_date
+            if date < after_date:
+                continue
             # Skip to the next time range if the planned date is not in the
             # current time interval.
-            while not (date_range[index][0] <= move.date.date() and date_range[index][1] >= move.date.date()):
+            while not (date_range[index][0] <= date and date_range[index][1] >= date):
                 index += 1
             key = (date_range[index], move.product_id, move.location_id.warehouse_id)
             if move.state == 'done':
@@ -844,14 +919,43 @@ class MrpProductionSchedule(models.Model):
         :param date_start: start date of the forecast domain
         :param date_stop: end date of the forecast domain
         """
-        return [
-            ('order_id.picking_type_id.default_location_dest_id', 'child_of', self.mapped('warehouse_id.view_location_id').ids),
-            ('product_id', 'in', self.mapped('product_id').ids),
+        if not self:
+            return [('id', '=', False)]
+        domain = []
+        common_domain = [
             ('state', 'in', ('draft', 'sent', 'to approve')),
-            ('date_planned', '>=', date_start),
             ('date_planned', '<=', date_stop)
         ]
+        groupby_delay = defaultdict(list)
+        for schedule in self:
+            rules = schedule.product_id._get_rules_from_location(schedule.warehouse_id.lot_stock_id)
+            delay, dummy = rules._get_lead_days(schedule.product_id)
+            groupby_delay[delay].append((schedule.product_id, schedule.warehouse_id))
 
+        for delay in groupby_delay:
+            products, warehouses = zip(*groupby_delay[delay])
+            warehouses = self.env['stock.warehouse'].concat(*warehouses)
+            products = self.env['product.product'].concat(*products)
+            specific_domain = [
+                ('order_id.picking_type_id.default_location_dest_id', 'child_of', warehouses.mapped('view_location_id').ids),
+                ('product_id', 'in', products.ids),
+                ('date_planned', '>=', date_start - relativedelta(days=delay)),
+            ]
+            domain = OR([domain, AND([common_domain, specific_domain])])
+        return domain
+
+    def _get_rfq_and_planned_date(self, rfq_domain, date_start, date_stop, order=False):
+        purchase_lines = self.env['purchase.order.line'].search(rfq_domain, order=order)
+        res_purchase_lines = []
+        for line in purchase_lines:
+            if not line.move_dest_ids:
+                res_purchase_lines.append((line, fields.Date.to_date(line.date_planned)))
+                continue
+            delay = max(line.move_dest_ids.mapped(lambda m: self._get_dest_moves_delay(m)))
+            date = fields.Date.to_date(line.date_planned) + relativedelta(days=delay)
+            res_purchase_lines.append((line, date))
+
+        return res_purchase_lines
 
 class MrpProductForecast(models.Model):
     _name = 'mrp.product.forecast'

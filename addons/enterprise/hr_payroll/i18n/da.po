@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
 "Last-Translator: Mads Søndergaard, 2021\n"
 "Language-Team: Danish (https://www.transifex.com/odoo/teams/41243/da/)\n"
@@ -39,6 +39,18 @@ msgstr "# Lønseddel"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Lønsedler"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -2749,10 +2761,8 @@ msgstr "Sedler at godkende"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
-"En del af %s's kalender er ikke dækket af nogen arbejdspostering. Fuldfør "
-"venligst skemaet."
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
@@ -2890,13 +2900,13 @@ msgstr "Udregningsmetoden for regel mængden."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "Kontrakten som vil anvende dette input"
+msgid "The contract this input should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "Kontrakten som vil anvende disse arbejdsdage"
+msgid "The contract this worked days should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3013,6 +3023,12 @@ msgstr ""
 "Dette vil blive brugt til at udregne % felternes værdier; generelt er det på"
 " basic, men du kan også bruge kategorikode felterne med små bogstaver som "
 "variabel navne (hra, ma, lta, osv.) og variablen basic."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3386,44 +3402,32 @@ msgstr "Arbejdsplan"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong percentage base or quantity defined for:"
 msgstr ""
-"Forkert grundprocent eller mængde defineret for lønregel %s (%s).\n"
-"Fejl: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python code defined for:"
 msgstr ""
-"Forkert python kode defineret for lønregel %s (%s).\n"
-"Fejl: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Forkert python betingelse defineret for lønregel %s (%s)."
-
-#. module: hr_payroll
-#: code:addons/hr_payroll/models/hr_salary_rule.py:0
-#, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python condition defined for:"
 msgstr ""
-"Forkert mængde defineret for lønregel %s (%s).\n"
-"Fejl: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Forkert interval betingelse defineret for lønregel %s (%s)."
+msgid "Wrong quantity defined for:"
+msgstr ""
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid "Wrong range condition defined for:"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

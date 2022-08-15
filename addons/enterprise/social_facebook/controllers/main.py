@@ -137,7 +137,7 @@ class SocialFacebookController(SocialController):
         else:
             redirect_url = 'https://www.facebook.com/search/?q=%s' % urllib.parse.quote(name)
 
-        return werkzeug.utils.redirect(redirect_url)
+        return request.redirect(redirect_url, local=False)
 
     def _facebook_create_accounts(self, access_token, media, is_extended_token):
         """ Steps to create the facebook social.accounts:
@@ -158,6 +158,9 @@ class SocialFacebookController(SocialController):
 
         if 'data' not in json_response:
             raise SocialValidationException(_('Facebook did not provide a valid access token or it may have expired.'))
+
+        if not json_response['data']:
+            raise SocialValidationException(_('There is no page linked to this account'))
 
         accounts_to_create = []
         existing_accounts = self._facebook_get_existing_accounts(media, json_response)

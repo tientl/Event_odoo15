@@ -10,17 +10,19 @@ class AccountReconciliation(models.AbstractModel):
     @api.model
     def _get_query_reconciliation_widget_miscellaneous_matching_lines(self, statement_line, domain=[]):
         # OVERRIDE
-        account_ids = []
-        for account_property in [
+        account_stock_properties_names = [
             'property_stock_account_input',
             'property_stock_account_output',
             'property_stock_account_input_categ_id',
             'property_stock_account_output_categ_id',
-        ]:
-            account = self.env['ir.property']._get(account_property, "product.category")
-            if account:
-                account_ids.append(account.id)
+        ]
+        properties = self.env['ir.property'].sudo().search([
+            ('name', 'in', account_stock_properties_names),
+            ('company_id', '=', self.env.company.id),
+            ('value_reference', '!=', False),
+        ])
 
-        if account_ids:
-            domain.append(('account_id', 'not in', tuple(account_ids)))
+        if properties:
+            accounts = properties.mapped(lambda p: p.get_by_record())
+            domain.append(('account_id', 'not in', tuple(accounts.ids)))
         return super()._get_query_reconciliation_widget_miscellaneous_matching_lines(statement_line, domain=domain)

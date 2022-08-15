@@ -31,7 +31,7 @@ class AppointmentPortal(portal.CustomerPortal):
             ('appointment_type_id', '!=', False),
         ]
 
-    def _get_search_domain(self, search_in, search):
+    def _get_appointment_search_domain(self, search_in, search):
         search_domain = []
         if search_in in ('all', 'name'):
             search_domain = OR([search_domain, [('name', 'ilike', search)]])
@@ -93,7 +93,7 @@ class AppointmentPortal(portal.CustomerPortal):
         domain = AND([domain, searchbar_filters[filterby]['domain']])
 
         if search and search_in:
-            domain = AND([domain, self._get_search_domain(search_in, search)])
+            domain = AND([domain, self._get_appointment_search_domain(search_in, search)])
 
         appointment_count = Appointment.search_count(domain)
         pager = portal_pager(

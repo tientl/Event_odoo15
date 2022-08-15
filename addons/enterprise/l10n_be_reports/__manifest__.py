@@ -19,6 +19,7 @@
         'views/l10n_be_vendor_partner_views.xml',
         'views/report_views.xml',
         'views/res_partner_views.xml',
+        'views/report_financial.xml',
         'data/account_financial_html_report_data.xml',
         'data/account_tag_data.xml',
         'security/ir.model.access.csv',

@@ -49,6 +49,6 @@ class L10nBeScheduleChangeAllocation(models.Model):
     def _cron_update_allocation_from_new_schedule(self, date=None):
         if not date:
             date = fields.Date.today()
-        to_apply = self.search([('effective_date', '<=', date.strftime('%Y-%m-%d'))])
+        to_apply = self.search([('effective_date', '<=', date)])
         to_apply.apply_directly()
         to_apply.unlink()

@@ -3,6 +3,7 @@
 import { _t } from "web.core";
 import spreadsheet from "../o_spreadsheet_loader";
 import { formats } from "../constants";
+import { removeContextUserInfo } from "./helpers";
 
 const { Model } = spreadsheet;
 
@@ -66,7 +67,7 @@ export function sanitizePivot(pivotModel) {
         colGroupBys,
         measures,
         domain: pivotModel.searchParams.domain,
-        context: pivotModel.searchParams.context,
+        context: removeContextUserInfo(pivotModel.searchParams.context),
     };
 }
 

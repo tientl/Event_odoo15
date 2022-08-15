@@ -9,7 +9,7 @@ class AccountReconciliation(models.AbstractModel):
     @api.model
     def process_bank_statement_line(self, st_line_ids, data):
         bsl_dict = super(AccountReconciliation, self).process_bank_statement_line(st_line_ids, data)
-        moves = self.env['account.move'].browse(bsl_dict.get('moves'))
+        moves = bsl_dict.get('moves')
         if moves:
             bsl_dict['documents_actions'] = moves._get_request_document_actions()
         return bsl_dict

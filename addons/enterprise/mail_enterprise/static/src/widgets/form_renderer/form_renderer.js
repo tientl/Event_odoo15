@@ -237,7 +237,7 @@ FormRenderer.include({
         attachments = _.filter(attachments, function (attachment) {
             var match = attachment.mimetype.match(options.types.join('|'));
             attachment.update({ type: match ? match[0] : false });
-            return match;
+            return match && !attachment.isUploading;
         });
         const thread = ev.data.thread;
         // most recent attachment is first in attachment list, so default order is 'desc'
@@ -259,6 +259,13 @@ FormRenderer.include({
                     }
                     else {
                         this.attachmentViewer.updateContents(attachments, options.order);
+                    }
+                } else {
+                    // The attachmentViewer lose its event listeners when it is reused,
+                    // we just need to reregister them.
+                    if (this.attachmentViewer.$el) {
+                        this.attachmentViewer._undelegateEvents();
+                        this.attachmentViewer._delegateEvents();
                     }
                 }
                 this.trigger_up('preview_attachment_validation');

@@ -10,14 +10,12 @@
                     var d = Object.getOwnPropertyDescriptor(e, k);
                     Object.defineProperty(n, k, d.get ? d : {
                         enumerable: true,
-                        get: function () {
-                            return e[k];
-                        }
+                        get: function () { return e[k]; }
                     });
                 }
             });
         }
-        n['default'] = e;
+        n["default"] = e;
         return Object.freeze(n);
     }
 
@@ -29,7 +27,7 @@
      *  sub-env of Spreadsheet components as _t
      * */
     // define a mock translation function, when o-spreadsheet runs in standalone it doesn't translate any string
-    let _t = (s) => s;
+    let _translate = (s) => s;
     function sprintf(s, ...values) {
         if (values.length === 1 && typeof values[0] === "object") {
             const valuesDict = values[0];
@@ -45,12 +43,15 @@
      * @param tfn the function that will do the translation
      */
     function setTranslationMethod(tfn) {
-        _t = tfn;
+        _translate = tfn;
     }
+    const _t = function (s, ...values) {
+        return sprintf(_translate(s), ...values);
+    };
     const _lt = function (s, ...values) {
         return {
             toString: function () {
-                return sprintf(_t(s), ...values);
+                return sprintf(_translate(s), ...values);
             },
             // casts the object to unknown then to string to trick typescript into thinking that the object it receives is actually a string
             // this way it will be typed correctly (behaves like a string) but tests like typeof _lt("whatever") will be object and not string !
@@ -119,6 +120,7 @@
     const FORBIDDEN_IN_EXCEL_REGEX = /'|\*|\?|\/|\\|\[|\]/;
     // Cells
     const NULL_FORMAT = undefined;
+    const FORMULA_REF_IDENTIFIER = "|";
 
     // -----------------------------------------------------------------------------
     // Date Type
@@ -1235,7 +1237,6 @@
         "SELECT_CELL",
         "SELECT_COLUMN",
         "SELECT_ROW",
-        "SELECT_FIGURE",
         "MOVE_POSITION",
         "SELECT_SEARCH_NEXT_MATCH",
         "SELECT_SEARCH_PREVIOUS_MATCH",
@@ -1375,6 +1376,7 @@
         CommandResult[CommandResult["Readonly"] = 50] = "Readonly";
         CommandResult[CommandResult["InvalidOffset"] = 51] = "InvalidOffset";
         CommandResult[CommandResult["InvalidViewportSize"] = 52] = "InvalidViewportSize";
+        CommandResult[CommandResult["FigureDoesNotExist"] = 53] = "FigureDoesNotExist";
     })(exports.CommandResult || (exports.CommandResult = {}));
 
     var ReturnFormatType;
@@ -1382,9 +1384,6 @@
         ReturnFormatType["FormatFromArgument"] = "FormatFromArgument";
     })(ReturnFormatType || (ReturnFormatType = {}));
 
-    // -----------------------------------------------------------------------------
-    // MISC
-    // -----------------------------------------------------------------------------
     var DIRECTION;
     (function (DIRECTION) {
         DIRECTION[DIRECTION["UP"] = 0] = "UP";
@@ -1733,9 +1732,9 @@
     const COUNTIFS = {
         description: _lt("Count values depending on multiple criteria."),
         args: args(`
-    criteria_range (range) ${_lt("The range to check against criterion1.")}
-    criterion (string) ${_lt("The pattern or test to apply to criteria_range1.")}
-    additional_values (any, range, optional, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
+    criteria_range1 (range) ${_lt("The range to check against criterion1.")}
+    criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1.")}
+    criteria_range2 (any, range, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
     criterion2 (string, repeating) ${_lt("Additional criteria to check.")}
   `),
         returns: ["NUMBER"],
@@ -1783,7 +1782,7 @@
     range (range) ${_lt("The range of cells from which the number of unique values will be counted.")}
     criteria_range1 (range) ${_lt("The range of cells over which to evaluate criterion1.")}
     criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1, such that each cell that evaluates to TRUE will be included in the filtered set.")}
-    additional_values (any, range, optional, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
+    criteria_range2 (any, range, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
     criterion2 (string, repeating) ${_lt("The pattern or test to apply to criteria_range2.")}
   `),
         returns: ["NUMBER"],
@@ -2346,7 +2345,7 @@
         args: args(`
       criteria_range (range) ${_lt("The range which is tested against criterion.")}
       criterion (string) ${_lt("The pattern or test to apply to range.")}
-      sum_range (range, optional, default=criteria_range) ${_lt("The range to be summed, if different from range.")}
+      sum_range (range, default=criteria_range) ${_lt("The range to be summed, if different from range.")}
     `),
         returns: ["NUMBER"],
         compute: function (criteriaRange, criterion, sumRange = undefined) {
@@ -2373,7 +2372,8 @@
       sum_range (range) ${_lt("The range to sum.")}
       criteria_range1 (range) ${_lt("The range to check against criterion1.")}
       criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1.")}
-      additional_values (any, range, optional, repeating) ${_lt("Additional criteria to check.")}
+      criteria_range2 (any, range, repeating) ${_lt("Additional ranges to check.")}
+      criterion2 (string, repeating) ${_lt("Additional criteria to check.")}
     `),
         returns: ["NUMBER"],
         compute: function (sumRange, ...criters) {
@@ -2689,6 +2689,42 @@
         return JSON.stringify(obj, Object.keys(obj).sort());
     }
     /**
+     * Deep copy arrays, plain objects and primitive values.
+     * Throws an error for other types such as class instances.
+     * Sparse arrays remain sparse.
+     */
+    function deepCopy(obj) {
+        const result = Array.isArray(obj) ? [] : {};
+        switch (typeof obj) {
+            case "object": {
+                if (obj === null) {
+                    return obj;
+                }
+                else if (!(isPlainObject(obj) || obj instanceof Array)) {
+                    throw new Error("Unsupported type: only objects and arrays are supported");
+                }
+                for (const key in obj) {
+                    result[key] = deepCopy(obj[key]);
+                }
+                return result;
+            }
+            case "number":
+            case "string":
+            case "boolean":
+            case "function":
+            case "undefined":
+                return obj;
+            default:
+                throw new Error(`Unsupported type: ${typeof obj}`);
+        }
+    }
+    /**
+     * Check if the object is a plain old javascript object.
+     */
+    function isPlainObject(obj) {
+        return typeof obj === "object" && (obj === null || obj === void 0 ? void 0 : obj.constructor) === Object;
+    }
+    /**
      * Sanitize the name of a sheet, by eventually removing quotes
      * @param sheetName name of the sheet, potentially quoted with single quotes
      */
@@ -2929,7 +2965,8 @@
         const dimension = start === "left" ? "columns" : "rows";
         const baseElement = position === "before" ? base - 1 : base;
         const end = start === "left" ? "right" : "bottom";
-        if (zone[start] <= baseElement && zone[end] >= baseElement) {
+        const shouldIncludeEnd = position === "before" ? zone[end] > baseElement : zone[end] >= baseElement;
+        if (zone[start] <= baseElement && shouldIncludeEnd) {
             return createAdaptedZone(zone, dimension, "RESIZE", quantity);
         }
         if (baseElement < zone[start]) {
@@ -3001,6 +3038,20 @@
             left: Math.min(z1.left, z2.left),
             bottom: Math.max(z1.bottom, z2.bottom),
             right: Math.max(z1.right, z2.right),
+        };
+    }
+    /**
+     * Compute the intersection of two zones. Returns nothing if the two zones don't overlap
+     */
+    function intersection(z1, z2) {
+        if (!overlap(z1, z2)) {
+            return undefined;
+        }
+        return {
+            top: Math.max(z1.top, z2.top),
+            left: Math.max(z1.left, z2.left),
+            bottom: Math.min(z1.bottom, z2.bottom),
+            right: Math.min(z1.right, z2.right),
         };
     }
     /**
@@ -3707,7 +3758,7 @@
         args: args(`
       criteria_range (range) ${_lt("The range to check against criterion.")}
       criterion (string) ${_lt("The pattern or test to apply to criteria_range.")}
-      average_range (range, optional, default=criteria_range) ${_lt("The range to average. If not included, criteria_range is used for the average instead.")}
+      average_range (range, default=criteria_range) ${_lt("The range to average. If not included, criteria_range is used for the average instead.")}
     `),
         returns: ["NUMBER"],
         compute: function (criteriaRange, criterion, averageRange = undefined) {
@@ -3737,7 +3788,8 @@
       average_range (range) ${_lt("The range to average.")}
       criteria_range1 (range) ${_lt("The range to check against criterion1.")}
       criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1.")}
-      additional_values (any, range, optional, repeating) ${_lt("Additional criteria_range and criterion to check.")}
+      criteria_range2 (any, range, repeating) ${_lt("Additional criteria_range and criterion to check.")}
+      criterion2 (string, repeating) ${_lt("The pattern or test to apply to criteria_range2.")}
     `),
         returns: ["NUMBER"],
         compute: function (averageRange, ...values) {
@@ -3905,7 +3957,7 @@
         description: _lt("Maximum numeric value in a dataset."),
         args: args(`
       value1 (any, range) ${_lt("The first value or range to consider when calculating the maximum value.")}
-      value2 (any, range, optional, repeating) ${_lt("Additional values or ranges to consider when calculating the maximum value.")}
+      value2 (any, range, repeating) ${_lt("Additional values or ranges to consider when calculating the maximum value.")}
     `),
         returns: ["NUMBER"],
         returnFormat: ReturnFormatType.FormatFromArgument,
@@ -3926,7 +3978,7 @@
       range (range) ${_lt("The range of cells from which the maximum will be determined.")}
       criteria_range1 (range) ${_lt("The range of cells over which to evaluate criterion1.")}
       criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1, such that each cell that evaluates to TRUE will be included in the filtered set.")}
-      additional_values (any, range, optional, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
+      criteria_range2 (any, range, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
       criterion2 (string, repeating) ${_lt("The pattern or test to apply to criteria_range2.")}
     `),
         returns: ["NUMBER"],
@@ -4007,7 +4059,7 @@
       range (range) ${_lt("The range of cells from which the minimum will be determined.")}
       criteria_range1 (range) ${_lt("The range of cells over which to evaluate criterion1.")}
       criterion1 (string) ${_lt("The pattern or test to apply to criteria_range1, such that each cell that evaluates to TRUE will be included in the filtered set.")}
-      additional_values (any, range, optional, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
+      criteria_range2 (any, range, repeating) ${_lt("Additional ranges over which to evaluate the additional criteria. The filtered set will be the intersection of the sets produced by each criterion-range pair.")}
       criterion2 (string, repeating) ${_lt("The pattern or test to apply to criteria_range2.")}
     `),
         returns: ["NUMBER"],
@@ -4657,9 +4709,9 @@
     const DATE = {
         description: _lt("Converts year/month/day into a date."),
         args: args(`
-    year (number) ${_lt("The year component of the date.")}")}
-    month (number) ${_lt("The month component of the date.")}")}
-    day (number) ${_lt("The day component of the date.")}")}
+    year (number) ${_lt("The year component of the date.")}
+    month (number) ${_lt("The month component of the date.")}
+    day (number) ${_lt("The day component of the date.")}
     `),
         returns: ["DATE"],
         returnFormat: { specificFormat: "m/d/yyyy" },
@@ -5940,7 +5992,7 @@
         description: _lt("Logical `and` operator."),
         args: args(`
       logical_expression1 (boolean, range<boolean>) ${_lt("An expression or reference to a cell containing an expression that represents some logical value, i.e. TRUE or FALSE, or an expression that can be coerced to a logical value.")}
-      logical_expression1 (boolean, range<boolean>, repeating) ${_lt("More expressions that represent logical values.")}
+      logical_expression2 (boolean, range<boolean>, repeating) ${_lt("More expressions that represent logical values.")}
     `),
         returns: ["BOOLEAN"],
         compute: function (...logicalExpressions) {
@@ -6118,7 +6170,8 @@
     `),
         returns: ["NUMBER"],
         compute: function (cellReference) {
-            cellReference = cellReference || this.__originCellXC;
+            var _a;
+            cellReference = cellReference || ((_a = this.__originCellXC) === null || _a === void 0 ? void 0 : _a.call(this));
             assert(() => !!cellReference, "In this context, the function [[FUNCTION_NAME]] needs to have a cell or range in parameter.");
             const zone = toZone(cellReference);
             return zone.left + 1;
@@ -6244,7 +6297,8 @@
         args: args(`cell_reference (meta, default=${_lt("The cell in which the formula is entered by default")}) ${_lt("The cell whose row number will be returned.")}`),
         returns: ["NUMBER"],
         compute: function (cellReference) {
-            cellReference = cellReference || this.__originCellXC;
+            var _a;
+            cellReference = cellReference || ((_a = this.__originCellXC) === null || _a === void 0 ? void 0 : _a.call(this));
             assert(() => !!cellReference, "In this context, the function [[FUNCTION_NAME]] needs to have a cell or range in parameter.");
             const zone = toZone(cellReference);
             return zone.top + 1;
@@ -6925,6 +6979,7 @@
      * is useful for the composer, which needs to be able to work with incomplete
      * formulas.
      */
+    const dependencyIdentifierRegex = /^[S|N]?\d+/;
     const functions$3 = functionRegistry.content;
     const OPERATORS = "+,-,*,/,:,=,<>,>=,>,<=,<,%,^,&".split(",");
     function tokenize(str) {
@@ -6939,11 +6994,11 @@
             let token = tokenizeSpace(chars) ||
                 tokenizeMisc(chars) ||
                 tokenizeOperator(chars) ||
-                tokenizeNumber(chars) ||
                 tokenizeString(chars) ||
                 tokenizeDebugger(chars) ||
                 tokenizeNormalizedReferences(chars) ||
                 tokenizeInvalidRange(chars) ||
+                tokenizeNumber(chars) ||
                 tokenizeSymbol(chars);
             if (!token) {
                 token = { type: "UNKNOWN", value: chars.shift() };
@@ -6952,11 +7007,10 @@
         }
         return result;
     }
-    const FORMULA_REF_IDENTIFIER = "|";
     function tokenizeNormalizedReferences(chars) {
         if (chars[0] === FORMULA_REF_IDENTIFIER) {
             chars.shift(); // consume the | even if it is incorrect
-            const match = chars.join("").match(formulaNumberRegexp);
+            const match = chars.join("").match(dependencyIdentifierRegex);
             if (match) {
                 chars.splice(0, match[0].length);
             }
@@ -6966,7 +7020,15 @@
             if (chars[0] === FORMULA_REF_IDENTIFIER) {
                 chars.shift();
             }
-            return { type: "REFERENCE", value: match[0] };
+            const value = match[0];
+            switch (value[0]) {
+                case "S":
+                    return { type: "NORMALIZED_STRING", value: value.substring(1) };
+                case "N":
+                    return { type: "NORMALIZED_NUMBER", value: value.substring(1) };
+                default:
+                    return { type: "REFERENCE", value };
+            }
         }
         return null;
     }
@@ -7104,6 +7166,7 @@
     }
 
     const UNARY_OPERATORS = ["-", "+"];
+    const ASSOCIATIVE_OPERATORS = ["*", "+", "&"];
     const OP_PRIORITY = {
         "^": 30,
         "*": 20,
@@ -7136,35 +7199,41 @@
         throw new Error(_lt("Unknown token: %s", token.value));
     }
     function parsePrefix(current, tokens) {
+        var _a;
         switch (current.type) {
             case "DEBUGGER":
                 const next = parseExpression(tokens, 1000);
                 next.debug = true;
                 return next;
             case "NUMBER":
-                return { type: current.type, value: parseNumber(current.value) };
+                return { type: "NUMBER", value: parseNumber(current.value) };
+            case "NORMALIZED_NUMBER":
+                return { type: "NORMALIZED_NUMBER", value: parseInt(current.value, 10) };
             case "STRING":
-                return { type: current.type, value: current.value };
+                return { type: "STRING", value: current.value };
+            case "NORMALIZED_STRING":
+                return { type: "NORMALIZED_STRING", value: parseInt(current.value, 10) };
             case "FUNCTION":
                 if (tokens.shift().type !== "LEFT_PAREN") {
                     throw new Error(_lt("Wrong function call"));
                 }
                 else {
                     const args = [];
-                    if (tokens[0].type !== "RIGHT_PAREN") {
+                    if (tokens[0] && tokens[0].type !== "RIGHT_PAREN") {
                         if (tokens[0].type === "COMMA") {
                             args.push({ type: "UNKNOWN", value: "" });
                         }
                         else {
                             args.push(parseExpression(tokens, FUNCTION_BP));
                         }
-                        while (tokens[0].type === "COMMA") {
+                        while (((_a = tokens[0]) === null || _a === void 0 ? void 0 : _a.type) === "COMMA") {
                             tokens.shift();
-                            if (tokens[0].type === "RIGHT_PAREN") {
+                            const token = tokens[0];
+                            if ((token === null || token === void 0 ? void 0 : token.type) === "RIGHT_PAREN") {
                                 args.push({ type: "UNKNOWN", value: "" });
                                 break;
                             }
-                            if (tokens[0].type === "COMMA") {
+                            else if ((token === null || token === void 0 ? void 0 : token.type) === "COMMA") {
                                 args.push({ type: "UNKNOWN", value: "" });
                             }
                             else {
@@ -7172,27 +7241,36 @@
                             }
                         }
                     }
-                    if (tokens.shift().type !== "RIGHT_PAREN") {
+                    const closingToken = tokens.shift();
+                    if (!closingToken || closingToken.type !== "RIGHT_PAREN") {
                         throw new Error(_lt("Wrong function call"));
                     }
                     return { type: "FUNCALL", value: current.value, args };
                 }
             case "REFERENCE":
                 return {
-                    type: "REFERENCE",
+                    type: "NORMALIZED_REFERENCE",
                     value: parseInt(current.value, 10),
                 };
             case "INVALID_REFERENCE":
                 throw new Error(_lt("Invalid reference"));
             case "SYMBOL":
-                if (["TRUE", "FALSE"].includes(current.value.toUpperCase())) {
-                    return { type: "BOOLEAN", value: current.value.toUpperCase() === "TRUE" };
+                if (cellReference.test(current.value)) {
+                    return {
+                        type: "REFERENCE",
+                        value: current.value,
+                    };
                 }
                 else {
-                    if (current.value) {
-                        throw new Error(_lt("Invalid formula"));
+                    if (["TRUE", "FALSE"].includes(current.value.toUpperCase())) {
+                        return { type: "BOOLEAN", value: current.value.toUpperCase() === "TRUE" };
                     }
-                    return { type: "UNKNOWN", value: current.value };
+                    else {
+                        if (current.value) {
+                            throw new Error(_lt("Invalid formula"));
+                        }
+                        return { type: "STRING", value: current.value };
+                    }
                 }
             case "LEFT_PAREN":
                 const result = parseExpression(tokens, 5);
@@ -7251,28 +7329,111 @@
         return result;
     }
     /**
-     * Converts an ast formula to the corresponding string
+     * Allows to visit all nodes of an AST and apply a mapping function
+     * to nodes of a specific type.
+     * Useful if you want to convert some part of a formula.
+     *
+     * e.g.
+     * ```ts
+     * convertAstNodes(ast, "FUNCALL", convertFormulaToExcel)
+     *
+     * function convertFormulaToExcel(ast: ASTFuncall) {
+     *   // ...
+     *   return modifiedAst
+     * }
+     * ```
      */
-    function astToFormula(ast) {
+    function convertAstNodes(ast, type, fn) {
+        if (type === ast.type) {
+            ast = fn(ast);
+        }
         switch (ast.type) {
             case "FUNCALL":
-                const args = ast.args.map((arg) => astToFormula(arg));
+                return {
+                    ...ast,
+                    args: ast.args.map((child) => convertAstNodes(child, type, fn)),
+                };
+            case "UNARY_OPERATION":
+                return {
+                    ...ast,
+                    right: convertAstNodes(ast.right, type, fn),
+                };
+            case "BIN_OPERATION":
+                return {
+                    ...ast,
+                    right: convertAstNodes(ast.right, type, fn),
+                    left: convertAstNodes(ast.left, type, fn),
+                };
+            default:
+                return ast;
+        }
+    }
+    /**
+     * Converts an ast formula to the corresponding string
+     */
+    function astToFormula(ast, dependencies = { references: [], numbers: [], strings: [] }) {
+        switch (ast.type) {
+            case "FUNCALL":
+                const args = ast.args.map((arg) => astToFormula(arg, dependencies));
                 return `${ast.value}(${args.join(",")})`;
             case "NUMBER":
                 return ast.value.toString();
+            case "NORMALIZED_STRING":
+                return `"${dependencies.strings[ast.value]}"`;
+            case "NORMALIZED_NUMBER":
+                return dependencies.numbers[ast.value].toString();
+            case "NORMALIZED_REFERENCE":
+                return dependencies.references[ast.value].toString();
+            case "REFERENCE":
             case "STRING":
                 return ast.value;
             case "BOOLEAN":
                 return ast.value ? "TRUE" : "FALSE";
             case "UNARY_OPERATION":
-                return ast.value + astToFormula(ast.right);
+                return ast.value + rightOperandToFormula(ast, dependencies);
             case "BIN_OPERATION":
-                return astToFormula(ast.left) + ast.value + astToFormula(ast.right);
-            case "REFERENCE":
-                return `${FORMULA_REF_IDENTIFIER}${ast.value}${FORMULA_REF_IDENTIFIER}`;
+                return (leftOperandToFormula(ast, dependencies) +
+                    ast.value +
+                    rightOperandToFormula(ast, dependencies));
             default:
                 return ast.value;
         }
+    }
+    /**
+     * Convert the left operand of a binary operation to the corresponding string
+     * and enclose the result inside parenthesis if necessary.
+     */
+    function leftOperandToFormula(binaryOperationAST, dependencies) {
+        const mainOperator = binaryOperationAST.value;
+        const leftOperation = binaryOperationAST.left;
+        const leftOperator = leftOperation.value;
+        const needParenthesis = leftOperation.type === "BIN_OPERATION" && OP_PRIORITY[leftOperator] < OP_PRIORITY[mainOperator];
+        return needParenthesis
+            ? `(${astToFormula(leftOperation, dependencies)})`
+            : astToFormula(leftOperation, dependencies);
+    }
+    /**
+     * Convert the right operand of a binary or unary operation to the corresponding string
+     * and enclose the result inside parenthesis if necessary.
+     */
+    function rightOperandToFormula(binaryOperationAST, dependencies) {
+        const mainOperator = binaryOperationAST.value;
+        const rightOperation = binaryOperationAST.right;
+        const rightPriority = OP_PRIORITY[rightOperation.value];
+        const mainPriority = OP_PRIORITY[mainOperator];
+        let needParenthesis = false;
+        if (rightOperation.type !== "BIN_OPERATION") {
+            needParenthesis = false;
+        }
+        else if (rightPriority < mainPriority) {
+            needParenthesis = true;
+        }
+        else if (rightPriority === mainPriority && !ASSOCIATIVE_OPERATORS.includes(mainOperator)) {
+            needParenthesis = true;
+        }
+        return needParenthesis
+            ? `(${astToFormula(rightOperation, dependencies)})`
+            : astToFormula(rightOperation, dependencies);
     }
 
     const functions$2 = functionRegistry.content;
@@ -7312,9 +7473,9 @@
     // -----------------------------------------------------------------------------
     // COMPILER
     // -----------------------------------------------------------------------------
-    function compile(str) {
-        if (!functionCache[str.text]) {
-            const ast = parse(str.text);
+    function compile(formula) {
+        if (!functionCache[formula.text]) {
+            const ast = parse(formula.text);
             let nextId = 1;
             if (ast.type === "BIN_OPERATION" && ast.value === ":") {
                 throw new Error(_lt("Invalid formula"));
@@ -7324,7 +7485,7 @@
             }
             const compiledAST = compileAST(ast);
             const code = splitCodeLines([
-                `// ${str.text}`,
+                `// ${formula.text}`,
                 compiledAST.code,
                 `return ${compiledAST.id};`,
             ]).join("\n");
@@ -7334,8 +7495,8 @@
             "range", // same as above, but guarantee that the result is in the form of a range
             "ctx", code);
             //@ts-ignore
-            functionCache[str.text] = baseFunction;
-            functionCache[str.text].dependenciesFormat = formatAST(ast);
+            functionCache[formula.text] = baseFunction;
+            functionCache[formula.text].dependenciesFormat = formatAST(ast);
             /**
              * This function compile the function arguments. It is mostly straightforward,
              * except that there is a non trivial transformation in one situation:
@@ -7385,8 +7546,8 @@
                             t === "RANGE<NUMBER>" ||
                             t === "RANGE<STRING>");
                         if (isRangeOnly) {
-                            if (currentArg.type !== "REFERENCE") {
-                                throw new Error(_lt("Function %s expects the parameter %s to be reference to a cell or range, not a %s.", ast.value.toUpperCase(), (i + 1).toString(), currentArg.type.toLowerCase()));
+                            if (currentArg.type !== "NORMALIZED_REFERENCE") {
+                                throw new Error(_lt("Function %s expects the parameter %s to be reference to a cell or range, not a %s.", ast.value.toUpperCase(), (i + 1).toString(), currentArg.type.toLowerCase().replace("normalized_", "")));
                             }
                         }
                         const compiledAST = compileAST(currentArg, isLazy, isMeta, hasRange, {
@@ -7419,7 +7580,8 @@
             function compileAST(ast, isLazy = false, isMeta = false, hasRange = false, referenceVerification = {}) {
                 const codeBlocks = [];
                 let id, fnName, statement;
-                if (ast.type !== "REFERENCE" && !(ast.type === "BIN_OPERATION" && ast.value === ":")) {
+                if (ast.type !== "NORMALIZED_REFERENCE" &&
+                    !(ast.type === "BIN_OPERATION" && ast.value === ":")) {
                     if (isMeta) {
                         throw new Error(_lt(`Argument must be a reference to a cell or range.`));
                     }
@@ -7429,16 +7591,26 @@
                 }
                 switch (ast.type) {
                     case "BOOLEAN":
-                    case "NUMBER":
-                    case "STRING":
+                    case "NUMBER": // probably dead case
+                    case "STRING": // probably dead case
                         if (!isLazy) {
                             return { id: ast.value, code: "" };
                         }
                         id = nextId++;
                         statement = `${ast.value}`;
                         break;
+                    case "NORMALIZED_NUMBER":
+                        id = nextId++;
+                        statement = `deps.numbers[${ast.value}]`;
+                        break;
+                    case "NORMALIZED_STRING":
+                        id = nextId++;
+                        statement = `deps.strings[${ast.value}]`;
+                        break;
                     case "REFERENCE":
-                        const referenceIndex = str.dependencies[ast.value];
+                        throw new Error(`Only normalized references can be compiled: ${ast.value}`);
+                    case "NORMALIZED_REFERENCE":
+                        const referenceIndex = formula.dependencies.references[ast.value];
                         if (!referenceIndex) {
                             id = nextId++;
                             statement = `null`;
@@ -7446,10 +7618,10 @@
                         }
                         id = nextId++;
                         if (hasRange) {
-                            statement = `range(${ast.value}, deps, sheetId)`;
+                            statement = `range(${ast.value}, deps.references, sheetId)`;
                         }
                         else {
-                            statement = `ref(${ast.value}, deps, sheetId, ${isMeta ? "true" : "false"}, "${referenceVerification.functionName || OPERATOR_MAP["="]}",  ${referenceVerification.paramIndex})`;
+                            statement = `ref(${ast.value}, deps.references, sheetId, ${isMeta ? "true" : "false"}, "${referenceVerification.functionName || OPERATOR_MAP["="]}",  ${referenceVerification.paramIndex})`;
                         }
                         break;
                     case "FUNCALL":
@@ -7457,7 +7629,7 @@
                         const args = compileFunctionArgs(ast);
                         codeBlocks.push(splitCodeLines(args.map((arg) => arg.code)).join("\n"));
                         fnName = ast.value.toUpperCase();
-                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}'`);
+                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}';`);
                         statement = `ctx['${fnName}'](${args.map((arg) => arg.id)})`;
                         break;
                     case "UNARY_OPERATION": {
@@ -7467,7 +7639,7 @@
                             functionName: fnName,
                         });
                         codeBlocks.push(right.code);
-                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}'`);
+                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}';`);
                         statement = `ctx['${fnName}']( ${right.id})`;
                         break;
                     }
@@ -7482,7 +7654,7 @@
                         });
                         codeBlocks.push(left.code);
                         codeBlocks.push(right.code);
-                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}'`);
+                        codeBlocks.push(`ctx.__lastFnCalled = '${fnName}';`);
                         statement = `ctx['${fnName}'](${left.id}, ${right.id})`;
                         break;
                     }
@@ -7495,15 +7667,14 @@
                         break;
                 }
                 if (isLazy) {
-                    // prettier-ignore
-                    const lazyFunction = `const _${id} = () => {
-	${splitCodeLines(codeBlocks).join("\n\t")}
-	return ${statement};
-}`;
+                    const lazyFunction = `const _${id} = () => {\n` +
+                        `\t${splitCodeLines(codeBlocks).join("\n\t")}\n` +
+                        `\treturn ${statement};\n` +
+                        "}";
                     return { id: `_${id}`, code: lazyFunction };
                 }
                 else {
-                    codeBlocks.push(`let _${id} = ` + statement);
+                    codeBlocks.push(`let _${id} = ${statement};`);
                     return { id: `_${id}`, code: splitCodeLines(codeBlocks).join("\n") };
                 }
             }
@@ -7519,8 +7690,8 @@
             function formatAST(ast) {
                 let fnDef;
                 switch (ast.type) {
-                    case "REFERENCE":
-                        const referenceIndex = str.dependencies[ast.value];
+                    case "NORMALIZED_REFERENCE":
+                        const referenceIndex = formula.dependencies.references[ast.value];
                         if (referenceIndex) {
                             return [ast.value];
                         }
@@ -7569,39 +7740,9 @@
                 return [];
             }
         }
-        return functionCache[str.text];
+        return functionCache[formula.text];
     }
 
-    /**
-     * Add the following information on tokens:
-     * - length
-     * - start
-     * - end
-     */
-    function enrichTokens(tokens) {
-        let current = 0;
-        return tokens.map((x) => {
-            const len = x.value.toString().length;
-            const token = Object.assign({}, x, {
-                start: current,
-                end: current + len,
-                length: len,
-            });
-            current = token.end;
-            return token;
-        });
-    }
-    /**
-     * Remove information added on EnrichedToken to make a Token
-     */
-    function toSimpleTokens(composerTokens) {
-        return composerTokens.map((x) => {
-            return {
-                type: x.type,
-                value: x.value,
-            };
-        });
-    }
     /**
      * finds a sequence of token that represent a range and replace them with a single token
      * The range can be
@@ -7635,9 +7776,6 @@
                         if (startIncludingSpaces && refStart && operator && refEnd) {
                             const newToken = {
                                 type: "SYMBOL",
-                                start: result[startIncludingSpaces].start,
-                                end: result[i - 1].end,
-                                length: result[i - 1].end - result[startIncludingSpaces].start,
                                 value: result
                                     .slice(startIncludingSpaces, i)
                                     .filter((x) => !removeSpace || x.type !== "SPACE")
@@ -7685,9 +7823,6 @@
         if (startIncludingSpaces && refStart && operator && refEnd) {
             const newToken = {
                 type: "SYMBOL",
-                start: result[startIncludingSpaces].start,
-                end: result[i].end,
-                length: result[i].end - result[startIncludingSpaces].start,
                 value: result
                     .slice(startIncludingSpaces, i + 1)
                     .filter((x) => !removeSpace || x.type !== "SPACE")
@@ -7706,17 +7841,27 @@
      */
     function rangeTokenize(formula) {
         const tokens = tokenize(formula);
-        return toSimpleTokens(mergeSymbolsIntoRanges(enrichTokens(tokens), true));
+        return mergeSymbolsIntoRanges(tokens, true);
     }
 
     /**
-     * Take the result of the tokenizer and transform it to be usable in the composer.
-     *
-     * @param formula
+     * Add the following information on tokens:
+     * - length
+     * - start
+     * - end
      */
-    function composerTokenize(formula) {
-        const tokens = tokenize(formula);
-        return mapParentFunction(mergeSymbolsIntoRanges(mapParenthesis(enrichTokens(tokens))));
+    function enrichTokens(tokens) {
+        let current = 0;
+        return tokens.map((x) => {
+            const len = x.value.toString().length;
+            const token = Object.assign({}, x, {
+                start: current,
+                end: current + len,
+                length: len,
+            });
+            current = token.end;
+            return token;
+        });
     }
     /**
      * add on each token the length, start and end
@@ -7781,31 +7926,74 @@
         });
         return res;
     }
+    /**
+     * Take the result of the tokenizer and transform it to be usable in the composer.
+     *
+     * @param formula
+     */
+    function composerTokenize(formula) {
+        const tokens = tokenize(formula);
+        return mapParentFunction(mapParenthesis(enrichTokens(mergeSymbolsIntoRanges(tokens))));
+    }
 
     /**
      * parses a formula (as a string) into the same formula,
-     * but with the references to other cells extracted
+     * but with the references to other cells as well as strings and numbers extracted
      *
      * =sum(a3:b1) + c3 --> =sum(|0|) + |1|
+     *
+     * = sum(a3, 5) --> =sum(|0|, |N1|)
+     *
+     * =CONCAT(CONCAT(1, "beta"), A1) --> =CONCAT(CONCAT(|N0|, |S1|), |2|)
+     *
+     * Strings and Numbers are marked with a prefix of their type (S and N) to be detected
+     * as their normalized form by the parser as they won't be processed like the references by the compiler.
      *
      * @param formula
      */
     function normalize(formula) {
         const tokens = rangeTokenize(formula);
-        let references = [];
+        let dependencies = {
+            numbers: [],
+            strings: [],
+            references: [],
+        };
         let noRefFormula = "".concat(...tokens.map((token) => {
             if (token.type === "SYMBOL" && cellReference.test(token.value)) {
                 const value = token.value.trim();
-                if (!references.includes(value)) {
-                    references.push(value);
+                if (!dependencies.references.includes(value)) {
+                    dependencies.references.push(value);
                 }
-                return `${FORMULA_REF_IDENTIFIER}${references.indexOf(value)}${FORMULA_REF_IDENTIFIER}`;
+                const index = dependencies.references.indexOf(value).toString();
+                return formatIndex(index);
+            }
+            else if ("STRING" === token.type) {
+                const value = token.value.slice(1).slice(0, token.value.length - 2);
+                if (!dependencies.strings.includes(value)) {
+                    dependencies.strings.push(value);
+                }
+                const index = dependencies.strings.indexOf(value);
+                return formatIndex(`${token.type[0]}${index}`);
+            }
+            else if (token.type === "NUMBER") {
+                const value = parseNumber(token.value);
+                if (!dependencies.numbers.includes(value)) {
+                    dependencies.numbers.push(value);
+                }
+                const index = dependencies.numbers.indexOf(value);
+                return formatIndex(`${token.type[0]}${index}`);
             }
             else {
                 return token.value;
             }
         }));
-        return { text: noRefFormula, dependencies: references };
+        return { text: noRefFormula, dependencies };
+    }
+    /**
+     * Enclose an index between normalization identifiers
+     */
+    function formatIndex(index) {
+        return `${FORMULA_REF_IDENTIFIER}${index}${FORMULA_REF_IDENTIFIER}`;
     }
 
     /**
@@ -7830,6 +8018,26 @@
                 return format ? formatNumber(value, format) : formatStandardNumber(value);
             case "object":
                 return "0";
+        }
+    }
+    /**
+     * Parse a string representing a primitive cell value
+     */
+    function parsePrimitiveContent(content) {
+        if (content === "") {
+            return "";
+        }
+        else if (isNumber(content)) {
+            return parseNumber(content);
+        }
+        else if (isBoolean(content)) {
+            return content.toUpperCase() === "TRUE" ? true : false;
+        }
+        else if (isDateTime(content)) {
+            return parseDateTime(content).value;
+        }
+        else {
+            return content;
         }
     }
     /**
@@ -7920,16 +8128,6 @@
                     return false;
             }
         }
-        withDisplayProperties(properties) {
-            return Object.create(this, {
-                style: {
-                    value: properties.style,
-                },
-                format: {
-                    value: properties.format,
-                },
-            });
-        }
     }
     class EmptyCell extends AbstractCell {
         constructor(id, properties = {}) {
@@ -7968,7 +8166,7 @@
             this.format = properties.format;
         }
         get composerContent() {
-            return formatDateTime({ value: this.evaluated.value, format: this.format });
+            return formatValue(this.evaluated.value, this.format);
         }
     }
     class LinkCell extends AbstractCell {
@@ -8050,9 +8248,6 @@
         isFormula() {
             return true;
         }
-        startEvaluation() {
-            this.evaluated = { value: LOADING, type: CellValueType.text };
-        }
         assignValue(value) {
             switch (typeof value) {
                 case "number":
@@ -8123,10 +8318,10 @@
             const formula = normalize(content);
             const normalizedText = formula.text;
             const compiledFormula = compile(formula);
-            const ranges = formula.dependencies.map((xc) => getters.getRangeFromSheetXC(sheetId, xc));
+            const ranges = formula.dependencies.references.map((xc) => getters.getRangeFromSheetXC(sheetId, xc));
             const format = properties.format ||
                 computeFormulaFormat(getters.getEvaluationSheets(), compiledFormula, ranges);
-            return new FormulaCell((normalizedText, dependencies) => getters.buildFormulaContent(sheetId, normalizedText, dependencies), id, normalizedText, compiledFormula, ranges, {
+            return new FormulaCell((normalizedText, dependencies) => getters.buildFormulaContent(sheetId, normalizedText, dependencies), id, normalizedText, compiledFormula, { ...formula.dependencies, references: ranges }, {
                 ...properties,
                 format,
             });
@@ -8207,6 +8402,374 @@
             catch (error) {
                 return new BadExpressionCell(id, content, error.message || DEFAULT_ERROR_MESSAGE, properties);
             }
+        };
+    }
+
+    /**
+     * parses a formula (as a string) into the same formula,
+     * but with the references to other cells extracted
+     *
+     * =sum(a3:b1) + c3 --> =sum(|0|) + |1|
+     *
+     * @param formula
+     */
+    function normalizeV9(formula) {
+        const tokens = rangeTokenize(formula);
+        let dependencies = [];
+        let noRefFormula = "".concat(...tokens.map((token) => {
+            if (token.type === "SYMBOL" && cellReference.test(token.value)) {
+                const value = token.value.trim();
+                if (!dependencies.includes(value)) {
+                    dependencies.push(value);
+                }
+                return `${FORMULA_REF_IDENTIFIER}${dependencies.indexOf(value)}${FORMULA_REF_IDENTIFIER}`;
+            }
+            else {
+                return token.value;
+            }
+        }));
+        return { text: noRefFormula, dependencies };
+    }
+
+    /**
+     * This is the current state version number. It should be incremented each time
+     * a breaking change is made in the way the state is handled, and an upgrade
+     * function should be defined
+     */
+    const CURRENT_VERSION = 10;
+    const INITIAL_SHEET_ID = "Sheet1";
+    /**
+     * This function tries to load anything that could look like a valid
+     * workbookData object. It applies any migrations, if needed, and return a
+     * current, complete workbookData object.
+     *
+     * It also ensures that there is at least one sheet.
+     */
+    function load(data) {
+        if (!data) {
+            return createEmptyWorkbookData();
+        }
+        data = JSON.parse(JSON.stringify(data));
+        // apply migrations, if needed
+        if ("version" in data) {
+            if (data.version < CURRENT_VERSION) {
+                data = migrate(data);
+            }
+        }
+        // sanity check: try to fix missing fields/corrupted state by providing
+        // sensible default values
+        data = Object.assign(createEmptyWorkbookData(), data, { version: CURRENT_VERSION });
+        data.sheets = data.sheets.map((s, i) => Object.assign(createEmptySheet(`Sheet${i + 1}`, `Sheet${i + 1}`), s));
+        if (data.sheets.length === 0) {
+            data.sheets.push(createEmptySheet(INITIAL_SHEET_ID, "Sheet1"));
+        }
+        return data;
+    }
+    function migrate(data) {
+        const index = MIGRATIONS.findIndex((m) => m.from === data.version);
+        for (let i = index; i < MIGRATIONS.length; i++) {
+            data = MIGRATIONS[i].applyMigration(data);
+        }
+        return data;
+    }
+    const MIGRATIONS = [
+        {
+            description: "add the `activeSheet` field on data",
+            from: 1,
+            to: 2,
+            applyMigration(data) {
+                if (data.sheets && data.sheets[0]) {
+                    data.activeSheet = data.sheets[0].name;
+                }
+                return data;
+            },
+        },
+        {
+            description: "add an id field in each sheet",
+            from: 2,
+            to: 3,
+            applyMigration(data) {
+                if (data.sheets && data.sheets.length) {
+                    for (let sheet of data.sheets) {
+                        sheet.id = sheet.id || sheet.name;
+                    }
+                }
+                return data;
+            },
+        },
+        {
+            description: "activeSheet is now an id, not the name of a sheet",
+            from: 3,
+            to: 4,
+            applyMigration(data) {
+                if (data.sheets && data.activeSheet) {
+                    const activeSheet = data.sheets.find((s) => s.name === data.activeSheet);
+                    data.activeSheet = activeSheet.id;
+                }
+                return data;
+            },
+        },
+        {
+            description: "add figures object in each sheets",
+            from: 4,
+            to: 5,
+            applyMigration(data) {
+                for (let sheet of data.sheets || []) {
+                    sheet.figures = sheet.figures || [];
+                }
+                return data;
+            },
+        },
+        {
+            description: "normalize the content of the cell if it is a formula to avoid parsing all the formula that vary only by the cells they use",
+            from: 5,
+            to: 6,
+            applyMigration(data) {
+                for (let sheet of data.sheets || []) {
+                    for (let xc in sheet.cells || []) {
+                        const cell = sheet.cells[xc];
+                        if (cell.content && cell.content.startsWith("=")) {
+                            cell.formula = normalizeV9(cell.content);
+                        }
+                    }
+                }
+                return data;
+            },
+        },
+        {
+            description: "transform chart data structure",
+            from: 6,
+            to: 7,
+            applyMigration(data) {
+                for (let sheet of data.sheets || []) {
+                    for (let f in sheet.figures || []) {
+                        const { dataSets, ...newData } = sheet.figures[f].data;
+                        const newDataSets = [];
+                        for (let ds of dataSets) {
+                            if (ds.labelCell) {
+                                const dataRange = toZone(ds.dataRange);
+                                const newRange = ds.labelCell + ":" + toXC(dataRange.right, dataRange.bottom);
+                                newDataSets.push(newRange);
+                            }
+                            else {
+                                newDataSets.push(ds.dataRange);
+                            }
+                        }
+                        newData.dataSetsHaveTitle = Boolean(dataSets[0].labelCell);
+                        newData.dataSets = newDataSets;
+                        sheet.figures[f].data = newData;
+                    }
+                }
+                return data;
+            },
+        },
+        {
+            description: "remove single quotes in sheet names",
+            from: 7,
+            to: 8,
+            applyMigration(data) {
+                var _a;
+                const namesTaken = [];
+                const globalForbiddenInExcel = new RegExp(FORBIDDEN_IN_EXCEL_REGEX, "g");
+                for (let sheet of data.sheets || []) {
+                    if (!sheet.name) {
+                        continue;
+                    }
+                    const oldName = sheet.name;
+                    const escapedName = oldName.replace(globalForbiddenInExcel, "_");
+                    let i = 1;
+                    let newName = escapedName;
+                    while (namesTaken.includes(newName)) {
+                        newName = `${escapedName}${i}`;
+                        i++;
+                    }
+                    sheet.name = newName;
+                    namesTaken.push(newName);
+                    const replaceName = (str) => {
+                        if (str === undefined) {
+                            return str;
+                        }
+                        // replaceAll is only available in next Typescript version
+                        let newString = str.replace(oldName, newName);
+                        let currentString = str;
+                        while (currentString !== newString) {
+                            currentString = newString;
+                            newString = currentString.replace(oldName, newName);
+                        }
+                        return currentString;
+                    };
+                    //cells
+                    for (let xc in sheet.cells) {
+                        const cell = sheet.cells[xc];
+                        if (cell.formula) {
+                            cell.formula.dependencies = cell.formula.dependencies.map(replaceName);
+                        }
+                    }
+                    //charts
+                    for (let figure of sheet.figures || []) {
+                        if (figure.type === "chart") {
+                            const dataSets = figure.data.dataSets.map(replaceName);
+                            const labelRange = replaceName(figure.data.labelRange);
+                            figure.data = { ...figure.data, dataSets, labelRange };
+                        }
+                    }
+                    //ConditionalFormats
+                    for (let cf of sheet.conditionalFormats || []) {
+                        cf.ranges = cf.ranges.map(replaceName);
+                        for (const thresholdName of [
+                            "minimum",
+                            "maximum",
+                            "midpoint",
+                            "upperInflectionPoint",
+                            "lowerInflectionPoint",
+                        ]) {
+                            if (((_a = cf.rule[thresholdName]) === null || _a === void 0 ? void 0 : _a.type) === "formula") {
+                                cf.rule[thresholdName].value = replaceName(cf.rule[thresholdName].value);
+                            }
+                        }
+                    }
+                }
+                return data;
+            },
+        },
+        {
+            description: "transform chart data structure with design attributes",
+            from: 8,
+            to: 9,
+            applyMigration(data) {
+                for (const sheet of data.sheets || []) {
+                    for (const chart of sheet.figures || []) {
+                        chart.data.background = BACKGROUND_CHART_COLOR;
+                        chart.data.verticalAxisPosition = "left";
+                        chart.data.legendPosition = "top";
+                        chart.data.stackedBar = false;
+                    }
+                }
+                return data;
+            },
+        },
+        {
+            description: "de-normalize formula to reduce exported json size (~30%)",
+            from: 9,
+            to: 10,
+            applyMigration(data) {
+                for (let sheet of data.sheets || []) {
+                    for (let xc in sheet.cells || []) {
+                        const cell = sheet.cells[xc];
+                        if (cell.formula) {
+                            let { text, dependencies } = cell.formula;
+                            for (let [index, d] of Object.entries(dependencies)) {
+                                const stringPosition = `\\${FORMULA_REF_IDENTIFIER}${index}\\${FORMULA_REF_IDENTIFIER}`;
+                                text = text.replace(new RegExp(stringPosition, "g"), d);
+                            }
+                            cell.content = text;
+                            delete cell.formula;
+                        }
+                    }
+                }
+                return data;
+            },
+        },
+    ];
+    /**
+     * The goal of this function is to repair corrupted/wrong initial messages caused by
+     * a bug.
+     * The bug should obviously be fixed, but it's too late for existing spreadsheet.
+     */
+    function repairInitialMessages(data, initialMessages) {
+        initialMessages = fixTranslatedSheetIds(data, initialMessages);
+        initialMessages = dropSortCommands(data, initialMessages);
+        return initialMessages;
+    }
+    /**
+     * When the workbook data is originally empty, a new one is generated on-the-fly.
+     * A bug caused the sheet id to be non-deterministic. The sheet id was propagated in
+     * commands.
+     * This function repairs initial commands with a wrong sheetId.
+     */
+    function fixTranslatedSheetIds(data, initialMessages) {
+        // the fix is only needed when the workbook is generated on-the-fly
+        if (Object.keys(data).length !== 0) {
+            return initialMessages;
+        }
+        const sheetIds = [];
+        const messages = [];
+        const fixSheetId = (cmd) => {
+            if (cmd.type === "CREATE_SHEET") {
+                sheetIds.push(cmd.sheetId);
+            }
+            else if ("sheetId" in cmd && !sheetIds.includes(cmd.sheetId)) {
+                return { ...cmd, sheetId: INITIAL_SHEET_ID };
+            }
+            return cmd;
+        };
+        for (const message of initialMessages) {
+            if (message.type === "REMOTE_REVISION") {
+                messages.push({
+                    ...message,
+                    commands: message.commands.map(fixSheetId),
+                });
+            }
+            else {
+                messages.push(message);
+            }
+        }
+        return messages;
+    }
+    function dropSortCommands(data, initialMessages) {
+        const messages = [];
+        for (const message of initialMessages) {
+            if (message.type === "REMOTE_REVISION") {
+                messages.push({
+                    ...message,
+                    // @ts-ignore
+                    commands: message.commands.filter((command) => command.type !== "SORT_CELLS"),
+                });
+            }
+            else {
+                messages.push(message);
+            }
+        }
+        return messages;
+    }
+    // -----------------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------------
+    function createEmptySheet(sheetId, name) {
+        return {
+            id: sheetId,
+            name,
+            colNumber: 26,
+            rowNumber: 100,
+            cells: {},
+            cols: {},
+            rows: {},
+            merges: [],
+            conditionalFormats: [],
+            figures: [],
+        };
+    }
+    function createEmptyWorkbookData(sheetName = "Sheet1") {
+        const data = {
+            version: CURRENT_VERSION,
+            sheets: [createEmptySheet(INITIAL_SHEET_ID, sheetName)],
+            entities: {},
+            styles: {},
+            borders: {},
+            revisionId: DEFAULT_REVISION_ID,
+        };
+        return data;
+    }
+    function createEmptyExcelSheet(sheetId, name) {
+        return {
+            ...createEmptySheet(sheetId, name),
+            charts: [],
+        };
+    }
+    function createEmptyExcelWorkbookData() {
+        return {
+            ...createEmptyWorkbookData(),
+            sheets: [createEmptyExcelSheet(INITIAL_SHEET_ID, "Sheet1")],
         };
     }
 
@@ -8354,7 +8917,12 @@
                 case "DUPLICATE_SHEET":
                     const borders = this.borders[cmd.sheetId];
                     if (borders) {
-                        this.history.update("borders", cmd.sheetIdTo, JSON.parse(JSON.stringify(borders)));
+                        // borders is a sparse 2D array.
+                        // map and slice preserve empty values and do not set `undefined` instead
+                        const bordersCopy = borders
+                            .slice()
+                            .map((col) => col === null || col === void 0 ? void 0 : col.slice().map((border) => ({ ...border })));
+                        this.history.update("borders", cmd.sheetIdTo, bordersCopy);
                     }
                     break;
                 case "DELETE_SHEET":
@@ -8816,11 +9384,11 @@
             for (const sheet of Object.keys(this.cells)) {
                 for (const cell of Object.values(this.cells[sheet] || {})) {
                     if (cell.isFormula()) {
-                        for (const range of cell.dependencies) {
+                        for (const range of cell.dependencies.references) {
                             if (!sheetId || range.sheetId === sheetId) {
                                 const change = applyChange(range);
                                 if (change.changeType !== "NONE") {
-                                    this.history.update("cells", sheet, cell.id, "dependencies", cell.dependencies.indexOf(range), change.range);
+                                    this.history.update("cells", sheet, cell.id, "dependencies", "references", cell.dependencies.references.indexOf(range), change.range);
                                 }
                             }
                         }
@@ -8848,9 +9416,6 @@
                     if ("format" in cmd && cmd.format !== undefined) {
                         this.setFormatter(cmd.sheetId, cmd.target, cmd.format);
                     }
-                    break;
-                case "SET_DECIMAL":
-                    this.setDecimal(cmd.sheetId, cmd.target, cmd.step);
                     break;
                 case "CLEAR_FORMATTING":
                     this.clearStyles(cmd.sheetId, cmd.target);
@@ -8894,146 +9459,6 @@
                     }
                 }
             }
-        }
-        /**
-         * This function allows to adjust the quantity of decimal places after a decimal
-         * point on cells containing number value. It does this by changing the cells
-         * format. Values aren't modified.
-         *
-         * The change of the decimal quantity is done one by one, the sign of the step
-         * variable indicates whether we are increasing or decreasing.
-         *
-         * If several cells are in the zone, the format resulting from the change of the
-         * first cell (with number type) will be applied to the whole zone.
-         */
-        setDecimal(sheetId, zones, step) {
-            // Find the first cell with a number value and get the format
-            const numberFormat = this.searchNumberFormat(sheetId, zones);
-            if (numberFormat !== undefined) {
-                // Depending on the step sign, increase or decrease the decimal representation
-                // of the format
-                const newFormat = this.changeDecimalFormat(numberFormat, step);
-                // Apply the new format on the whole zone
-                this.setFormatter(sheetId, zones, newFormat);
-            }
-        }
-        /**
-         * Take a range of cells and return the format of the first cell containing a
-         * number value. Returns a default format if the cell hasn't format. Returns
-         * undefined if no number value in the range.
-         */
-        searchNumberFormat(sheetId, zones) {
-            var _a;
-            for (let zone of zones) {
-                for (let row = zone.top; row <= zone.bottom; row++) {
-                    for (let col = zone.left; col <= zone.right; col++) {
-                        const cell = this.getters.getCell(sheetId, col, row);
-                        if ((cell === null || cell === void 0 ? void 0 : cell.evaluated.type) === CellValueType.number &&
-                            !((_a = cell.format) === null || _a === void 0 ? void 0 : _a.match(DATETIME_FORMAT)) // reject dates
-                        ) {
-                            return cell.format || this.setDefaultNumberFormat(cell.evaluated.value);
-                        }
-                    }
-                }
-            }
-            return undefined;
-        }
-        /**
-         * Function used to give the default format of a cell with a number for value.
-         * It is considered that the default format of a number is 0 followed by as many
-         * 0 as there are decimal places.
-         *
-         * Example:
-         * - 1 --> '0'
-         * - 123 --> '0'
-         * - 12345 --> '0'
-         * - 42.1 --> '0.0'
-         * - 456.0001 --> '0.0000'
-         */
-        setDefaultNumberFormat(cellValue) {
-            const strValue = cellValue.toString();
-            const parts = strValue.split(".");
-            if (parts.length === 1) {
-                return "0";
-            }
-            return "0." + Array(parts[1].length + 1).join("0");
-        }
-        /**
-         * This function take a cell format representation and return a new format representation
-         * with more or less decimal places.
-         *
-         * If the format doesn't look like a digital format (means that not contain '0')
-         * or if this one cannot be increased or decreased, the returned format will be
-         * the same.
-         *
-         * This function aims to work with all possible formats as well as custom formats.
-         *
-         * Examples of format changed by this function:
-         * - "0" (step = 1) --> "0.0"
-         * - "0.000%" (step = 1) --> "0.0000%"
-         * - "0.00" (step = -1) --> "0.0"
-         * - "0%" (step = -1) --> "0%"
-         * - "#,##0.0" (step = -1) --> "#,##0"
-         * - "#,##0;0.0%;0.000" (step = 1) --> "#,##0.0;0.00%;0.0000"
-         */
-        changeDecimalFormat(format, step) {
-            const sign = Math.sign(step);
-            // According to the representation of the cell format. A format can contain
-            // up to 4 sub-formats which can be applied depending on the value of the cell
-            // (among positive / negative / zero / text), each of these sub-format is separated
-            // by ';' in the format. We need to make the change on each sub-format.
-            const subFormats = format.split(";");
-            let newSubFormats = [];
-            for (let subFormat of subFormats) {
-                const decimalPointPosition = subFormat.indexOf(".");
-                const exponentPosition = subFormat.toUpperCase().indexOf("E");
-                let newSubFormat;
-                // the 1st step is to find the part of the zeros located before the
-                // exponent (when existed)
-                const subPart = exponentPosition > -1 ? subFormat.slice(0, exponentPosition) : subFormat;
-                const zerosAfterDecimal = decimalPointPosition > -1 ? subPart.slice(decimalPointPosition).match(/0/g).length : 0;
-                // the 2nd step is to add (or remove) zero after the last zeros obtained in
-                // step 1
-                const lastZeroPosition = subPart.lastIndexOf("0");
-                if (lastZeroPosition > -1) {
-                    if (sign > 0) {
-                        // in this case we want to add decimal information
-                        if (zerosAfterDecimal < maximumDecimalPlaces) {
-                            newSubFormat =
-                                subFormat.slice(0, lastZeroPosition + 1) +
-                                    (zerosAfterDecimal === 0 ? ".0" : "0") +
-                                    subFormat.slice(lastZeroPosition + 1);
-                        }
-                        else {
-                            newSubFormat = subFormat;
-                        }
-                    }
-                    else {
-                        // in this case we want to remove decimal information
-                        if (zerosAfterDecimal > 0) {
-                            // remove last zero
-                            newSubFormat =
-                                subFormat.slice(0, lastZeroPosition) + subFormat.slice(lastZeroPosition + 1);
-                            // if a zero always exist after decimal point else remove decimal point
-                            if (zerosAfterDecimal === 1) {
-                                newSubFormat =
-                                    newSubFormat.slice(0, decimalPointPosition) +
-                                        newSubFormat.slice(decimalPointPosition + 1);
-                            }
-                        }
-                        else {
-                            // zero after decimal isn't present, we can't remove zero
-                            newSubFormat = subFormat;
-                        }
-                    }
-                }
-                else {
-                    // no zeros are present in this format, we do nothing
-                    newSubFormat = subFormat;
-                }
-                newSubFormats.push(newSubFormat);
-            }
-            return newSubFormats.join(";");
         }
         /**
          * Clear the styles of zones
@@ -9081,7 +9506,7 @@
                 for (let xc in sheet.cells) {
                     const cellData = sheet.cells[xc];
                     const [col, row] = toCartesian(xc);
-                    if ((cellData === null || cellData === void 0 ? void 0 : cellData.formula) || (cellData === null || cellData === void 0 ? void 0 : cellData.content) || (cellData === null || cellData === void 0 ? void 0 : cellData.format) || (cellData === null || cellData === void 0 ? void 0 : cellData.style)) {
+                    if ((cellData === null || cellData === void 0 ? void 0 : cellData.content) || (cellData === null || cellData === void 0 ? void 0 : cellData.format) || (cellData === null || cellData === void 0 ? void 0 : cellData.style)) {
                         const cell = this.importCell(imported_sheet, cellData, data.styles);
                         this.history.update("cells", sheet.id, cell.id, cell);
                         this.dispatch("UPDATE_CELL_POSITION", {
@@ -9096,7 +9521,6 @@
             }
         }
         export(data) {
-            var _a;
             let styleId = 0;
             const styles = {};
             /**
@@ -9114,23 +9538,17 @@
             }
             for (let _sheet of data.sheets) {
                 const cells = {};
-                for (let [cellId, cell] of Object.entries(this.cells[_sheet.id] || {})) {
-                    let position = this.getters.getCellPosition(cellId);
-                    let xc = toXC(position.col, position.row);
+                const positions = Object.keys(this.cells[_sheet.id] || {})
+                    .map((cellId) => this.getters.getCellPosition(cellId))
+                    .sort((a, b) => (a.col === b.col ? a.row - b.row : a.col - b.col));
+                for (const { col, row } of positions) {
+                    const cell = this.getters.getCell(_sheet.id, col, row);
+                    const xc = toXC(col, row);
                     cells[xc] = {
                         style: cell.style && getStyleId(cell.style),
                         format: cell.format,
+                        content: cell.content,
                     };
-                    if (cell.isFormula()) {
-                        cells[xc].formula = {
-                            text: cell.normalizedText || "",
-                            dependencies: ((_a = cell.dependencies) === null || _a === void 0 ? void 0 : _a.map((d) => this.getters.getRangeString(d, _sheet.id))) || [],
-                            value: cell.evaluated.value,
-                        };
-                    }
-                    else {
-                        cells[xc].content = cell.content;
-                    }
                 }
                 _sheet.cells = cells;
             }
@@ -9138,19 +9556,21 @@
         }
         importCell(sheet, cellData, normalizedStyles) {
             const style = (cellData.style && normalizedStyles[cellData.style]) || undefined;
-            // For perf reasons, formula are already normalized at export/import
             const cellId = this.uuidGenerator.uuidv4();
-            if (cellData.formula) {
-                const ranges = cellData.formula.dependencies.map((xc) => this.getters.getRangeFromSheetXC(sheet.id, xc));
-                return new FormulaCell((normalizedText, dependencies) => this.getters.buildFormulaContent(sheet.id, normalizedText, dependencies), cellId, cellData.formula.text, compile(cellData.formula), ranges, { format: cellData === null || cellData === void 0 ? void 0 : cellData.format, style });
-            }
-            else {
-                const properties = { format: cellData === null || cellData === void 0 ? void 0 : cellData.format, style };
-                return this.createCell(cellId, (cellData === null || cellData === void 0 ? void 0 : cellData.content) || "", properties, sheet.id);
-            }
+            const properties = { format: cellData === null || cellData === void 0 ? void 0 : cellData.format, style };
+            return this.createCell(cellId, (cellData === null || cellData === void 0 ? void 0 : cellData.content) || "", properties, sheet.id);
         }
         exportForExcel(data) {
             this.export(data);
+            for (let sheet of data.sheets) {
+                for (const xc in sheet.cells) {
+                    const [col, row] = toCartesian(xc);
+                    const cell = this.getters.getCell(sheet.id, col, row);
+                    const exportedCellData = sheet.cells[xc];
+                    exportedCellData.value = cell.evaluated.value;
+                    exportedCellData.isFormula = cell.isFormula();
+                }
+            }
         }
         // ---------------------------------------------------------------------------
         // GETTERS
@@ -9170,18 +9590,23 @@
             }
             return undefined;
         }
+        /**
+         * Reconstructs the original formula string based on a normalized form and its dependencies
+         */
         buildFormulaContent(sheetId, formula, dependencies) {
-            let newDependencies = dependencies.map((x, i) => {
-                return {
-                    stringDependency: this.getters.getRangeString(x, sheetId),
-                    stringPosition: `\\${FORMULA_REF_IDENTIFIER}${i}\\${FORMULA_REF_IDENTIFIER}`,
-                };
-            });
             let newContent = formula;
-            if (newDependencies) {
-                for (let d of newDependencies) {
-                    newContent = newContent.replace(new RegExp(d.stringPosition, "g"), d.stringDependency);
-                }
+            for (let [index, range] of Object.entries(dependencies.references)) {
+                const xc = this.getters.getRangeString(range, sheetId);
+                const stringPosition = `\\${FORMULA_REF_IDENTIFIER}${index}\\${FORMULA_REF_IDENTIFIER}`;
+                newContent = newContent.replace(new RegExp(stringPosition, "g"), xc);
+            }
+            for (let [index, d] of Object.entries(dependencies.strings)) {
+                const stringPosition = `\\${FORMULA_REF_IDENTIFIER}S${index}\\${FORMULA_REF_IDENTIFIER}`;
+                newContent = newContent.replace(new RegExp(stringPosition, "g"), `"${d}"`);
+            }
+            for (let [index, d] of Object.entries(dependencies.numbers)) {
+                const stringPosition = `\\${FORMULA_REF_IDENTIFIER}N${index}\\${FORMULA_REF_IDENTIFIER}`;
+                newContent = newContent.replace(new RegExp(stringPosition, "g"), d.toString());
             }
             return newContent;
         }
@@ -9278,10 +9703,13 @@
             return format;
         }
         updateCell(sheet, col, row, after) {
+            var _a;
             const before = sheet.rows[row].cells[col];
             const hasContent = "content" in after || "formula" in after;
             // Compute the new cell properties
-            const afterContent = after.content ? after.content.replace(nbspRegexp, "") : "";
+            const afterContent = hasContent
+                ? ((_a = after.content) === null || _a === void 0 ? void 0 : _a.replace(nbspRegexp, "")) || ""
+                : (before === null || before === void 0 ? void 0 : before.content) || "";
             let style;
             if (after.style !== undefined) {
                 style = after.style || undefined;
@@ -9315,13 +9743,17 @@
             }
             const cellId = (before === null || before === void 0 ? void 0 : before.id) || this.uuidGenerator.uuidv4();
             const didContentChange = hasContent;
-            let cell;
             const properties = { format, style };
-            if (before && !didContentChange) {
-                cell = before.withDisplayProperties(properties);
-            }
-            else {
-                cell = this.createCell(cellId, afterContent, properties, sheet.id);
+            const cell = this.createCell(cellId, afterContent, properties, sheet.id);
+            if (before && !didContentChange && cell.isFormula()) {
+                // content is not re-evaluated if the content did not change => reassign the value manually
+                // TODO this plugin should not care about evaluation
+                // and evaluation should not depend on implementation details here.
+                // Task 2813749
+                cell.assignValue(before.evaluated.value);
+                if (before.evaluated.type === CellValueType.error) {
+                    cell.assignError(before.evaluated.value, before.evaluated.error);
+                }
             }
             this.history.update("cells", sheet.id, cell.id, cell);
             this.dispatch("UPDATE_CELL_POSITION", { cell, cellId: cell.id, col, row, sheetId: sheet.id });
@@ -9352,6 +9784,7 @@
         constructor() {
             super(...arguments);
             this.chartFigures = {};
+            this.nextId = 1;
         }
         adaptRanges(applyChange) {
             for (let [chartId, chart] of Object.entries(this.chartFigures)) {
@@ -9426,24 +9859,19 @@
             }
         }
         handle(cmd) {
-            var _a;
+            var _a, _b;
             switch (cmd.type) {
                 case "CREATE_CHART":
-                    const chartDefinition = this.createChartDefinition(cmd.definition, cmd.sheetId);
                     const x = cmd.position ? cmd.position.x : 0;
                     const y = cmd.position ? cmd.position.y : 0;
-                    this.dispatch("CREATE_FIGURE", {
-                        sheetId: cmd.sheetId,
-                        figure: {
-                            id: cmd.id,
-                            x,
-                            y,
-                            height: 335,
-                            width: 536,
-                            tag: "chart",
-                        },
+                    this.addChartFigure(cmd.sheetId, this.createChartDefinition(cmd.definition, cmd.sheetId), {
+                        id: cmd.id,
+                        x,
+                        y,
+                        height: 335,
+                        width: 536,
+                        tag: "chart",
                     });
-                    this.history.update("chartFigures", cmd.id, chartDefinition);
                     break;
                 case "UPDATE_CHART": {
                     this.updateChartDefinition(cmd.id, cmd.definition);
@@ -9453,20 +9881,31 @@
                     const sheetFiguresFrom = this.getters.getFigures(cmd.sheetId);
                     for (const fig of sheetFiguresFrom) {
                         if (fig.tag === "chart") {
-                            const id = this.uuidGenerator.uuidv4();
-                            const chartDefinition = { ...this.chartFigures[fig.id], id };
-                            this.dispatch("CREATE_FIGURE", {
-                                sheetId: cmd.sheetIdTo,
-                                figure: {
-                                    id: id,
-                                    x: fig.x,
-                                    y: fig.y,
-                                    height: fig.height,
-                                    width: fig.width,
-                                    tag: "chart",
-                                },
+                            const id = this.nextId.toString();
+                            this.history.update("nextId", this.nextId + 1);
+                            const chartDefinition = { ...deepCopy(this.chartFigures[fig.id]), id };
+                            chartDefinition.sheetId = cmd.sheetIdTo;
+                            chartDefinition.dataSets.forEach((dataset) => {
+                                var _a;
+                                if (dataset.dataRange.sheetId === cmd.sheetId) {
+                                    dataset.dataRange.sheetId = cmd.sheetIdTo;
+                                }
+                                if (((_a = dataset.labelCell) === null || _a === void 0 ? void 0 : _a.sheetId) === cmd.sheetId) {
+                                    dataset.labelCell.sheetId = cmd.sheetIdTo;
+                                }
                             });
-                            this.history.update("chartFigures", id, chartDefinition);
+                            if (((_a = chartDefinition.labelRange) === null || _a === void 0 ? void 0 : _a.sheetId) === cmd.sheetId) {
+                                chartDefinition.labelRange.sheetId = cmd.sheetIdTo;
+                            }
+                            const figure = {
+                                id: id,
+                                x: fig.x,
+                                y: fig.y,
+                                height: fig.height,
+                                width: fig.width,
+                                tag: "chart",
+                            };
+                            this.addChartFigure(cmd.sheetIdTo, chartDefinition, figure);
                         }
                     }
                     break;
@@ -9476,7 +9915,7 @@
                     break;
                 case "DELETE_SHEET":
                     for (let id of Object.keys(this.chartFigures)) {
-                        if (((_a = this.chartFigures[id]) === null || _a === void 0 ? void 0 : _a.sheetId) === cmd.sheetId) {
+                        if (((_b = this.chartFigures[id]) === null || _b === void 0 ? void 0 : _b.sheetId) === cmd.sheetId) {
                             this.history.update("chartFigures", id, undefined);
                         }
                     }
@@ -9698,6 +10137,13 @@
             }
             return dataSets;
         }
+        addChartFigure(sheetId, data, figure) {
+            this.dispatch("CREATE_FIGURE", {
+                sheetId,
+                figure,
+            });
+            this.history.update("chartFigures", figure.id, data);
+        }
         createDataSet(sheetId, fullZone, titleZone) {
             if (fullZone.left !== fullZone.right && fullZone.top !== fullZone.bottom) {
                 throw new Error(`Zone should be a single column or row: ${zoneToXc(fullZone)}`);
@@ -9799,7 +10245,10 @@
                     this.cfRules[cmd.sheetId] = [];
                     break;
                 case "DUPLICATE_SHEET":
-                    this.history.update("cfRules", cmd.sheetIdTo, this.cfRules[cmd.sheetId].slice());
+                    this.history.update("cfRules", cmd.sheetIdTo, []);
+                    for (const cf of this.getConditionalFormats(cmd.sheetId)) {
+                        this.addConditionalFormatting(cf, cmd.sheetIdTo);
+                    }
                     break;
                 case "DELETE_SHEET":
                     const cfRules = Object.assign({}, this.cfRules);
@@ -10070,6 +10519,15 @@
         // ---------------------------------------------------------------------------
         // Command Handling
         // ---------------------------------------------------------------------------
+        allowDispatch(cmd) {
+            switch (cmd.type) {
+                case "UPDATE_FIGURE":
+                case "DELETE_FIGURE":
+                    return this.checkFigureExists(cmd.sheetId, cmd.id);
+                default:
+                    return 0 /* Success */;
+            }
+        }
         handle(cmd) {
             switch (cmd.type) {
                 case "CREATE_SHEET":
@@ -10120,6 +10578,13 @@
         }
         removeFigure(id, sheetId) {
             this.history.update("figures", sheetId, id, undefined);
+        }
+        checkFigureExists(sheetId, figureId) {
+            var _a;
+            if (((_a = this.figures[sheetId]) === null || _a === void 0 ? void 0 : _a[figureId]) === undefined) {
+                return 53 /* FigureDoesNotExist */;
+            }
+            return 0 /* Success */;
         }
         // ---------------------------------------------------------------------------
         // Getters
@@ -10447,7 +10912,7 @@
                             sheetId: sheet.id,
                             col,
                             row,
-                            style: topLeft ? topLeft.style : undefined,
+                            style: topLeft ? topLeft.style : null,
                             content: undefined,
                         });
                     }
@@ -10587,11 +11052,7 @@
             }
             switch (cmd.type) {
                 case "CREATE_SHEET": {
-                    const { visibleSheets } = this;
-                    if (cmd.position > visibleSheets.length || cmd.position < 0) {
-                        return 13 /* WrongSheetPosition */;
-                    }
-                    return 0 /* Success */;
+                    return this.checkValidations(cmd, this.checkSheetName, this.checkSheetPosition);
                 }
                 case "MOVE_SHEET":
                     const currentIndex = this.visibleSheets.findIndex((id) => id === cmd.sheetId);
@@ -10632,7 +11093,7 @@
                     this.clearZones(cmd.sheetId, cmd.target);
                     break;
                 case "CREATE_SHEET":
-                    const sheet = this.createSheet(cmd.sheetId, this.generateSheetName(), cmd.cols || 26, cmd.rows || 100, cmd.position);
+                    const sheet = this.createSheet(cmd.sheetId, cmd.name || this.getNextSheetName(), cmd.cols || 26, cmd.rows || 100, cmd.position);
                     this.history.update("sheetIds", sheet.name, sheet.id);
                     break;
                 case "RESIZE_COLUMNS_ROWS":
@@ -10705,12 +11166,13 @@
                 this.sheetIds[sheet.name] = sheet.id;
             }
             for (let sheetData of data.sheets) {
-                const name = sheetData.name || `Sheet${Object.keys(this.sheets).length + 1}`;
+                const name = sheetData.name || _t("Sheet") + (Object.keys(this.sheets).length + 1);
+                const { colNumber, rowNumber } = this.getImportedSheetSize(sheetData);
                 const sheet = {
                     id: sheetData.id,
                     name: name,
-                    cols: createCols(sheetData.cols || {}, sheetData.colNumber),
-                    rows: createRows(sheetData.rows || {}, sheetData.rowNumber),
+                    cols: createCols(sheetData.cols || {}, colNumber),
+                    rows: createRows(sheetData.rows || {}, rowNumber),
                     hiddenColsGroups: [],
                     hiddenRowsGroups: [],
                     areGridLinesVisible: sheetData.areGridLinesVisible === undefined ? true : sheetData.areGridLinesVisible,
@@ -10853,6 +11315,16 @@
         getNumberRows(sheetId) {
             return this.getSheet(sheetId).rows.length;
         }
+        getNextSheetName(baseName = "Sheet") {
+            let i = 1;
+            const names = this.getSheets().map((s) => s.name);
+            let name = `${baseName}${i}`;
+            while (names.includes(name)) {
+                name = `${baseName}${i}`;
+                i++;
+            }
+            return name;
+        }
         // ---------------------------------------------------------------------------
         // Row/Col manipulation
         // ---------------------------------------------------------------------------
@@ -10921,17 +11393,6 @@
                 }
             }
         }
-        generateSheetName() {
-            let i = 1;
-            const names = this.getSheets().map((s) => s.name);
-            const baseName = _lt("Sheet");
-            let name = `${baseName}${i}`;
-            while (names.includes(name)) {
-                name = `${baseName}${i}`;
-                i++;
-            }
-            return name;
-        }
         createSheet(id, name, colNumber, rowNumber, position) {
             const sheet = {
                 id,
@@ -10964,6 +11425,13 @@
             }
             if (FORBIDDEN_IN_EXCEL_REGEX.test(name)) {
                 return 11 /* ForbiddenCharactersInSheetName */;
+            }
+            return 0 /* Success */;
+        }
+        checkSheetPosition(cmd) {
+            const { visibleSheets } = this;
+            if (cmd.position > visibleSheets.length || cmd.position < 0) {
+                return 13 /* WrongSheetPosition */;
             }
             return 0 /* Success */;
         }
@@ -11138,7 +11606,7 @@
                         const cell = row.cells[i];
                         if (cell) {
                             if (dimension === "rows" || colIndex >= addedElement) {
-                                commands.unshift({
+                                commands.push({
                                     type: "UPDATE_CELL_POSITION",
                                     sheetId: sheet.id,
                                     cellId: cell.id,
@@ -11151,7 +11619,7 @@
                     }
                 }
             }
-            for (let cmd of commands) {
+            for (let cmd of commands.reverse()) {
                 this.dispatch(cmd.type, cmd);
             }
         }
@@ -11351,6 +11819,13 @@
             }
             this.history.update("sheets", sheet.id, "rows", rows);
         }
+        getImportedSheetSize(data) {
+            const positions = Object.keys(data.cells).map(toCartesian);
+            return {
+                rowNumber: Math.max(data.rowNumber, ...new Set(positions.map(([col, row]) => row + 1))),
+                colNumber: Math.max(data.colNumber, ...new Set(positions.map(([col, row]) => col + 1))),
+            };
+        }
         // ----------------------------------------------------
         //  HIDE / SHOW
         // ----------------------------------------------------
@@ -11446,6 +11921,7 @@
         "getHiddenColsGroups",
         "getHiddenRowsGroups",
         "getGridLinesVisibility",
+        "getNextSheetName",
         "isEmpty",
     ];
 
@@ -11514,8 +11990,11 @@
                 return { cellData: {} };
             }
             const sheetId = data.sheetId;
-            const ranges = getters.createAdaptedRanges(data.cell.dependencies, x, y, sheetId);
-            const content = getters.buildFormulaContent(sheetId, data.cell.normalizedText, ranges);
+            const ranges = getters.createAdaptedRanges(data.cell.dependencies.references, x, y, sheetId);
+            const content = getters.buildFormulaContent(sheetId, data.cell.normalizedText, {
+                ...data.cell.dependencies,
+                references: ranges,
+            });
             return {
                 cellData: {
                     border: data.border,
@@ -11667,7 +12146,8 @@
     }
     function inverseRemoveColumnsRows(cmd) {
         const commands = [];
-        for (let group of groupConsecutive(cmd.elements.sort((a, b) => a - b))) {
+        const elements = [...cmd.elements].sort((a, b) => a - b);
+        for (let group of groupConsecutive(elements)) {
             const column = group[0] === 0 ? 0 : group[0] - 1;
             const position = group[0] === 0 ? "before" : "after";
             commands.push({
@@ -12249,7 +12729,6 @@
         const id = env.uuidGenerator.uuidv4();
         let labelRange;
         if (zone.left !== zone.right) {
-            labelRange = zoneToXc({ ...zone, right: zone.left, top: zone.top + 1 });
             dataSetZone = { ...zone, left: zone.left + 1 };
         }
         const dataSets = [zoneToXc(dataSetZone)];
@@ -12263,7 +12742,15 @@
             const cell = env.getters.getCell(sheetId, x, zone.top);
             if (cell && cell.evaluated.type !== CellValueType.number) {
                 dataSetsHaveTitle = true;
+                break;
             }
+        }
+        if (zone.left !== zone.right) {
+            labelRange = zoneToXc({
+                ...zone,
+                right: zone.left,
+                top: dataSetsHaveTitle ? zone.top + 1 : zone.top,
+            });
         }
         env.dispatch("CREATE_CHART", {
             sheetId,
@@ -13130,13 +13617,19 @@
             "#4c1130",
         ],
     ];
+    const PICKER_VERTICAL_PADDING = 6;
+    const LINE_VERTICAL_PADDING = 3;
+    const LINE_HORIZONTAL_PADDING = 6;
+    const ITEM_HORIZONTAL_MARGIN = 2;
+    const ITEM_EDGE_LENGTH = 18;
+    const ITEM_BORDER_WIDTH = 1;
+    const ITEMS_PER_LINE = Math.max(...COLORS.map((line) => line.length));
+    const PICKER_WIDTH = ITEMS_PER_LINE * (ITEM_EDGE_LENGTH + ITEM_HORIZONTAL_MARGIN * 2 + 2 * ITEM_BORDER_WIDTH) +
+        2 * LINE_HORIZONTAL_PADDING;
     class ColorPicker extends Component$r {
         constructor() {
             super(...arguments);
             this.COLORS = COLORS;
-        }
-        isDropdownRight() {
-            return this.props.dropdownDirection !== "left";
         }
         onColorClick(ev) {
             const color = ev.target.dataset.color;
@@ -13146,10 +13639,9 @@
         }
     }
     ColorPicker.template = xml$u /* xml */ `
-  <div class="o-color-picker" t-att-class="{
-    'right': isDropdownRight(),
-    'left': !isDropdownRight()
-    }" t-on-click="onColorClick">
+  <div class="o-color-picker"
+    t-att-class="props.dropdownDirection || 'right'"
+    t-on-click="onColorClick">
     <div class="o-color-picker-line" t-foreach="COLORS" t-as="colors" t-key="colors">
       <t t-foreach="colors" t-as="color" t-key="color">
         <div class="o-color-picker-line-item" t-att-data-color="color" t-attf-style="background-color:{{color}};"></div>
@@ -13163,17 +13655,17 @@
       z-index: 10;
       box-shadow: 1px 2px 5px 2px rgba(51, 51, 51, 0.15);
       background-color: white;
-      padding: 6px 0px;
+      padding: ${PICKER_VERTICAL_PADDING}px 0px;
 
       .o-color-picker-line {
         display: flex;
-        padding: 3px 6px;
+        padding: ${LINE_VERTICAL_PADDING}px ${LINE_HORIZONTAL_PADDING}px;
         .o-color-picker-line-item {
-          width: 18px;
-          height: 18px;
-          margin: 0px 2px;
+          width: ${ITEM_EDGE_LENGTH}px;
+          height: ${ITEM_EDGE_LENGTH}px;
+          margin: 0px ${ITEM_HORIZONTAL_MARGIN}px;
           border-radius: 50px;
-          border: 1px solid #c0c0c0;
+          border: ${ITEM_BORDER_WIDTH}px solid #c0c0c0;
           &:hover {
             cursor: pointer;
             background-color: rgba(0, 0, 0, 0.08);
@@ -13189,6 +13681,9 @@
       &.left {
         right: 0;
       }
+      &.center {
+        left: calc(50% - ${PICKER_WIDTH / 2}px);
+      }
     }
   `;
 
@@ -13200,8 +13695,8 @@
     const CLEAR_FORMAT_ICON = `<svg class="o-icon"><path fill="#000000" d="M0.27,1.55 L5.43,6.7 L3,12 L5.5,12 L7.14,8.42 L11.73,13 L13,11.73 L1.55,0.27 L0.27,1.55 L0.27,1.55 Z M3.82,0 L5.82,2 L7.58,2 L7.03,3.21 L8.74,4.92 L10.08,2 L14,2 L14,0 L3.82,0 L3.82,0 Z" transform="translate(2 3)"/></svg>`;
     const TRIANGLE_DOWN_ICON = `<svg class="o-icon"><polygon fill="#000000" points="0 0 4 4 8 0" transform="translate(5 7)"/></svg>`;
     const TRIANGLE_UP_ICON = `<svg class="o-icon"><polygon fill="#000000" points="4 0 0 4 8 4" transform="translate(5 7)"/></svg>`;
-    const TRIANGLE_RIGHT_ICON = `<svg class="o-icon"><polygon fill="#000000" points="0 0 4 4 0 8" transform="translate(5 3)"/></svg>`;
-    const TRIANGLE_LEFT_ICON = `<svg class="o-icon"><polygon fill="#000000" points="4 0 0 4 4 8" transform="translate(5 3)"/></svg>`;
+    const TRIANGLE_RIGHT_ICON = `<svg class="o-icon"><polygon fill="#000000" points="0 0 4 4 0 8" transform="translate(5 5)"/></svg>`;
+    const TRIANGLE_LEFT_ICON = `<svg class="o-icon"><polygon fill="#000000" points="4 0 0 4 4 8" transform="translate(5 5)"/></svg>`;
     const BOLD_ICON = `<svg class="o-icon"><path fill="#000000" fill-rule="evenodd" d="M9,3.5 C9,1.57 7.43,0 5.5,0 L1.77635684e-15,0 L1.77635684e-15,12 L6.25,12 C8.04,12 9.5,10.54 9.5,8.75 C9.5,7.45 8.73,6.34 7.63,5.82 C8.46,5.24 9,4.38 9,3.5 Z M5,2 C5.82999992,2 6.5,2.67 6.5,3.5 C6.5,4.33 5.82999992,5 5,5 L3,5 L3,2 L5,2 Z M3,10 L3,7 L5.5,7 C6.32999992,7 7,7.67 7,8.5 C7,9.33 6.32999992,10 5.5,10 L3,10 Z" transform="translate(4 3)"/></svg>`;
     const ITALIC_ICON = `<svg class="o-icon"><polygon fill="#000000" fill-rule="evenodd" points="4 0 4 2 6.58 2 2.92 10 0 10 0 12 8 12 8 10 5.42 10 9.08 2 12 2 12 0" transform="translate(3 3)"/></svg>`;
     const UNDERLINE_ICON = `<svg class="o-icon"><path fill="#000000" d="M6,12 C8.76,12 11,9.76 11,7 L11,0 L9,0 L9,7 C9,8.75029916 7.49912807,10 6,10 C4.50087193,10 3,8.75837486 3,7 L3,0 L1,0 L1,7 C1,9.76 3.24,12 6,12 Z M0,13 L0,15 L12,15 L12,13 L0,13 Z" transform="translate(3 3)"/></svg>`;
@@ -13881,7 +14376,7 @@
     }
 
     const { Component: Component$o, useState: useState$j, hooks: hooks$4 } = owl__namespace;
-    const { useExternalListener: useExternalListener$6 } = hooks$4;
+    const { useExternalListener: useExternalListener$5 } = hooks$4;
     const { xml: xml$r, css: css$p } = owl__namespace.tags;
     const PREVIEW_TEMPLATE$2 = xml$r /* xml */ `
     <div class="o-cf-preview-line"
@@ -13933,24 +14428,20 @@
         <div class="o-tool" t-att-title="env._t('${conditionalFormattingTerms.STRIKE_THROUGH}')" t-att-class="{active:state.style.strikethrough}"
              t-on-click="toggleTool('strikethrough')">${STRIKE_ICON}
         </div>
-        <div class="o-tool o-with-color">
+        <div class="o-tool o-dropdown o-with-color">
               <span t-att-title="env._t('${conditionalFormattingTerms.TEXT_COLOR}')" t-attf-style="border-color:{{state.style.textColor}}"
                     t-on-click.stop="toggleMenu('textColorTool')">
                     ${TEXT_COLOR_ICON}
               </span>
-              <div class="o-colorpicker-container" >
-                <ColorPicker t-if="state.textColorTool" dropdownDirection="'left'" t-on-color-picked="setColor('textColor')" t-key="textColor"/>
-              </div>
+              <ColorPicker t-if="state.textColorTool" dropdownDirection="'center'" t-on-color-picked="setColor('textColor')" t-key="textColor"/>
         </div>
         <div class="o-divider"/>
-        <div class="o-tool o-with-color">
+        <div class="o-tool o-dropdown o-with-color">
           <span t-att-title="env._t('${conditionalFormattingTerms.FILL_COLOR}')" t-attf-style="border-color:{{state.style.fillColor}}"
                 t-on-click.stop="toggleMenu('fillColorTool')">
                 ${FILL_COLOR_ICON}
           </span>
-          <div class="o-colorpicker-container" >
-            <ColorPicker t-if="state.fillColorTool" dropdownDirection="'left'" t-on-color-picked="setColor('fillColor')" t-key="fillColor"/>
-          </div>
+          <ColorPicker t-if="state.fillColorTool" dropdownDirection="'center'" t-on-color-picked="setColor('fillColor')" t-key="fillColor"/>
         </div>
     </div>
 </div>
@@ -13968,15 +14459,8 @@
     margin-bottom: 5px;
     width: 96%;
   }
-  .o-colorpicker-container {
-    position: absolute;
-    padding-left: 20px;
-    padding-bottom: 18px;
-    pointer-events: none;
-
-    .o-color-picker {
-      pointer-events: all;
-    }
+  .o-color-picker {
+    pointer-events: all;
   }
 `;
     class CellIsRuleEditor extends Component$o {
@@ -14003,7 +14487,7 @@
                     underline: this.props.rule.style.underline,
                 },
             });
-            useExternalListener$6(window, "click", this.closeMenus);
+            useExternalListener$5(window, "click", this.closeMenus);
         }
         get isValue1Invalid() {
             var _a;
@@ -14079,7 +14563,7 @@
     };
 
     const { Component: Component$n, useState: useState$i, hooks: hooks$3 } = owl__namespace;
-    const { useExternalListener: useExternalListener$5 } = hooks$3;
+    const { useExternalListener: useExternalListener$4 } = hooks$3;
     const { xml: xml$q, css: css$o } = owl__namespace.tags;
     const PREVIEW_TEMPLATE$1 = xml$q /* xml */ `
   <div class="o-cf-preview-gradient" t-attf-style="{{getPreviewGradient()}}">
@@ -14188,7 +14672,7 @@
                 minimumColorTool: false,
                 midpointColorTool: false,
             });
-            useExternalListener$5(window, "click", this.closeMenus);
+            useExternalListener$4(window, "click", this.closeMenus);
         }
         getRule() {
             const minimum = { ...this.stateColorScale.minimum };
@@ -14314,7 +14798,7 @@
   `;
 
     const { Component: Component$l, useState: useState$h, hooks: hooks$2 } = owl__namespace;
-    const { useExternalListener: useExternalListener$4 } = hooks$2;
+    const { useExternalListener: useExternalListener$3 } = hooks$2;
     const { xml: xml$o, css: css$m } = owl__namespace.tags;
     const ICON_SETS_TEMPLATE = xml$o /* xml */ `
   <div>
@@ -14533,7 +15017,7 @@
                 middleIconTool: false,
                 lowerIconTool: false,
             });
-            useExternalListener$4(window, "click", this.closeMenus);
+            useExternalListener$3(window, "click", this.closeMenus);
         }
         isInflectionPointInvalid(inflectionPoint) {
             switch (inflectionPoint) {
@@ -14721,24 +15205,26 @@
     </t>
   </div>`;
     const CSS$j = css$l /* scss */ `
-  label{
+  label {
     vertical-align: middle;
   }
-  .o_cf_radio_item{
-      margin-right: 10%;
+  .o_cf_radio_item {
+    margin-right: 10%;
   }
   .radio input:checked {
     color: #e9ecef;
-    border-color: #00A09D;
-    background-color: #00A09D;
+    border-color: #00a09d;
+    background-color: #00a09d;
   }
-  .o-cf-editor{
+  .o-cf-editor {
     border-bottom: solid;
     border-color: lightgrey;
   }
   .o-cf {
-    .o-cf-type-selector{
-      *, ::after, ::before {
+    .o-cf-type-selector {
+      *,
+      ::after,
+      ::before {
         box-sizing: border-box;
       }
       margin-top: 10px;
@@ -14776,7 +15262,7 @@
         text-align: center;
         width: 50px;
       }
-      .o-cf-preview-icon{
+      .o-cf-preview-icon {
         border: 1px solid lightgrey;
         position: absolute;
         height: 50px;
@@ -14797,17 +15283,17 @@
           margin-bottom: 4px;
           overflow: hidden;
         }
-        .o-cf-preview-description-values{
+        .o-cf-preview-description-values {
           overflow: hidden;
         }
-        .o-cf-preview-range{
+        .o-cf-preview-range {
           text-overflow: ellipsis;
           font-size: 12px;
           overflow: hidden;
         }
       }
-      .o-cf-delete{
-        color:dimgrey;
+      .o-cf-delete {
+        color: dimgrey;
         left: 90%;
         top: 39%;
         position: absolute;
@@ -14816,7 +15302,7 @@
     .o-cf-ruleEditor {
       font-size: 12px;
       line-height: 1.5;
-      .o-selection-cf{
+      .o-selection-cf {
         margin-bottom: 3%;
       }
       .o-dropdown {
@@ -14910,7 +15396,7 @@
       margin-top: 10px;
     }
   }
-  }`;
+`;
     class ConditionalFormattingPanel extends Component$k {
         constructor(parent, props) {
             super(parent, props);
@@ -14930,8 +15416,8 @@
                 ColorScaleRule: ColorScaleRuleEditor,
                 IconSetRule: IconSetRuleEditor,
             };
-            const sheetId = this.getters.getActiveSheetId();
-            const rules = this.getters.getRulesSelection(sheetId, props.selection || []);
+            this.activeSheetId = this.getters.getActiveSheetId();
+            const rules = this.getters.getRulesSelection(this.activeSheetId, props.selection || []);
             if (rules.length === 1) {
                 const cf = this.conditionalFormats.find((c) => c.id === rules[0]);
                 if (cf) {
@@ -14949,7 +15435,12 @@
             return this.env._t(conditionalFormattingTerms.Errors[error] || conditionalFormattingTerms.Errors.unexpected);
         }
         async willUpdateProps(nextProps) {
-            if (nextProps.selection !== this.props.selection) {
+            const newActiveSheetId = this.getters.getActiveSheetId();
+            if (newActiveSheetId !== this.activeSheetId) {
+                this.activeSheetId = newActiveSheetId;
+                this.switchToList();
+            }
+            else if (nextProps.selection !== this.props.selection) {
                 const sheetId = this.getters.getActiveSheetId();
                 const rules = this.getters.getRulesSelection(sheetId, nextProps.selection || []);
                 if (rules.length === 1) {
@@ -16038,6 +16529,7 @@
             return 0 /* Success */;
         }
         handle(cmd) {
+            var _a, _b;
             switch (cmd.type) {
                 case "COPY":
                 case "CUT":
@@ -16054,8 +16546,10 @@
                         this.interactivePaste(this.state, cmd.target, cmd);
                     }
                     else {
-                        this.selectPastedZone(this.state, cmd.target);
+                        const height = this.state.cells.length;
+                        const width = this.state.cells[0].length;
                         this.paste(this.state, cmd.target, pasteOption);
+                        this.selectPastedZone(width, height, cmd.target);
                         this.status = "invisible";
                     }
                     break;
@@ -16079,6 +16573,34 @@
                     else {
                         this.paste(state, paste);
                     }
+                    break;
+                }
+                case "ADD_COLUMNS_ROWS": {
+                    this.status = "invisible";
+                    // If we add a col/row inside or before the cut area, we invalidate the clipboard
+                    if (((_a = this.state) === null || _a === void 0 ? void 0 : _a.operation) !== "CUT") {
+                        return;
+                    }
+                    const isClipboardDirty = this.isColRowDirtyingClipboard(cmd.position === "before" ? cmd.base : cmd.base + 1, cmd.dimension);
+                    if (isClipboardDirty) {
+                        this.state = undefined;
+                    }
+                    break;
+                }
+                case "REMOVE_COLUMNS_ROWS": {
+                    this.status = "invisible";
+                    // If we remove a col/row inside or before the cut area, we invalidate the clipboard
+                    if (((_b = this.state) === null || _b === void 0 ? void 0 : _b.operation) !== "CUT") {
+                        return;
+                    }
+                    for (let el of cmd.elements) {
+                        const isClipboardDirty = this.isColRowDirtyingClipboard(el, cmd.dimension);
+                        if (isClipboardDirty) {
+                            this.state = undefined;
+                            break;
+                        }
+                    }
+                    this.status = "invisible";
                     break;
                 }
                 case "PASTE_FROM_OS_CLIPBOARD":
@@ -16198,6 +16720,7 @@
                 ({ sheetId, col, row } = target);
                 this.dispatch("ADD_MERGE", {
                     sheetId,
+                    force: true,
                     target: [
                         {
                             left: col,
@@ -16362,9 +16885,7 @@
         /**
          * Update the selection with the newly pasted zone
          */
-        selectPastedZone(state, target) {
-            const height = state.cells.length;
-            const width = state.cells[0].length;
+        selectPastedZone(width, height, target) {
             const selection = target[0];
             const col = selection.left;
             const row = selection.top;
@@ -16513,7 +17034,7 @@
         getUpdatedContent(sheetId, cell, offsetX, offsetY, zones, operation) {
             if (operation === "CUT") {
                 const ranges = [];
-                for (const range of cell.dependencies) {
+                for (const range of cell.dependencies.references) {
                     if (this.isZoneOverlapClippedZone(zones, range.zone)) {
                         ranges.push(...this.getters.createAdaptedRanges([range], offsetX, offsetY, sheetId));
                     }
@@ -16521,10 +17042,12 @@
                         ranges.push(range);
                     }
                 }
-                return this.getters.buildFormulaContent(sheetId, cell.normalizedText, ranges);
+                const dependencies = { ...cell.dependencies, references: ranges };
+                return this.getters.buildFormulaContent(sheetId, cell.normalizedText, dependencies);
             }
-            const ranges = this.getters.createAdaptedRanges(cell.dependencies, offsetX, offsetY, sheetId);
-            return this.getters.buildFormulaContent(sheetId, cell.normalizedText, ranges);
+            const ranges = this.getters.createAdaptedRanges(cell.dependencies.references, offsetX, offsetY, sheetId);
+            const dependencies = { ...cell.dependencies, references: ranges };
+            return this.getters.buildFormulaContent(sheetId, cell.normalizedText, dependencies);
         }
         /**
          * Check if the given zone and at least one of the clipped zones overlap
@@ -16545,6 +17068,22 @@
             else {
                 this.dispatch(cmd.type, { ...cmd, interactive: false });
             }
+        }
+        /**
+         * Check if a col/row added/removed at the given position is dirtying the clipboard
+         */
+        isColRowDirtyingClipboard(position, dimension) {
+            if (!this.state || !this.state.zones)
+                return false;
+            for (let zone of this.state.zones) {
+                if (dimension === "COL" && position <= zone.right) {
+                    return true;
+                }
+                if (dimension === "ROW" && position <= zone.bottom) {
+                    return true;
+                }
+            }
+            return false;
         }
         // ---------------------------------------------------------------------------
         // Grid rendering
@@ -16682,6 +17221,7 @@
                 case "EVALUATE_CELLS":
                 case "DISABLE_SELECTION_INPUT":
                 case "ENABLE_NEW_SELECTION_INPUT":
+                case "RESIZE_VIEWPORT":
                     break;
                 case "DELETE_FIGURE":
                     if (this.selectedFigureId === cmd.id) {
@@ -16715,7 +17255,7 @@
                         Object.assign(this, this.sheetsData[cmd.sheetIdTo]);
                     }
                     else {
-                        this.selectCell(...getNextVisibleCellCoords(this.getters.getSheets()[0], 0, 0));
+                        this.selectCell(...getNextVisibleCellCoords(this.getters.getSheet(cmd.sheetIdTo), 0, 0));
                     }
                     break;
                 case "SET_SELECTION":
@@ -17068,17 +17608,20 @@
         }
         setSelection(anchor, zones, anchorZone, strict = false) {
             this.selectCell(...anchor);
+            const sheetId = this.getters.getActiveSheetId();
+            let selection;
+            zones = uniqueZones(zones);
             if (strict) {
-                this.selection.zones = zones;
-                this.selection.anchorZone = anchorZone;
+                selection = { zones, anchorZone, anchor };
             }
             else {
-                const sheetId = this.getters.getActiveSheetId();
-                this.selection.zones = zones.map((zone) => this.getters.expandZone(sheetId, zone));
-                this.selection.anchorZone = this.getters.expandZone(sheetId, anchorZone);
+                selection = {
+                    anchor,
+                    zones: zones.map((zone) => this.getters.expandZone(sheetId, zone)),
+                    anchorZone: this.getters.expandZone(sheetId, anchorZone),
+                };
             }
-            this.selection.zones = uniqueZones(this.selection.zones);
-            this.selection.anchor = anchor;
+            this.selection = this.clipSelection(sheetId, selection);
         }
         /**
          * Finds a visible cell in the currently selected zone starting with the anchor.
@@ -17277,9 +17820,9 @@
             const isCol = cmd.dimension === "COL";
             const start = cmd.elements[0];
             const end = cmd.elements[thickness - 1];
-            const isBasedbefore = cmd.base < start;
-            const deltaCol = isBasedbefore && isCol ? thickness : 0;
-            const deltaRow = isBasedbefore && !isCol ? thickness : 0;
+            const isBasedBefore = cmd.base < start;
+            const deltaCol = isBasedBefore && isCol ? thickness : 0;
+            const deltaRow = isBasedBefore && !isCol ? thickness : 0;
             const sheet = this.getters.getSheet(cmd.sheetId);
             this.dispatch("CUT", {
                 target: [
@@ -17301,10 +17844,24 @@
                     },
                 ],
             });
+            const toRemove = isBasedBefore ? cmd.elements.map((el) => el + thickness) : cmd.elements;
+            let currentIndex = cmd.base;
+            for (const element of toRemove) {
+                const size = cmd.dimension === "COL"
+                    ? this.getters.getCol(cmd.sheetId, element).size
+                    : this.getters.getRow(cmd.sheetId, element).size;
+                this.dispatch("RESIZE_COLUMNS_ROWS", {
+                    dimension: cmd.dimension,
+                    sheetId: cmd.sheetId,
+                    size,
+                    elements: [currentIndex],
+                });
+                currentIndex += 1;
+            }
             this.dispatch("REMOVE_COLUMNS_ROWS", {
                 dimension: cmd.dimension,
                 sheetId: cmd.sheetId,
-                elements: isBasedbefore ? cmd.elements.map((el) => el + thickness) : cmd.elements,
+                elements: toRemove,
             });
         }
         isMoveElementAllowed(cmd) {
@@ -17544,8 +18101,12 @@
                     this.selectionEnd = this.currentContent.length;
                     break;
                 case "DELETE_SHEET":
-                    if (cmd.sheetId === this.sheet && this.mode !== "inactive") {
-                        this.dispatch("STOP_EDITION", { cancel: true });
+                case "UNDO":
+                case "REDO":
+                    const sheetIdExists = !!this.getters.tryGetSheet(this.sheet);
+                    if (!sheetIdExists && this.mode !== "inactive") {
+                        this.cancelEdition();
+                        this.resetContent();
                         this.ui.notifyUser(CELL_DELETED_MESSAGE);
                     }
                     break;
@@ -17632,10 +18193,12 @@
          */
         startComposerRangeSelection() {
             this.mode = "resettingPosition";
-            this.dispatch("SELECT_CELL", {
-                col: this.col,
-                row: this.row,
-            });
+            if (this.sheet === this.getters.getActiveSheetId()) {
+                this.dispatch("SELECT_CELL", {
+                    col: this.col,
+                    row: this.row,
+                });
+            }
             this.mode = "waitingForRangeSelection";
             // We set this variable to store the start of the multiple range
             // selection. This is useful for example when we select multiple
@@ -17664,7 +18227,8 @@
             if (this.mode !== "inactive") {
                 this.cancelEdition();
                 const sheetId = this.getters.getActiveSheetId();
-                const [col, row] = this.getters.getMainCell(sheetId, this.col, this.row);
+                const mergeSheetId = this.getters.getSheets().find((sheet) => sheet.id === this.sheet).id;
+                const [col, row] = this.getters.getMainCell(mergeSheetId, this.col, this.row);
                 let content = this.currentContent;
                 const didChange = this.initialContent !== content;
                 if (!didChange) {
@@ -17905,11 +18469,6 @@
     ];
     EditionPlugin.modes = ["normal"];
 
-    function* makeObjectIterator(obj) {
-        for (let i in obj) {
-            yield obj[i];
-        }
-    }
     const functionMap = functionRegistry.mapping;
     class EvaluationPlugin extends UIPlugin {
         constructor(getters, state, dispatch, config) {
@@ -17933,6 +18492,11 @@
                         this.isUpToDate.clear();
                     }
                     break;
+                case "ACTIVATE_SHEET": {
+                    this.evaluate(cmd.sheetIdTo);
+                    this.isUpToDate.add(cmd.sheetIdTo);
+                    break;
+                }
                 case "EVALUATE_CELLS":
                     this.evaluate(cmd.sheetId);
                     this.isUpToDate.add(cmd.sheetId);
@@ -17952,15 +18516,16 @@
         // ---------------------------------------------------------------------------
         // Getters
         // ---------------------------------------------------------------------------
-        evaluateFormula(formula, sheetId = this.getters.getActiveSheetId()) {
-            let formulaString = normalize(formula);
-            const compiledFormula = compile(formulaString);
+        evaluateFormula(formulaString, sheetId = this.getters.getActiveSheetId()) {
+            let formula = normalize(formulaString);
+            const compiledFormula = compile(formula);
             const params = this.getFormulaParameters(() => { });
             const ranges = [];
-            for (let xc of formulaString.dependencies) {
+            for (let xc of formula.dependencies.references) {
                 ranges.push(this.getters.getRangeFromSheetXC(sheetId, xc));
             }
-            return compiledFormula(ranges, sheetId, ...params);
+            const dependencies = { ...formula.dependencies, references: ranges };
+            return compiledFormula(dependencies, sheetId, ...params);
         }
         /**
          * Return the value of each cell in the range as they are displayed in the grid.
@@ -17987,19 +18552,14 @@
             const cells = this.getters.getCells(sheetId);
             const params = this.getFormulaParameters(computeValue);
             const visited = {};
-            for (let cell of makeObjectIterator(cells)) {
-                if (cell.isFormula()) {
-                    cell.startEvaluation();
-                }
-            }
-            for (let cell of makeObjectIterator(cells)) {
+            for (let cell of Object.values(cells)) {
                 computeValue(cell, sheetId);
             }
             function handleError(e, cell) {
                 if (!(e instanceof Error)) {
                     e = new Error(e);
                 }
-                if (cell.evaluated.type !== CellValueType.error) {
+                if (cell.evaluated.value !== "#CYCLE") {
                     cell.assignValue("#ERROR");
                     // apply function name
                     const __lastFnCalled = params[2].__lastFnCalled || "";
@@ -18010,18 +18570,20 @@
                 if (!cell.isFormula()) {
                     return;
                 }
-                const position = params[2].getters.getCellPosition(cell.id);
-                const xc = toXC(position.col, position.row);
-                visited[sheetId] = visited[sheetId] || {};
-                if (xc in visited[sheetId]) {
-                    if (visited[sheetId][xc] === null) {
+                const cellId = cell.id;
+                if (cellId in visited) {
+                    if (visited[cellId] === null) {
                         cell.assignError("#CYCLE", _lt("Circular reference"));
                     }
                     return;
                 }
-                visited[sheetId][xc] = null;
+                visited[cellId] = null;
                 try {
-                    params[2].__originCellXC = xc;
+                    params[2].__originCellXC = () => {
+                        // compute the value lazily for performance reasons
+                        const position = params[2].getters.getCellPosition(cellId);
+                        return toXC(position.col, position.row);
+                    };
                     cell.assignValue(cell.compiledFormula(cell.dependencies, sheetId, ...params));
                     if (Array.isArray(cell.evaluated.value)) {
                         // if a value returns an array (like =A1:A3)
@@ -18031,7 +18593,7 @@
                 catch (e) {
                     handleError(e, cell);
                 }
-                visited[sheetId][xc] = true;
+                visited[cellId] = true;
             }
         }
         /**
@@ -18057,14 +18619,13 @@
                 }
                 if (!cell || cell.isEmpty()) {
                     // magic "empty" value
+                    // Returning null instead of undefined will ensure that we don't
+                    // fall back on the default value of the argument provided to the formula's compute function
                     return null;
                 }
                 return getCellValue(cell, range.sheetId);
             }
             function getCellValue(cell, sheetId) {
-                if (cell.isFormula() && cell.evaluated.type === CellValueType.error) {
-                    throw new Error(_lt("This formula depends on invalid values"));
-                }
                 computeValue(cell, sheetId);
                 if (cell.evaluated.type === CellValueType.error) {
                     throw new Error(_lt("This formula depends on invalid values"));
@@ -18082,13 +18643,30 @@
                 if (!isZoneValid(range.zone)) {
                     throw new Error(_lt("Invalid reference"));
                 }
-                const zone = {
-                    left: range.zone.left,
-                    top: range.zone.top,
-                    right: Math.min(range.zone.right, sheet.cols.length - 1),
-                    bottom: Math.min(range.zone.bottom, sheet.rows.length - 1),
+                // Performance issue: Avoid fetching data on positions that are out of the spreadsheet
+                // e.g. A1:ZZZ9999 in a sheet with 10 cols and 10 rows should ignore everything past J10 and return a 10x10 array
+                const sheetZone = {
+                    top: 0,
+                    bottom: sheet.rows.length - 1,
+                    left: 0,
+                    right: sheet.cols.length - 1,
                 };
-                return mapCellsInZone(zone, sheet, (cell) => getCellValue(cell, range.sheetId));
+                const result = [];
+                const zone = intersection(range.zone, sheetZone);
+                if (!zone) {
+                    result.push([]);
+                    return result;
+                }
+                // Performance issue: nested loop is faster than a map here
+                for (let col = zone.left; col <= zone.right; col++) {
+                    const rowValues = [];
+                    for (let row = zone.top; row <= zone.bottom; row++) {
+                        const cell = evalContext.getters.getCell(range.sheetId, col, row);
+                        rowValues.push(cell ? getCellValue(cell, range.sheetId) : undefined);
+                    }
+                    result.push(rowValues);
+                }
+                return result;
             }
             /**
              * Returns the value of the cell(s) used in reference
@@ -18137,10 +18715,8 @@
          */
         evaluateAllSheets() {
             for (const sheetId of this.getters.getVisibleSheets()) {
-                if (!this.isUpToDate.has(sheetId)) {
-                    this.evaluate(sheetId);
-                    this.isUpToDate.add(sheetId);
-                }
+                this.evaluate(sheetId);
+                this.isUpToDate.add(sheetId);
             }
         }
     }
@@ -18187,26 +18763,14 @@
             this.chartRuntime = {};
             this.outOfDate = new Set();
         }
-        beforeHandle(cmd) {
-            switch (cmd.type) {
-                case "REMOVE_COLUMNS_ROWS":
-                    const sheet = this.getters.getSheet(cmd.sheetId);
-                    const length = cmd.dimension === "ROW" ? sheet.cols.length : sheet.rows.length;
-                    const zones = cmd.elements.map((el) => ({
-                        top: cmd.dimension === "ROW" ? el : 0,
-                        bottom: cmd.dimension === "ROW" ? el : length - 1,
-                        left: cmd.dimension === "ROW" ? 0 : el,
-                        right: cmd.dimension === "ROW" ? length - 1 : el,
-                    }));
-                    for (const chartId of Object.keys(this.chartRuntime)) {
-                        if (this.areZonesUsedInChart(cmd.sheetId, zones, chartId)) {
-                            this.outOfDate.add(chartId);
-                        }
-                    }
-                    break;
-            }
-        }
         handle(cmd) {
+            if (invalidateEvaluationCommands.has(cmd.type) ||
+                cmd.type === "EVALUATE_CELLS" ||
+                (cmd.type === "UPDATE_CELL" && "content" in cmd)) {
+                for (let chartId of Object.keys(this.chartRuntime)) {
+                    this.outOfDate.add(chartId);
+                }
+            }
             switch (cmd.type) {
                 case "UPDATE_CHART":
                 case "CREATE_CHART":
@@ -18224,47 +18788,11 @@
                     const chartsIds = this.getters.getChartsIdBySheet(cmd.sheetIdTo);
                     this.evaluateUsedSheets(chartsIds);
                     break;
-                case "UPDATE_CELL":
-                    for (let chartId of Object.keys(this.chartRuntime)) {
-                        if (this.isCellUsedInChart(cmd.sheetId, chartId, cmd.col, cmd.row)) {
-                            this.outOfDate.add(chartId);
-                        }
-                    }
-                    break;
                 case "DELETE_SHEET":
                     for (let chartId of Object.keys(this.chartRuntime)) {
                         if (!this.getters.getChartDefinition(chartId)) {
                             delete this.chartRuntime[chartId];
                         }
-                    }
-                    break;
-                case "ADD_COLUMNS_ROWS":
-                    const sheet = this.getters.getSheet(cmd.sheetId);
-                    const numberOfElem = cmd.dimension === "ROW" ? sheet.cols.length : sheet.rows.length;
-                    const offset = cmd.position === "before" ? 0 : 1;
-                    const zone = {
-                        top: cmd.dimension === "ROW" ? cmd.base + offset : 0,
-                        bottom: cmd.dimension === "ROW" ? cmd.base + cmd.quantity + offset : numberOfElem - 1,
-                        left: cmd.dimension === "ROW" ? 0 : cmd.base + offset,
-                        right: cmd.dimension === "ROW" ? numberOfElem - 1 : cmd.base + cmd.quantity + offset,
-                    };
-                    for (const chartId of Object.keys(this.chartRuntime)) {
-                        if (this.areZonesUsedInChart(cmd.sheetId, [zone], chartId)) {
-                            this.outOfDate.add(chartId);
-                        }
-                    }
-                    break;
-                case "UNDO":
-                case "REDO":
-                    for (let chartId of Object.keys(this.chartRuntime)) {
-                        this.outOfDate.add(chartId);
-                    }
-                    break;
-                case "EVALUATE_CELLS":
-                    // if there was an async evaluation of cell, there is no way to know which was updated so all charts must be updated
-                    //TODO Need to check that someday
-                    for (let id in this.chartRuntime) {
-                        this.outOfDate.add(id);
                     }
                     break;
             }
@@ -18374,40 +18902,6 @@
                 };
             }
             return config;
-        }
-        areZonesUsedInChart(sheetId, zones, chartId) {
-            const chartDefinition = this.getters.getChartDefinition(chartId);
-            if (!chartDefinition || sheetId !== (chartDefinition === null || chartDefinition === void 0 ? void 0 : chartDefinition.sheetId)) {
-                return false;
-            }
-            const ranges = [
-                ...chartDefinition.dataSets.map((ds) => ds.dataRange),
-                chartDefinition.labelRange,
-            ].filter(isDefined);
-            for (let zone of zones) {
-                for (let range of ranges) {
-                    if (range.sheetId === sheetId && overlap(range.zone, zone)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        isCellUsedInChart(sheetId, chartId, col, row) {
-            const chartDefinition = this.getters.getChartDefinition(chartId);
-            if (chartDefinition === undefined) {
-                return false;
-            }
-            const ranges = [
-                ...chartDefinition.dataSets.map((ds) => ds.dataRange),
-                chartDefinition.labelRange,
-            ].filter(isDefined);
-            for (let range of ranges) {
-                if (range.sheetId === sheetId && isInside(col, row, range.zone)) {
-                    return true;
-                }
-            }
-            return false;
         }
         getSheetIdsUsedInChart(chartDefinition) {
             const sheetIds = new Set();
@@ -18528,53 +19022,54 @@
                     if (cell && cell.evaluated.type === CellValueType.error) {
                         return false;
                     }
+                    const values = rule.values.map(parsePrimitiveContent);
                     switch (rule.operator) {
                         case "IsEmpty":
                             return !isDefined(cell) || cell.evaluated.value.toString().trim() === "";
                         case "IsNotEmpty":
                             return isDefined(cell) && cell.evaluated.value.toString().trim() !== "";
                         case "BeginsWith":
-                            if (!cell && rule.values[0] === "") {
+                            if (!cell && values[0] === "") {
                                 return false;
                             }
-                            return isDefined(cell) && (cell === null || cell === void 0 ? void 0 : cell.evaluated.value.toString().startsWith(rule.values[0]));
+                            return (isDefined(cell) && (cell === null || cell === void 0 ? void 0 : cell.evaluated.value.toString().startsWith(values[0].toString())));
                         case "EndsWith":
-                            if (!cell && rule.values[0] === "") {
+                            if (!cell && values[0] === "") {
                                 return false;
                             }
-                            return isDefined(cell) && cell.evaluated.value.toString().endsWith(rule.values[0]);
+                            return isDefined(cell) && cell.evaluated.value.toString().endsWith(values[0].toString());
                         case "Between":
                             return (isDefined(cell) &&
-                                cell.evaluated.value >= rule.values[0] &&
-                                cell.evaluated.value <= rule.values[1]);
+                                cell.evaluated.value >= values[0] &&
+                                cell.evaluated.value <= values[1]);
                         case "NotBetween":
                             return !(isDefined(cell) &&
-                                cell.evaluated.value >= rule.values[0] &&
-                                cell.evaluated.value <= rule.values[1]);
+                                cell.evaluated.value >= values[0] &&
+                                cell.evaluated.value <= values[1]);
                         case "ContainsText":
-                            return isDefined(cell) && cell.evaluated.value.toString().indexOf(rule.values[0]) > -1;
+                            return (isDefined(cell) && cell.evaluated.value.toString().indexOf(values[0].toString()) > -1);
                         case "NotContains":
                             return (!isDefined(cell) ||
                                 !cell.evaluated.value ||
-                                cell.evaluated.value.toString().indexOf(rule.values[0]) == -1);
+                                cell.evaluated.value.toString().indexOf(values[0].toString()) == -1);
                         case "GreaterThan":
-                            return isDefined(cell) && cell.evaluated.value > rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value > values[0];
                         case "GreaterThanOrEqual":
-                            return isDefined(cell) && cell.evaluated.value >= rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value >= values[0];
                         case "LessThan":
-                            return isDefined(cell) && cell.evaluated.value < rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value < values[0];
                         case "LessThanOrEqual":
-                            return isDefined(cell) && cell.evaluated.value <= rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value <= values[0];
                         case "NotEqual":
-                            if (!isDefined(cell) && rule.values[0] === "") {
+                            if (!isDefined(cell) && values[0] === "") {
                                 return false;
                             }
-                            return isDefined(cell) && cell.evaluated.value !== rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value !== values[0];
                         case "Equal":
-                            if (!cell && rule.values[0] === "") {
+                            if (!cell && values[0] === "") {
                                 return true;
                             }
-                            return isDefined(cell) && cell.evaluated.value.toString() === rule.values[0];
+                            return isDefined(cell) && cell.evaluated.value === values[0];
                         default:
                             console.warn(_lt("Not implemented operator %s for kind of conditional formatting:  %s", rule.operator, rule.type));
                     }
@@ -19155,6 +19650,164 @@
     FindAndReplacePlugin.layers = [3 /* Search */];
     FindAndReplacePlugin.getters = ["getSearchMatches", "getCurrentSelectedMatchIndex"];
 
+    class FormatPlugin extends UIPlugin {
+        // ---------------------------------------------------------------------------
+        // Command Handling
+        // ---------------------------------------------------------------------------
+        handle(cmd) {
+            switch (cmd.type) {
+                case "SET_DECIMAL":
+                    this.setDecimal(cmd.sheetId, cmd.target, cmd.step);
+                    break;
+            }
+        }
+        /**
+         * This function allows to adjust the quantity of decimal places after a decimal
+         * point on cells containing number value. It does this by changing the cells
+         * format. Values aren't modified.
+         *
+         * The change of the decimal quantity is done one by one, the sign of the step
+         * variable indicates whether we are increasing or decreasing.
+         *
+         * If several cells are in the zone, the format resulting from the change of the
+         * first cell (with number type) will be applied to the whole zone.
+         */
+        setDecimal(sheetId, zones, step) {
+            // Find the first cell with a number value and get the format
+            const numberFormat = this.searchNumberFormat(sheetId, zones);
+            if (numberFormat !== undefined) {
+                // Depending on the step sign, increase or decrease the decimal representation
+                // of the format
+                const newFormat = this.changeDecimalFormat(numberFormat, step);
+                // Apply the new format on the whole zone
+                this.dispatch("SET_FORMATTING", {
+                    sheetId,
+                    target: zones,
+                    format: newFormat,
+                });
+            }
+        }
+        /**
+         * Take a range of cells and return the format of the first cell containing a
+         * number value. Returns a default format if the cell hasn't format. Returns
+         * undefined if no number value in the range.
+         */
+        searchNumberFormat(sheetId, zones) {
+            var _a;
+            for (let zone of zones) {
+                for (let row = zone.top; row <= zone.bottom; row++) {
+                    for (let col = zone.left; col <= zone.right; col++) {
+                        const cell = this.getters.getCell(sheetId, col, row);
+                        if ((cell === null || cell === void 0 ? void 0 : cell.evaluated.type) === CellValueType.number &&
+                            !((_a = cell.format) === null || _a === void 0 ? void 0 : _a.match(DATETIME_FORMAT)) // reject dates
+                        ) {
+                            return cell.format || this.setDefaultNumberFormat(cell.evaluated.value);
+                        }
+                    }
+                }
+            }
+            return undefined;
+        }
+        /**
+         * Function used to give the default format of a cell with a number for value.
+         * It is considered that the default format of a number is 0 followed by as many
+         * 0 as there are decimal places.
+         *
+         * Example:
+         * - 1 --> '0'
+         * - 123 --> '0'
+         * - 12345 --> '0'
+         * - 42.1 --> '0.0'
+         * - 456.0001 --> '0.0000'
+         */
+        setDefaultNumberFormat(cellValue) {
+            const strValue = cellValue.toString();
+            const parts = strValue.split(".");
+            if (parts.length === 1) {
+                return "0";
+            }
+            return "0." + Array(parts[1].length + 1).join("0");
+        }
+        /**
+         * This function take a cell format representation and return a new format representation
+         * with more or less decimal places.
+         *
+         * If the format doesn't look like a digital format (means that not contain '0')
+         * or if this one cannot be increased or decreased, the returned format will be
+         * the same.
+         *
+         * This function aims to work with all possible formats as well as custom formats.
+         *
+         * Examples of format changed by this function:
+         * - "0" (step = 1) --> "0.0"
+         * - "0.000%" (step = 1) --> "0.0000%"
+         * - "0.00" (step = -1) --> "0.0"
+         * - "0%" (step = -1) --> "0%"
+         * - "#,##0.0" (step = -1) --> "#,##0"
+         * - "#,##0;0.0%;0.000" (step = 1) --> "#,##0.0;0.00%;0.0000"
+         */
+        changeDecimalFormat(format, step) {
+            const sign = Math.sign(step);
+            // According to the representation of the cell format. A format can contain
+            // up to 4 sub-formats which can be applied depending on the value of the cell
+            // (among positive / negative / zero / text), each of these sub-format is separated
+            // by ';' in the format. We need to make the change on each sub-format.
+            const subFormats = format.split(";");
+            let newSubFormats = [];
+            for (let subFormat of subFormats) {
+                const decimalPointPosition = subFormat.indexOf(".");
+                const exponentPosition = subFormat.toUpperCase().indexOf("E");
+                let newSubFormat;
+                // the 1st step is to find the part of the zeros located before the
+                // exponent (when existed)
+                const subPart = exponentPosition > -1 ? subFormat.slice(0, exponentPosition) : subFormat;
+                const zerosAfterDecimal = decimalPointPosition > -1 ? subPart.slice(decimalPointPosition).match(/0/g).length : 0;
+                // the 2nd step is to add (or remove) zero after the last zeros obtained in
+                // step 1
+                const lastZeroPosition = subPart.lastIndexOf("0");
+                if (lastZeroPosition > -1) {
+                    if (sign > 0) {
+                        // in this case we want to add decimal information
+                        if (zerosAfterDecimal < maximumDecimalPlaces) {
+                            newSubFormat =
+                                subFormat.slice(0, lastZeroPosition + 1) +
+                                    (zerosAfterDecimal === 0 ? ".0" : "0") +
+                                    subFormat.slice(lastZeroPosition + 1);
+                        }
+                        else {
+                            newSubFormat = subFormat;
+                        }
+                    }
+                    else {
+                        // in this case we want to remove decimal information
+                        if (zerosAfterDecimal > 0) {
+                            // remove last zero
+                            newSubFormat =
+                                subFormat.slice(0, lastZeroPosition) + subFormat.slice(lastZeroPosition + 1);
+                            // if a zero always exist after decimal point else remove decimal point
+                            if (zerosAfterDecimal === 1) {
+                                newSubFormat =
+                                    newSubFormat.slice(0, decimalPointPosition) +
+                                        newSubFormat.slice(decimalPointPosition + 1);
+                            }
+                        }
+                        else {
+                            // zero after decimal isn't present, we can't remove zero
+                            newSubFormat = subFormat;
+                        }
+                    }
+                }
+                else {
+                    // no zeros are present in this format, we do nothing
+                    newSubFormat = subFormat;
+                }
+                newSubFormats.push(newSubFormat);
+            }
+            return newSubFormats.join(";");
+        }
+    }
+    FormatPlugin.modes = ["normal"];
+
     /**
      * HighlightPlugin
      */
@@ -19178,7 +19831,9 @@
                 const [xc, sheet] = r1c1.split("!").reverse();
                 const sheetId = sheet ? this.getters.getSheetIdByName(sheet) : activeSheetId;
                 if (sheetId) {
-                    const zone = this.getters.expandZone(activeSheetId, toZone(xc));
+                    let zone = toZone(xc);
+                    const { height, width } = zoneToDimension(zone);
+                    zone = height * width === 1 ? this.getters.expandZone(activeSheetId, toZone(xc)) : zone;
                     preparedHighlights.push({ zone, color, sheet: sheetId });
                 }
             }
@@ -20358,7 +21013,7 @@
                     break;
                 case "REVISION_REDONE": {
                     this.waitingAck = false;
-                    this.revisions.redo(message.redoneRevisionId, message.nextRevisionId);
+                    this.revisions.redo(message.redoneRevisionId, message.nextRevisionId, message.serverRevisionId);
                     this.trigger("revision-redone", {
                         revisionId: message.redoneRevisionId,
                         commands: this.revisions.get(message.redoneRevisionId).commands,
@@ -20367,7 +21022,7 @@
                 }
                 case "REVISION_UNDONE":
                     this.waitingAck = false;
-                    this.revisions.undo(message.undoneRevisionId, message.nextRevisionId);
+                    this.revisions.undo(message.undoneRevisionId, message.nextRevisionId, message.serverRevisionId);
                     this.trigger("revision-undone", {
                         revisionId: message.undoneRevisionId,
                         commands: this.revisions.get(message.undoneRevisionId).commands,
@@ -20436,12 +21091,28 @@
             this.waitingAck = true;
             this.sendPendingMessage();
         }
+        /**
+         * Send the next pending message
+         */
         sendPendingMessage() {
             let message = this.pendingMessages[0];
             if (!message)
                 return;
             if (message.type === "REMOTE_REVISION") {
                 const revision = this.revisions.get(message.nextRevisionId);
+                if (revision.commands.length === 0) {
+                    /**
+                     * The command is empty, we have to drop all the next local revisions
+                     * to avoid issues with undo/redo
+                     */
+                    this.revisions.drop(revision.id);
+                    const revisionIds = this.pendingMessages
+                        .filter((message) => message.type === "REMOTE_REVISION")
+                        .map((message) => message.nextRevisionId);
+                    this.trigger("pending-revisions-dropped", { revisionIds });
+                    this.pendingMessages = [];
+                    return;
+                }
                 message = {
                     ...message,
                     clientId: revision.clientId,
@@ -20941,8 +21612,11 @@
                             const position = this.getters.getCellPosition(cell.id);
                             const offsetY = newRow - position.row;
                             // we only have a vertical offset
-                            const ranges = this.getters.createAdaptedRanges(cell.dependencies, 0, offsetY, sheetId);
-                            content = this.getters.buildFormulaContent(sheetId, cell.normalizedText, ranges);
+                            const ranges = this.getters.createAdaptedRanges(cell.dependencies.references, 0, offsetY, sheetId);
+                            content = this.getters.buildFormulaContent(sheetId, cell.normalizedText, {
+                                ...cell.dependencies,
+                                references: ranges,
+                            });
                         }
                         newCellValues.style = cell.style;
                         newCellValues.content = content;
@@ -21240,15 +21914,20 @@
                 Math.max(DEFAULT_CELL_HEIGHT + 5, Math.min(topRow.size, effectiveHeight - lastRow.size));
             return { width, height };
         }
+        getMaximumViewportOffset(sheet) {
+            const { width, height } = this.getters.getGridDimension(sheet);
+            return {
+                maxOffsetX: Math.max(0, width - this.clientWidth + HEADER_WIDTH + 1),
+                maxOffsetY: Math.max(0, height - this.clientHeight + HEADER_HEIGHT + 1),
+            };
+        }
         // ---------------------------------------------------------------------------
         // Private
         // ---------------------------------------------------------------------------
         checkOffsetValidity(offsetX, offsetY) {
-            const { width, height } = this.getters.getGridDimension(this.getters.getActiveSheet());
-            if (offsetX < 0 ||
-                offsetY < 0 ||
-                this.clientHeight - HEADER_HEIGHT + offsetY > height ||
-                this.clientWidth - HEADER_WIDTH + offsetX > width) {
+            const sheet = this.getters.getActiveSheet();
+            const { maxOffsetX, maxOffsetY } = this.getMaximumViewportOffset(sheet);
+            if (offsetX < 0 || offsetY < 0 || offsetY > maxOffsetY || offsetX > maxOffsetX) {
                 return 51 /* InvalidOffset */;
             }
             return 0 /* Success */;
@@ -21436,6 +22115,7 @@
         "getActiveSnappedViewport",
         "getViewportDimension",
         "getGridDimension",
+        "getMaximumViewportOffset",
     ];
     ViewportPlugin.modes = ["normal"];
 
@@ -21464,6 +22144,7 @@
         .add("find_and_replace", FindAndReplacePlugin)
         .add("sort", SortPlugin)
         .add("automatic_sum", AutomaticSumPlugin)
+        .add("format", FormatPlugin)
         .add("selection_multiuser", SelectionMultiUserPlugin);
 
     class LocalTransportService {
@@ -21484,264 +22165,6 @@
     }
 
     /**
-     * This is the current state version number. It should be incremented each time
-     * a breaking change is made in the way the state is handled, and an upgrade
-     * function should be defined
-     */
-    const CURRENT_VERSION = 9;
-    /**
-     * This function tries to load anything that could look like a valid
-     * workbookData object. It applies any migrations, if needed, and return a
-     * current, complete workbookData object.
-     *
-     * It also ensures that there is at least one sheet.
-     */
-    function load(data) {
-        if (!data) {
-            return createEmptyWorkbookData();
-        }
-        data = JSON.parse(JSON.stringify(data));
-        // apply migrations, if needed
-        if ("version" in data) {
-            if (data.version < CURRENT_VERSION) {
-                data = migrate(data);
-            }
-        }
-        // sanity check: try to fix missing fields/corrupted state by providing
-        // sensible default values
-        data = Object.assign(createEmptyWorkbookData(), data, { version: CURRENT_VERSION });
-        data.sheets = data.sheets.map((s, i) => Object.assign(createEmptySheet(`Sheet${i + 1}`), s));
-        if (data.sheets.length === 0) {
-            data.sheets.push(createEmptySheet());
-        }
-        return data;
-    }
-    function migrate(data) {
-        const index = MIGRATIONS.findIndex((m) => m.from === data.version);
-        for (let i = index; i < MIGRATIONS.length; i++) {
-            data = MIGRATIONS[i].applyMigration(data);
-        }
-        return data;
-    }
-    const MIGRATIONS = [
-        {
-            description: "add the `activeSheet` field on data",
-            from: 1,
-            to: 2,
-            applyMigration(data) {
-                if (data.sheets && data.sheets[0]) {
-                    data.activeSheet = data.sheets[0].name;
-                }
-                return data;
-            },
-        },
-        {
-            description: "add an id field in each sheet",
-            from: 2,
-            to: 3,
-            applyMigration(data) {
-                if (data.sheets && data.sheets.length) {
-                    for (let sheet of data.sheets) {
-                        sheet.id = sheet.id || sheet.name;
-                    }
-                }
-                return data;
-            },
-        },
-        {
-            description: "activeSheet is now an id, not the name of a sheet",
-            from: 3,
-            to: 4,
-            applyMigration(data) {
-                if (data.sheets && data.activeSheet) {
-                    const activeSheet = data.sheets.find((s) => s.name === data.activeSheet);
-                    data.activeSheet = activeSheet.id;
-                }
-                return data;
-            },
-        },
-        {
-            description: "add figures object in each sheets",
-            from: 4,
-            to: 5,
-            applyMigration(data) {
-                for (let sheet of data.sheets || []) {
-                    sheet.figures = sheet.figures || [];
-                }
-                return data;
-            },
-        },
-        {
-            description: "normalize the content of the cell if it is a formula to avoid parsing all the formula that vary only by the cells they use",
-            from: 5,
-            to: 6,
-            applyMigration(data) {
-                for (let sheet of data.sheets || []) {
-                    for (let xc in sheet.cells || []) {
-                        const cell = sheet.cells[xc];
-                        if (cell.content && cell.content.startsWith("=")) {
-                            cell.formula = normalize(cell.content);
-                        }
-                    }
-                }
-                return data;
-            },
-        },
-        {
-            description: "transform chart data structure",
-            from: 6,
-            to: 7,
-            applyMigration(data) {
-                for (let sheet of data.sheets || []) {
-                    for (let f in sheet.figures || []) {
-                        const { dataSets, ...newData } = sheet.figures[f].data;
-                        const newDataSets = [];
-                        for (let ds of dataSets) {
-                            if (ds.labelCell) {
-                                const dataRange = toZone(ds.dataRange);
-                                const newRange = ds.labelCell + ":" + toXC(dataRange.right, dataRange.bottom);
-                                newDataSets.push(newRange);
-                            }
-                            else {
-                                newDataSets.push(ds.dataRange);
-                            }
-                        }
-                        newData.dataSetsHaveTitle = Boolean(dataSets[0].labelCell);
-                        newData.dataSets = newDataSets;
-                        sheet.figures[f].data = newData;
-                    }
-                }
-                return data;
-            },
-        },
-        {
-            description: "remove single quotes in sheet names",
-            from: 7,
-            to: 8,
-            applyMigration(data) {
-                var _a;
-                const namesTaken = [];
-                const globalForbiddenInExcel = new RegExp(FORBIDDEN_IN_EXCEL_REGEX, "g");
-                for (let sheet of data.sheets || []) {
-                    if (!sheet.name) {
-                        continue;
-                    }
-                    const oldName = sheet.name;
-                    const escapedName = oldName.replace(globalForbiddenInExcel, "_");
-                    let i = 1;
-                    let newName = escapedName;
-                    while (namesTaken.includes(newName)) {
-                        newName = `${escapedName}${i}`;
-                        i++;
-                    }
-                    sheet.name = newName;
-                    namesTaken.push(newName);
-                    const replaceName = (str) => {
-                        if (str === undefined) {
-                            return str;
-                        }
-                        // replaceAll is only available in next Typescript version
-                        let newString = str.replace(oldName, newName);
-                        let currentString = str;
-                        while (currentString !== newString) {
-                            currentString = newString;
-                            newString = currentString.replace(oldName, newName);
-                        }
-                        return currentString;
-                    };
-                    //cells
-                    for (let xc in sheet.cells) {
-                        const cell = sheet.cells[xc];
-                        if (cell.formula) {
-                            cell.formula.dependencies = cell.formula.dependencies.map(replaceName);
-                        }
-                    }
-                    //charts
-                    for (let figure of sheet.figures || []) {
-                        if (figure.type === "chart") {
-                            const dataSets = figure.data.dataSets.map(replaceName);
-                            const labelRange = replaceName(figure.data.labelRange);
-                            figure.data = { ...figure.data, dataSets, labelRange };
-                        }
-                    }
-                    //ConditionalFormats
-                    for (let cf of sheet.conditionalFormats || []) {
-                        cf.ranges = cf.ranges.map(replaceName);
-                        for (const thresholdName of [
-                            "minimum",
-                            "maximum",
-                            "midpoint",
-                            "upperInflectionPoint",
-                            "lowerInflectionPoint",
-                        ]) {
-                            if (((_a = cf.rule[thresholdName]) === null || _a === void 0 ? void 0 : _a.type) === "formula") {
-                                cf.rule[thresholdName].value = replaceName(cf.rule[thresholdName].value);
-                            }
-                        }
-                    }
-                }
-                return data;
-            },
-        },
-        {
-            description: "transform chart data structure with design attributes",
-            from: 8,
-            to: 9,
-            applyMigration(data) {
-                for (const sheet of data.sheets || []) {
-                    for (const chart of sheet.figures || []) {
-                        chart.data.background = BACKGROUND_CHART_COLOR;
-                        chart.data.verticalAxisPosition = "left";
-                        chart.data.legendPosition = "top";
-                        chart.data.stackedBar = false;
-                    }
-                }
-                return data;
-            },
-        },
-    ];
-    // -----------------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------------
-    function createEmptySheet(name = "Sheet1") {
-        return {
-            id: name,
-            name,
-            colNumber: 26,
-            rowNumber: 100,
-            cells: {},
-            cols: {},
-            rows: {},
-            merges: [],
-            conditionalFormats: [],
-            figures: [],
-        };
-    }
-    function createEmptyWorkbookData() {
-        const data = {
-            version: CURRENT_VERSION,
-            sheets: [createEmptySheet("Sheet1")],
-            entities: {},
-            styles: {},
-            borders: {},
-            revisionId: DEFAULT_REVISION_ID,
-        };
-        return data;
-    }
-    function createEmptyExcelSheet(name = "Sheet1") {
-        return {
-            ...createEmptySheet(name),
-            charts: [],
-        };
-    }
-    function createEmptyExcelWorkbookData() {
-        return {
-            ...createEmptyWorkbookData(),
-            sheets: [createEmptyExcelSheet("Sheet1")],
-        };
-    }
-
-    /**
      * DataSourceRegistry is used to contains all the DataSource of spreadsheet.
      * It's role is to ensure that an evaluation is triggered when a data source is
      * ready, and to provide a way to wait for the loading of all the data sources
@@ -21758,7 +22181,8 @@
          */
         add(key, value) {
             this.registry.add(key, value);
-            value.on("data-loaded", this, () => this.trigger("data-loaded", { id: key }));
+            const debouncedLoaded = owl__namespace.utils.debounce(() => this.trigger("data-loaded", { id: key }), 0);
+            value.on("data-loaded", this, () => debouncedLoaded());
             value.loadMetadata();
             return this;
         }
@@ -21877,6 +22301,7 @@
     otRegistry.addTransformation("ADD_COLUMNS_ROWS", ["CREATE_CHART", "UPDATE_CHART"], updateChartRangesTransformation);
     otRegistry.addTransformation("REMOVE_COLUMNS_ROWS", ["CREATE_CHART", "UPDATE_CHART"], updateChartRangesTransformation);
     otRegistry.addTransformation("DELETE_FIGURE", ["UPDATE_FIGURE", "UPDATE_CHART"], updateChartFigure);
+    otRegistry.addTransformation("CREATE_SHEET", ["CREATE_SHEET"], createSheetTransformation);
     otRegistry.addTransformation("ADD_MERGE", ["ADD_MERGE", "REMOVE_MERGE"], mergeTransformation);
     function updateChartFigure(toTransform, executed) {
         if (toTransform.id === executed.id) {
@@ -21906,6 +22331,19 @@
                 labelRange: labelZone ? zoneToXc(labelZone) : undefined,
             },
         };
+    }
+    function createSheetTransformation(cmd, executed) {
+        var _a;
+        if (cmd.name === executed.name) {
+            return {
+                ...cmd,
+                name: ((_a = cmd.name) === null || _a === void 0 ? void 0 : _a.match(/\d+/))
+                    ? cmd.name.replace(/\d+/, (n) => (parseInt(n) + 1).toString())
+                    : `${cmd.name}~`,
+                position: cmd.position + 1,
+            };
+        }
+        return cmd;
     }
     function mergeTransformation(cmd, executed) {
         if (cmd.sheetId !== executed.sheetId) {
@@ -21987,7 +22425,9 @@
         if (cmd.sheetId === deleteSheet) {
             return "IGNORE_COMMAND";
         }
-        if (cmd.sheetId !== executed.sheetId) {
+        else if (cmd.type === "CREATE_SHEET" ||
+            executed.type === "CREATE_SHEET" ||
+            cmd.sheetId !== executed.sheetId) {
             return cmd;
         }
         return "SKIP_TRANSFORMATION";
@@ -22061,10 +22501,11 @@
         const field = executed.dimension === "COL" ? "col" : "row";
         let base = cmd[field];
         if (executed.type === "REMOVE_COLUMNS_ROWS") {
-            if (executed.elements.includes(base)) {
+            const elements = [...executed.elements].sort((a, b) => b - a);
+            if (elements.includes(base)) {
                 return "IGNORE_COMMAND";
             }
-            for (let removedElement of executed.elements) {
+            for (let removedElement of elements) {
                 if (base >= removedElement) {
                     base--;
                 }
@@ -22182,7 +22623,13 @@
             this.operations.push(operation);
         }
         /**
-         * Create and return a copy of this branch, starting at the given operationId
+         * Append operations in the given branch to this branch.
+         */
+        appendBranch(branch) {
+            this.operations = this.operations.concat(branch.operations);
+        }
+        /**
+         * Create and return a copy of this branch, starting after the given operationId
          */
         fork(operationId) {
             const { after } = this.locateOperation(operationId);
@@ -22192,7 +22639,21 @@
          * Transform all the operations in this branch with the given transformation
          */
         transform(transformation) {
-            this.operations = this.operations.map((operation) => operation.transformed(transformation, false));
+            this.operations = this.operations.map((operation) => operation.transformed(transformation));
+        }
+        /**
+         * Cut the branch before the operation, meaning the operation
+         * and all following operations are dropped.
+         */
+        cutBefore(operationId) {
+            this.operations = this.locateOperation(operationId).before;
+        }
+        /**
+         * Cut the branch after the operation, meaning all following operations are dropped.
+         */
+        cutAfter(operationId) {
+            const { before, operation } = this.locateOperation(operationId);
+            this.operations = before.concat([operation]);
         }
         /**
          * Find an operation in this branch based on its id.
@@ -22223,13 +22684,12 @@
      * to revert it).
      */
     class Operation {
-        constructor(id, data, isOriginal = true) {
+        constructor(id, data) {
             this.id = id;
             this.data = data;
-            this.isOriginal = isOriginal;
         }
-        transformed(transformation, isOriginal) {
-            return new Operation(this.id, transformation(this.data), isOriginal !== undefined ? isOriginal : this.isOriginal);
+        transformed(transformation) {
+            return new Operation(this.id, transformation(this.data));
         }
     }
 
@@ -22446,6 +22906,17 @@
             }
         }
         /**
+         * Drop the operation and all following operations in every
+         * branch
+         */
+        drop(operationId) {
+            for (const branch of this.branches) {
+                if (branch.contains(operationId)) {
+                    branch.cutBefore(operationId);
+                }
+            }
+        }
+        /**
          * Find the operation in the execution path.
          */
         findOperation(branch, operationId) {
@@ -22455,22 +22926,6 @@
                 }
             }
             throw new Error(`Operation ${operationId} not found`);
-        }
-        /**
-         * Find the branch in which the operation was first inserted.
-         */
-        findOriginBranch(branch, operationId) {
-            let currentBranch = branch;
-            while (currentBranch) {
-                if (currentBranch.getOperation(operationId).isOriginal) {
-                    return currentBranch;
-                }
-                currentBranch = this.previousBranch(currentBranch);
-            }
-            if (!currentBranch) {
-                throw new Error("Branch not found");
-            }
-            return currentBranch;
         }
         /**
          * Rebuild transformed operations of this branch based on the upper branch.
@@ -22554,7 +23009,7 @@
         getTransformedOperation(branch, branchingId, operation) {
             const branchingOperation = branch.getOperation(branchingId);
             const branchingTransformation = this.buildTransformation.without(branchingOperation.data);
-            return operation.transformed(branchingTransformation, false);
+            return operation.transformed(branchingTransformation);
         }
         /**
          * Check if this branch should execute the given operation.
@@ -22581,8 +23036,11 @@
             if (!previousBranch || !branchingOperation)
                 return;
             const transformation = this.buildTransformation.with(branchingOperation.data);
-            const operationToInsert = newOperation.transformed(transformation, false);
-            previousBranch.insert(operationToInsert, insertAfter);
+            const branchTail = branch.fork(insertAfter);
+            branchTail.transform(transformation);
+            previousBranch.cutAfter(insertAfter);
+            previousBranch.appendBranch(branchTail);
+            const operationToInsert = newOperation.transformed(transformation);
             this.insertPrevious(previousBranch, operationToInsert, insertAfter);
         }
         findPreviousBranchingOperation(branch) {
@@ -22719,32 +23177,36 @@
         insert(operationId, data, insertAfter) {
             const operation = new Operation(operationId, data);
             this.revertTo(insertAfter);
-            // insert to branch where it first was executed!
-            const branch = this.tree.findOriginBranch(this.HEAD_BRANCH, insertAfter);
-            this.tree.insertOperationAfter(branch, operation, insertAfter);
+            this.tree.insertOperationAfter(this.HEAD_BRANCH, operation, insertAfter);
             this.fastForward();
         }
         /**
          * @param operationId operation to undo
          * @param undoId the id of the "undo operation"
+         * @param insertAfter the id of the operation after which to insert the undo
          */
-        undo(operationId, undoId) {
+        undo(operationId, undoId, insertAfter) {
             const { branch, operation } = this.tree.findOperation(this.HEAD_BRANCH, operationId);
             this.revertBefore(operationId);
             this.tree.undo(branch, operation);
             this.fastForward();
-            this.append(undoId, this.buildEmpty(undoId));
+            this.insert(undoId, this.buildEmpty(undoId), insertAfter);
         }
         /**
          * @param operationId operation to redo
          * @param redoId the if of the "redo operation"
+         * @param insertAfter the id of the operation after which to insert the redo
          */
-        redo(operationId, redoId) {
+        redo(operationId, redoId, insertAfter) {
             const { branch } = this.tree.findOperation(this.HEAD_BRANCH, operationId);
             this.revertBefore(operationId);
             this.tree.redo(branch);
             this.fastForward();
-            this.append(redoId, this.buildEmpty(redoId));
+            this.insert(redoId, this.buildEmpty(redoId), insertAfter);
+        }
+        drop(operationId) {
+            this.revertBefore(operationId);
+            this.tree.drop(operationId);
         }
         /**
          * Revert the state as it was *before* the given operation was executed.
@@ -22872,6 +23334,7 @@
             this.session.on("new-local-state-update", this, this.onNewLocalStateUpdate);
             this.session.on("revision-undone", this, ({ commands }) => this.selectiveUndo(commands));
             this.session.on("revision-redone", this, ({ commands }) => this.selectiveRedo(commands));
+            this.session.on("pending-revisions-dropped", this, ({ revisionIds }) => this.drop(revisionIds));
             this.session.on("snapshot", this, () => {
                 this.undoStack = [];
                 this.redoStack = [];
@@ -22929,6 +23392,11 @@
         canRedo() {
             return this.redoStack.length > 0;
         }
+        drop(revisionIds) {
+            this.undoStack = this.undoStack.filter((id) => !revisionIds.includes(id));
+            this.redoStack = [];
+            this.isWaitingForUndoRedo = false;
+        }
         onNewLocalStateUpdate({ id }) {
             this.undoStack.push(id);
             this.redoStack = [];
@@ -22980,7 +23448,16 @@
                                 changeType = "RESIZE";
                                 newRange = this.createAdaptedRange(newRange, dimension, changeType, -toRemove);
                             }
-                            if (min < range.zone[start]) {
+                            else if (range.zone[start] >= min && range.zone[end] <= max) {
+                                changeType = "REMOVE";
+                            }
+                            else if (range.zone[start] <= max && range.zone[end] >= max) {
+                                const toRemove = max - range.zone[start] + 1;
+                                changeType = "RESIZE";
+                                newRange = this.createAdaptedRange(newRange, dimension, changeType, -toRemove);
+                                newRange = this.createAdaptedRange(newRange, dimension, "MOVE", -(range.zone[start] - min));
+                            }
+                            else if (min < range.zone[start]) {
                                 changeType = "MOVE";
                                 newRange = this.createAdaptedRange(newRange, dimension, changeType, -(max - min + 1));
                             }
@@ -23074,10 +23551,7 @@
         verifyRangeRemoved(adaptRange) {
             return (range) => {
                 const result = adaptRange(range);
-                if (result.changeType !== "NONE" &&
-                    result.range &&
-                    (result.range.zone.right - result.range.zone.left < 0 ||
-                        result.range.zone.bottom - result.range.zone.top < 0)) {
+                if (result.changeType !== "NONE" && !isZoneValid(result.range.zone)) {
                     return { range: result.range, changeType: "REMOVE" };
                 }
                 return result;
@@ -23511,11 +23985,20 @@
     //            CF HELPERS
     // -------------------------------------
     /**
-     * Forces the first char of a string to lowerCase
-     * e.g. BeginWith --> beginWith
+     * Convert the conditional formatting o-spreadsheet operator to
+     * the corresponding excel operator.
      * */
     function convertOperator(operator) {
-        return operator.charAt(0).toLowerCase() + operator.slice(1);
+        switch (operator) {
+            case "IsNotEmpty":
+                return "notContainsBlanks";
+            case "IsEmpty":
+                return "containsBlanks";
+            case "NotContains":
+                return "notContainsBlanks";
+            default:
+                return operator.charAt(0).toLowerCase() + operator.slice(1);
+        }
     }
     // -------------------------------------
     //        WORKSHEET HELPERS
@@ -23689,11 +24172,11 @@
     }
     function xmlEscape(str) {
         return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&apos;");
+            .replace(/\&/g, "&amp;")
+            .replace(/\</g, "&lt;")
+            .replace(/\>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/\'/g, "&apos;");
     }
     function formatAttributes(attrs) {
         return new XMLString(attrs.map(([key, val]) => `${key}="${xmlEscape(val)}"`).join(" "));
@@ -24119,9 +24602,10 @@
   `;
     }
 
-    function addFormula(formula) {
+    function addFormula(cell) {
+        const formula = cell.content;
         const functions = functionRegistry.content;
-        const tokens = tokenize(formula.text);
+        const tokens = tokenize(formula);
         const attrs = [];
         let node = escapeXml ``;
         const isExported = tokens
@@ -24132,9 +24616,9 @@
             const XlsxFormula = adaptFormulaToExcel(formula);
             // hack for cycles : if we don't set a value (be it 0 or #VALUE!), it will appear as invisible on excel,
             // Making it very hard for the client to find where the recursion is.
-            if (formula.value === "#CYCLE") {
+            if (cell.value === "#CYCLE") {
                 attrs.push(["t", "str"]);
-                cycle = escapeXml /*xml*/ `<v>${formula.value}</v>`;
+                cycle = escapeXml /*xml*/ `<v>${cell.value}</v>`;
             }
             node = escapeXml /*xml*/ `
       <f>
@@ -24146,7 +24630,7 @@
         }
         else {
             // Shouldn't we always output the value then ?
-            const value = formula.value;
+            const value = cell.value;
             // what if value = 0? Is this condition correct?
             if (value) {
                 const type = getCellType(value);
@@ -24170,87 +24654,81 @@
         }
         return { attrs, node: escapeXml /*xml*/ `<v>${value}</v>` };
     }
-    function adaptFormulaToExcel(formula) {
-        let formulaText = formula.text;
+    function adaptFormulaToExcel(formulaText) {
         if (formulaText[0] === "=") {
             formulaText = formulaText.slice(1);
         }
-        const ast = parse(formulaText);
-        let newFormulaText = ast ? astToExcelFormula(ast) : formula.text;
-        return getFormulaContent(newFormulaText, formula.dependencies);
+        let ast;
+        try {
+            ast = parse(formulaText);
+        }
+        catch (error) {
+            return formulaText;
+        }
+        ast = convertAstNodes(ast, "STRING", convertDateFormat);
+        ast = convertAstNodes(ast, "FUNCALL", (ast) => {
+            ast = { ...ast, value: ast.value.toUpperCase() };
+            ast = prependNonRetrocompatibleFunction(ast);
+            ast = addMissingRequiredArgs(ast);
+            return ast;
+        });
+        return ast ? astToFormula(ast) : formulaText;
     }
     /**
-     * Converts an ast formula to the corresponding string
-     *
-     * We cannot use astToFormula directly; since the function is of recursive form,
-     * it will call itself when we'd need it to call astToExcelFormula to process
-     * the specific cases of FUNCALL.
-     * Function calls are different because:
-     * - non retrocompatible function needs to be prepended
-     * - required args which are optional in o-spreadsheet
+     * Some Excel function need required args that might not be mandatory in o-spreadsheet.
+     * This adds those missing args.
      */
-    function astToExcelFormula(ast) {
-        let value;
-        switch (ast.type) {
-            case "FUNCALL":
-                value = ast.value.toUpperCase();
-                // In this case, the Excel function will need required args that might not be mandatory in Spreadsheet
-                const exportDefaultArgs = FORCE_DEFAULT_ARGS_FUNCTIONS[value];
-                if (exportDefaultArgs) {
-                    const requiredArgs = functionRegistry.content[value].args.filter((el) => !el.optional);
-                    const diffArgs = requiredArgs.length - ast.args.length;
-                    if (diffArgs) {
-                        // We know that we have at least 1 default Value missing
-                        for (let i = ast.args.length; i < requiredArgs.length; i++) {
-                            const currentDefaultArg = exportDefaultArgs[i - diffArgs];
-                            ast.args.push({ type: currentDefaultArg.type, value: currentDefaultArg.value });
-                        }
-                    }
+    function addMissingRequiredArgs(ast) {
+        const formulaName = ast.value.toUpperCase();
+        const args = ast.args;
+        const exportDefaultArgs = FORCE_DEFAULT_ARGS_FUNCTIONS[formulaName];
+        if (exportDefaultArgs) {
+            const requiredArgs = functionRegistry.content[formulaName].args.filter((el) => !el.optional);
+            const diffArgs = requiredArgs.length - ast.args.length;
+            if (diffArgs) {
+                // We know that we have at least 1 default Value missing
+                for (let i = ast.args.length; i < requiredArgs.length; i++) {
+                    const currentDefaultArg = exportDefaultArgs[i - diffArgs];
+                    args.push({ type: currentDefaultArg.type, value: currentDefaultArg.value });
                 }
-                // Prepend function names that are not compatible with Old Excel versions
-                ast.value = NON_RETROCOMPATIBLE_FUNCTIONS.includes(value) ? `_xlfn.${value}` : value;
-                const args = ast.args.map((arg) => astToExcelFormula(arg));
-                return `${ast.value}(${args.join(",")})`;
-            case "NUMBER":
-                return ast.value.toString();
-            case "STRING":
-                // strings that correspond to a date should be converted to the format YYYY-DD-MM
-                value = ast.value.replace(new RegExp('"', "g"), "");
-                const internalDate = parseDateTime(value);
-                if (internalDate) {
-                    let format = [];
-                    if (value.match(mdyDateRegexp) || value.match(ymdDateRegexp)) {
-                        format.push("yyyy-mm-dd");
-                    }
-                    if (value.match(timeRegexp)) {
-                        format.push("hh:mm:ss");
-                    }
-                    return `"${formatDateTime({ value: internalDate.value, format: format.join(" ") })}"`;
-                }
-                else {
-                    return ast.value.replace(/\\"/g, `""`);
-                }
-            case "BOOLEAN":
-                return ast.value ? "TRUE" : "FALSE";
-            case "UNARY_OPERATION":
-                return ast.value + astToExcelFormula(ast.right);
-            case "BIN_OPERATION":
-                return astToExcelFormula(ast.left) + ast.value + astToExcelFormula(ast.right);
-            case "REFERENCE":
-                return `${FORMULA_REF_IDENTIFIER}${ast.value}${FORMULA_REF_IDENTIFIER}`;
-            default:
-                return ast.value;
-        }
-    }
-    function getFormulaContent(formula, dependencies) {
-        let newContent = formula;
-        if (dependencies) {
-            for (let [index, d] of Object.entries(dependencies)) {
-                const stringPosition = `\\${FORMULA_REF_IDENTIFIER}${index}\\${FORMULA_REF_IDENTIFIER}`;
-                newContent = newContent.replace(new RegExp(stringPosition, "g"), d);
             }
         }
-        return newContent;
+        return { ...ast, args };
+    }
+    /**
+     * Prepend function names that are not compatible with Old Excel versions
+     */
+    function prependNonRetrocompatibleFunction(ast) {
+        const formulaName = ast.value.toUpperCase();
+        return {
+            ...ast,
+            value: NON_RETROCOMPATIBLE_FUNCTIONS.includes(formulaName)
+                ? `_xlfn.${formulaName}`
+                : formulaName,
+        };
+    }
+    /**
+     * Convert strings that correspond to a date to the format YYYY-DD-MM
+     */
+    function convertDateFormat(ast) {
+        const value = ast.value.replace(new RegExp('"', "g"), "");
+        const internalDate = parseDateTime(value);
+        if (internalDate) {
+            let format = [];
+            if (value.match(mdyDateRegexp) || value.match(ymdDateRegexp)) {
+                format.push("yyyy-mm-dd");
+            }
+            if (value.match(timeRegexp)) {
+                format.push("hh:mm:ss");
+            }
+            return {
+                ...ast,
+                value: `"${formatDateTime({ value: internalDate.value, format: format.join(" ") })}"`,
+            };
+        }
+        else {
+            return { ...ast, value: ast.value.replace(/\\"/g, `""`) };
+        }
     }
 
     function addConditionalFormatting(dxfs, conditionalFormats) {
@@ -24281,12 +24759,18 @@
     // ----------------------
     function addCellIsRule(cf, rule, dxfs) {
         const ruleAttributes = commonCfAttributes(cf);
-        ruleAttributes.push(["type", "cellIs"], ["operator", convertOperator(rule.operator)]);
-        const formulas = rule.values.map((value) => escapeXml /*xml*/ `<formula>${value}</formula>`);
-        const dxf = {};
-        if (rule.style.textColor) {
-            dxf.font = { color: rule.style.textColor };
-        }
+        const operator = convertOperator(rule.operator);
+        ruleAttributes.push(...cellRuleTypeAttributes(rule), ["operator", operator]);
+        const formulas = cellRuleFormula(cf.ranges, rule).map((formula) => escapeXml /*xml*/ `<formula>${formula}</formula>`);
+        const dxf = {
+            font: {
+                color: rule.style.textColor,
+                bold: rule.style.bold,
+                italic: rule.style.italic,
+                strike: rule.style.strikethrough,
+                underline: rule.style.underline,
+            },
+        };
         if (rule.style.fillColor) {
             dxf.fill = { fgColor: rule.style.fillColor };
         }
@@ -24299,6 +24783,59 @@
       </cfRule>
     </conditionalFormatting>
   `;
+    }
+    function cellRuleFormula(ranges, rule) {
+        const firstCell = ranges[0].split(":")[0];
+        const values = rule.values;
+        switch (rule.operator) {
+            case "ContainsText":
+                return [`NOT(ISERROR(SEARCH("${values[0]}",${firstCell})))`];
+            case "NotContains":
+                return [`ISERROR(SEARCH("${values[0]}",${firstCell}))`];
+            case "BeginsWith":
+                return [`LEFT(${firstCell},LEN("${values[0]}"))="${values[0]}"`];
+            case "EndsWith":
+                return [`RIGHT(${firstCell},LEN("${values[0]}"))="${values[0]}"`];
+            case "IsEmpty":
+                return [`LEN(TRIM(${firstCell}))=0`];
+            case "IsNotEmpty":
+                return [`LEN(TRIM(${firstCell}))>0`];
+            case "Equal":
+            case "NotEqual":
+            case "GreaterThan":
+            case "GreaterThanOrEqual":
+            case "LessThan":
+            case "LessThanOrEqual":
+                return [values[0]];
+            case "Between":
+            case "NotBetween":
+                return [values[0], values[1]];
+        }
+    }
+    function cellRuleTypeAttributes(rule) {
+        const operator = convertOperator(rule.operator);
+        switch (rule.operator) {
+            case "ContainsText":
+            case "NotContains":
+            case "BeginsWith":
+            case "EndsWith":
+                return [
+                    ["type", operator],
+                    ["text", rule.values[0]],
+                ];
+            case "IsEmpty":
+            case "IsNotEmpty":
+                return [["type", operator]];
+            case "Equal":
+            case "NotEqual":
+            case "GreaterThan":
+            case "GreaterThanOrEqual":
+            case "LessThan":
+            case "LessThanOrEqual":
+            case "Between":
+            case "NotBetween":
+                return [["type", "cellIs"]];
+        }
     }
     function addColorScaleRule(cf, rule) {
         const ruleAttributes = commonCfAttributes(cf);
@@ -24410,7 +24947,7 @@
             if (type === "formula") {
                 try {
                     checkRelativeReferences(threshold.value);
-                    val = adaptFormulaToExcel(normalize(threshold.value));
+                    val = adaptFormulaToExcel(threshold.value);
                 }
                 catch (error) {
                     val = threshold.value;
@@ -24445,7 +24982,7 @@
      */
     function checkRelativeReferences(formula) {
         const { dependencies } = normalize(formula);
-        if (dependencies.length) {
+        if (dependencies.references.length) {
             console.warn("Relative references might not work in conditional format formula thresholds in Excel.");
         }
     }
@@ -24572,24 +25109,26 @@
     </numFmts>
   `;
     }
-    function addFonts(fonts) {
-        const fontNodes = [];
-        for (let font of Object.values(fonts)) {
-            fontNodes.push(escapeXml /*xml*/ `
-      <font>
-        ${font.bold ? escapeXml /*xml*/ `<b />` : ""}
-        ${font.italic ? escapeXml /*xml*/ `<i />` : ""}
-        ${font.underline ? escapeXml /*xml*/ `<u />` : ""}
-        ${font.strike ? escapeXml /*xml*/ `<strike />` : ""}
-        <sz val="${font.size}" />
-        <color rgb="${toHex6(font.color)}" />
-        <name val="${font.name}" />
-      </font>
-    `);
+    function addFont(font) {
+        if (Object.values(font).filter(isDefined).length === 0) {
+            return escapeXml /*xml*/ ``;
         }
         return escapeXml /*xml*/ `
+    <font>
+      ${font.bold ? escapeXml /*xml*/ `<b />` : ""}
+      ${font.italic ? escapeXml /*xml*/ `<i />` : ""}
+      ${font.underline ? escapeXml /*xml*/ `<u />` : ""}
+      ${font.strike ? escapeXml /*xml*/ `<strike />` : ""}
+      ${font.size ? escapeXml /*xml*/ `<sz val="${font.size}" />` : ""}
+      ${font.color ? escapeXml /*xml*/ `<color rgb="${toHex6(font.color)}" />` : ""}
+      ${font.name ? escapeXml /*xml*/ `<name val="${font.name}" />` : ""}
+    </font>
+  `;
+    }
+    function addFonts(fonts) {
+        return escapeXml /*xml*/ `
     <fonts count="${fonts.length}">
-      ${joinXmlNodes(fontNodes)}
+      ${joinXmlNodes(Object.values(fonts).map(addFont))}
     </fonts>
   `;
     }
@@ -24682,14 +25221,11 @@
      */
     function addCellWiseConditionalFormatting(dxfs // cell-wise CF
     ) {
-        var _a;
         const dxfNodes = [];
         for (const dxf of dxfs) {
             let fontNode = escapeXml ``;
-            if ((_a = dxf.font) === null || _a === void 0 ? void 0 : _a.color) {
-                fontNode = escapeXml /*xml*/ `
-        <font rgb="${toHex6(dxf.font.color)}" />
-      `;
+            if (dxf.font) {
+                fontNode = addFont(dxf.font);
             }
             let fillNode = escapeXml ``;
             if (dxf.fill) {
@@ -24758,8 +25294,8 @@
                     let additionalAttrs = [];
                     let cellNode = escapeXml ``;
                     // Either formula or static value inside the cell
-                    if (cell.formula) {
-                        ({ attrs: additionalAttrs, node: cellNode } = addFormula(cell.formula));
+                    if (cell.isFormula) {
+                        ({ attrs: additionalAttrs, node: cellNode } = addFormula(cell));
                     }
                     else if (cell.content && isMarkdownLink(cell.content)) {
                         const { label } = parseMarkdownLink(cell.content);
@@ -24802,8 +25338,9 @@
                 if (isMarkdownSheetLink(content)) {
                     const sheetId = parseSheetLink(url);
                     const sheet = data.sheets.find((sheet) => sheet.id === sheetId);
+                    const location = sheet ? `${sheet.name}!A1` : INCORRECT_RANGE_STRING;
                     linkNodes.push(escapeXml /*xml*/ `
-          <hyperlink display="${label}" location="${sheet.name}!A1" ref="${xc}"/>
+          <hyperlink display="${label}" location="${location}" ref="${xc}"/>
         `);
                 }
                 else {
@@ -25136,6 +25673,7 @@
                 return DispatchResult.Success;
             };
             DEBUG.model = this;
+            stateUpdateMessages = repairInitialMessages(data, stateUpdateMessages);
             const workbookData = load(data);
             this.state = new StateObserver();
             this.uuidGenerator = uuidGenerator;
@@ -25489,7 +26027,7 @@
     };
 
     const { xml: xml$k, css: css$j } = owl.tags;
-    const { useExternalListener: useExternalListener$3, useRef: useRef$6 } = owl.hooks;
+    const { useExternalListener: useExternalListener$2, useRef: useRef$6 } = owl.hooks;
     //------------------------------------------------------------------------------
     // Context Menu Component
     //------------------------------------------------------------------------------
@@ -25502,7 +26040,7 @@
       flipVerticalOffset="popover.flipVerticalOffset"
       marginTop="popover.marginTop"
       >
-      <div t-ref="menu" class="o-menu" t-on-scroll="onScroll" t-on-wheel.stop="" t-on-click.stop="">
+      <div t-ref="menu" class="o-menu" t-on-scroll="onScroll" t-on-wheel.stop="" t-on-click.stop="" t-on-contextmenu.prevent="">
         <t t-foreach="props.menuItems" t-as="menuItem" t-key="menuItem.id">
           <t t-set="isMenuRoot" t-value="isRoot(menuItem)"/>
           <t t-set="isMenuEnabled" t-value="isEnabled(menuItem)"/>
@@ -25589,8 +26127,8 @@
             super(...arguments);
             this.position = useAbsolutePosition(useRef$6("menu"));
             this.subMenuRef = useRef$6("subMenuRef");
-            useExternalListener$3(window, "click", this.onClick);
-            useExternalListener$3(window, "contextmenu", this.onContextMenu);
+            useExternalListener$2(window, "click", this.onClick);
+            useExternalListener$2(window, "contextmenu", this.onContextMenu);
             this.subMenu = owl.useState({
                 isOpen: false,
                 position: null,
@@ -25859,7 +26397,8 @@
             const activeSheetId = this.env.getters.getActiveSheetId();
             const position = this.env.getters.getVisibleSheets().findIndex((sheetId) => sheetId === activeSheetId) + 1;
             const sheetId = this.env.uuidGenerator.uuidv4();
-            this.env.dispatch("CREATE_SHEET", { sheetId, position });
+            const name = this.getters.getNextSheetName(this.env._t("Sheet"));
+            this.env.dispatch("CREATE_SHEET", { sheetId, position, name });
             this.env.dispatch("ACTIVATE_SHEET", { sheetIdFrom: activeSheetId, sheetIdTo: sheetId });
         }
         listSheets(ev) {
@@ -25987,7 +26526,7 @@
                 timeOutId = setTimeout(() => {
                     timeOutId = null;
                     onMouseMove(currentEv);
-                }, Math.round(edgeScrollInfoX.delay));
+                }, Math.round(edgeScrollInfoY.delay));
             }
         };
         const onMouseUp = () => {
@@ -26575,6 +27114,7 @@
     t-on-input="onInput"
     t-on-keyup="onKeyup"
     t-on-click.stop="onClick"
+    t-on-blur="onBlur"
   />
 
   <div t-if="props.focus !== 'inactive' and (autoCompleteState.showProvider or functionDescriptionState.showDescription)"
@@ -26760,6 +27300,7 @@
         processEnterKey(ev) {
             ev.preventDefault();
             ev.stopPropagation();
+            this.isKeyStillDown = false;
             const autoCompleteComp = this.autoCompleteRef.comp;
             if (this.autoCompleteState.showProvider && autoCompleteComp) {
                 const autoCompleteValue = autoCompleteComp.getValueToFill();
@@ -26832,6 +27373,7 @@
                 this.dispatch("CHANGE_COMPOSER_CURSOR_SELECTION", this.contentHelper.getCurrentSelection());
             }
             this.processTokenAtCursor();
+            this.processContent();
         }
         onMousedown(ev) {
             if (ev.button > 0) {
@@ -26853,6 +27395,9 @@
             }
             this.dispatch("CHANGE_COMPOSER_CURSOR_SELECTION", newSelection);
             this.processTokenAtCursor();
+        }
+        onBlur() {
+            this.isKeyStillDown = false;
         }
         onCompleted(ev) {
             this.autoComplete(ev.detail.text);
@@ -26950,8 +27495,14 @@
             const refSheet = sheetName
                 ? this.getters.getSheetIdByName(sheetName)
                 : this.getters.getEditionSheet();
-            const highlight = highlights.find((highlight) => highlight.sheet === refSheet &&
-                isEqual(this.getters.expandZone(refSheet, toZone(xc)), highlight.zone));
+            const highlight = highlights.find((highlight) => {
+                if (highlight.sheet !== refSheet)
+                    return false;
+                let zone = toZone(xc);
+                const { height, width } = zoneToDimension(zone);
+                zone = height * width === 1 ? this.getters.expandZone(refSheet, toZone(xc)) : zone;
+                return highlight.sheet === refSheet && isEqual(zone, highlight.zone);
+            });
             return highlight && highlight.color ? highlight.color : undefined;
         }
         /**
@@ -26979,12 +27530,10 @@
                         const parentFunction = tokenContext.parent.toUpperCase();
                         const description = functions[parentFunction];
                         const argPosition = tokenContext.argPosition;
-                        this.functionDescriptionState = {
-                            functionName: parentFunction,
-                            functionDescription: description,
-                            argToFocus: description.getArgToFocus(argPosition + 1) - 1,
-                            showDescription: true,
-                        };
+                        this.functionDescriptionState.functionName = parentFunction;
+                        this.functionDescriptionState.functionDescription = description;
+                        this.functionDescriptionState.argToFocus = description.getArgToFocus(argPosition + 1) - 1;
+                        this.functionDescriptionState.showDescription = true;
                     }
                 }
             }
@@ -27319,7 +27868,8 @@
                  t-att-class="{active: info.isSelected, 'o-dragging': info.id === dnd.figureId}"
                  t-att-style="getDims(info)"
                  tabindex="0"
-                 t-on-keydown.stop="onKeyDown(info.figure)">
+                 t-on-keydown.stop="onKeyDown(info.figure)"
+                 t-on-keyup.stop="">
                 <t t-component="figureRegistry.get(info.figure.tag).Component"
                    t-key="info.id"
                    sidePanelIsOpen="props.sidePanelIsOpen"
@@ -27379,7 +27929,7 @@
       background-color: #1a73e8;
       &.o-top {
         top: -${ANCHOR_SIZE / 2}px;
-        right: 50%;
+        right: calc(50% - 4px);
         cursor: n-resize;
       }
       &.o-topRight {
@@ -27389,7 +27939,7 @@
       }
       &.o-right {
         right: -${ANCHOR_SIZE / 2}px;
-        top: 50%;
+        top: calc(50% - 4px);
         cursor: e-resize;
       }
       &.o-bottomRight {
@@ -27399,7 +27949,7 @@
       }
       &.o-bottom {
         bottom: -${ANCHOR_SIZE / 2}px;
-        right: 50%;
+        right: calc(50% - 4px);
         cursor: s-resize;
       }
       &.o-bottomLeft {
@@ -27408,7 +27958,7 @@
         cursor: sw-resize;
       }
       &.o-left {
-        bottom: 50%;
+        bottom: calc(50% - 4px);
         left: -${ANCHOR_SIZE / 2}px;
         cursor: w-resize;
       }
@@ -27523,7 +28073,10 @@
                 // not main button, probably a context menu
                 return;
             }
-            this.dispatch("SELECT_FIGURE", { id: figure.id });
+            const selectResult = this.dispatch("SELECT_FIGURE", { id: figure.id });
+            if (!selectResult.isSuccessful) {
+                return;
+            }
             if (this.props.sidePanelIsOpen) {
                 this.env.openSidePanel("ChartPanel", { figure });
             }
@@ -28557,6 +29110,10 @@
         z-index: 1;
         background-color: lightgrey;
       }
+      .o-unhide > svg {
+        position: relative;
+        top: calc(${UNHIDE_ICON_EDGE_LENGTH}px / 2 - ${ICON_EDGE_LENGTH}px / 2);
+      }
     }
   `;
     class RowResizer extends AbstractResizer {
@@ -28818,7 +29375,7 @@
      */
     const { Component: Component$3, useState: useState$3 } = owl__namespace;
     const { xml: xml$3, css: css$3 } = owl__namespace.tags;
-    const { useRef: useRef$2, onMounted, onWillUnmount, useExternalListener: useExternalListener$2 } = owl__namespace.hooks;
+    const { useRef: useRef$2, onMounted, onWillUnmount } = owl__namespace.hooks;
     const registries$1 = {
         ROW: rowMenuRegistry,
         COL: colMenuRegistry,
@@ -28826,7 +29383,7 @@
     };
     const LINK_EDITOR_WIDTH = 340;
     const LINK_EDITOR_HEIGHT = 180;
-    const ERROR_TOOLTIP_HEIGHT = 80;
+    const ERROR_TOOLTIP_HEIGHT = 40;
     const ERROR_TOOLTIP_WIDTH = 180;
     // copy and paste are specific events that should not be managed by the keydown event,
     // but they shouldn't be preventDefault and stopped (else copy and paste events will not trigger)
@@ -28946,6 +29503,7 @@
     <Popover
       t-if="errorTooltip.isOpen"
       position="errorTooltip.position"
+      flipHorizontalOffset="errorTooltip.cellWidth"
       childWidth="${ERROR_TOOLTIP_WIDTH}"
       childHeight="${ERROR_TOOLTIP_HEIGHT}">
       <ErrorToolTip text="errorTooltip.text"/>
@@ -28982,7 +29540,7 @@
     <Menu t-if="menuState.isOpen"
       menuItems="menuState.menuItems"
       position="menuState.position"
-      t-on-close.stop="menuState.isOpen=false"/>
+      t-on-close.stop="closeMenu"/>
     <t t-set="gridSize" t-value="getters.getGridDimension(getters.getActiveSheet())"/>
     <FiguresContainer model="props.model" sidePanelIsOpen="props.sidePanelIsOpen" t-on-figure-deleted="focus" />
     <div class="o-scrollbar vertical" t-on-scroll="onScroll" t-ref="vscrollbar">
@@ -29155,7 +29713,6 @@
             this.vScrollbar = new ScrollBar(this.vScrollbarRef.el, "vertical");
             this.hScrollbar = new ScrollBar(this.hScrollbarRef.el, "horizontal");
             useTouchMove(this.moveCanvas.bind(this), () => this.vScrollbar.scroll > 0);
-            useExternalListener$2(window, "resize", this.resizeGrid.bind(this));
         }
         get errorTooltip() {
             const { col, row } = this.hoveredCell;
@@ -29172,6 +29729,7 @@
                     isOpen: true,
                     position: { x: x + width, y: y + TOPBAR_HEIGHT },
                     text: cell.evaluated.error,
+                    cellWidth: width,
                 };
             }
             return { isOpen: false };
@@ -29214,6 +29772,7 @@
             this.drawGrid();
         }
         patched() {
+            this.resizeGrid();
             this.drawGrid();
         }
         focus() {
@@ -29222,17 +29781,23 @@
             }
         }
         resizeGrid() {
-            this.dispatch("RESIZE_VIEWPORT", {
-                height: this.el.clientHeight - SCROLLBAR_WIDTH$1,
-                width: this.el.clientWidth - SCROLLBAR_WIDTH$1,
-            });
+            const currentHeight = this.el.clientHeight - SCROLLBAR_WIDTH$1;
+            const currentWidth = this.el.clientWidth - SCROLLBAR_WIDTH$1;
+            const { height: viewportHeight, width: viewportWidth } = this.getters.getViewportDimension();
+            if (currentHeight != viewportHeight || currentWidth !== viewportWidth) {
+                this.dispatch("RESIZE_VIEWPORT", {
+                    height: currentHeight,
+                    width: currentWidth,
+                });
+            }
         }
         onScroll() {
             const { offsetX, offsetY } = this.getters.getActiveViewport();
             if (offsetX !== this.hScrollbar.scroll || offsetY !== this.vScrollbar.scroll) {
+                const { maxOffsetX, maxOffsetY } = this.getters.getMaximumViewportOffset(this.getters.getActiveSheet());
                 this.dispatch("SET_VIEWPORT_OFFSET", {
-                    offsetX: this.hScrollbar.scroll,
-                    offsetY: this.vScrollbar.scroll,
+                    offsetX: Math.min(this.hScrollbar.scroll, maxOffsetX),
+                    offsetY: Math.min(this.vScrollbar.scroll, maxOffsetY),
                 });
             }
         }
@@ -29538,6 +30103,10 @@
                 .getAll()
                 .filter((item) => !item.isVisible || item.isVisible(this.env));
         }
+        closeMenu() {
+            this.menuState.isOpen = false;
+            this.focus();
+        }
     }
     Grid.template = TEMPLATE$2;
     Grid.style = CSS$2;
@@ -29693,14 +30262,33 @@
     const { Component: Component$1, useState: useState$1, hooks } = owl__namespace;
     const { xml: xml$1, css: css$1 } = owl__namespace.tags;
     const { useExternalListener: useExternalListener$1, useRef: useRef$1 } = hooks;
+    const Terms = {
+        Undo: _lt("Undo"),
+        Redo: _lt("Redo"),
+        PaintFormat: _lt("Paint Format"),
+        ClearFormat: _lt("Clear Format"),
+        FormatAsPercent: _lt("Format as percent"),
+        DecreaseDecimalPlaces: _lt("Decrease decimal places"),
+        IncreaseDecimalPlaces: _lt("Increase decimal places"),
+        MoreFormats: _lt("More formats"),
+        FontSize: _lt("Font Size"),
+        Bold: _lt("Bold"),
+        Italic: _lt("Italic"),
+        Strikethrough: _lt("Strikethrough"),
+        TextColor: _lt("Text Color"),
+        FillColor: _lt("Fill Color"),
+        Borders: _lt("Borders"),
+        MergeCells: _lt("Merge Cells"),
+        HorizontalAlign: _lt("Horizontal align"),
+    };
     const FORMATS = [
-        { name: "general", text: "General (no specific format)" },
-        { name: "number", text: "Number (1,000.12)", value: "#,##0.00" },
-        { name: "percent", text: "Percent (10.12%)", value: "0.00%" },
-        { name: "date", text: "Date (9/26/2008)", value: "m/d/yyyy" },
-        { name: "time", text: "Time (10:43:00 PM)", value: "hh:mm:ss a" },
-        { name: "datetime", text: "Date time (9/26/2008 22:43:00)", value: "m/d/yyyy hh:mm:ss" },
-        { name: "duration", text: "Duration (27:51:38)", value: "hhhh:mm:ss" },
+        { name: "general", text: _lt("General (no specific format)") },
+        { name: "number", text: _lt("Number (1,000.12)"), value: "#,##0.00" },
+        { name: "percent", text: _lt("Percent (10.12%)"), value: "0.00%" },
+        { name: "date", text: _lt("Date (9/26/2008)"), value: "m/d/yyyy" },
+        { name: "time", text: _lt("Time (10:43:00 PM)"), value: "hh:mm:ss a" },
+        { name: "datetime", text: _lt("Date time (9/26/2008 22:43:00)"), value: "m/d/yyyy hh:mm:ss" },
+        { name: "duration", text: _lt("Duration (27:51:38)"), value: "hhhh:mm:ss" },
     ];
     // -----------------------------------------------------------------------------
     // TopBar
@@ -29928,15 +30516,15 @@
           </span>
         </div>
         <div t-else="" class="o-toolbar-tools">
-          <div class="o-tool" title="Undo" t-att-class="{'o-disabled': !undoTool}" t-on-click="undo" >${UNDO_ICON}</div>
-          <div class="o-tool" t-att-class="{'o-disabled': !redoTool}" title="Redo"  t-on-click="redo">${REDO_ICON}</div>
-          <div class="o-tool" title="Paint Format" t-att-class="{active:paintFormatTool}" t-on-click="paintFormat">${PAINT_FORMAT_ICON}</div>
-          <div class="o-tool" title="Clear Format" t-on-click="clearFormatting()">${CLEAR_FORMAT_ICON}</div>
+          <div class="o-tool" title="${Terms.Undo}" t-att-class="{'o-disabled': !undoTool}" t-on-click="undo" >${UNDO_ICON}</div>
+          <div class="o-tool" title="${Terms.Redo}" t-att-class="{'o-disabled': !redoTool}" t-on-click="redo">${REDO_ICON}</div>
+          <div class="o-tool" title="${Terms.PaintFormat}" t-att-class="{active:paintFormatTool}" t-on-click="paintFormat">${PAINT_FORMAT_ICON}</div>
+          <div class="o-tool" title="${Terms.ClearFormat}" t-on-click="clearFormatting()">${CLEAR_FORMAT_ICON}</div>
           <div class="o-divider"/>
-          <div class="o-tool" title="Format as percent" t-on-click="toogleFormat('percent')">%</div>
-          <div class="o-tool" title="Decrease decimal places" t-on-click="setDecimal(-1)">.0</div>
-          <div class="o-tool" title="Increase decimal places" t-on-click="setDecimal(+1)">.00</div>
-          <div class="o-tool o-dropdown" title="More formats" t-on-click="toggleDropdownTool('formatTool')">
+          <div class="o-tool" title="${Terms.FormatAsPercent}" t-on-click="toogleFormat('percent')">%</div>
+          <div class="o-tool" title="${Terms.DecreaseDecimalPlaces}" t-on-click="setDecimal(-1)">.0</div>
+          <div class="o-tool" title="${Terms.IncreaseDecimalPlaces}" t-on-click="setDecimal(+1)">.00</div>
+          <div class="o-tool o-dropdown" title="${Terms.MoreFormats}" t-on-click="toggleDropdownTool('formatTool')">
             <div class="o-text-icon">123${TRIANGLE_DOWN_ICON}</div>
             <div class="o-dropdown-content o-text-options  o-format-tool "  t-if="state.activeTool === 'formatTool'" t-on-click="setFormat">
               <t t-foreach="formats" t-as="format" t-key="format.name">
@@ -29946,7 +30534,7 @@
           </div>
           <div class="o-divider"/>
           <!-- <div class="o-tool" title="Font"><span>Roboto</span> ${TRIANGLE_DOWN_ICON}</div> -->
-          <div class="o-tool o-dropdown" title="Font Size" t-on-click="toggleDropdownTool('fontSizeTool')">
+          <div class="o-tool o-dropdown" title="${Terms.FontSize}" t-on-click="toggleDropdownTool('fontSizeTool')">
             <div class="o-text-icon"><t t-esc="style.fontSize || ${DEFAULT_FONT_SIZE}"/> ${TRIANGLE_DOWN_ICON}</div>
             <div class="o-dropdown-content o-text-options "  t-if="state.activeTool === 'fontSizeTool'" t-on-click="setSize">
               <t t-foreach="fontSizes" t-as="font" t-key="font_index">
@@ -29955,20 +30543,20 @@
             </div>
           </div>
           <div class="o-divider"/>
-          <div class="o-tool" title="Bold" t-att-class="{active:style.bold}" t-on-click="toogleStyle('bold')">${BOLD_ICON}</div>
-          <div class="o-tool" title="Italic" t-att-class="{active:style.italic}" t-on-click="toogleStyle('italic')">${ITALIC_ICON}</div>
-          <div class="o-tool" title="Strikethrough"  t-att-class="{active:style.strikethrough}" t-on-click="toogleStyle('strikethrough')">${STRIKE_ICON}</div>
-          <div class="o-tool o-dropdown o-with-color">
-            <span t-attf-style="border-color:{{textColor}}" title="Text Color" t-on-click="toggleDropdownTool('textColorTool')">${TEXT_COLOR_ICON}</span>
+          <div class="o-tool" title="${Terms.Bold}" t-att-class="{active:style.bold}" t-on-click="toogleStyle('bold')">${BOLD_ICON}</div>
+          <div class="o-tool" title="${Terms.Italic}" t-att-class="{active:style.italic}" t-on-click="toogleStyle('italic')">${ITALIC_ICON}</div>
+          <div class="o-tool" title="${Terms.Strikethrough}"  t-att-class="{active:style.strikethrough}" t-on-click="toogleStyle('strikethrough')">${STRIKE_ICON}</div>
+          <div class="o-tool o-dropdown o-with-color" title="${Terms.TextColor}" t-on-click="toggleDropdownTool('textColorTool')" >
+            <span t-attf-style="border-color:{{textColor}}">${TEXT_COLOR_ICON}</span>
             <ColorPicker t-if="state.activeTool === 'textColorTool'" t-on-color-picked="setColor('textColor')" t-key="textColor"/>
           </div>
           <div class="o-divider"/>
-          <div class="o-tool  o-dropdown o-with-color">
-            <span t-attf-style="border-color:{{fillColor}}" title="Fill Color" t-on-click="toggleDropdownTool('fillColorTool')">${FILL_COLOR_ICON}</span>
+          <div class="o-tool  o-dropdown o-with-color" title="${Terms.FillColor}" t-on-click="toggleDropdownTool('fillColorTool')">
+            <span t-attf-style="border-color:{{fillColor}}">${FILL_COLOR_ICON}</span>
             <ColorPicker t-if="state.activeTool === 'fillColorTool'" t-on-color-picked="setColor('fillColor')" t-key="fillColor"/>
           </div>
-          <div class="o-tool o-dropdown">
-            <span title="Borders" t-on-click="toggleDropdownTool('borderTool')">${BORDERS_ICON}</span>
+          <div class="o-tool o-dropdown" t-on-click="toggleDropdownTool('borderTool')" title="${Terms.Borders}">
+            <span>${BORDERS_ICON}</span>
             <div class="o-dropdown-content o-border" t-if="state.activeTool === 'borderTool'">
               <div class="o-dropdown-line">
                 <span class="o-line-item" t-on-click="setBorder('all')">${BORDERS_ICON}</span>
@@ -29986,9 +30574,9 @@
               </div>
             </div>
           </div>
-          <div class="o-tool" title="Merge Cells"  t-att-class="{active:inMerge, 'o-disabled': cannotMerge}" t-on-click="toggleMerge">${MERGE_CELL_ICON}</div>
+          <div class="o-tool" title="${Terms.MergeCells}"  t-att-class="{active:inMerge, 'o-disabled': cannotMerge}" t-on-click="toggleMerge">${MERGE_CELL_ICON}</div>
           <div class="o-divider"/>
-          <div class="o-tool o-dropdown" title="Horizontal align" t-on-click="toggleDropdownTool('alignTool')">
+          <div class="o-tool o-dropdown" title="${Terms.HorizontalAlign}" t-on-click="toggleDropdownTool('alignTool')">
             <span>
               <t t-if="style.align === 'right'">${ALIGN_RIGHT_ICON}</t>
               <t t-elif="style.align === 'center'">${ALIGN_CENTER_ICON}</t>
@@ -30221,7 +30809,7 @@
       t-on-composer-cell-focused="onGridComposerCellFocused"
       t-att-class="{'o-two-columns': !sidePanel.isOpen}"/>
     <SidePanel t-if="sidePanel.isOpen"
-           t-on-close-side-panel="sidePanel.isOpen = false"
+           t-on-close-side-panel="closeSidePanel"
            component="sidePanel.component"
            panelProps="sidePanel.panelProps"/>
     <BottomBar t-on-click="focusGrid" class="o-two-columns"/>
@@ -30355,6 +30943,10 @@
             this.sidePanel.component = panel;
             this.sidePanel.panelProps = panelProps;
             this.sidePanel.isOpen = true;
+        }
+        closeSidePanel() {
+            this.sidePanel.isOpen = false;
+            this.focusGrid();
         }
         openLinkEditor() {
             this.linkEditor.isOpen = true;
@@ -30539,6 +31131,7 @@
         isMarkdownLink,
         parseMarkdownLink,
         markdownLink,
+        createEmptyWorkbookData,
     };
 
     exports.CorePlugin = CorePlugin;
@@ -30554,6 +31147,7 @@
     exports.__info__ = __info__;
     exports.astToFormula = astToFormula;
     exports.cellTypes = cellTypes;
+    exports.convertAstNodes = convertAstNodes;
     exports.coreTypes = coreTypes;
     exports.functionCache = functionCache;
     exports.helpers = helpers;
@@ -30567,8 +31161,8 @@
     Object.defineProperty(exports, '__esModule', { value: true });
 
     exports.__info__.version = '2.0.0';
-    exports.__info__.date = '2021-11-16T12:58:56.829Z';
-    exports.__info__.hash = 'f633666';
+    exports.__info__.date = '2022-08-11T09:45:24.263Z';
+    exports.__info__.hash = 'ba132db';
 
-}(this.o_spreadsheet = this.o_spreadsheet || {}, owl));
+})(this.o_spreadsheet = this.o_spreadsheet || {}, owl);
 //# sourceMappingURL=o_spreadsheet.js.map

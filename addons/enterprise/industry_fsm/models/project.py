@@ -48,6 +48,8 @@ class Task(models.Model):
         if 'project_id' in fields_list and not result.get('project_id') and is_fsm_mode:
             company_id = self.env.context.get('default_company_id') or self.env.company.id
             fsm_project = self.env['project.project'].search([('is_fsm', '=', True), ('company_id', '=', company_id)], order='sequence', limit=1)
+            if fsm_project:
+                result['stage_id'] = self.stage_find(fsm_project.id, [('fold', '=', False), ('is_closed', '=', False)])
             result['project_id'] = fsm_project.id
 
         date_begin = result.get('planned_date_begin')
@@ -178,7 +180,7 @@ class Task(models.Model):
                 ('is_fsm', '=', True),
                 ('user_ids', '!=', False)
             ])
-            search_domain = ['|', '|', ('id', 'in', users.ids), ('groups_id', 'in', self.env.ref('industry_fsm.group_fsm_user').id), ('id', 'in', recently_created_tasks.mapped('user_ids.id'))]
+            search_domain = ['&',('company_id', 'in', self.env.companies.ids) ,'|', '|', ('id', 'in', users.ids), ('groups_id', 'in', self.env.ref('industry_fsm.group_fsm_user').id), ('id', 'in', recently_created_tasks.mapped('user_ids.id'))]
             return users.search(search_domain, order=order)
         return users
 
@@ -229,32 +231,51 @@ class Task(models.Model):
     def _stop_all_timers_and_create_timesheets(self):
         ConfigParameter = self.env['ir.config_parameter'].sudo()
         Timesheet = self.env['account.analytic.line']
+        Timer = self.env['timer.timer']
 
-        running_timer_ids = self.env['timer.timer'].sudo().search([('res_model', '=', 'project.task'), ('res_id', 'in', self.ids)])
-        if not running_timer_ids:
+        tasks_running_timer_ids = Timer.search([('res_model', '=', 'project.task'), ('res_id', 'in', self.ids)])
+        timesheets = Timesheet.sudo().search([('task_id', 'in', self.ids)])
+        timesheets_running_timer_ids = None
+        if timesheets:
+            timesheets_running_timer_ids = Timer.search([
+                ('res_model', '=', 'account.analytic.line'),
+                ('res_id', 'in', timesheets.ids)])
+        if not tasks_running_timer_ids and not timesheets_running_timer_ids:
             return Timesheet
 
-        task_dict = {task.id: task for task in self}
+        result = Timesheet
         minimum_duration = int(ConfigParameter.get_param('hr_timesheet.timesheet_min_duration', 0))
         rounding = int(ConfigParameter.get_param('hr_timesheet.timesheet_rounding', 0))
-        timesheets = []
-        for timer in running_timer_ids:
-            minutes_spent = timer._get_minutes_spent()
-            time_spent = self._timer_rounding(minutes_spent, minimum_duration, rounding) / 60
-            task = task_dict[timer.res_id]
-            timesheets.append({
-                'task_id': task.id,
-                'project_id': task.project_id.id,
-                'user_id': timer.user_id.id,
-                'unit_amount': time_spent,
-            })
-        running_timer_ids.unlink()
-        return Timesheet.create(timesheets)
+        if tasks_running_timer_ids:
+            task_dict = {task.id: task for task in self}
+            timesheets_val = []
+            for timer in tasks_running_timer_ids:
+                minutes_spent = timer._get_minutes_spent()
+                time_spent = self._timer_rounding(minutes_spent, minimum_duration, rounding) / 60
+                task = task_dict[timer.res_id]
+                timesheets_val.append({
+                    'task_id': task.id,
+                    'project_id': task.project_id.id,
+                    'user_id': timer.user_id.id,
+                    'unit_amount': time_spent,
+                })
+            tasks_running_timer_ids.sudo().unlink()
+            result += Timesheet.sudo().create(timesheets_val)
+
+        if timesheets_running_timer_ids:
+            timesheets_dict = {timesheet.id: timesheet for timesheet in timesheets}
+            for timer in timesheets_running_timer_ids:
+                timesheet = timesheets_dict[timer.res_id]
+                minutes_spent = timer._get_minutes_spent()
+                timesheet._add_timesheet_time(minutes_spent)
+                result += timesheet
+            timesheets_running_timer_ids.sudo().unlink()
+
+        return result
 
     def action_fsm_navigate(self):
         if not self.partner_id.partner_latitude and not self.partner_id.partner_longitude:
             self.partner_id.geo_localize()
-        # YTI TODO: The url should be set with single method everywhere in the codebase
         url = "https://www.google.com/maps/dir/?api=1&destination=%s,%s" % (self.partner_id.partner_latitude, self.partner_id.partner_longitude)
         return {
             'type': 'ir.actions.act_url',

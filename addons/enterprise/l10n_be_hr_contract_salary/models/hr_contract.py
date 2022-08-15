@@ -10,7 +10,6 @@ EMPLOYER_ONSS = 0.2714
 class HrContract(models.Model):
     _inherit = 'hr.contract'
 
-    double_holiday_wage = fields.Monetary(compute='_compute_double_holiday_wage')
     id_card = fields.Binary(related='employee_id.id_card', groups="hr_contract.group_hr_contract_manager")
     driving_license = fields.Binary(related='employee_id.driving_license', groups="hr_contract.group_hr_contract_manager")
     mobile_invoice = fields.Binary(related='employee_id.mobile_invoice', groups="hr_contract.group_hr_contract_manager")

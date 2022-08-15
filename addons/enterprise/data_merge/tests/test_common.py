@@ -31,19 +31,35 @@ class TestCommon(TransactionCase):
             ]
         })
 
+        self.DMTestModel2 = self.env['ir.model'].create({
+            'name': 'Test Model',
+            'model': 'x_dm_test_model2',
+            'field_id': [
+                (0, 0, {'name': 'x_name', 'ttype': 'char', 'field_description': 'Name'}),
+                (0, 0, {'name': 'x_email', 'ttype': 'char', 'field_description': 'Email'}),
+            ]
+        })
+
+
         self.MyModel = self.DMModel.create({
             'name': 'test of test model',
             'res_model_id': self.DMTestModel.id,
         })
-        
+
+        self.MyModel2 = self.DMModel.create({
+            'name': 'test of test model 2',
+            'res_model_id': self.DMTestModel2.id,
+        })
+
     def _create_record(self, model, **kwargs):
         return self.env[model].create(kwargs)
 
-    def _create_rule(self, field_name, mode):
+    def _create_rule(self, field_name, mode, model_name='x_dm_test_model'):
+        model = self.MyModel if model_name == 'x_dm_test_model' else self.MyModel2
         if mode == 'accent' and not self.registry.has_unaccent:
             raise unittest.SkipTest("Unaccent rules require unaccent to be enabled")
         self.DMRule.create({
-            'model_id': self.MyModel.id,
-            'field_id': self.env['ir.model.fields']._get('x_dm_test_model', field_name).id,
+            'model_id': model.id,
+            'field_id': self.env['ir.model.fields']._get(model_name, field_name).id,
             'match_mode': mode
         })

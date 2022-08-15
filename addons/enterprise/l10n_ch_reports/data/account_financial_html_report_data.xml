@@ -306,10 +306,31 @@
         <field name="level" eval="2"/>
         <field name="sequence" eval="2"/>
         <field name="parent_id" ref="account_financial_report_line_ch_28"/>
+        <field name="domain" eval=""/>
+        <field name="formulas">CH_290_A + CH_290_B</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_290_a" model="account.financial.html.report.line">
+        <field name="name">Legal reserves</field>
+        <field name="code">CH_290_A</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_290"/>
         <field name="groupby">account_id</field>
-        <field name="special_date_changer">normal</field>
-        <field name="domain" eval="[('account_id.code', '&gt;=', '290'), ('account_id.code', '&lt;', '2991')]"/>
+        <field name="special_date_changer">from_beginning</field>
+        <field name="domain" eval="['&amp;', ('account_id.code', '&gt;=', '290'), ('account_id.code', '&lt;', '2991')]"/>
         <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_ch_290_b" model="account.financial.html.report.line">
+        <field name="name">Previous years' profit or loss</field>
+        <field name="code">CH_290_B</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="parent_id" ref="account_financial_report_line_ch_290"/>
+        <field name="special_date_changer">from_beginning</field>
+        <field name="domain" eval="[('account_id.internal_group', 'in', ['income', 'expense'])]"/>
+        <field name="formulas">-sum - CH_299</field>
     </record>
 
     <record id="account_financial_report_line_ch_299" model="account.financial.html.report.line">
@@ -318,10 +339,10 @@
         <field name="level" eval="2"/>
         <field name="sequence" eval="3"/>
         <field name="parent_id" ref="account_financial_report_line_ch_28"/>
-        <field name="special_date_changer">from_beginning</field>
+        <field name="special_date_changer">from_fiscalyear</field>
         <field name="green_on_positive">true</field>
-        <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_unaffected_earnings'))]"/>
-        <field name="formulas">CH_R - sum</field>
+        <field name="domain" eval="[('account_id.internal_group', 'in', ['income','expense'])]"/>
+        <field name="formulas">-sum</field>
     </record>
 
    <!-- P&L REPORT  -->
@@ -330,6 +351,15 @@
         <field name="name">Profit And Loss</field>
         <field name="parent_id" ref="l10n_ch.account_reports_ch_statements_menu"/>
         <field name="country_id" ref="base.ch"/>
+    </record>
+
+    <record id="action_account_report_ch_cdr" model="ir.actions.client">
+        <field name="name">Profit And Loss</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.financial.html.report', 'id': ref('account_financial_report_l10n_ch_cdr')}" />
+    </record>
+    <record id="account_financial_report_line_ch_299" model="account.financial.html.report.line">
+        <field name="action_id" ref="action_account_report_ch_cdr"/>
     </record>
 
     <record id="account_financial_report_line_ch_3" model="account.financial.html.report.line">

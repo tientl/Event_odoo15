@@ -24,7 +24,7 @@ class ProjectTask(models.Model):
                     ['ids:array_agg(id)', 'task_id'],
                     ['task_id'],
                 )
-                timesheets_dict = {res['task_id']: res['ids'] for res in timesheets_read_group}
+                timesheets_dict = {res['task_id'][0]: res['ids'] for res in timesheets_read_group}
                 for record_read in result:
                     record_read['timesheet_ids'] = timesheets_dict.get(record_read['id'], [])
         return result

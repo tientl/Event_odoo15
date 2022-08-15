@@ -83,7 +83,7 @@ class PatchedOfxParser(OfxParserClass):
             )
             return local_date + msec
         except:
-            if ofxDateTime[:8] == "00000000":
+            if not ofxDateTime or ofxDateTime[:8] == "00000000":
                 return None
 
             return datetime.datetime.strptime(

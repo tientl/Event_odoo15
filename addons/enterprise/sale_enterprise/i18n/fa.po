@@ -1,20 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * sale_enterprise
+# 	* sale_enterprise
 # 
 # Translators:
-# Zahed Alfak <tamass4116@gmail.com>, 2018
-# Martin Trigaux, 2018
-# Morovat Guivi <tarjomac@gmail.com>, 2018
-# Hamid Darabi, 2018
-# Hamed Mohammadi <hamed@dehongi.com>, 2018
+# M.Hossein S.Farvashani <Farvashani@gmail.com>, 2022
+# Hamid Darabi, 2022
+# Far Har <fhari1234@gmail.com>, 2022
+# Morovat Guivi <tarjomac@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Hamed Mohammadi <hamed@dehongi.com>, 2022
+# Hanna Kheradroosta, 2022
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5+e\n"
+"Project-Id-Version: Odoo Server saas~14.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:32+0000\n"
-"PO-Revision-Date: 2018-10-02 10:32+0000\n"
-"Last-Translator: Hamed Mohammadi <hamed@dehongi.com>, 2018\n"
+"POT-Creation-Date: 2021-07-12 07:57+0000\n"
+"PO-Revision-Date: 2021-09-14 12:43+0000\n"
+"Last-Translator: Hanna Kheradroosta, 2022\n"
 "Language-Team: Persian (https://www.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,12 +28,22 @@ msgstr ""
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
 msgid "# Customers"
-msgstr ""
+msgstr "# مشتریان"
 
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
 msgid "# Lines"
-msgstr ""
+msgstr "# سطرها"
+
+#. module: sale_enterprise
+#: model:ir.model.fields,field_description:sale_enterprise.field_sale_report__avg_days_to_confirm
+msgid "Average Days To Confirm"
+msgstr "میانگین روزها برای تایید"
+
+#. module: sale_enterprise
+#: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
+msgid "Average Days to Confirm"
+msgstr "میانگین روزها برای تایید"
 
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
@@ -38,18 +51,32 @@ msgid "Average Order"
 msgstr "سفارش متوسط"
 
 #. module: sale_enterprise
-#: model:ir.model.fields,field_description:sale_enterprise.field_sale_report__days_to_confirm
-msgid "Days To Confirm"
+#: model:ir.model.fields,help:sale_enterprise.field_sale_report__avg_days_to_confirm
+msgid ""
+"Average days to confirm a sales order after its creation. Due to a hack "
+"needed to calculate this,               every record will show the same "
+"average value, therefore only use this as an aggregated value with "
+"group_operator=avg"
 msgstr ""
+"میانگین روزها برای تایید یک سفارش فروش پس از ایجاد آن. با توجه به هک مورد "
+"نیاز برای محاسبه این,               هر رکورد همان ارزش متوسط را نشان می دهد,"
+" بنابراین تنها از این به عنوان یک مقدار تجمیع شده با group_operator=avg "
+"استفاده شود"
 
 #. module: sale_enterprise
-#: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
-msgid "Days to Confirm"
-msgstr ""
+#: model_terms:ir.actions.act_window,help:sale_enterprise.sale_report_action_dashboard
+msgid "Create a new sales order"
+msgstr "ایجاد سفارش فروش جدید"
 
 #. module: sale_enterprise
+#: model:ir.actions.act_window,name:sale_enterprise.sale_report_action_dashboard
+#: model:ir.ui.menu,name:sale_enterprise.menu_sale_report_dashboard
+msgid "Dashboard"
+msgstr "تحلیل فروش"
+
+#. module: sale_enterprise
+#: model:ir.model.fields.selection,name:sale_enterprise.selection__sale_report__invoice_status__invoiced
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.view_order_product_search_inherit
-#: selection:sale.report,invoice_status:0
 msgid "Fully Invoiced"
 msgstr "به‌طور کامل فاکتور شده"
 
@@ -59,7 +86,12 @@ msgid "Invoice Status"
 msgstr "وضعیت فاکتور"
 
 #. module: sale_enterprise
-#: selection:sale.report,invoice_status:0
+#: model_terms:ir.actions.act_window,help:sale_enterprise.sale_report_action_dashboard
+msgid "No data yet!"
+msgstr "هنوز اطلاعاتی وجود ندارد!"
+
+#. module: sale_enterprise
+#: model:ir.model.fields.selection,name:sale_enterprise.selection__sale_report__invoice_status__no
 msgid "Nothing to Invoice"
 msgstr "هیچ چیز برای فاکتور وجود ندارد"
 
@@ -69,7 +101,6 @@ msgid "Orders"
 msgstr "سفارشات"
 
 #. module: sale_enterprise
-#: model:ir.actions.act_window,name:sale_enterprise.sale_report_action_dashboard
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_pivot
 msgid "Sales Analysis"
 msgstr "تحلیل فروش"
@@ -77,30 +108,40 @@ msgstr "تحلیل فروش"
 #. module: sale_enterprise
 #: model:ir.model,name:sale_enterprise.model_sale_report
 msgid "Sales Analysis Report"
-msgstr ""
+msgstr "گزارش تحلیل فروش"
 
 #. module: sale_enterprise
+#: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
+msgid "Sales Teams"
+msgstr "تیم های فروش"
+
+#. module: sale_enterprise
+#: model:ir.model.fields.selection,name:sale_enterprise.selection__sale_report__invoice_status__to_invoice
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.view_order_product_search_inherit
-#: selection:sale.report,invoice_status:0
 msgid "To Invoice"
 msgstr "قابل فاکتور"
 
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
 msgid "Total Sales"
-msgstr ""
+msgstr "فروش کل"
 
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
 msgid "Total, Tax Included"
-msgstr ""
+msgstr "کل، با مالیات"
 
 #. module: sale_enterprise
 #: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
 msgid "Untaxed Total"
-msgstr ""
+msgstr "جمع کل بدون مالیات"
 
 #. module: sale_enterprise
-#: selection:sale.report,invoice_status:0
+#: model:ir.model.fields.selection,name:sale_enterprise.selection__sale_report__invoice_status__upselling
 msgid "Upselling Opportunity"
 msgstr "فرصت فروش تعدادی بیشتر"
+
+#. module: sale_enterprise
+#: model_terms:ir.ui.view,arch_db:sale_enterprise.sale_report_view_dashboard
+msgid "days"
+msgstr "روز"

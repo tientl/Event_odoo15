@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:18+0000\n"
 "PO-Revision-Date: 2021-09-14 12:41+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,16 +29,18 @@ msgid ""
 "                            upon validation.\n"
 "                        </small>"
 msgstr ""
+"<small class=\"text-muted form-text\">授权书副本将通过电子邮件发送至<span "
+"name=\"o_sdd_partner_email\"/>验证后。</span></small>"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "<strong>Authenticated by SMS by:</strong>"
-msgstr ""
+msgstr "<strong>通过短信认证的是：。</strong>"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "<strong>Date and place of signature:</strong>"
-msgstr ""
+msgstr "<strong>签署日期和地点。</strong>"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
@@ -45,6 +48,8 @@ msgid ""
 "<strong>Name of the reference party:</strong>\n"
 "                            ......................................"
 msgstr ""
+"<strong>参照方的名称。\n"
+"</strong>                           ......................................"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
@@ -140,6 +145,91 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">您的SEPA直接借记交易</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.reference or ''\"/>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    你好，<t t-out=\"object.partner_id.name or ''\">布兰登-弗里曼</t>。<br/><br/>\n"
+"\n"
+"                    我们将向您的银行发送金额为<t t-out=\"format_amount(object.amount, object.currency_id) or ''\">10.00美元</t>的SEPA直接借记支付请求。<br/>\n"
+"\n"
+"                    您的账户<t t-out=\"ctx.get('iban') or ''\">LU 28 001 94006447500003</t>将在最多两个日历日或不久后被扣除，请确保您有所需的资金。<br/><br/>\n"
+"\n"
+"                   <t t-if=\"ctx.get('creditor_identifier') or ctx.get('mandate_ref')\">\n"
+"                        商家数据。<br/>\n"
+"                       <ul>\n"
+"                           <t t-if=\"ctx.get('creditor_identifier')\">\n"
+"                               <li>IBAN:<t t-out=\"ctx['creditor_identifier'] or ''\">No 93 8601 1117947</t></li> </t>\n"
+"                            \n"
+"                           <t t-if=\"ctx.get('mandate_ref')\">\n"
+"                               <li>SEPA直接扣款授权参考。<t t-out=\"ctx['mandate_ref'] or ''\"/>\n"
+"</li> </t> </ul> </t>                           \n"
+"                        \n"
+"                    \n"
+"                    如果您有任何问题，请立即与我们联系。\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">您的公司</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                       <t t-out=\"company.phone or ''\">+1 650-123-4567</t>|\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                       <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a>|\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        由<a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>提供技术支持\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,body_html:payment_sepa_direct_debit.mail_template_sepa_notify_validation
@@ -219,12 +309,86 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.payment_journal_id.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">您的SEPA直接付款日期</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.partner_bank_id.acc_number or ''\">BE15001559627230</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    你好，<t t-out=\"object.partner_id.name or ''\">布兰登-弗里曼</t>。<br/><br/>\n"
+"\n"
+"                   <p>一个SEPA直接借记授权刚刚在<t t-out=\"company.name or ''\">贵公司</t></p>得到验证使用。\n"
+"\n"
+"                   <p>你会发现这封邮件的附件中有一份授权验证的副本。\n"
+"</p>\n"
+"                   <p>如果您有任何问题，请随时与我们联系。\n"
+"</p>               </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">您的公司</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                       <t t-out=\"company.phone or ''\">+1 650-123-4567</t>|\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                       <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a>|\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        由<a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>提供技术支持\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "Both the phone number and the verification code are required."
-msgstr ""
+msgstr "电话号码和验证码都是必须的。"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
@@ -241,7 +405,7 @@ msgstr "联系人"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Could not send the verification code."
-msgstr ""
+msgstr "无法发送验证码。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__currency_id
@@ -252,12 +416,12 @@ msgstr "币种"
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Direct Debit: %s"
-msgstr ""
+msgstr "直接扣款:%s"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_mandate_form
 msgid "Electronic Signature"
-msgstr ""
+msgstr "电子签名"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
@@ -268,7 +432,7 @@ msgstr "IBAN"
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Incorrect phone number."
-msgstr ""
+msgstr "电话号码不正确。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_account_move_line
@@ -278,13 +442,13 @@ msgstr "会计分录"
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Missing Signature. Please fill your name and signature."
-msgstr ""
+msgstr "缺少签名。请填写您的姓名和签名。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Missing or invalid IBAN."
-msgstr ""
+msgstr "缺少或无效的IBAN。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
@@ -320,7 +484,7 @@ msgstr "电话号码"
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Phone Verification"
-msgstr ""
+msgstr "电话验证"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__provider
@@ -338,7 +502,7 @@ msgstr "重新发送短信"
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "Restricted to countries in the SEPA zone. Forbidden countries: %s"
-msgstr ""
+msgstr "限制在SEPA区域内的国家。禁止的国家:%s"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_sdd_mandate
@@ -353,7 +517,7 @@ msgstr "SEPA 直接借记"
 #. module: payment_sepa_direct_debit
 #: model:account.payment.method,name:payment_sepa_direct_debit.payment_method_sepa_direct_debit
 msgid "SEPA Direct Debit (acquirer)"
-msgstr ""
+msgstr "SEPA直接借记(收单方)"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_token__sdd_mandate_id
@@ -364,17 +528,17 @@ msgstr "SEPA 直接借记授权范围"
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 #: model:mail.template,subject:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 msgid "SEPA Direct Debit: Charge Notification"
-msgstr ""
+msgstr "SEPA直接借记：收费通知"
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "SEPA Direct Debit: Validation Notification"
-msgstr ""
+msgstr "SEPA直接借记：验证通知"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_credits
 msgid "SMS Credits"
-msgstr ""
+msgstr "短信学分"
 
 #. module: payment_sepa_direct_debit
 #. openerp-web
@@ -387,19 +551,19 @@ msgstr "短信已发送"
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "SMS could not be sent due to insufficient credit."
-msgstr ""
+msgstr "由于信用不足，短信无法发送。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "SMS verification is disabled."
-msgstr ""
+msgstr "短信验证被禁用。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_token.py:0
 #, python-format
 msgid "Saved payment methods cannot be restored once they have been archived."
-msgstr ""
+msgstr "已保存的支付方式一旦被归档，就不能再恢复。"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
@@ -433,23 +597,23 @@ msgstr "签名时间"
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.sdd_payment_mandate_form
 msgid "Signed online on"
-msgstr ""
+msgstr "在网上签署的是"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__provider
 msgid "The Payment Service Provider to use with this acquirer"
-msgstr ""
+msgstr "与该收单机构一起使用的支付服务提供商"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The bank account of the journal is not a valid IBAN."
-msgstr ""
+msgstr "日志的银行账户不是一个有效的IBAN。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_on
 msgid "The date of the signature"
-msgstr ""
+msgstr "签字的日期"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -458,97 +622,97 @@ msgid ""
 "The mandate could not be created. Please verify your IBAN and that you have "
 "not already created an account with this bank number. If that is the case, "
 "log in under that account."
-msgstr ""
+msgstr "无法创建授权。请核实您的IBAN，并确认您没有用这个银行号码创建过账户。如果是这样的话，请在该账户下登录。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The mandate is invalid."
-msgstr ""
+msgstr "该授权是无效的。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
 #, python-format
 msgid "The mandate owner and customer do not match."
-msgstr ""
+msgstr "授权负责人和客户不匹配。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was signed by %s."
-msgstr ""
+msgstr "该授权书由%s签署。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The mandate was verified with phone number %s."
-msgstr ""
+msgstr "该授权是通过电话号码%s核实的。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The name and signature must be provided."
-msgstr ""
+msgstr "必须提供姓名和签名。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__signed_by
 msgid "The name of the signer"
-msgstr ""
+msgstr "签名人的姓名"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number does not match."
-msgstr ""
+msgstr "电话号码不匹配。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "The phone number must be provided and verified."
-msgstr ""
+msgstr "必须提供电话号码并进行核实。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number should be in international format."
-msgstr ""
+msgstr "电话号码应该是国际格式的。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__phone_number
 msgid "The phone number used for verification by SMS code"
-msgstr ""
+msgstr "用于通过短信代码验证的电话号码"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The token is not linked to a mandate."
-msgstr ""
+msgstr "该令牌不与授权挂钩。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The transaction is not linked to a token."
-msgstr ""
+msgstr "该交易没有与令牌挂钩。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The verification code does not match."
-msgstr ""
+msgstr "验证码不匹配。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "This mandate has already been verified."
-msgstr ""
+msgstr "这项授权已经得到了验证。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Unknown mandate ID."
-msgstr ""
+msgstr "未知的授权ID。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__verification_code
@@ -566,30 +730,30 @@ msgstr "已验证"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "We are not able to process your payment."
-msgstr ""
+msgstr "我们无法处理您的付款。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_signature_required
 msgid "Whether a signature is required to create a new mandate."
-msgstr ""
+msgstr "创建新的授权是否需要签名。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_acquirer__sdd_sms_verification_required
 msgid "Whether phone numbers must be verified by an SMS code."
-msgstr ""
+msgstr "电话号码是否必须通过短信代码来验证。"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_acquirer_form
 msgid ""
 "You don't have enough credit to send SMS. You can buy new credits here:"
-msgstr ""
+msgstr "你没有足够的点数来发送短信。你可以在这里购买新的点数："
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,subject:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid ""
 "Your SEPA Direct Debit Mandate with {{ "
 "object.payment_journal_id.company_id.name }}"
-msgstr ""
+msgstr "您与{{ object.payment_journal_id.company_id.name }}的SEPA直接借记委托书"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_acquirer.py:0
@@ -597,7 +761,7 @@ msgstr ""
 msgid ""
 "Your company must have a creditor identifier in order to issue a SEPA Direct"
 " Debit payment request. It can be set in Accounting settings."
-msgstr ""
+msgstr "您的公司必须有一个债权人标识符，以便发出SEPA直接借记支付请求。它可以在会计设置中设置。"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
@@ -608,4 +772,4 @@ msgstr "您确认代码是%s"
 #. module: payment_sepa_direct_debit
 #: model:mail.template,report_name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "{{ (object.name or '').replace('/','_') }}"
-msgstr ""
+msgstr "{{ (object.name or '').replace('/','_') }}"

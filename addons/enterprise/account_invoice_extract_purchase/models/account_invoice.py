@@ -2,10 +2,9 @@
 import logging
 import time
 
-from odoo import api, models
+from odoo import models, _
 from odoo.addons.account_invoice_extract.models.account_invoice import WARNING_DUPLICATE_VENDOR_REFERENCE
 from odoo.exceptions import ValidationError
-from odoo.tests.common import Form
 
 _logger = logging.getLogger(__name__)
 
@@ -71,12 +70,12 @@ class AccountMove(models.Model):
     def _set_purchase_orders(self, purchase_orders, ocr_vendor_ref):
         try:
             with self.env.cr.savepoint():
-                with Form(self) as move_form:
+                with self.get_form_context_manager() as move_form:
                     for purchase_order in purchase_orders:
                         move_form.purchase_id = purchase_order
         except ValidationError:
             # In case of ValidationError due to a duplicated vendor reference, set it to False and display a warning message
-            with Form(self) as move_form:
+            with self.get_form_context_manager() as move_form:
                 for purchase_order in purchase_orders:
                     move_form.purchase_id = purchase_order
                 move_form.ref = False
@@ -95,16 +94,15 @@ class AccountMove(models.Model):
                 purchase_orders_found = [po['content'] for po in purchase_orders_ocr]
                 matching_pos |= self.env['purchase.order'].search(common_domain + [('name', 'in', purchase_orders_found)])
 
-            if not matching_pos and invoice_id_ocr:
-                matching_po = self.env['purchase.order'].search(common_domain + [('partner_ref', '=', invoice_id_ocr)])
-                if len(matching_po) == 1:
+                if not matching_pos:
+                    matching_po = self.env['purchase.order'].search(common_domain + [('partner_ref', 'in', purchase_orders_found)])
                     matching_pos |= matching_po
 
             if not matching_pos:
                 supplier_ocr = ocr_results['supplier']['selected_value']['content'] if 'supplier' in ocr_results else ""
                 vat_number_ocr = ocr_results['VAT_Number']['selected_value']['content'] if 'VAT_Number' in ocr_results else ""
 
-                partner_id = self.env["res.partner"].search([("vat", "=ilike", vat_number_ocr)], limit=1)
+                partner_id = self.find_partner_id_with_vat(vat_number_ocr)
                 if partner_id.exists():
                     partner_id = partner_id.id
                 else:
@@ -113,14 +111,13 @@ class AccountMove(models.Model):
                     purchase_id_domain = common_domain + [('partner_id', 'child_of', [partner_id]), ('amount_total', '>=', total_ocr - TOLERANCE), ('amount_total', '<=', total_ocr + TOLERANCE)]
                     matching_po = self.env['purchase.order'].search(purchase_id_domain)
                     if len(matching_po) == 1:
-                        matching_pos |= matching_po
-
-            if matching_pos:
+                        self._set_purchase_orders(matching_po, invoice_id_ocr)
+            else:
                 matching_pos_invoice_lines = [{
                     'purchase_order': matching_po,
                     'line': line,
-                    'amount_to_invoice': (line.qty_received - line.qty_invoiced) * line.price_unit,
-                } for matching_po in matching_pos for line in matching_po.mapped('order_line')]
+                    'amount_to_invoice': (1 - line.qty_invoiced / line.product_qty) * line.price_total,
+                } for matching_po in matching_pos for line in matching_po.mapped('order_line') if line.product_qty]
                 if total_ocr - TOLERANCE < sum(line['amount_to_invoice'] for line in matching_pos_invoice_lines) < total_ocr + TOLERANCE:
                     self._set_purchase_orders(matching_pos, invoice_id_ocr)
                 else:
@@ -128,8 +125,11 @@ class AccountMove(models.Model):
                     if il_subset:
                         self._set_purchase_orders(set(line['purchase_order'] for line in il_subset), invoice_id_ocr)
                         subset_purchase_order_line_ids = set(line['line'] for line in il_subset)
-                        for invoice_line in self.invoice_line_ids:
-                            if invoice_line.purchase_line_id and invoice_line.purchase_line_id not in subset_purchase_order_line_ids:
-                                invoice_line.quantity = 0
-
-        super(AccountMove, self)._save_form(ocr_results, no_ref=no_ref)
+                        with self.get_form_context_manager() as move_form:
+                            for i in range(len(move_form.invoice_line_ids)):
+                                with move_form.invoice_line_ids.edit(i) as line:
+                                    if line.purchase_line_id and line.purchase_line_id not in subset_purchase_order_line_ids:
+                                        line.quantity = 0
+                    else:
+                        self._set_purchase_orders(matching_pos, invoice_id_ocr)
+        return super(AccountMove, self)._save_form(ocr_results, no_ref=no_ref)

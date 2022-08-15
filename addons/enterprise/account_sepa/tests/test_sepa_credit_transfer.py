@@ -4,6 +4,7 @@ import base64
 from lxml import etree
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.account_sepa import sanitize_communication
 from odoo.modules.module import get_module_resource
 from odoo.tests import tagged
 from odoo.tests.common import Form
@@ -15,6 +16,11 @@ class TestSEPACreditTransfer(AccountTestInvoicingCommon):
     @classmethod
     def setUpClass(cls, chart_template_ref=None):
         super().setUpClass(chart_template_ref=chart_template_ref)
+        cls.env.ref('base.EUR').active = True
+
+        # tests doesn't go through the sanitization (_ is invalid)
+        cls.partner_a.name = sanitize_communication(cls.partner_a.name)
+        cls.partner_b.name = sanitize_communication(cls.partner_b.name)
 
         cls.company_data['company'].write({
             'country_id': cls.env.ref('base.be').id,

@@ -124,3 +124,64 @@ class TestSubscriptionDashboard(HttpCase):
         self.assertEqual(res.status_code, 200, "Should OK")
         res_data = res.json()["result"]
         self.assertEqual(res_data["stats"]["value_2"], nrr_before, "NRR should not change after adding a subscription")
+
+    def test_mrr(self):
+        start_date = fields.Date.to_string(fields.Date.start_of(datetime.date.today(), "month"))
+        end_date = fields.Date.to_string(fields.Date.end_of(datetime.date.today(), "month"))
+
+        self.subscription.write(
+            {
+                "partner_id": self.partner_id.id,
+                "recurring_next_date": fields.Date.to_string(datetime.date.today()),
+                "template_id": self.subscription_tmpl.id,
+                "recurring_invoice_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": self.product.id,
+                            "name": "TestRecurringLine",
+                            "price_unit": 50,
+                            "uom_id": self.product.uom_id.id,
+                        },
+                    )
+                ],
+                "stage_id": self.ref("sale_subscription.sale_subscription_stage_in_progress"),
+            }
+        )
+        invoice = self.subscription.with_context(auto_commit=False)._recurring_create_invoice(automatic=True)
+        invoice._post()
+
+        self._check_mrr(start_date, end_date, 50)
+
+        # make refund
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+            'date': datetime.date.today(),
+            'reason': 'no reason',
+            'refund_method': 'refund',
+            'journal_id': invoice.journal_id.id,
+        })
+        reversal = move_reversal.reverse_moves()
+        reverse_move = self.env['account.move'].browse(reversal['res_id'])
+        reverse_move._post()
+
+        self._check_mrr(start_date, end_date, 0)
+
+    def _check_mrr(self, start_date, end_date, value):
+        self.authenticate("test_user_1", "P@ssw0rd!")
+        url = '/sale_subscription_dashboard/compute_stat'
+        res = self.url_open(
+            url,
+            data=json.dumps(
+                {
+                    "params": {
+                        "stat_type": "mrr",
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "filters": {},
+                    },
+                }
+            ),
+            headers={"Content-Type": "application/json"},
+        )
+        self.assertEqual(res.json()['result'], value)

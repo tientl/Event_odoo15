@@ -7,9 +7,10 @@
 # Fabien Pinckaers <fp@openerp.com>, 2021
 # guillaume bauer <guillaume.bauer@syentys.fr>, 2021
 # Laura Piraux <lap@odoo.com>, 2021
-# Alexandra Jubert <aju@odoo.com>, 2021
+# Alexandra Jubert, 2021
 # Nathan Grognet <ngr@odoo.com>, 2021
 # N GR <nathg212@gmail.com>, 2021
+# Cécile Collart <cco@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -17,13 +18,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 11:00+0000\n"
 "PO-Revision-Date: 2021-09-14 12:38+0000\n"
-"Last-Translator: N GR <nathg212@gmail.com>, 2021\n"
+"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: data_merge
 #: code:addons/data_merge/models/data_merge_model.py:0
@@ -36,7 +37,7 @@ msgstr "%s (copie)"
 #: code:addons/data_merge/static/src/js/data_merge_list_view.js:0
 #, python-format
 msgid "%s records have been merged"
-msgstr ""
+msgstr "%senregistrements ont été fusionnés"
 
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.data_merge_duplicate
@@ -44,6 +45,8 @@ msgid ""
 "' deduplication rule.<br/>\n"
 "You can merge them"
 msgstr ""
+"' deduplication rule.<br/>\n"
+"Vous pouvez les fusionner"
 
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_model_form
@@ -65,7 +68,7 @@ msgstr "<span class=\"oe_inline\">%</span>"
 #. module: data_merge
 #: model:ir.model.constraint,message:data_merge.constraint_data_merge_rule_uniq_model_id_field_id
 msgid "A field can only appear once!"
-msgstr "Un champ ne peut apparaître qu'une fois!"
+msgstr "Un champ ne peut apparaître qu'une fois !"
 
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_group__active
@@ -94,14 +97,14 @@ msgid ""
 " group?"
 msgstr ""
 "Êtes-vous sûr de vouloir fusionner les enregistrements sélectionnés dans "
-"leur groupe respectif?"
+"leur groupe respectif ?"
 
 #. module: data_merge
 #. openerp-web
 #: code:addons/data_merge/static/src/js/data_merge_list_view.js:0
 #, python-format
 msgid "Are you sure that you want to merge these records?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir fusionner ces enregistrements ?"
 
 #. module: data_merge
 #: model:ir.model.fields.selection,name:data_merge.selection__data_merge_model__merge_mode__automatic
@@ -112,7 +115,7 @@ msgstr "Automatique"
 #: model:ir.model.fields,field_description:data_merge.field_ir_model__is_merge_enabled
 #: model_terms:ir.ui.view,arch_db:data_merge.ir_model_view_search
 msgid "Can Be Merged"
-msgstr ""
+msgstr "Peut être fusionné"
 
 #. module: data_merge
 #: code:addons/data_merge/models/data_merge_rule.py:0
@@ -124,7 +127,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:data_merge.action_data_merge_record
 #: model_terms:ir.actions.act_window,help:data_merge.action_data_merge_record_notification
 msgid "Configure rules to identify duplicate records"
-msgstr ""
+msgstr "Configurer des règles pour identifier les enregistrements en double"
 
 #. module: data_merge
 #: model:ir.model,name:data_merge.model_res_partner
@@ -171,21 +174,21 @@ msgstr ""
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_model__custom_merge_method
 msgid "Custom Merge Method"
-msgstr ""
+msgstr "Méthode de fusion personnalisée"
 
 #. module: data_merge
 #: model:ir.actions.server,name:data_merge.ir_cron_cleanup_ir_actions_server
 #: model:ir.cron,cron_name:data_merge.ir_cron_cleanup
 #: model:ir.cron,name:data_merge.ir_cron_cleanup
 msgid "Data Merge: Cleanup Records"
-msgstr ""
+msgstr "Fusion de données : nettoyage des enregistrements"
 
 #. module: data_merge
 #: model:ir.actions.server,name:data_merge.ir_cron_find_duplicates_ir_actions_server
 #: model:ir.cron,cron_name:data_merge.ir_cron_find_duplicates
 #: model:ir.cron,name:data_merge.ir_cron_find_duplicates
 msgid "Data Merge: Find Duplicate Records"
-msgstr ""
+msgstr "Fusion de données : rechercher des enregistrements en double"
 
 #. module: data_merge
 #: model:ir.model.fields.selection,name:data_merge.selection__data_merge_model__notify_frequency_period__days
@@ -208,7 +211,7 @@ msgstr "Déduplication"
 #. module: data_merge
 #: model:ir.model,name:data_merge.model_data_merge_group
 msgid "Deduplication Group"
-msgstr ""
+msgstr "Groupe de déduplication"
 
 #. module: data_merge
 #: model:ir.model,name:data_merge.model_data_merge_model
@@ -233,7 +236,7 @@ msgstr "Règle de déduplication"
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_model__rule_ids
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_model_form
 msgid "Deduplication Rules"
-msgstr ""
+msgstr "Règles de déduplication"
 
 #. module: data_merge
 #: model:ir.model.fields.selection,name:data_merge.selection__data_merge_model__removal_mode__delete
@@ -253,7 +256,7 @@ msgstr ""
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.ir_model_view_form
 msgid "Disable Merge"
-msgstr ""
+msgstr "Désactiver la fusion"
 
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_record_list
@@ -287,7 +290,7 @@ msgstr "Domaine"
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_model__removal_mode
 msgid "Duplicate Removal"
-msgstr ""
+msgstr "Suppression des doublons"
 
 #. module: data_merge
 #: model:ir.actions.act_window,name:data_merge.action_data_merge_record
@@ -301,17 +304,19 @@ msgstr "Duplicatas"
 msgid ""
 "Duplicates with a similarity below this threshold will not be suggested"
 msgstr ""
+"Les doublons avec une similarité inférieure à ce seuil ne seront pas "
+"suggérés"
 
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.ir_model_view_form
 msgid "Enable Merge"
-msgstr ""
+msgstr "Activer la fusion "
 
 #. module: data_merge
 #: code:addons/data_merge/models/data_merge_rule.py:0
 #, python-format
 msgid "Exact Match"
-msgstr ""
+msgstr "Correspondance exacte"
 
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_record__field_values
@@ -510,7 +515,7 @@ msgstr "Nom"
 #: model_terms:ir.actions.act_window,help:data_merge.action_data_merge_record_notification
 #, python-format
 msgid "No duplicates found"
-msgstr ""
+msgstr "Aucun doublon trouvé"
 
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_model__notify_frequency
@@ -556,7 +561,7 @@ msgstr "Nombre d'enregistrements à fusionner"
 #. module: data_merge
 #: model:ir.model.fields,help:data_merge.field_data_merge_model__domain
 msgid "Records eligible for the deduplication process"
-msgstr ""
+msgstr "Enregistrements éligibles au processus de déduplication"
 
 #. module: data_merge
 #: model:ir.model.fields,help:data_merge.field_data_merge_model__merge_threshold
@@ -624,7 +629,7 @@ msgstr ""
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "The target model does not exists."
-msgstr ""
+msgstr "Le modèle cible n'existe pas."
 
 #. module: data_merge
 #: model:ir.model.constraint,message:data_merge.constraint_data_merge_model_uniq_name
@@ -651,7 +656,7 @@ msgstr "Mis à jour par"
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_record__record_write_date
 msgid "Updated On"
-msgstr ""
+msgstr "Mis à jours le"
 
 #. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_record__used_in
@@ -667,12 +672,14 @@ msgstr "Semaines"
 #: model:ir.model.fields,help:data_merge.field_data_merge_model__mix_by_company
 msgid "When enabled, duplicates across different companies will be suggested"
 msgstr ""
+"En cas d'activation, les doublons dans différentes entreprises seront "
+"suggérés"
 
 #. module: data_merge
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "You must select at least two %s in order to merge them."
-msgstr ""
+msgstr "Vous devez sélectionner au moins 2 %s afin de pouvoir les fusionner."
 
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.data_merge_duplicate

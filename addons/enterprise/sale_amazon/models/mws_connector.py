@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import html
 from datetime import datetime
 import dateutil.parser
 import logging
@@ -256,11 +257,14 @@ def _get_xml_node_content(xml, namespace, key_path=()):
     return current.text if current is not None else ''
 
 
-def get_string_value(parsed_data, key_path=(), default_value=''):
+def get_string_value(parsed_data, key_path=(), default_value='', unescape_html=False):
     """ Return the value of the last key in the path as a string. """
     raw_data = get_raw_data(parsed_data, key_path)
     string_value = raw_data and isinstance(raw_data, dict) and raw_data.get('value')
-    return string_value or default_value
+    if string_value:
+        return html.unescape(string_value) if unescape_html else string_value
+    else:
+        return default_value
 
 
 def get_integer_value(parsed_data, key_path=(), default_value=0):

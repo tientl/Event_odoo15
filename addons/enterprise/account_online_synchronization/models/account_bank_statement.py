@@ -54,8 +54,8 @@ class AccountBankStatement(models.Model):
             if transactions_partner_information:
                 self._cr.execute("""
                     SELECT p.online_partner_information, p.id FROM res_partner p
-                    WHERE p.online_partner_information IN %s
-                """, [tuple(transactions_partner_information)])
+                    WHERE p.online_partner_information IN %s AND p.company_id = %s
+                """, [tuple(transactions_partner_information), journal.company_id.id])
                 partner_id_per_information = dict(self._cr.fetchall())
             else:
                 partner_id_per_information = {}

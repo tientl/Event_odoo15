@@ -68,7 +68,7 @@ odoo.define('l10n_de_pos_cert.pos', function(require) {
             return this.config.is_company_country_germany;
         },
         isCountryGermanyAndFiskaly() {
-            return this.isCountryGermany() && this.getTssId();
+            return this.isCountryGermany() && !!this.getTssId();
         },
         format_round_decimals_currency(value) {
             const decimals = this.currency.decimals;
@@ -155,7 +155,7 @@ odoo.define('l10n_de_pos_cert.pos', function(require) {
                     }
                 } catch (error) {
                     fiskalyError = error;
-                    fiskalyError.source = 'fiskaly';
+                    fiskalyError.code = 'fiskaly';
                     fiskalyFailure.push(orderJson);
                 }
             }
@@ -398,13 +398,14 @@ odoo.define('l10n_de_pos_cert.pos', function(require) {
             this.tssInformation.transaction_number.value = data.number;
             this._updateTimeStart(data.time_start);
             this.tssInformation.time_end.value = convertFromEpoch(data.time_end);
-            this.tssInformation.certificate_serial.value = data.certificate_serial;
+            // certificate_serial is now called tss_serial_number in the v2 api
+            this.tssInformation.certificate_serial.value = data.tss_serial_number ? data.tss_serial_number : data.certificate_serial;
             this.tssInformation.timestamp_format.value = data.log.timestamp_format;
             this.tssInformation.signature_value.value = data.signature.value;
             this.tssInformation.signature_algorithm.value = data.signature.algorithm;
             this.tssInformation.signature_public_key.value = data.signature.public_key;
             this.tssInformation.client_serial_number.value = data.client_serial_number;
-            this.tssInformation.erstBestellung.value = this.get_orderlines()[0].get_product().display_name;
+            this.tssInformation.erstBestellung.value = this.get_orderlines()[0] ? this.get_orderlines()[0].get_product().display_name : undefined;
             this.transactionFinished();
         },
         async finishShortTransaction() {

@@ -70,7 +70,9 @@ result_name = inputs.AFTERPUB.name
         <field name="condition_python">result = bool(not payslip.is_outside_contract and contract.internet)</field>
         <field name="amount_select">code</field>
         <field name="amount_python_compute">
-result = 5.0
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.internet)[0]
+result = 5.0 if payslip.contract_id == first_period_contract else 0
         </field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
@@ -88,6 +90,9 @@ if contract.mobile and not contract.internet:
     result = 4.0 + 5.0
 elif contract.mobile and contract.internet:
     result = 4.0
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.mobile)[0]
+result = result if payslip.contract_id == first_period_contract else 0
         </field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
@@ -101,7 +106,9 @@ elif contract.mobile and contract.internet:
         <field name="condition_python">result = bool(not payslip.is_outside_contract and contract.has_laptop)</field>
         <field name="amount_select">code</field>
         <field name="amount_python_compute">
-result = 7.0
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.has_laptop)[0]
+result = 7.0 if payslip.contract_id == first_period_contract else 0
         </field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
@@ -205,7 +212,9 @@ result = abs(categories.ONSS) - abs(categories.ONSSRESTRUCTURING) - abs(categori
         <field name="condition_python">result = bool(not payslip.is_outside_contract and contract.transport_mode_car and contract.car_atn)</field>
         <field name="amount_select">code</field>
         <field name="amount_python_compute">
-result = contract.car_atn
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.transport_mode_car)[0]
+result = contract.car_atn if payslip.contract_id == first_period_contract else 0
         </field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
@@ -402,7 +411,15 @@ if contract.mobile:
 if not categories.BASIC:
     result = 0
 else:
-    result = contract.public_transport_reimbursed_amount + contract.train_transport_reimbursed_amount
+    first_period_contract_ids = payslip.dict._get_period_contracts()
+    first_period_contracts = contract.browse(first_period_contract_ids).filtered(
+        lambda c: (c.transport_mode_public or c.transport_mode_train) and not (c.time_credit and not c.work_time_rate)
+    )
+    if first_period_contracts:
+        first_period_contract = first_period_contracts[0]
+        result = (contract.public_transport_reimbursed_amount + contract.train_transport_reimbursed_amount) if payslip.contract_id == first_period_contract else 0
+    else:
+        result = 0
         </field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
@@ -441,54 +458,19 @@ else:
         <field name="sequence">171</field>
         <field name="condition_select">python</field>
         <field name="condition_python">result = bool(contract.representation_fees)</field>
-        <field name="amount_python_compute">
-if not categories.BASIC:
-    result = 0
-    result_qty = 0
-else:
-    calendar = contract.resource_calendar_id
-    days_per_week = calendar._get_days_per_week()
-    incapacity_attendances = calendar.attendance_ids.filtered(lambda a: a.work_entry_type_id.code == 'LEAVE281')
-    if incapacity_attendances:
-        incapacity_hours = sum((attendance.hour_to - attendance.hour_from) for attendance in incapacity_attendances)
-        incapacity_hours = incapacity_hours / 2 if calendar.two_weeks_calendar else incapacity_hours
-        incapacity_rate = (1 - incapacity_hours / calendar.hours_per_week) if calendar.hours_per_week else 0
-        work_time_rate = contract.resource_calendar_id.work_time_rate * incapacity_rate
-    else:
-        work_time_rate = contract.resource_calendar_id.work_time_rate
+        <field name="amount_python_compute">result = compute_serious_representation_fees(payslip, categories, worked_days, inputs)</field>
+        <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
+    </record>
 
-    threshold = 0 if (worked_days.OUT and worked_days.OUT.number_of_hours) else 279.31
-    if days_per_week and contract.representation_fees > threshold:
-        # Only part of the representation costs are pro-rated because certain costs are fully
-        # covered for the company (teleworking costs, mobile phone, internet, etc., namely:
-        # - 144.31 € (Tax, since 2021 - coronavirus)
-        # - 30 € (internet)
-        # - 25 € (phone)
-        # - 80 € (car management fees)
-        # = Total € 279.31
-        # Legally, they are not prorated according to the occupancy fraction.
-        # In summary, those who select amounts of for example 150 € and 250 €, have nothing pro-rated
-        # because the amounts are covered in an irreducible way.
-        # For those who have selected the maximum of 399 €, there is therefore only the share of 
-        # +-120 € of representation expenses which is then subject to prorating.
-
-        # Credit time, but with only half days (otherwise it's taken into account)
-        if contract.time_credit and work_time_rate and work_time_rate &lt; 100 and days_per_week == 5:
-            total_amount = threshold + (contract.representation_fees - threshold) * work_time_rate / 100
-        # Contractual part time
-        elif not contract.time_credit and work_time_rate &lt; 100:
-            total_amount = threshold + (contract.representation_fees - threshold) * work_time_rate / 100
-        else:
-            total_amount = contract.representation_fees
-
-        if total_amount > threshold:
-            daily_amount = (total_amount - threshold) * 3 / 13 / days_per_week
-            result = max(0, total_amount - daily_amount * payslip.representation_fees_missing_days)
-    elif days_per_week:
-            result = contract.representation_fees
-    else:
-        result = 0
-        </field>
+    <record id="cp200_employees_salary_representation_fees_volatile" model="hr.salary.rule">
+        <field name="category_id" ref="hr_payroll_head_div_net"/>
+        <field name="name">Representation Fees (Without Serious Standards)</field>
+        <field name="code">REP.FEES.VOLATILE</field>
+        <field name="amount_select">code</field>
+        <field name="sequence">171</field>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.representation_fees and compute_representation_fees(payslip, categories, worked_days, inputs) &gt; 279.31</field>
+        <field name="amount_python_compute">result = compute_volatile_representation_fees(payslip, categories, worked_days, inputs)</field>
         <field name="struct_id" ref="hr_payroll_structure_cp200_employee_salary"/>
     </record>
 

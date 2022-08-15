@@ -89,12 +89,12 @@ class Employee(models.Model):
         """
         result = {}
 
-        start_datetime = fields.Datetime.from_string(date_start)
-        end_datetime = fields.Datetime.from_string(date_stop)
+        start_datetime = datetime.combine(fields.Date.from_string(date_start), time.min)
+        end_datetime = datetime.combine(fields.Date.from_string(date_stop), time.max)
 
         uom = str(self.env.company.timesheet_encode_uom_id.name).lower()
 
-        employee_ids = [employee_data['employee_id'] for employee_data in employees_grid_data]
+        employee_ids = [employee_data['employee_id'] for employee_data in employees_grid_data if 'employee_id' in employee_data]
         employees = self.env['hr.employee'].browse(employee_ids)
         hours_per_day_per_employee = {}
 

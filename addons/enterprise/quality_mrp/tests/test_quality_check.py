@@ -98,7 +98,7 @@ class TestQualityCheck(TestQualityMrpCommon):
         # Check that the Quality Check were created and has correct values
         self.assertEqual(len(production.move_raw_ids[0].move_line_ids.check_ids), 1)
         self.assertEqual(len(production.check_ids), 3)
-        self.assertEqual(production.move_finished_ids.move_line_ids.check_ids[0].qty_to_test, 2)
+        self.assertEqual(production.check_ids.filtered(lambda qc: qc.product_id == production.product_id)[0].qty_to_test, 2)
 
         # Create Production Order of non-tracked product
         production2_form = Form(self.env['mrp.production'])

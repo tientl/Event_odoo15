@@ -29,3 +29,13 @@ class Repair(models.Model):
         for order in orders.filtered('ticket_id'):
             order.message_post_with_view('helpdesk.ticket_creation', values={'self': order, 'ticket': order.ticket_id}, subtype_id=self.env.ref('mail.mt_note').id)
         return orders
+
+    def action_repair_done(self):
+        """repair.action_repair_done() calls stock_move.create() which,
+        if default_lot_id is still in the context, will give all stock_move_lines.lot_id this value.
+        We want to avoid that, as the components of the repair do not have the same lot_id, if any,
+        so it leads to an exception.
+        """
+        context = dict(self.env.context)
+        context.pop('default_lot_id', None)
+        return super(Repair, self.with_context(context)).action_repair_done()

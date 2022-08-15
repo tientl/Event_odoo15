@@ -55,7 +55,7 @@ class SocialStreamYoutube(models.Model):
         ).json()
 
         if playlist_items_response.get('error'):
-            self.account_id.write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(playlist_items_response)
             return False
 
         youtube_video_ids = [
@@ -78,7 +78,7 @@ class SocialStreamYoutube(models.Model):
         ).json()
 
         if video_items_response.get('error'):
-            self.account_id.write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(video_items_response)
             return False
         elif not video_items_response.get('items'):
             return False

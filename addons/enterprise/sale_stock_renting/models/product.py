@@ -102,7 +102,7 @@ class Product(models.Model):
                 ('reservation_begin', '<=', fro),
                 ('return_date', '>=', fro)
             ])
-            return [], [], active_lines_at_time_fro
+            return Reservation, Reservation, active_lines_at_time_fro
         else:
             begins_during_period = Reservation.search(domain + [
                 ('reservation_begin', '>', fro),

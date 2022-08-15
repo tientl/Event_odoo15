@@ -162,8 +162,7 @@ class AppCreator extends Component {
      * @returns {Promise}
      */
     async _createNewApp() {
-        this.env.services.blockUI();
-
+        this.env.services.ui.block();
         const iconValue =
             this.state.iconData.type === "custom_icon"
                 ? // custom icon data
@@ -196,7 +195,7 @@ class AppCreator extends Component {
                 throw error;
             }
         } finally {
-            this.env.services.unblockUI();
+            this.env.services.ui.unblock();
         }
     }
 

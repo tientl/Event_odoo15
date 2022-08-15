@@ -24,3 +24,9 @@ class ResPartner(models.Model):
         string="Addenda Documentation",
         help="How should be done the addenda for this customer (try to put human readable information here to help the "
              "invoice people to fill properly the fields in the invoice)")
+
+    @api.model
+    def _formatting_address_fields(self):
+        """Returns the list of address fields usable to format addresses."""
+        return super(ResPartner, self)._formatting_address_fields() + ['l10n_mx_edi_colony',
+                                                                       'l10n_mx_edi_colony_code']

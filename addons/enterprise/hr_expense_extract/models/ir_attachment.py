@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
+from odoo import models, fields
+from datetime import timedelta
 
 
 class IrAttachment(models.Model):
@@ -18,3 +19,5 @@ class IrAttachment(models.Model):
             related_record = self.env[self.res_model].browse(self.res_id)
             if related_record.extract_state == "no_extract_requested" and not related_record.sample:
                 related_record.retry_ocr()
+            # OCR usually takes between 5 and 60 seconds to process the file. Thus, we wait a bit before we update the status
+            self.env.ref('hr_expense_extract.ir_cron_update_ocr_status')._trigger(fields.Datetime.now() + timedelta(minutes=1))

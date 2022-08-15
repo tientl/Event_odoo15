@@ -412,6 +412,7 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
 
         self.env['stock.quant']._update_available_quantity(self.product1, self.shelf1, 2)
         self.env['stock.quant']._update_available_quantity(self.product2, self.shelf2, 2)
+        self.env['stock.quant']._update_available_quantity(self.product3, self.shelf1, 1)
 
         # Creates a first delivery with 2 move lines: one from Section 1 and one from Section 2.
         delivery_form = Form(self.env['stock.picking'])
@@ -421,6 +422,9 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
             move.product_uom_qty = 1
         with delivery_form.move_ids_without_package.new() as move:
             move.product_id = self.product2
+            move.product_uom_qty = 1
+        with delivery_form.move_ids_without_package.new() as move:
+            move.product_id = self.product3
             move.product_uom_qty = 1
         delivery_1 = delivery_form.save()
         delivery_1.action_confirm()
@@ -449,8 +453,8 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
         batch_form.picking_ids.add(delivery_2)
         batch_delivery = batch_form.save()
         batch_delivery.action_confirm()
-        self.assertEqual(len(batch_delivery.move_ids), 4)
-        self.assertEqual(len(batch_delivery.move_line_ids), 4)
+        self.assertEqual(len(batch_delivery.move_ids), 5)
+        self.assertEqual(len(batch_delivery.move_line_ids), 5)
 
         # Resets package sequence to be sure we'll have the attended packages name.
         seq = self.env['ir.sequence'].search([('code', '=', 'stock.quant.package')])
@@ -460,7 +464,7 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
         self.start_tour(url, 'test_put_in_pack_scan_suggested_package', login='admin', timeout=180)
 
         self.assertEqual(batch_delivery.state, 'done')
-        self.assertEqual(len(batch_delivery.move_line_ids), 4)
+        self.assertEqual(len(batch_delivery.move_line_ids), 5)
         for move_line in delivery_1.move_line_ids:
             self.assertEqual(move_line.result_package_id.name, 'PACK0000001')
         for move_line in delivery_2.move_line_ids:

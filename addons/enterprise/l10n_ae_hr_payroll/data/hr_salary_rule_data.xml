@@ -36,6 +36,7 @@
             <field name="condition_python">result = not employee.active and employee.departure_reason_id</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
+                <![CDATA[
 result = 0
 start_date = contract.first_contract_date
 end_date = contract.date_end
@@ -44,13 +45,21 @@ compensation_year = contract.wage / 30 * 21
 compensation = difference.years * compensation_year + difference.months/12 * compensation_year + difference.days/365 * compensation_year
 years = difference.years
 years_beyond_5 = years - 5
-if 1 &lt;= years &lt; 3:
-    result = compensation * 1 / 3 if employee.departure_reason_id != self.env.ref('hr.departure_fired') else compensation
-elif 3 &lt;= years &lt;= 5:
-    result = compensation * 2 / 3 if employee.departure_reason_id != self.env.ref('hr.departure_fired') else compensation
-elif 5 &lt; years:
-    result = 5 * compensation_year + (compensation - 5 * compensation_year) * 30 / 21
-result = payslip.dict.company_id.currency_id.round(ceil(result))
+if contract.date_start >= date(2022,2,1):
+    if 1 <= years <= 5:
+        result = compensation
+    elif 5 < years:
+        result = 5 * compensation_year + (compensation - 5 * compensation_year) * 30 / 21
+    result = payslip.dict.company_id.currency_id.round(ceil(result))
+else:
+    if 1 <= years < 3:
+        result = compensation * 1 / 3 if employee.departure_reason_id != contract.env.ref('hr.departure_fired') else compensation
+    elif 3 <= years <= 5:
+        result = compensation * 2 / 3 if employee.departure_reason_id != contract.env.ref('hr.departure_fired') else compensation
+    elif 5 < years:
+        result = 5 * compensation_year + (compensation - 5 * compensation_year) * 30 / 21
+    result = payslip.dict.company_id.currency_id.round(ceil(result))
+    ]]>
 </field>
             <field name="struct_id" ref="l10n_ae_hr_payroll.uae_employee_payroll_structure"/>
         </record>

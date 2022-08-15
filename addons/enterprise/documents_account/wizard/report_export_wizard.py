@@ -12,7 +12,7 @@ class ReportExportWizard(models.TransientModel):
 
     def _get_default_folder(self):
         company = self.env.company
-        return company.documents_account_settings and company.account_folder or self.env.ref('documents.documents_finance_folder')
+        return company.account_folder if company.documents_account_settings else self.env.ref('documents.documents_finance_folder', raise_if_not_found=False)
 
     folder_id = fields.Many2one(string="Folder", comodel_name='documents.folder',
         help="Folder where to save the generated file", required=True,

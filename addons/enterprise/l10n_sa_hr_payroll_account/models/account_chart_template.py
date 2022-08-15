@@ -14,7 +14,7 @@ class AccountChartTemplate(models.Model):
         Override to configure payroll accounting data as well as accounting data.
         """
         if self == self.env.ref('l10n_sa.sa_chart_template_standard'):
-            sa_companies = self.env['res.company'].search([('partner_id.country_id.code', '=', 'SA')])
+            sa_companies = self.env['res.company'].search([('partner_id.country_id.code', '=', 'SA'), ('chart_template_id', '=', self.env.ref('l10n_sa.sa_chart_template_standard').id)])
             self._configure_payroll_account_data_saudi(sa_companies)
 
     def _configure_payroll_account_data_saudi(self, companies):

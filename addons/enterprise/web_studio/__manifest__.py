@@ -58,6 +58,7 @@ Note: Only the admin user is allowed to make those customizations.
             'web_studio/static/src/legacy/js/views/renderers/list_renderer_eager.js',
             'web_studio/static/src/legacy/js/views/controllers/form_controller.js',
             'web_studio/static/src/legacy/studio_legacy_service.js',
+            'web_studio/static/src/home_menu/**/*.js',
         ],
         'web.assets_backend_prod_only': [
             'web_studio/static/src/client_action/studio_action_loader.js',
@@ -68,7 +69,6 @@ Note: Only the admin user is allowed to make those customizations.
             'web_studio/static/src/client_action/**/*.js',
             ('remove', 'web_studio/static/src/client_action/studio_action_loader.js'),
             ('remove', 'web_studio/static/src/client_action/app_creator/app_creator_shortcut.js'),
-            'web_studio/static/src/home_menu/**/*.js',
             'web_studio/static/src/legacy/action_editor_main.js',
             'web_studio/static/src/legacy/edit_menu_adapter.js',
             'web_studio/static/src/legacy/new_model_adapter.js',

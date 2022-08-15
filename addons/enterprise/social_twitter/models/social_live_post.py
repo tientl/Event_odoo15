@@ -39,7 +39,7 @@ class SocialLivePostTwitter(models.Model):
 
             result_tweets = result.json()
             if isinstance(result_tweets, dict) and result_tweets.get('errors') or result_tweets is None:
-                account.sudo().write({'is_media_disconnected': True})
+                account._action_disconnect_accounts(result_tweets)
                 return
 
             tweets_ids = [tweet.get('id_str') for tweet in result_tweets]

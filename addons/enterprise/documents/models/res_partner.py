@@ -23,12 +23,12 @@ class Partner(models.Model):
         self.ensure_one()
         return {
             'name': _('Documents'),
+            'domain': [('partner_id', '=', self.id)],
             'res_model': 'documents.document',
             'type': 'ir.actions.act_window',
             'views': [(False, 'kanban')],
             'view_mode': 'kanban',
             'context': {
-                "search_default_partner_id": self.id,
                 "default_partner_id": self.id,
                 "searchpanel_default_folder_id": False
             },

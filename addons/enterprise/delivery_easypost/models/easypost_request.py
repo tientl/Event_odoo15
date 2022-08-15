@@ -146,12 +146,15 @@ class EasypostRequest():
             last_shipment_weight = float_round(total_weight % max_weight, precision_digits=1)
             for shp_id in range(0, total_shipment):
                 shipments.update(self._prepare_parcel(shp_id, carrier.easypost_default_package_type_id, max_weight, carrier.easypost_label_file_type))
+                shipments.update(self._customs_info(shp_id, order.order_line))
                 shipments.update(self._options(shp_id, carrier))
             if not float_is_zero(last_shipment_weight, precision_digits=1):
                 shipments.update(self._prepare_parcel(total_shipment, carrier.easypost_default_package_type_id, last_shipment_weight, carrier.easypost_label_file_type))
+                shipments.update(self._customs_info(total_shipment, order.order_line))
                 shipments.update(self._options(total_shipment, carrier))
         else:
             shipments.update(self._prepare_parcel(0, carrier.easypost_default_package_type_id, total_weight, carrier.easypost_label_file_type))
+            shipments.update(self._customs_info(0, order.order_line))
             shipments.update(self._options(0, carrier))
         return shipments
 
@@ -253,19 +256,29 @@ class EasypostRequest():
             # skip service
             if line.product_id.type not in ['product', 'consu']:
                 continue
-            if line.picking_id.picking_type_code == 'incoming':
-                unit_quantity = line.product_uom_id._compute_quantity(line.product_qty, line.product_id.uom_id, rounding_method='HALF-UP')
-            else:
-                unit_quantity = line.product_uom_id._compute_quantity(line.qty_done, line.product_id.uom_id, rounding_method='HALF-UP')
-            rounded_qty = float_repr(float_round(unit_quantity, precision_digits=0, rounding_method='HALF-UP'), precision_digits=0)
             hs_code = line.product_id.hs_code or ''
+            if hasattr(line, "picking_id"):
+                if line.picking_id.picking_type_code == 'incoming':
+                    unit_quantity = line.product_uom_id._compute_quantity(line.product_qty, line.product_id.uom_id, rounding_method='HALF-UP')
+                else:
+                    unit_quantity = line.product_uom_id._compute_quantity(line.qty_done, line.product_id.uom_id, rounding_method='HALF-UP')
+                price = line.sale_price
+                currency = line.picking_id.company_id.currency_id.name
+                origin_country = line.picking_id.picking_type_id.warehouse_id.partner_id.country_id.code
+            else:
+                unit_quantity = line.product_qty
+                price = line.price_total
+                currency = lines.currency_id.name
+                origin_country = line.warehouse_id.partner_id.country_id.code
+            rounded_qty = max(1, float_round(unit_quantity, precision_digits=0, rounding_method='HALF-UP'))
+            rounded_qty = float_repr(rounded_qty, precision_digits=0)
             customs_info.update({
                 'order[shipments][%d][customs_info][customs_items][%d][description]' % (shipment_id, customs_item_id): line.product_id.name,
                 'order[shipments][%d][customs_info][customs_items][%d][quantity]' % (shipment_id, customs_item_id): rounded_qty,
-                'order[shipments][%d][customs_info][customs_items][%d][value]' % (shipment_id, customs_item_id): line.sale_price,
-                'order[shipments][%d][customs_info][customs_items][%d][currency]' % (shipment_id, customs_item_id): line.picking_id.company_id.currency_id.name,
+                'order[shipments][%d][customs_info][customs_items][%d][value]' % (shipment_id, customs_item_id): price,
+                'order[shipments][%d][customs_info][customs_items][%d][currency]' % (shipment_id, customs_item_id): currency,
                 'order[shipments][%d][customs_info][customs_items][%d][weight]' % (shipment_id, customs_item_id): line.env['delivery.carrier']._easypost_convert_weight(line.product_id.weight * unit_quantity),
-                'order[shipments][%d][customs_info][customs_items][%d][origin_country]' % (shipment_id, customs_item_id): line.picking_id.picking_type_id.warehouse_id.partner_id.country_id.code,
+                'order[shipments][%d][customs_info][customs_items][%d][origin_country]' % (shipment_id, customs_item_id): origin_country,
                 'order[shipments][%d][customs_info][customs_items][%d][hs_tariff_number]' % (shipment_id, customs_item_id): hs_code,
             })
             customs_item_id += 1

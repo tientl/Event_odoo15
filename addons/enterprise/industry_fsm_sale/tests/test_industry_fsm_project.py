@@ -3,6 +3,7 @@
 
 from psycopg2 import IntegrityError
 
+from odoo import Command
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 from odoo.tests.common import Form
@@ -111,3 +112,34 @@ class TestIndustryFsmProject(TestFsmFlowSaleCommon):
             self.assertEqual(project.pricing_type, 'employee_rate', 'The pricing type of this project should be equal to employee rate since it has a mapping.')
             self.assertFalse(project.partner_id, 'No partner should be set with the compute_partner_id because this compute should be ignored in a fsm project.')
             self.assertEqual(project.sale_line_employee_ids.price_unit, 150, 'The price unit should remain to 150.')
+
+    def test_fetch_sale_order_items(self):
+        self.assertFalse(self.task.sale_line_id, 'The task in the FSM Project should not have any SOL linked.')
+        self.assertFalse(self.fsm_project._fetch_sale_order_items(), 'No SOL should be fetched since no task in that project has a SOL linked.')
+        self.assertFalse(self.fsm_project._get_sale_order_items(), 'No SOL should be fetched since no task in that project has a SOL linked.')
+        self.assertFalse(self.fsm_project._get_sale_orders(), 'No SOL should be fetched since no task in that project has a SOL linked.')
+
+        self.assertFalse(self.fsm_project_employee_rate.task_count, 'No task should be created in that fsm project.')
+        self.assertFalse(self.fsm_project_employee_rate._fetch_sale_order_items(), 'No SOL should be fetched since no task exists in that project.')
+        self.assertFalse(self.fsm_project_employee_rate._get_sale_order_items(), 'No SOL should be fetched since no task exists in that project.')
+        self.assertFalse(self.fsm_project_employee_rate._get_sale_orders(), 'No SOL should be fetched since no task exists in that project.')
+
+        self.task.write({
+            'partner_id': self.partner_1.id,
+            'timesheet_ids': [
+                Command.create({
+                    'name': '/',
+                    'employee_id': self.employee_user.id,
+                    'unit_amount': 1.0,
+                    'project_id': self.fsm_project.id,
+                }),
+            ],
+        })
+        self.task.action_fsm_validate()
+        self.assertTrue(self.task.fsm_done)
+        self.assertTrue(self.task.sale_line_id, 'The fsm task should have a SOL linked.')
+
+        self.task.flush()  # It needed to have the result of `action_fsm_validate` in db before executing the query to fetch SOL linked to the project
+        self.assertEqual(self.fsm_project._fetch_sale_order_items(), self.task.sale_line_id)
+        self.assertEqual(self.fsm_project._get_sale_order_items(), self.task.sale_line_id)
+        self.assertEqual(self.fsm_project._get_sale_orders(), self.task.sale_order_id)

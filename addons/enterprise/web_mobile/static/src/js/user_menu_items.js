@@ -11,15 +11,14 @@ export function shortcutItem(env) {
             const { hash } = env.services.router.current;
             if (hash.menu_id) {
                 const menu = env.services.menu.getMenu(hash.menu_id);
+                const base64Icon = menu && menu.webIconData;
                 mobile.methods.addHomeShortcut({
                     title: document.title,
                     shortcut_url: document.URL,
-                    web_icon: menu && menu.webIconData,
+                    web_icon: base64Icon.substring(base64Icon.indexOf(',') + 1),
                 });
             } else {
-                env.services.notification.notify({
-                    message: env._t("No shortcut for Home Menu"),
-                });
+                env.services.notification.add(env._t("No shortcut for Home Menu"));
             }
         },
         sequence: 100,

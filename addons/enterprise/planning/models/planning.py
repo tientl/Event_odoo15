@@ -204,9 +204,9 @@ class Planning(models.Model):
         # If allocated hours have to be recomputed, the allocated percentage have to keep its current value.
         # Hence, we stop the computation of allocated percentage if allocated hours have to be recomputed.
         allocated_hours_field = self._fields['allocated_hours']
-        if allocated_hours_field in self.env.fields_to_compute():
-            return
         for slot in self:
+            if self.env.is_to_compute(allocated_hours_field, slot):
+                continue
             if slot.start_datetime and slot.end_datetime and slot.start_datetime != slot.end_datetime:
                 if slot.allocation_type == 'planning':
                     slot.allocated_percentage = 100 * slot.allocated_hours / slot._get_slot_duration()
@@ -443,7 +443,7 @@ class Planning(models.Model):
             if slot.repeat and not slot.recurrency_id.id:  # create the recurrence
                 repeat_until = False
                 if slot.repeat_type == "until":
-                    repeat_until = datetime.combine(slot.repeat_until, datetime.max.time())
+                    repeat_until = datetime.combine(fields.Date.to_date(slot.repeat_until), datetime.max.time())
                     repeat_until = repeat_until.replace(tzinfo=pytz.timezone(slot.company_id.resource_calendar_id.tz or 'UTC')).astimezone(pytz.utc).replace(tzinfo=None)
                 recurrency_values = {
                     'repeat_interval': slot.repeat_interval,
@@ -488,8 +488,14 @@ class Planning(models.Model):
         def convert_datetime_timezone(dt, tz):
             return dt and pytz.utc.localize(dt).astimezone(tz)
 
-        user_tz = pytz.timezone(self._get_tz())
         resource = resource_id or self.env.user.employee_id.resource_id
+        employee = resource_id.employee_id if resource_id.resource_type == 'user' else False
+        user_tz = pytz.timezone(self.env.user.tz
+                                or employee and employee.tz
+                                or resource_id.tz
+                                or self._context.get('tz')
+                                or self.env.user.company_id.resource_calendar_id.tz
+                                or 'UTC')
 
         # start_datetime and end_datetime are from 00:00 to 23:59 in user timezone
         # Converted in UTC, it gives an offset for any other timezone, _convert_datetime_timezone removes the offset
@@ -542,10 +548,10 @@ class Planning(models.Model):
                                                                                      slot.previous_template_id,
                                                                                      slot.template_reset)
 
-    @api.depends('start_datetime', 'end_datetime', 'resource_id')
+    @api.depends(lambda self: self._get_fields_breaking_publication())
     def _compute_publication_warning(self):
-        with_warning = self.filtered(lambda t: t.resource_id and t.state == 'published')
-        with_warning.update({'publication_warning': True})
+        for slot in self:
+            slot.publication_warning = slot.resource_id and slot.resource_type != 'material' and slot.state == 'published'
 
     def _company_working_hours(self, start, end):
         company = self.company_id or self.env.company
@@ -555,6 +561,9 @@ class Planning(models.Model):
         if intervals and (end_datetime-start_datetime).days == 0: # Then we want the first working day and keep the end hours of this day
             start_datetime = intervals[0][0]
             end_datetime = [stop for start, stop in intervals if stop.date() == start_datetime.date()][-1]
+        elif intervals and (end_datetime-start_datetime).days >= 0:
+            start_datetime = intervals[0][0]
+            end_datetime = intervals[-1][1]
 
         return (start_datetime, end_datetime)
 
@@ -664,20 +673,24 @@ class Planning(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        Resource = self.env['resource.resource']
         for vals in vals_list:
-            if not vals.get('company_id') and vals.get('resource_id'):
-                vals['company_id'] = self.env['resource.resource'].browse(vals.get('resource_id')).company_id.id
+            if vals.get('resource_id'):
+                resource = Resource.browse(vals.get('resource_id'))
+                if not vals.get('company_id'):
+                    vals['company_id'] = resource.company_id.id
+                if resource.resource_type == 'material':
+                    vals['state'] = 'published'
             if not vals.get('company_id'):
                 vals['company_id'] = self.env.company.id
         return super().create(vals_list)
 
     def write(self, values):
+        if 'resource_id' in values and self.env['resource.resource'].browse(values['resource_id']).resource_type == 'material':
+            values['state'] = 'published'
         # detach planning entry from recurrency
         if any(fname in values.keys() for fname in self._get_fields_breaking_recurrency()) and not values.get('recurrency_id'):
             values.update({'recurrency_id': False})
-        # warning on published shifts
-        if 'publication_warning' not in values and (set(values.keys()) & set(self._get_fields_breaking_publication())):
-            values['publication_warning'] = True
         result = super(Planning, self).write(values)
         # recurrence
         if any(key in ('repeat', 'repeat_type', 'repeat_until', 'repeat_interval') for key in values):
@@ -688,7 +701,7 @@ class Planning(models.Model):
                     repeat_type = values.get('repeat_type') or slot.recurrency_id.repeat_type
                     repeat_until = values.get('repeat_until') or slot.recurrency_id.repeat_until
                     if repeat_type == 'until':
-                        repeat_until = datetime.combine(repeat_until, datetime.max.time())
+                        repeat_until = datetime.combine(fields.Date.to_date(repeat_until), datetime.max.time())
                         repeat_until = repeat_until.replace(tzinfo=pytz.timezone(slot.company_id.resource_calendar_id.tz or 'UTC')).astimezone(pytz.utc).replace(tzinfo=None)
                     recurrency_values = {
                         'repeat_interval': values.get('repeat_interval') or slot.recurrency_id.repeat_interval,
@@ -935,9 +948,9 @@ class Planning(models.Model):
     def action_unpublish(self):
         if not self.env.user.has_group('planning.group_planning_manager'):
             raise AccessError(_('You are not allowed to reset to draft shifts.'))
-        published_shifts = self.filtered(lambda shift: shift.state == 'published')
+        published_shifts = self.filtered(lambda shift: shift.state == 'published' and shift.resource_type != 'material')
         if published_shifts:
-            published_shifts.write({'state': 'draft'})
+            published_shifts.write({'state': 'draft', 'publication_warning': False,})
             notif_type = "success"
             message = _('The shifts have been successfully reset to draft.')
         else:
@@ -1104,7 +1117,7 @@ class Planning(models.Model):
                 pytz.utc.localize(slot.end_datetime),
                 self.env['resource.calendar.leaves'])])
         # 2)
-        resource_calendar_validity_intervals = self.resource_id._get_calendars_validity_within_period(
+        resource_calendar_validity_intervals = self.resource_id.sudo()._get_calendars_validity_within_period(
             start_dt_delta_utc, end_dt_delta_utc)
         for slot in self:
             if slot.resource_id:
@@ -1211,6 +1224,7 @@ class Planning(models.Model):
         """ Fields list triggering the `publication_warning` to True when updating shifts """
         return [
             'resource_id',
+            'resource_type',
             'start_datetime',
             'end_datetime',
             'role_id',

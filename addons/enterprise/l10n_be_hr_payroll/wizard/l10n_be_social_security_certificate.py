@@ -83,7 +83,7 @@ class L10nBeSocialSecurityCertificate(models.TransientModel):
                 'BASIC', 'COMMISSION', 'ATN.INT', 'ATN.MOB', 'ATN.LAP', 'BASIC', 'BASIC', 'BASIC',
                 'D.P', 'EU.LEAVE.DEDUC', 'ATN.CAR', 'PAY_SIMPLE', 'PAY DOUBLE',
                 'PAY DOUBLE COMPLEMENTARY', 'SALARY', 'SALARY', 'ONSSTOTAL', 'ONSSTOTAL', 'ONSS1',
-                'ONSS2', 'ONSS', 'ONSS', 'ONSS', 'REP.FEES', 'CAR.PRIV', 'P.P', 'M.ONSS',
+                'ONSS2', 'ONSS', 'ONSS', 'ONSS', 'REP.FEES', 'REP.FEES.VOLATILE', 'CAR.PRIV', 'P.P', 'M.ONSS',
                 'ATTACH_SALARY', 'ATN.CAR.2', 'ATN.MOB.2', 'ATN.INT.2', 'ATN.LAP.2', 'MEAL_V_EMP',
                 'IMPULSION25', 'IMPULSION12', 'ASSIG_SALARY', 'ADVANCE', 'NET', 'P.P.DED']
             all_values = aggregate_payslips._get_line_values(code_list, vals_list=['total', 'quantity'])
@@ -109,7 +109,7 @@ class L10nBeSocialSecurityCertificate(models.TransientModel):
             onss_thirteen_month = _get_total(thirteen_slips, all_values, ['ONSS'])
             onss_double = _get_total(double_slips, all_values, ['ONSS'])
             onss_student = _get_total(student_slips, all_values, ['ONSS'])
-            representation_fees = _get_total(monthly_slips, all_values, ['REP.FEES'])
+            representation_fees = _get_total(monthly_slips, all_values, ['REP.FEES', 'REP.FEES.VOLATILE'])
             private_car = _get_total(monthly_slips + student_slips, all_values, ['CAR.PRIV'])
             atn_car = atn_without_onss
             withholding_taxes = _get_total(aggregate_payslips, all_values, ['P.P'])

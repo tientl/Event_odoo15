@@ -15,10 +15,16 @@ var PaymentIOT = PaymentInterface.extend({
     send_payment_request: function (cid) {
         var self = this;
         this._super.apply(this, this.arguments);
+        const terminal_proxy = self.get_terminal();
+
+        if (!terminal_proxy) {
+            this._showErrorConfig();
+            return Promise.resolve(false);
+        }
 
         return new Promise(function (resolve) {
             self._waitingResponse = self._waitingPayment;
-            self.get_terminal().add_listener(self._onValueChange.bind(self, resolve, self.pos.get_order()));
+            terminal_proxy.add_listener(self._onValueChange.bind(self, resolve, self.pos.get_order()));
             self._send_request(self.get_payment_data(cid));
         });
     },
@@ -118,6 +124,7 @@ var PaymentIOT = PaymentInterface.extend({
      * @param {Object} data.owner
      * @param {Object} data.session_id
      * @param {Object} data.value
+     * @param {Object} data.Card
      */
     _onValueChange: function (resolve, order, data) {
         var line = order.get_paymentline(data.cid);
@@ -126,6 +133,9 @@ var PaymentIOT = PaymentInterface.extend({
             this._waitingResponse(resolve, data, line);
             if (data.Ticket) {
                 line.set_receipt_info(data.Ticket.replace(/\n/g, "<br />"));
+            }
+            if (data.Card) {
+                line.card_type = data.Card;
             }
         }
     },

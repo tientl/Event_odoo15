@@ -113,6 +113,7 @@ class AccountChartOfAccountReport(models.AbstractModel):
             lines.append({
                 'id': self._get_generic_line_id('account.account', account.id),
                 'name': name,
+                'code': account.code,
                 'title_hover': name,
                 'columns': columns,
                 'unfoldable': False,

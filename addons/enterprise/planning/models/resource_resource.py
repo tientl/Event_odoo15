@@ -17,7 +17,13 @@ class ResourceResource(models.Model):
 
     color = fields.Integer(default=_default_color)
     employee_id = fields.One2many('hr.employee', 'resource_id', domain="[('company_id', '=', company_id)]")
-    avatar_128 = fields.Image(related='employee_id.avatar_128')
+    avatar_128 = fields.Image(compute='_compute_avatar_128')
+
+    @api.depends('employee_id')
+    def _compute_avatar_128(self):
+        for resource in self:
+            employees = resource.with_context(active_test=False).employee_id
+            resource.avatar_128 = employees[0].avatar_128 if employees else False
 
     def get_formview_id(self, access_uid=None):
         if self.env.context.get('from_planning'):
@@ -34,7 +40,7 @@ class ResourceResource(models.Model):
                     'name': resource.name,
                     'resource_id': resource.id,
                 })
-            self.env['hr.employee'].sudo().create(create_vals)
+            self.env['hr.employee'].sudo().with_context(from_planning=False).create(create_vals)
         return resources
 
     def name_get(self):
@@ -65,7 +71,7 @@ class ResourceResource(models.Model):
         planned_hours_mapped = defaultdict(float)
         start_utc = pytz.utc.localize(date_start)
         stop_utc = pytz.utc.localize(date_stop)
-        work_intervals_batch = self._get_work_intervals_batch(start_utc, stop_utc)
+        work_intervals_batch = self.sudo()._get_work_intervals_batch(start_utc, stop_utc)
         for slot in planning_slots:
             if slot.start_datetime >= date_start and slot.end_datetime <= date_stop:
                 planned_hours_mapped[slot.resource_id.id] += slot.allocated_hours
@@ -99,7 +105,7 @@ class ResourceResource(models.Model):
             resource.id: {
                 'planned_hours': planned_hours_mapped[resource.id],
                 'work_hours': work_hours.get(resource.id, 0.0),
-                'employee_id': resource.employee_id.id,
+                'employee_id': resource.with_context(active_test=False).employee_id.id,
             }
             for resource in self
         }

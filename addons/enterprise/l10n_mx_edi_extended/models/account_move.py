@@ -79,6 +79,10 @@ class AccountMoveLine(models.Model):
     def _auto_init(self):
         if not column_exists(self.env.cr, "account_move_line", "l10n_mx_edi_umt_aduana_id"):
             create_column(self.env.cr, "account_move_line", "l10n_mx_edi_umt_aduana_id", "int4")
+            # Since l10n_mx_edi_umt_aduana_id columns does not exist we can assume the columns
+            # l10n_mx_edi_qty_umt and l10n_mx_edi_price_unit_umt do not exist either
+            create_column(self.env.cr, "account_move_line", "l10n_mx_edi_qty_umt", "numeric")
+            create_column(self.env.cr, "account_move_line", "l10n_mx_edi_price_unit_umt", "float8")
         return super()._auto_init()
 
     l10n_mx_edi_customs_number = fields.Char(

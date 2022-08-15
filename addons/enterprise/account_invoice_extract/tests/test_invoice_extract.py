@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
+import json
 
 from odoo import fields
 
@@ -118,6 +119,51 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
                 self.assertEqual(invoice_line.price_subtotal, extract_response['results'][0]['invoice_lines'][i]['subtotal']['selected_value']['content'])
                 self.assertEqual(invoice_line.price_total, extract_response['results'][0]['invoice_lines'][i]['total']['selected_value']['content'])
 
+    def test_included_default_tax(self):
+        # test that a default purchase included tax is not removed from the lines even if it's not detected
+        tax_10_included = self.env['account.tax'].create({
+            'name': 'Tax 10% included',
+            'amount': 10,
+            'type_tax_use': 'purchase',
+            'price_include': True,
+        })
+        self.env.company.account_purchase_tax_id = tax_10_included
+
+        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
+        extract_response = self.get_default_extract_response()
+        extract_response['results'][0]['total']['selected_value']['content'] = 300
+        extract_response['results'][0]['global_taxes'][0]['selected_value']['content'] = 0
+        extract_response['results'][0]['global_taxes_amount']['selected_value']['content'] = 0
+        for line in extract_response['results'][0]['invoice_lines']:
+            line['total'] = line['subtotal']
+            line['taxes']['selected_values'] = []
+
+        with self.mock_iap_extract(extract_response, {}):
+            invoice._check_status()
+
+        self.assertEqual(invoice.amount_total, 300)
+        for line in invoice.invoice_line_ids:
+            self.assertEqual(line.tax_ids[0], tax_10_included)
+
+        # test that the default purchase included tax is the only tax used if it matches the detected tax
+        tax_15_included = self.env['account.tax'].create({
+            'name': 'Tax 15% included',
+            'amount': 15,
+            'type_tax_use': 'purchase',
+            'price_include': True,
+        })
+        self.env.company.account_purchase_tax_id = tax_15_included
+
+        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
+        extract_response = self.get_default_extract_response()
+
+        with self.mock_iap_extract(extract_response, {}):
+            invoice._check_status()
+
+        self.assertEqual(invoice.amount_total, 330)
+        for line in invoice.invoice_line_ids:
+            self.assertEqual(line.tax_ids[0], tax_15_included)
+
     def test_merge_check_status(self):
         # test check_status with lines merging
         for move_type in ('in_invoice', 'out_invoice'):
@@ -180,10 +226,25 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
 
         self.assertEqual(invoice.partner_id, existing_partner)
 
+    def test_partner_selection_from_iban(self):
+        # test that if a partner with the IBAN found already exists in database it is selected
+        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
+        existing_partner = self.env['res.partner'].create({
+            'name': 'Existing partner',
+            'bank_ids': [(0, 0, {'acc_number': "BE01234567890123"})],
+        })
+        extract_response = self.get_default_extract_response()
+
+        with self.mock_iap_extract(extract_response, {}):
+            invoice._check_status()
+
+        self.assertEqual(invoice.partner_id, existing_partner)
+
     def test_partner_selection_from_name(self):
         # test that if a partner with a similar name already exists in database it is selected
         invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
-        existing_partner = self.env['res.partner'].create({'name': 'Test S.A.'})
+        existing_partner = self.env['res.partner'].create({'name': 'Test'})
+
         self.env['res.partner'].create({'name': 'Partner'})
         self.env['res.partner'].create({'name': 'Another supplier'})
         extract_response = self.get_default_extract_response()
@@ -207,10 +268,9 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
         # test that if the multi currency is disabled, the currency isn't changed
         self.env['res.currency'].search([('name', '!=', 'USD')]).active = False
         invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
-        test_user = self.env['res.users'].create({
-            'login': "test_user",
-            'name': "Test User",
-        })
+        test_user = self.env.ref('base.user_root')
+        test_user.groups_id = [(3, self.env.ref('base.group_multi_currency').id)]
+
         usd_currency = self.env['res.currency'].search([('name', '=', 'USD')])
         eur_currency = self.env['res.currency'].with_context({'active_test': False}).search([('name', '=', 'EUR')])
         invoice.currency_id = usd_currency.id
@@ -248,17 +308,18 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
 
     def test_tax_adjustments(self):
         # test that if the total computed by Odoo doesn't exactly match the total found by the OCR, the tax are adjusted accordingly
-        self.env['res.currency'].search([('name', '!=', 'USD')]).active = False
-        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
-        extract_response = self.get_default_extract_response()
-        extract_response['results'][0]['total']['selected_value']['content'] += 0.01
+        for move_type in ('in_invoice', 'out_invoice'):
+            self.env['res.currency'].search([('name', '!=', 'USD')]).active = False
+            invoice = self.env['account.move'].create({'move_type': move_type, 'extract_state': 'waiting_extraction'})
+            extract_response = self.get_default_extract_response()
+            extract_response['results'][0]['total']['selected_value']['content'] += 0.01
 
-        with self.mock_iap_extract(extract_response, {}):
-            invoice._check_status()
+            with self.mock_iap_extract(extract_response, {}):
+                invoice._check_status()
 
-        self.assertEqual(invoice.amount_tax, 30.01)
-        self.assertEqual(invoice.amount_untaxed, 300)
-        self.assertEqual(invoice.amount_total, 330.01)
+            self.assertEqual(invoice.amount_tax, 30.01)
+            self.assertEqual(invoice.amount_untaxed, 300)
+            self.assertEqual(invoice.amount_total, 330.01)
 
     def test_non_existing_tax(self):
         # test that if there is an invoice line with a tax which doesn't exist in database it is ignored
@@ -287,31 +348,6 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
         self.assertEqual(len(invoice.invoice_line_ids[0].tax_ids), 0)
         self.assertEqual(invoice.invoice_line_ids[0].price_subtotal, 100)
         self.assertEqual(invoice.invoice_line_ids[0].price_total, 100)
-
-    def test_duplicated_reference(self):
-        # test that if an invoice with the same invoice reference already exists, the invoice is still created and the user is warned
-        partner = self.env['res.partner'].create({'name': 'Test', 'vat': 'BE0000000000'})
-        invoice = self.env['account.move'].create({
-            'move_type': 'in_invoice',
-            'partner_id': partner.id,
-            'extract_state': 'no_extract_requested',
-            'ref': 'INV0001',
-            'invoice_date': '2019-04-12',
-            'date': '2019-04-12',
-        })
-
-        invoice2 = self.env['account.move'].create({
-            'move_type': 'in_invoice',
-            'partner_id': partner.id,
-            'extract_state': 'waiting_extraction',
-        })
-        extract_response = self.get_default_extract_response()
-
-        with self.mock_iap_extract(extract_response, {}):
-            invoice2._check_status()
-
-        self.assertFalse(invoice2.ref)
-        self.assertTrue(WARNING_DUPLICATE_VENDOR_REFERENCE in invoice2.get_warnings())
 
     def test_server_error(self):
         # test that the extract state is set to 'error' if the OCR returned an error
@@ -365,7 +401,7 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
                 'account_id': self.company_data['default_account_revenue'].id,
             })],
         })
-        self.env['res.partner'].create({'name': 'Test', 'vat': 'BE0000000000'})     # this match the partner found in the server response
+        self.env['res.partner'].create({'name': 'Test', 'vat': 'BE0477472701'})     # this match the partner found in the server response
         extract_response = self.get_default_extract_response()
 
         with self.mock_iap_extract(extract_response, {}):
@@ -429,40 +465,117 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
                 'total': il.price_total,
             })
 
-    def test_automatic_sending(self):
-        # test that a vendor bill or a customer invoice is automatically sent to the OCR server when the option is enabled
+    def test_automatic_sending_vendor_bill_message_post(self):
+        # test that a vendor bill is automatically sent to the OCR server when a message with attachment is posted and the option is enabled
+        self.env.company.extract_show_ocr_option_selection = 'auto_send'
+        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'no_extract_requested'})
+        test_attachment = self.env['ir.attachment'].create({
+            'name': "an attachment",
+            'datas': base64.b64encode(b'My attachment'),
+        })
+
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            invoice.message_post(attachment_ids=[test_attachment.id])
+
+        self.assertEqual(invoice.extract_state, 'waiting_extraction')
+
+    def test_automatic_sending_vendor_bill_main_attachment(self):
+        # test that a vendor bill is automatically sent to the OCR server when a main attachment is registered and the option is enabled
+        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'no_extract_requested'})
+        test_attachment = self.env['ir.attachment'].create({
+            'name': "an attachment",
+            'datas': base64.b64encode(b'My attachment'),
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+        })
+
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            test_attachment.register_as_main_attachment()
+
+        self.assertEqual(invoice.extract_state, 'waiting_extraction')
+
+    def test_automatic_sending_customer_invoice_upload(self):
+        # test that a customer invoice is automatically sent to the OCR server when uploaded and the option is enabled
+        self.env.company.extract_show_ocr_option_selection = 'auto_send'
+        test_attachment = self.env['ir.attachment'].create({
+            'name': "an attachment",
+            'datas': base64.b64encode(b'My attachment'),
+        })
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            action = self.env['account.journal'].with_context(default_move_type='out_invoice').create_invoice_from_attachment(test_attachment.id)
+
+        self.assertEqual(self.env['account.move'].browse(action['res_id']).extract_state, 'waiting_extraction')
+
+    def test_automatic_sending_customer_invoice_email_alias(self):
+        # test that a customer invoice is automatically sent to the OCR server when sent via email alias and the option is enabled
+        journal = self.env['account.journal'].search([('company_id', '=', self.env.user.company_id.id), ('type', '=', 'sale')], limit=1)
+        journal_alias = self.env['mail.alias'].create({
+            'alias_name': 'test-bill',
+            'alias_model_id': self.env.ref('account.model_account_move').id,
+            'alias_defaults': json.dumps({
+                'move_type': 'out_invoice',
+                'company_id': self.env.user.company_id.id,
+                'journal_id': journal.id,
+            }),
+        })
+        journal.write({'alias_id': journal_alias.id})
+
+        mail = 'MIME-Version: 1.0\n'\
+               'Date: Fri, 26 Nov 2021 16:27:45 +0100\n'\
+               'Message-ID: blablabla\n'\
+               'Subject: Incoming bill\n'\
+               'From:  Someone <someone@some.company.com>\n'\
+               'To: {alias_name}@{alias_domain}\n'\
+               'Content-Type: multipart/alternative; boundary="000000000000a47519057e029630"\n'\
+               '\n'\
+               '--000000000000a47519057e029630\n'\
+               'Content-Type: text/plain; charset=\"UTF-8\"\n'\
+               '\n'\
+               '\n'\
+               '--000000000000a47519057e029630\n'\
+               'Content-type: application/octet-stream\n'\
+               'Content-transfer-encoding: base64\n'\
+               '\n'\
+               '{attachment}\n'\
+               '\n'\
+               '--000000000000a47519057e029630--\n'.format(alias_name=journal.alias_id.alias_name, alias_domain=journal.alias_id.alias_domain, attachment=base64.b64encode(b'My attachment'))
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            invoice = self.env['account.move'].browse(self.env['mail.thread'].message_process('account.move', mail))
+        self.assertEqual(invoice.extract_state, 'waiting_extraction')
+
+    def test_no_automatic_sending_customer_invoice_message_post(self):
+        # test that a customer invoice isn't automatically sent to the OCR server when a message with attachment is posted and the option is enabled
+        invoice = self.env['account.move'].create({'move_type': 'out_invoice', 'extract_state': 'no_extract_requested'})
+        test_attachment = self.env['ir.attachment'].create({
+            'name': "an attachment",
+            'datas': base64.b64encode(b'My attachment'),
+        })
+
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            invoice.message_post(attachment_ids=[test_attachment.id])
+
+        self.assertEqual(invoice.extract_state, 'no_extract_requested')
+
+    def test_no_automatic_sending_customer_invoice_main_attachment(self):
+        # test that a customer invoice isn't automatically sent to the OCR server when a main attachment is registered and the option is enabled
+        invoice = self.env['account.move'].create({'move_type': 'out_invoice', 'extract_state': 'no_extract_requested'})
+        test_attachment = self.env['ir.attachment'].create({
+            'name': "an attachment",
+            'datas': base64.b64encode(b'My attachment'),
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+        })
+
+        with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
+            test_attachment.register_as_main_attachment()
+
+        self.assertEqual(invoice.extract_state, 'no_extract_requested')
+
+    def test_no_automatic_sending_option_disabled(self):
+        # test that an invoice isn't automatically sent to the OCR server when the option is disabled
+        self.env.company.extract_show_ocr_option_selection = 'manual_send'
         for move_type in ('in_invoice', 'out_invoice'):
             # test with message_post()
-            self.env.company.extract_show_ocr_option_selection = 'auto_send'
-            invoice = self.env['account.move'].create({'move_type': move_type, 'extract_state': 'no_extract_requested'})
-            test_attachment = self.env['ir.attachment'].create({
-                'name': "an attachment",
-                'datas': base64.b64encode(b'My attachment'),
-            })
-
-            with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
-                invoice.message_post(attachment_ids=[test_attachment.id])
-
-            self.assertEqual(invoice.extract_state, 'waiting_extraction')
-
-            # test with register_as_main_attachment()
-            invoice = self.env['account.move'].create({'move_type': move_type, 'extract_state': 'no_extract_requested'})
-            test_attachment = self.env['ir.attachment'].create({
-                'name': "an attachment",
-                'datas': base64.b64encode(b'My attachment'),
-                'res_model': 'account.move',
-                'res_id': invoice.id,
-            })
-
-            with self.mock_iap_extract({'status_code': SUCCESS, 'document_id': 1}, {}):
-                test_attachment.register_as_main_attachment()
-
-            self.assertEqual(invoice.extract_state, 'waiting_extraction')
-
-            # test that the invoice is not automatically sent to the OCR server when the option is disabled
-
-            # test with message_post()
-            self.env.company.extract_show_ocr_option_selection = 'manual_send'
             invoice = self.env['account.move'].create({'move_type': move_type, 'extract_state': 'no_extract_requested'})
             test_attachment = self.env['ir.attachment'].create({
                 'name': "an attachment",

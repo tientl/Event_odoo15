@@ -693,7 +693,7 @@ tour.register('test_put_in_pack_scan_suggested_package', {test: true}, [
         trigger: '.o_barcode_client_action',
         run: function () {
             currentViewState = updateState(defaultViewState, {
-                linesCount: 2,
+                linesCount: 3,
                 pager: '1/2',
                 pageSummary: 'From WH/Stock/Section 1',
                 next: {
@@ -707,9 +707,10 @@ tour.register('test_put_in_pack_scan_suggested_package', {test: true}, [
                 scanMessage: 'scan_src',
             });
             checkState(currentViewState);
-            const $lineFromPicking1 = helper.getLines({index: 1});
+            const $linesFromPicking1 = helper.getLines({index: [1, 3]});
             const $linesFromPicking2 = helper.getLines({index: 2});
-            helper.assertLineBelongTo($lineFromPicking1, 'test_delivery_1');
+            helper.assertLineBelongTo($($linesFromPicking1[0]), 'test_delivery_1');
+            helper.assertLineBelongTo($($linesFromPicking1[1]), 'test_delivery_1');
             helper.assertLinesBelongTo($linesFromPicking2, 'test_delivery_2');
         },
     },
@@ -726,9 +727,23 @@ tour.register('test_put_in_pack_scan_suggested_package', {test: true}, [
     {
         trigger: '.o_barcode_line:contains("test_delivery_1"):contains("PACK")',
         run: function() {
-            const $lineFromPicking1 = $('.o_barcode_line:contains("test_delivery_1")');
-            const product1_package = $lineFromPicking1.find('div[name="package"]').text().trim();
+            const product1_package = $('.o_selected div[name="package"]').text().trim();
+            const product3_package = $('[data-barcode="product3"] [name="package"]').text().trim();
             helper.assert(product1_package, 'PACK0000001');
+            helper.assert(product3_package, 'PACK0000001 ?'); // Display suggested package.
+        }
+    },
+    // Selects product3's line then scans PACK0000001 and product3.
+    { trigger: '.o_barcode_line[data-barcode="product3"]' },
+    { trigger: '.o_selected[data-barcode="product3"]', run: 'scan PACK0000001' },
+    { trigger: '.o_barcode_client_action', run: 'scan product3' },
+    {
+        trigger: '.o_line_completed[data-barcode="product3"]',
+        run: function() {
+            const product1_package = $('[data-barcode="product1"] [name="package"]').text().trim();
+            const product3_package = $('.o_selected div[name="package"]').text().trim();
+            helper.assert(product1_package, 'PACK0000001');
+            helper.assert(product3_package, 'PACK0000001'); // Display suggested package.
         }
     },
 

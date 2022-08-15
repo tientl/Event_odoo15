@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _lt
 
 class Project(models.Model):
     _inherit = 'project.project'
@@ -51,7 +51,7 @@ class Project(models.Model):
         if self.user_has_groups('sale_subscription.group_sale_subscription_view'):
             buttons.append({
                 'icon': 'refresh',
-                'text': _('Subscriptions'),
+                'text': _lt('Subscriptions'),
                 'number': self.subscriptions_count,
                 'action_type': 'object',
                 'action': 'action_open_project_subscriptions',

@@ -26,7 +26,7 @@ class ProductProduct(models.Model):
         for product in self:
             if product.tracking != 'none':
                 sale_product = sale_lines.filtered(lambda sale: sale.product_id == product)
-                product.serial_missing = sale_product.filtered(lambda p: not p.fsm_lot_id and not p.qty_delivered)
+                product.serial_missing = sale_product.filtered(lambda p: not p.fsm_lot_id and p.product_uom_qty > 0 and not p.qty_delivered)
             else:
                 product.serial_missing = False
 
@@ -44,7 +44,7 @@ class ProductProduct(models.Model):
         if not task or task.fsm_done:
             self.quantity_decreasable = False
             return
-        elif task.sale_order_id.state in ['draft', 'sent']:
+        elif task.sale_order_id.sudo().state in ['draft', 'sent']:
             self.quantity_decreasable = True
             return
 

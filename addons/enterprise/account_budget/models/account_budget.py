@@ -249,12 +249,14 @@ class CrossoveredBudgetLines(models.Model):
 
     @api.onchange('date_from', 'date_to')
     def _onchange_dates(self):
+        # suggesting a budget based on given dates
         domain_list = []
         if self.date_from:
             domain_list.append(['|', ('date_from', '<=', self.date_from), ('date_from', '=', False)])
         if self.date_to:
             domain_list.append(['|', ('date_to', '>=', self.date_to), ('date_to', '=', False)])
-        if domain_list:
+        # don't suggest if a budget is already set and verifies condition on its dates
+        if domain_list and not self.crossovered_budget_id.filtered_domain(AND(domain_list)):
             self.crossovered_budget_id = self.env['crossovered.budget'].search(AND(domain_list), limit=1)
 
     @api.onchange('crossovered_budget_id')

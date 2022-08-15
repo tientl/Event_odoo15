@@ -30,6 +30,7 @@
         'views/tax_type_views.xml',
         'views/res_config_settings_views.xml',
         'views/electronic_invoice.xml',
+        'views/electronic_invoice_vendor_document.xml',
         'wizards/account_move_reversal_view.xml',
         'wizards/account_debit_note_view.xml'
     ],

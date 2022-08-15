@@ -3,7 +3,7 @@
 
 import json
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, _lt
 
 class Project(models.Model):
     _inherit = 'project.project'
@@ -66,7 +66,7 @@ class Project(models.Model):
         buttons = super(Project, self)._get_stat_buttons()
         buttons.append({
             'icon': 'clock-o',
-            'text': _('Timesheets and Planning'),
+            'text': _lt('Timesheets and Planning'),
             'action_type': 'object',
             'action': 'open_timesheets_planning_report',
             'additional_context': json.dumps({

@@ -1,6 +1,8 @@
 odoo.define('web_studio.FormEditor', function (require) {
 "use strict";
 
+// ensure the component is registered beforehand.
+require('@mail/components/chatter_container/chatter_container');
 const { getMessagingComponent } = require('@mail/utils/messaging_component');
 
 var core = require('web.core');

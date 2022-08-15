@@ -70,6 +70,17 @@
                     ('is_fsm', '=?', context.get('fsm_mode'))
                 ]</attribute>
             </field>
+            <xpath expr="//group/field[@name='project_id']" position="attributes">
+                <attribute name="context">{
+                    'default_is_fsm': context.get('fsm_mode'),
+                }
+                </attribute>
+                <attribute name="domain">[
+                    ('active', '=', True),
+                    ('company_id', '=', company_id),
+                    ('is_fsm', '=?', context.get('fsm_mode'))
+                ]</attribute>
+            </xpath>
             <field name="partner_phone" position="attributes">
                 <attribute name="attrs">
                     {'invisible': ['|', ('partner_id', '=', False), ('is_fsm', '=', False)]}

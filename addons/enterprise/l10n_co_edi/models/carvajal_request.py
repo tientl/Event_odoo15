@@ -56,14 +56,16 @@ class CarvajalUsernameToken(UsernameToken):
 
 
 class CarvajalRequest():
-    def __init__(self, company):
+    def __init__(self, move_type, company):
+        l10n_co_edi_account = company.l10n_co_edi_account or ''
+        if move_type in ('in_refund', 'in_invoice') and len(l10n_co_edi_account.split('_')) == 2:
+            l10n_co_edi_account = l10n_co_edi_account.split('_')[0] + "_DS" + l10n_co_edi_account.split('_')[1]
         self.username = company.l10n_co_edi_username or ''
         self.password = company.l10n_co_edi_password or ''
         self.co_id_company = company.l10n_co_edi_company or ''
-        self.account = company.l10n_co_edi_account or ''
+        self.account = l10n_co_edi_account
         self.test_mode = company.l10n_co_edi_test_mode
-
-        self.wsdl = company.env['ir.config_parameter'].get_param('l10n_edi_carvajal_wsdl')
+        self.wsdl = company.env['ir.config_parameter'].sudo().get_param('l10n_edi_carvajal_wsdl')
         if self.wsdl:
             self.wsdl = self.wsdl % ('-stage' if company.l10n_co_edi_test_mode else '')
         else:  # for old users, keep using the old URL
@@ -151,6 +153,10 @@ class CarvajalRequest():
                     '4': 'FC',
                 }
                 carvajal_type = odoo_type_to_carvajal_type[invoice.l10n_co_edi_type]
+        elif invoice.move_type == 'in_invoice':
+            carvajal_type = 'DS'
+        elif invoice.move_type == 'in_refund':
+            carvajal_type = 'NS'
 
         prefix = invoice.sequence_prefix
         if invoice.move_type == 'out_invoice' and invoice.journal_id.l10n_co_edi_debit_note:
@@ -204,10 +210,10 @@ class CarvajalRequest():
             return {'error': _('The invoice is still processing by Carvajal.'), 'blocking_level': 'info'}
         legalStatus = response.legalStatus if hasattr(response, 'legalStatus') else 'REJECTED'
         if legalStatus == 'ACCEPTED':
-            if invoice.move_type == 'in_invoice':
-                return {'message': _('The invoice was accepted by Carvajal.')}
-            else:
+            if invoice.move_type in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'):
                 return self._download(invoice)
+            else:
+                return {}
         msg = (_('The invoice was rejected by Carvajal: %s', html_escape(response['errorMessage']).replace('\n', '<br/>'))
                if hasattr(response, 'errorMessage') and response['errorMessage']
                else _('The invoice was rejected by Carvajal but no error message was received.'))

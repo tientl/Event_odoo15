@@ -33,6 +33,14 @@ class TestFsmProjectPricingType(TestFsmFlowSaleCommon):
         self.assertTrue(project.is_fsm, 'The project should be a fsm project.')
         self.assertTrue(project.allow_billable, 'By default, a fsm project should be billable.')
         self.assertEqual(project.pricing_type, 'task_rate', 'The pricing type of a fsm project should be equal to task_rate.')
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('!=', 'task_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'fixed_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'employee_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', False)))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', False)))
 
         # 3) Add a employee mapping and check if the pricing_type is equal to 'employee_rate'
         project.write({
@@ -44,6 +52,14 @@ class TestFsmProjectPricingType(TestFsmFlowSaleCommon):
             ]
         })
         self.assertEqual(project.pricing_type, 'employee_rate', 'The pricing type of fsm project should be equal to employee_rate when an employee mapping exists in this project.')
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'task_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'fixed_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('!=', 'employee_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', False)))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', False)))
 
         # 4) Set allow_billable to False and check if the pricing_type is equal to False.
         project.write({
@@ -52,3 +68,11 @@ class TestFsmProjectPricingType(TestFsmFlowSaleCommon):
 
         self.assertFalse(project.allow_billable, 'The fsm project should be non billable.')
         self.assertFalse(project.pricing_type, 'The pricing type should be equal to False since the project is non billable.')
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('=', False)))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'task_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'fixed_rate')))
+        self.assertTrue(project.filtered_domain(project._search_pricing_type('!=', 'employee_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('!=', False)))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
+        self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))

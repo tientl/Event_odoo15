@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# marcescu, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:42+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: marcescu, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,6 +39,21 @@ msgid ""
 "        </div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"            <p>Hubo un error en la sincronización del pedido de Amazon con referencia <t t-out=\"ctx.get('amazon_order_ref') or ''\">REF</t> y no se pudo completar.</p>\n"
+"            <p>A menos que se cancele el pedido en SellerCentral, no se intentará ninguna otra sincronización.</p>\n"
+"            <p>Para programar un nuevo intento de sincronización, siga este procedimiento:\n"
+"                <ol>\n"
+"                    <li>Ingrese a las herramientas de desarrollador.</li>\n"
+"                    <li>Abra el formulario de la cuenta de Amazon en la que se realizó el pedido.</li>\n"
+"                    <li>Vaya a la pestaña de seguimiento de pedidos.</li>\n"
+"                    <li>Establezca una fecha para la <em>sincronización de los últimos pedidos</em> que sea anterior a la última actualización del estado del pedido.</li>\n"
+"                    <li>Guarde los cambios y haga clic en el botón<em>SINCRONIZAR PEDIDOS</em>.</li>\n"
+"                </ol>\n"
+"            </p>\n"
+"            <p>Si el problema persiste, póngase en contacto con el <a href=\"https://www.odoo.com/help/\">soporte técnico de Odoo</a>.</p>\n"
+"        </div>\n"
+"        "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__name
@@ -178,6 +194,9 @@ msgid ""
 "Since the current carrier doesn't automatically provide a tracking "
 "reference, you need to set one manually."
 msgstr ""
+"Amazon requiere que se proporcione una referencia de seguimiento con cada "
+"entrega. Dado que el transportista actual no proporciona automáticamente una"
+" referencia de seguimiento, es necesario establecer una manualmente."
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -186,6 +205,8 @@ msgid ""
 "Amazon requires that a tracking reference is provided with each delivery. "
 "You need to assign a carrier to this delivery."
 msgstr ""
+"Amazon requiere que se proporcione una referencia de seguimiento con cada "
+"entrega. Es necesario asignar un transportista a esta entrega."
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_item_ref
@@ -195,7 +216,7 @@ msgstr "Referencia del artículo definida por Amazon"
 #. module: sale_amazon
 #: model:mail.template,name:sale_amazon.order_sync_failure
 msgid "Amazon: Order Synchronization Failure"
-msgstr ""
+msgstr "Amazon: Error en la sincronización de órdenes."
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_orders_ir_actions_server
@@ -539,6 +560,9 @@ msgid ""
 "the same package. Operations related to the product %s were not all "
 "confirmed at once."
 msgstr ""
+"Los productos entregados a los clientes de Amazon deben incluir sus "
+"respectivas piezas en el mismo paquete. No se confirmaron todas las "
+"operaciones relacionadas con el producto %s al mismo tiempo."
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
@@ -637,6 +661,8 @@ msgstr "Sincronizar recolecciones"
 msgid ""
 "Synchronization of Amazon order {{ ctx.get('amazon_order_ref') }} has failed"
 msgstr ""
+"Hubo un error en la sincronización del pedido de Amazon {{ "
+"ctx.get('amazon_order_ref') }}"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__tax_included
@@ -778,6 +804,9 @@ msgid ""
 "already been delivered. Please create a return for this order to adjust the "
 "stock."
 msgstr ""
+"El cliente de Amazon canceló el pedido cuando ya se habían entregado algunos"
+" productos. Realice una devolución de este pedido para ajustar las "
+"existencias."
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__base_marketplace_id

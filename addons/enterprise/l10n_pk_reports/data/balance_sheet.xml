@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_financial_report_pk_balancesheet0" model="account.financial.html.report">
+        <field name="name">Balance Sheet</field>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="date_range" eval="False" />
+        <field name='parent_id' ref='l10n_pk.account_reports_pk_statements_menu'/>
+        <field name="show_journal_filter" eval="True"/>
+        <field name="country_id" ref="base.pk"/>
+    </record>
+    <record id="account_balance_report_pk_asset" model="account.financial.html.report.line">
+        <field name="name">Assets</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_balancesheet0"/>
+        <field name="code">PK_AST</field>
+        <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'asset')]" />
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="1"/>
+        <field name="formulas">PK_NCA + PK_CA</field>
+    </record>
+    <record id="account_balance_report_pk_non_current_asset" model="account.financial.html.report.line">
+        <field name="name">Non-Current Assets</field>
+        <field name="parent_id" ref="account_balance_report_pk_asset"/>
+        <field name="code">PK_NCA</field>
+        <field name="control_domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_non_current_assets'),
+                                                                               ref('account.data_account_type_fixed_assets')])]" />
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="formulas">PK_1111 + PK_1112 + PK_1113 + PK_1114 + PK_1115 + PK_1116 + PK_1117 + PK_1118 + PK_1119</field>
+    </record>
+    <record id="account_financial_report_pk_property_plant_equipment" model="account.financial.html.report.line">
+        <field name="name">Property, plant, equipment</field>
+        <field name="code">PK_1111</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1111%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="1"/>
+    </record>
+    <record id="account_financial_report_pk_intangible_assets" model="account.financial.html.report.line">
+        <field name="name">Intangible Assets</field>
+        <field name="code">PK_1112</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1112%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="2"/>
+    </record>
+    <record id="account_financial_report_pk_investment_property" model="account.financial.html.report.line">
+        <field name="name">Investment Property</field>
+        <field name="code">PK_1113</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1113%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="3"/>
+    </record>
+    <record id="account_financial_report_pk_long_term_investments" model="account.financial.html.report.line">
+        <field name="name">Long Term Investments</field>
+        <field name="code">PK_1114</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1114%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="4"/>
+    </record>
+    <record id="account_financial_report_pk_long_term_deposits" model="account.financial.html.report.line">
+        <field name="name">Long Term Deposits</field>
+        <field name="code">PK_1115</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1115%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="5"/>
+    </record>
+    <record id="account_financial_report_pk_biological_assets" model="account.financial.html.report.line">
+        <field name="name">Biological Assets</field>
+        <field name="code">PK_1116</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1116%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="6"/>
+    </record>
+    <record id="account_financial_report_pk_investment_associates" model="account.financial.html.report.line">
+        <field name="name">Investment in Associates</field>
+        <field name="code">PK_1117</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1117%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="7"/>
+    </record>
+    <record id="account_financial_report_pk_investment_jointly_entities" model="account.financial.html.report.line">
+        <field name="name">Investment in Jointly Controlled Entities</field>
+        <field name="code">PK_1118</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1118%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="sequence" eval="8"/>
+        <field name="level" eval="3" />
+    </record>
+    <record id="account_financial_report_pk_financial_assets" model="account.financial.html.report.line">
+        <field name="name">Other Financial Assets</field>
+        <field name="code">PK_1119</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1119%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="9"/>
+    </record>
+    <record id="account_balance_report_pk_current_asset" model="account.financial.html.report.line">
+        <field name="name">Current Assets</field>
+        <field name="parent_id" ref="account_balance_report_pk_asset"/>
+        <field name="code">PK_CA</field>
+        <field name="control_domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_liquidity'),
+                                                                               ref('account.data_account_type_current_assets'),
+                                                                               ref('account.data_account_type_prepayments'),
+                                                                               ref('account.data_account_type_receivable')])]" />
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="formulas">PK_1121 + PK_1122 + PK_1123 + PK_1124 + PK_1125 + PK_1126</field>
+    </record>
+    <record id="account_financial_report_pk_trade_receivable" model="account.financial.html.report.line">
+        <field name="name">Trade Receivable</field>
+        <field name="code">PK_1121</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1121%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="10"/>
+    </record>
+    <record id="account_financial_report_pk_loans_advances" model="account.financial.html.report.line">
+        <field name="name">Loans and Advances</field>
+        <field name="code">PK_1122</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1122%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="11"/>
+    </record>
+    <record id="account_financial_report_pk_deposit_prepayments" model="account.financial.html.report.line">
+        <field name="name">Trade Deposits and Short Term Prepayments</field>
+        <field name="code">PK_1123</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1123%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="12"/>
+    </record>
+    <record id="account_financial_report_pk_inventories" model="account.financial.html.report.line">
+        <field name="name">Inventories</field>
+        <field name="code">PK_1125</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1125%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="13"/>
+    </record>
+    <record id="account_financial_report_pk_cash" model="account.financial.html.report.line">
+        <field name="name">Cash and Cash Equivalents</field>
+        <field name="code">PK_1126</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1126%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="14"/>
+    </record>
+    <record id="account_financial_report_pk_other_current_asset" model="account.financial.html.report.line">
+        <field name="name">Other Current Assets</field>
+        <field name="code">PK_1124</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_asset'/>
+        <field name="domain" eval="[('account_id.code', '=like', '1124%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="15"/>
+    </record>
+    <record id="account_balance_report_pk_liabilities" model="account.financial.html.report.line">
+        <field name="name">Liabilities</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_balancesheet0"/>
+        <field name="code">PK_LIA</field>
+        <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'liability')]" />
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="2"/>
+        <field name="formulas">PK_NCL + PK_CL</field>
+    </record>
+    <record id="account_balance_report_pk_non_current_liabilities" model="account.financial.html.report.line">
+        <field name="name">Non-Current Liabilities</field>
+        <field name="parent_id" ref="account_balance_report_pk_liabilities"/>
+        <field name="control_domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_non_current_liabilities')])]" />
+        <field name="code">PK_NCL</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="3"/>
+        <field name="formulas">PK_2211 + PK_2212</field>
+    </record>
+    <record id="account_financial_report_pk_long_term_financing" model="account.financial.html.report.line">
+        <field name="name">Long Term Financing</field>
+        <field name="code">PK_2211</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2211%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="16"/>
+    </record>
+    <record id="account_financial_report_pk_deferred_liabilities" model="account.financial.html.report.line">
+        <field name="name">Deferred Liabilities</field>
+        <field name="code">PK_2212</field>
+        <field name="parent_id" ref='account_balance_report_pk_non_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2212%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="17"/>
+    </record>
+    <record id="account_balance_report_pk_current_liabilities" model="account.financial.html.report.line">
+        <field name="name">Current Liabilities</field>
+        <field name="parent_id" ref="account_balance_report_pk_liabilities"/>
+        <field name="code">PK_CL</field>
+        <field name="control_domain" eval="[
+                '|', ('account_id.user_type_id', 'in', [ref('account.data_account_type_current_liabilities'), ref('account.data_account_type_credit_card')]),
+                     ('account_id.user_type_id.type', '=', 'payable'),
+            ]" />
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="4"/>
+        <field name="formulas">PK_2221 + PK_2222 + PK_2223 + PK_2224 + PK_2225 + PK_2226 </field>
+    </record>
+    <record id="account_financial_report_pk_payables" model="account.financial.html.report.line">
+        <field name="name">Trade and Payables</field>
+        <field name="code">PK_2221</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2221%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="18"/>
+    </record>
+    <record id="account_financial_report_pk_short_borrowing" model="account.financial.html.report.line">
+        <field name="name">Short Term Borrowings</field>
+        <field name="code">PK_2222</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2222%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="19"/>
+    </record>
+    <record id="account_financial_report_pk_provisions" model="account.financial.html.report.line">
+        <field name="name">Provisions</field>
+        <field name="code">PK_2223</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2223%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="20"/>
+    </record>
+    <record id="account_financial_report_pk_unpaid_dividend" model="account.financial.html.report.line">
+        <field name="name">Unpaid Dividend</field>
+        <field name="code">PK_2224</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2224%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="21"/>
+    </record>
+    <record id="account_financial_report_pk_unclaimed_dividend" model="account.financial.html.report.line">
+        <field name="name">Unclaimed Dividend</field>
+        <field name="code">PK_2225</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2225%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="22"/>
+    </record>
+    <record id="account_financial_report_pk_other_current_liabilities" model="account.financial.html.report.line">
+        <field name="name">Other Current Liabilities</field>
+        <field name="code">PK_2226</field>
+        <field name="parent_id" ref='account_balance_report_pk_current_liabilities'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2226%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="23"/>
+    </record>
+    <record id="account_balance_report_pk_equity" model="account.financial.html.report.line">
+        <field name="name">Equity</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_balancesheet0"/>
+        <field name="code">PK_EQUI</field>
+        <field name="control_domain" eval="[
+                '|', ('account_id.user_type_id.internal_group', '=', 'income'),
+                '|', ('account_id.user_type_id.internal_group', '=', 'expense'),
+                     ('account_id.user_type_id.internal_group', '=', 'equity')
+             ]" />
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="3"/>
+        <field name="formulas">PK_2111 + PK_Earnings + PK_2112 + PK_2113</field>
+    </record>
+    <record id="account_financial_report_pk_share_capital" model="account.financial.html.report.line">
+        <field name="name">Share Capital</field>
+        <field name="code">PK_2111</field>
+        <field name="parent_id" ref='account_balance_report_pk_equity'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2111%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="24"/>
+    </record>
+    <record id="account_financial_report_pk_current_year_earnings" model="account.financial.html.report.line">
+        <field name="name">Unappropriated Profit</field>
+        <field name="code">PK_Earnings</field>
+        <field name="parent_id" ref='account_balance_report_pk_equity'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '3%'), ('account_id.code', '=like', '4%')]" />
+        <field name="show_domain">never</field>
+        <field name="special_date_changer">from_beginning</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="25"/>
+    </record>
+    <record id="account_financial_report_pk_reserves" model="account.financial.html.report.line">
+        <field name="name">Reserves</field>
+        <field name="code">PK_2112</field>
+        <field name="parent_id" ref='account_balance_report_pk_equity'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2112%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="26"/>
+    </record>
+    <record id="account_financial_report_pk_revaluation_surplus" model="account.financial.html.report.line">
+        <field name="name">Revaluation Surplus on Property and Equipment</field>
+        <field name="code">PK_2113</field>
+        <field name="parent_id" ref='account_balance_report_pk_equity'/>
+        <field name="domain" eval="[('account_id.code', '=like', '2113%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="3" />
+        <field name="sequence" eval="27"/>
+    </record>
+    <record id="account_balance_report_pk_equity_plus_liabilities" model="account.financial.html.report.line">
+        <field name="name">Contingencies and Commitments</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_balancesheet0"/>
+        <field name="code">PK_EQUI_LIA</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="4"/>
+        <field name="formulas">PK_EQUI + PK_LIA</field>
+    </record>
+</odoo>

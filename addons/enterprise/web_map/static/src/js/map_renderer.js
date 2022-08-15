@@ -4,6 +4,7 @@ odoo.define('web_map.MapRenderer', function (require) {
     "use strict";
 
     const AbstractRendererOwl = require('web.AbstractRendererOwl');
+    const { format } = require("web.field_utils");
 
     const { useRef, useState } = owl.hooks;
 
@@ -177,6 +178,7 @@ odoo.define('web_map.MapRenderer', function (require) {
                     const group = Object.entries(this.props.recordGroups)
                         .find(([, value]) => value.records.includes(markerInfo.record));
                     params.color = this._getGroupColor(group[0]);
+                    params.number = group[1].records.indexOf(markerInfo.record) + 1;
                 }
 
                 // Icon creation
@@ -326,9 +328,15 @@ odoo.define('web_map.MapRenderer', function (require) {
             }
             for (const field of this.props.fieldNamesMarkerPopup) {
                 if (record[field.fieldName]) {
-                    const fieldName = record[field.fieldName] instanceof Array ?
+                    let fieldName = record[field.fieldName] instanceof Array ?
                         record[field.fieldName][1] :
                         record[field.fieldName];
+
+                    if (["date", "datetime"].includes(field.type)) {
+                        const date = moment.utc(fieldName);
+                        fieldName = format[field.type](date);
+                    }
+
                     fieldsView.push({
                         value: fieldName,
                         string: field.string,
@@ -427,6 +435,7 @@ odoo.define('web_map.MapRenderer', function (require) {
                 shape: {
                     fieldName: String,
                     string: String,
+                    type: String,
                 },
             },
         },

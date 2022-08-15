@@ -176,7 +176,7 @@
                                 <field name="user_id" invisible="1" groups="hr_timesheet.group_hr_timesheet_approver"/>
                             </group>
                             <group>
-                                <field name="employee_id" required="1" groups="hr_timesheet.group_hr_timesheet_approver" attrs="{'readonly': [('id', '!=', False), ('validated', '=', True)]}"/>
+                                <field name="employee_id" required="1" groups="hr_timesheet.group_hr_timesheet_approver" attrs="{'readonly': [('id', '!=', False), ('validated', '=', True)]}" context="{'active_test': True}"/>
                                 <field name="date" attrs="{'readonly': [('id', '!=', False), ('validated', '=', True)]}"/>
                                 <field name="unit_amount" widget="timesheet_uom" attrs="{'readonly': [('id', '!=', False), '|', ('validated', '=', True), ('timer_start', '!=', False)]}" decoration-danger="unit_amount &gt; 24"/>
                             </group>
@@ -375,7 +375,7 @@
                     <filter name="my_team_timesheet" string="My Team" domain="[
                         '|', ('employee_id.timesheet_manager_id', '=', uid),
                             '|', ('employee_id.parent_id.user_id', '=', uid),
-                                '|', ('project_id.user_id', '=', uid), ('user_id', '=', uid)]"/>
+                                ('project_id.user_id', '=', uid)]"/>
                     <filter name="my_project" string="My Projects" domain="[('project_id.user_id', '=', uid)]" context="{'group_expand': False}"/>
                 </xpath>
             </field>

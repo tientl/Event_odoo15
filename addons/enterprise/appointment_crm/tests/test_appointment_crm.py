@@ -75,6 +75,7 @@ class AppointmentCRMTest(TestCrmCommon):
         self.assertEqual(lead.partner_id, self.contact_1)
         self.assertTrue(self.env.ref('appointment_crm.appointment_crm_tag') in lead.tag_ids)
         self.assertTrue(lead.activity_ids[0], "Lead should have a next activity")
+        self.assertNotIn(self.env.user.partner_id, lead.message_partner_ids)
 
         next_activity = lead.activity_ids[0]
         self.assertEqual(next_activity.date_deadline, event.start_date)

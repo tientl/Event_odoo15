@@ -2,20 +2,19 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
-class StudioSystray extends owl.Component {
+const { Component, hooks } = owl;
+
+class StudioSystray extends Component {
     setup() {
         this.hm = useService("home_menu");
         this.studio = useService("studio");
+        this.rootRef = hooks.useRef("root");
         this.env.bus.on("ACTION_MANAGER:UI-UPDATED", this, (mode) => {
-            if (mode !== "new") {
-                this.render();
+            if (mode !== "new" && this.rootRef.el) {
+                this.rootRef.el.classList.toggle("o_disabled", this.buttonDisabled);
             }
         });
     }
-    /**
-    should react to actionamanger and home menu, store the action descriptor
-    determine if the action is editable
-   **/
     get buttonDisabled() {
         return !this.studio.isStudioEditable();
     }

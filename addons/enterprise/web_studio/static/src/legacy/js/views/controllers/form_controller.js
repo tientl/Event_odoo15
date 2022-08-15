@@ -11,6 +11,7 @@ odoo.define('web_studio.FormController', function (require) {
 
     const core = require('web.core');
     const FormController = require('web.FormController');
+    const { Markup } = require('web.utils');
 
     const _t = core._t;
 
@@ -38,11 +39,11 @@ odoo.define('web_studio.FormController', function (require) {
                     const doneApprovals = appSpec.entries.filter((e) => e.approved).map((e) => e.rule_id[0]);
                     appSpec.rules.forEach((r) => {if (!doneApprovals.includes(r.id)) {missingApprovals.push(r);}});
                     let msg = '<ul>';
-                    missingApprovals.forEach((r) => (msg += `<li>${r.message || r.group_id[1]}</li>`));
+                    missingApprovals.forEach((r) => (msg += `<li>${_.escape(r.message || r.group_id[1])}</li>`));
                     msg += '</ul>';
                     this.displayNotification({
                         subtitle: _t('The following approvals are missing:'),
-                        message: msg,
+                        message: Markup(msg),
                         type: 'warning',
                     });
                     return Promise.reject();

@@ -106,13 +106,18 @@ var sale_subscription_dashboard_abstract = AbstractAction.extend(StandaloneField
 
     load_action: function(view_xmlid, options) {
         var self = this;
-        options.on_reverse_breadcrumb = this.on_reverse_breadcrumb;
+        // FIXME
+        // options to make the doAction should be at the root of that object
+        // the info for the action itself should be in props of that object.
+        // For now, put those keys everywhere....
+        const doActionOptions = Object.assign({}, options, { props : _.omit(options, ['additional_context', 'push_main_state']) });
+        doActionOptions.on_reverse_breadcrumb = this.on_reverse_breadcrumb;
         if (options.push_main_state && self.main_dashboard_action_id) {
             // Reset the pushState prevents a traceback when the back button is used from a detailed dashboard.
             // The forward button does nothing.
             options.pushState = false;
         }
-        return this.do_action(view_xmlid, options).then(function() {
+        return this.do_action(view_xmlid, doActionOptions).then(function() {
             // ARJ: When the subscriptions dashboard will be rewritten in OWL, the current behavior have to be improved:
             // * keep the current graph when user refresh the page.
             // * Allows to use back and forward buttons.
@@ -1167,8 +1172,8 @@ var sale_subscription_dashboard_salesman = sale_subscription_dashboard_abstract.
 
     init: function() {
         this._super.apply(this, arguments);
-        this.start_date = moment().startOf('month');
-        this.end_date = moment().endOf('month');
+        this.start_date = moment().subtract(1, 'months').startOf('month');
+        this.end_date = moment().subtract(1, 'months').endOf('month');
         this.barGraph = {};
         this.migrationDate = false;
         this.currentCompany = $.bbq.getState('cids') && parseInt($.bbq.getState('cids').split(',')[0]);

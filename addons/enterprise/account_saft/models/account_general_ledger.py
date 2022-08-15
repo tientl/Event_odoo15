@@ -337,4 +337,4 @@ class AccountGeneralLedger(models.AbstractModel):
 
         # Indent the XML data and return as Pretty XML string and remove extra new lines.
         pretty_xml = xml.dom.minidom.parseString(content).toprettyxml()
-        return "\n".join(re.split(r'\n\s*\n', pretty_xml))
+        return "\n".join(re.split(r'\n\s*\n', pretty_xml)).encode()

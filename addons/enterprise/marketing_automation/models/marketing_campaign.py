@@ -273,7 +273,7 @@ class MarketingCampaign(models.Model):
 
         participants = self.env['marketing.participant']
         # auto-commit except in testing mode
-        auto_commit = not getattr(threading.currentThread(), 'testing', False)
+        auto_commit = not getattr(threading.current_thread(), 'testing', False)
         for campaign in self.filtered(lambda c: c.marketing_activity_ids):
             now = Datetime.now()
             if not campaign.last_sync_date:

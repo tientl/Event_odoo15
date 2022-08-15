@@ -5,7 +5,6 @@ from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare
 from dateutil.relativedelta import relativedelta
-
 from ..models.l10n_lu_tax_report_data import YEARLY_SIMPLIFIED_NEW_TOTALS, YEARLY_SIMPLIFIED_FIELDS
 from ..models.l10n_lu_tax_report_data import YEARLY_NEW_TOTALS, YEARLY_MONTHLY_FIELDS_TO_DELETE
 from ..models.l10n_lu_tax_report_data import VAT_MANDATORY_FIELDS
@@ -17,7 +16,7 @@ class L10nLuGenerateTaxReport(models.TransientModel):
     _name = 'l10n_lu.generate.tax.report'
     _description = 'Generate Tax Report'
 
-    simplified_declaration = fields.Boolean(default=False)
+    simplified_declaration = fields.Boolean(default=True)
     period = fields.Selection(
         [('A', 'Annual'), ('M', 'Monthly'), ('T', 'Quarterly')],
         help="Technical field used to show the correct button in the view"
@@ -44,7 +43,10 @@ class L10nLuGenerateTaxReport(models.TransientModel):
         return rec
 
     def _get_export_vat(self):
-        options = self.env.context['tax_report_options']
+        if self.env.context.get('tax_report_options'):
+            options = self.env.context['tax_report_options']
+        else:
+            options = self.env['account.generic.tax.report']._get_options(previous_options={'tax_report': self.env.ref('l10n_lu.tax_report').id})
         return self.env['account.report'].get_vat_for_export(options)
 
     def open_repartition_model(self):
@@ -121,12 +123,35 @@ class L10nLuGenerateTaxReport(models.TransientModel):
         declaration.update(declaration_template_values)
         return {'declarations': [declaration]}
 
-    def _adapt_to_full_annual_declaration(self, form):
+    def _add_yearly_fields(self, data, form):
+        numeric_fields = {
+            '001': data.report_section_001, '002': data.report_section_002, '003': data.report_section_003,
+            '004': data.report_section_004, '005': data.report_section_005, '007': data.report_section_007,
+            '008': data.report_section_008, '009': data.report_section_009, '010': data.report_section_010,
+            # field 010 reports to the annex
+            '389': data.report_section_010, '388': data.report_section_010, '011': data.report_section_011,
+            '013': data.report_section_013, '202': data.report_section_202, '077': data.report_section_077,
+            '078': data.report_section_078, '079': data.report_section_079, '404': data.report_section_404,
+            '081': data.report_section_081, '082': data.report_section_082, '083': data.report_section_083,
+            '405': data.report_section_405, '085': data.report_section_085, '086': data.report_section_086,
+            '087': data.report_section_087, '406': data.report_section_406
+        }
+        for k, v in numeric_fields.items():
+            if v != 0.00 or k == '013':  # field 013 is mandatory
+                form['field_values'][k] = {'value': v, 'field_type': 'float'}
+
+        return form
+
+    def _adapt_to_full_annual_declaration(self, form, report_id=None):
         """
         Adapts the report to the annual format, comprising additional fields and apppendices.
         (https://ecdf-developer.b2g.etat.lu/ecdf/forms/popup/TVA_DECA_TYPE/2020/en/1/preview)
         """
-        data = self.env['l10n_lu.yearly.tax.report.manual'].browse(self.env.context['tax_report_data_id'])
+        if report_id:
+            # if the function is called from the manual report itself, we don't have tax_report_data_id in the context and have to pass the id
+            data = self.env['l10n_lu.yearly.tax.report.manual'].browse(report_id)
+        else:
+            data = self.env['l10n_lu.yearly.tax.report.manual'].browse(self.env.context['tax_report_data_id'])
         # Check the correct allocation of monthly fields
         allocation_dict = {
             '472': data.report_section_472_rest,
@@ -153,22 +178,7 @@ class L10nLuGenerateTaxReport(models.TransientModel):
         if data.avg_nb_employees:
             form['field_values']['110'] = {'value': data.avg_nb_employees, 'field_type': 'float'}
 
-        # Add yearly fields
-        numeric_fields = {
-            '001': data.report_section_001, '002': data.report_section_002, '003': data.report_section_003,
-            '004': data.report_section_004, '005': data.report_section_005, '007': data.report_section_007,
-            '008': data.report_section_008, '009': data.report_section_009, '010': data.report_section_010,
-            # field 010 reports to the annex
-            '389': data.report_section_010, '388': data.report_section_010, '011': data.report_section_011,
-            '013': data.report_section_013, '202': data.report_section_202, '077': data.report_section_077,
-            '078': data.report_section_078, '079': data.report_section_079, '404': data.report_section_404,
-            '081': data.report_section_081, '082': data.report_section_082, '083': data.report_section_083,
-            '405': data.report_section_405, '085': data.report_section_085, '086': data.report_section_086,
-            '087': data.report_section_087, '406': data.report_section_406
-        }
-        for k, v in numeric_fields.items():
-            if v != 0.00 or k == '013':  # field 013 is mandatory
-                form['field_values'][k] = {'value': v, 'field_type': 'float'}
+        form = self._add_yearly_fields(data, form)
         # Character fields
         if data.report_section_007:
             # Only fill in field 206 (additional Total Sales/Receipts line), which specifies what field
@@ -196,11 +206,12 @@ class L10nLuGenerateTaxReport(models.TransientModel):
         form['field_values']['998'] = {'value': '1' if data.submitted_rcs else '0', 'field_type': 'boolean'}
         form['field_values']['999'] = {'value': '0' if data.submitted_rcs else '1', 'field_type': 'boolean'}
         # Add annex
-        annex_fields, expenditures_table = self._add_annex(self.env.context['tax_report_options'])
-        form['field_values'].update(annex_fields)
-        # Only add the table if it contains some data
-        if expenditures_table:
-            form['tables'] = [expenditures_table]
+        if self.env.context.get('tax_report_options'):
+            annex_fields, expenditures_table = self._add_annex(self.env.context['tax_report_options'])
+            form['field_values'].update(annex_fields)
+            # Only add the table if it contains some data
+            if expenditures_table:
+                form['tables'] = [expenditures_table]
 
     def _adapt_to_simplified_annual_declaration(self, form):
         """
@@ -219,44 +230,56 @@ class L10nLuGenerateTaxReport(models.TransientModel):
         # Only keep valid declaration fields
         form['field_values'] = {k: v for k, v in form['field_values'].items() if k in YEARLY_SIMPLIFIED_FIELDS}
 
-    def _add_annex(self, options):
-        """This returns the appendix fields to add to the annual tax report."""
+    def _get_account_code(self, ln):
+        if ln.get('caret_options') == 'account.account':
+            account_code = self.env['account.account'].browse(ln['id']).mapped('code')[0]
+            return account_code
+        return False
 
-        def _get_annex_data_from_lines(lines):
-            # Initialize data dictionary
-            annex_lines = {}
-            for ln in lines:
-                if ln.get('caret_options') == 'account.account':
-                    account_code = self.env['account.account'].browse(ln['id']).mapped('code')[0]
-                    # Search all mathing line codes: the present account must have a code lying between the borders
-                    # defined by the domain
-                    matching = [code for domain, code in YEARLY_ANNEX_MAPPING.items() if
-                                int(domain[0]) <= int(account_code) and int(domain[1]) > int(account_code)]
-                    for code in matching:
-                        annex_lines.setdefault(code, {})
-                        annex_lines[code]['%'] = 100.00  # business portion always 100%
-                        annex_lines[code]['base_amount'] = annex_lines[code].get('base_amount', 0.00) + ln['columns'][0]['no_format']
-                        annex_lines[code]['tot_VAT'] = annex_lines[code].get('tot_VAT', 0.00) + ln['columns'][1]['no_format']
-                        annex_lines[code]['total'] = annex_lines[code].get('total', 0.00) + ln['columns'][0]['no_format'] + ln['columns'][1]['no_format']
-                        # Add details for line A43
-                        if code == 'A43':
-                            account_name = self.env['account.account'].browse(ln['id']).name
-                            # The maximum length for the "Detail of Expense" field is 30 characters;
-                            line_name = ' '.join((account_name + ' ')[:30 + 1].split(' ')[:-1]).rstrip()
-                            detail_line = {
-                                'detail': line_name,
-                                'bus_base_amount': ln['columns'][0]['no_format'],  # business portion 100%
-                                'bus_VAT': ln['columns'][1]['no_format'],  # business portion 100%
-                            }
-                            annex_lines[code]['detailed_lines'] = annex_lines[code].get('detailed_lines', []) + [detail_line]
-            return annex_lines
+    def _get_account_name(self, ln):
+        return self.env['account.account'].browse(ln['id']).name
 
-        annex_fields = {}
-        annex_options = options.copy()
-        annex_options['group_by'] = 'account.tax'
-        lines = self.env['account.generic.tax.report'].with_context(
-            self.env['account.generic.tax.report']._set_context(annex_options))._get_lines(annex_options)
-        annex_lines = _get_annex_data_from_lines(lines)
+    def _get_annex_data_from_lines(self, lines):
+        # Initialize data dictionary
+        annex_lines = {}
+        for ln in lines:
+            account_code = self._get_account_code(ln)
+            if account_code:
+                # Search all mathing line codes: the present account must have a code lying between the borders
+                # defined by the domain
+                matching = [code for domain, code in YEARLY_ANNEX_MAPPING.items() if
+                            int(domain[0]) <= int(account_code) and int(domain[1]) > int(account_code)]
+                for code in matching:
+                    annex_lines.setdefault(code, {})
+                    annex_lines[code]['%'] = 100.00  # business portion always 100%
+                    annex_lines[code]['base_amount'] = annex_lines[code].get('base_amount', 0.00) + ln['columns'][0]['no_format']
+                    annex_lines[code]['tot_VAT'] = annex_lines[code].get('tot_VAT', 0.00) + ln['columns'][1]['no_format']
+                    annex_lines[code]['total'] = annex_lines[code].get('total', 0.00) + ln['columns'][0]['no_format'] + ln['columns'][1]['no_format']
+                    # Add details for line A43
+                    if code == 'A43':
+                        account_name = self._get_account_name(ln)
+                        # The maximum length for the "Detail of Expense" field is 30 characters;
+                        line_name = ' '.join((account_name + ' ')[:31].split(' ')[:-1]).rstrip()
+                        detail_line = {
+                            'detail': line_name,
+                            'bus_base_amount': ln['columns'][0]['no_format'],
+                            'bus_VAT': ln['columns'][1]['no_format'],
+                        }
+                        annex_lines[code]['detailed_lines'] = annex_lines[code].get('detailed_lines', []) + [detail_line]
+        return annex_lines
+
+    def _add_expenditures(self, data, lu_annual_report=False):
+        expenditures = []
+        for data_dict in data.get('detailed_lines', []):
+            report_line = {}
+            report_line['411'] = {'value': data_dict['detail'], 'field_type': 'char'}
+            report_line['412'] = {'value': data_dict['bus_base_amount'], 'field_type': 'float'}
+            report_line['413'] = {'value': data_dict['bus_VAT'], 'field_type': 'float'}
+            expenditures.append(report_line)
+        return expenditures
+
+    def _add_annex_fields_expenditures(self, annex_fields, lines, lu_annual_report=False):
+        annex_lines = self._get_annex_data_from_lines(lines)
         total_base_amount = 0.00
         total_vat = 0.00
         expenditures_table = []
@@ -275,12 +298,17 @@ class L10nLuGenerateTaxReport(models.TransientModel):
                     annex_fields[YEARLY_ANNEX_FIELDS[code]['%']] = data['%']
                 # if line A43 is reached, fill expenditures table
                 if code == 'A43':
-                    for data_dict in data.get('detailed_lines', []):
-                        report_line = {}
-                        report_line['411'] = {'value': data_dict['detail'], 'field_type': 'char'}
-                        report_line['412'] = {'value': data_dict['bus_base_amount'], 'field_type': 'float'}
-                        report_line['413'] = {'value': data_dict['bus_VAT'], 'field_type': 'float'}
-                        expenditures_table.append(report_line)
+                    expenditures_table += self._add_expenditures(data, lu_annual_report)
+        return annex_fields, expenditures_table, total_base_amount, total_vat
+
+    def _add_annex(self, options):
+        """This returns the appendix fields to add to the annual tax report."""
+        annex_fields = {}
+        annex_options = options.copy()
+        annex_options['group_by'] = 'account.tax'
+        lines = self.env['account.generic.tax.report'].with_context(
+            self.env['account.generic.tax.report']._set_context(annex_options))._get_lines(annex_options)
+        annex_fields, expenditures_table, total_base_amount, total_vat = self._add_annex_fields_expenditures(self, annex_fields, lines)
         # Annex totals
         if annex_fields:
             annex_fields['192'] = total_base_amount

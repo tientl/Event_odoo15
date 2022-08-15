@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields, api, _
-from odoo.tools import float_is_zero
+from odoo.tools import float_is_zero, classproperty
 
 from itertools import chain
 
@@ -25,6 +25,19 @@ class MulticurrencyRevaluationReport(models.Model):
     _auto = False
 
     _order = "report_include desc, currency_code desc, account_code asc, date desc, id desc"
+
+    @classproperty
+    def _depends(cls):
+        ret = dict(super()._depends)
+        ret.setdefault('account.partial.reconcile', []).extend([
+            'amount',
+            *(f'{side}_{field}' for side in ('debit', 'credit') for field in ('move_id', 'currency_id', 'amount_currency')),
+        ])
+        ret.setdefault('account.move.line', []).extend([
+            'amount_residual',
+            'amount_residual_currency'
+        ])
+        return ret
 
     filter_multi_company = None
     filter_date = {'filter': 'this_month', 'mode': 'single'}

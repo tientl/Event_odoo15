@@ -10,7 +10,12 @@ export default class PackageLineComponent extends owl.Component {
     }
 
     get qtyDone() {
-        return this.line.qty_done != 0 ? 1 : 0;
+        const reservedQuantity = this.line.lines.reduce((r, l) => r + l.product_uom_qty, 0);
+        const doneQuantity = this.line.lines.reduce((r, l) => r + l.qty_done, 0);
+        if (reservedQuantity > 0) {
+            return doneQuantity / reservedQuantity;
+        }
+        return doneQuantity >= 0 ? 1 : 0;
     }
 
     openPackage() {

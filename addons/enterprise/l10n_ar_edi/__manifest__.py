@@ -10,7 +10,7 @@
 Functional
 ----------
 
-Be able to create journals in Odoo to create electronic customer invoices and report then to AFIP (via webserices).
+Be able to create journals in Odoo to create electronic customer invoices and report then to AFIP (via webservices).
 The options available are:
 
     * Electronic Invoice - Web Service

@@ -25,7 +25,7 @@ QUnit.module("Studio", (hooks) => {
     QUnit.module("IconCreator");
 
     QUnit.test("icon creator: with initial web icon data", async function (assert) {
-        assert.expect(4);
+        assert.expect(5);
 
         class Parent extends Component {
             constructor() {
@@ -65,6 +65,7 @@ QUnit.module("Studio", (hooks) => {
         await testUtils.dom.click(parent.el.querySelector(".o_web_studio_upload a"));
 
         assert.verifySteps(["icon-changed"]);
+        assert.strictEqual(parent.el.querySelector('.o_web_studio_upload input').accept, 'image/png', "Input should now only accept pngs");
 
         parent.destroy();
     });

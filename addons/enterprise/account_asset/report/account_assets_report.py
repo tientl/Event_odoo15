@@ -289,7 +289,7 @@ class assets_report(models.AbstractModel):
                        asset.acquisition_date as asset_acquisition_date,
                        asset.method as asset_method,
                        (
-                           account_move_count.count
+                           COALESCE(account_move_count.count, 0)
                            + COALESCE(asset.depreciation_number_import, 0)
                            - CASE WHEN asset.prorata THEN 1 ELSE 0 END
                        ) as asset_method_number,
@@ -379,13 +379,5 @@ class assets_report(models.AbstractModel):
 
     def open_asset(self, options, params=None):
         model, active_id = self._get_model_info_from_id(params.get('id'))
-        line = self.env[model].browse(active_id)
-        return {
-            'name': line.name,
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.asset',
-            'view_mode': 'form',
-            'view_id': False,
-            'views': [(self.env.ref('account_asset.view_account_asset_form').id, 'form')],
-            'res_id': line.id,
-        }
+        asset = self.env[model].browse(active_id)
+        return asset.open_asset(['form'])

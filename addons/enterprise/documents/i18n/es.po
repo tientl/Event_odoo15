@@ -4,20 +4,22 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# marcescu, 2022
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2022-01-24 08:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: documents
 #. openerp-web
@@ -63,19 +65,33 @@ msgid ", expired on"
 msgstr ", vencido el"
 
 #. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+". Scanned files will appear automatically in your workspace. Then, process "
+"your documents in bulk with the split tool: launch user defined actions, "
+"request a signature, convert to vendor bills with AI, etc."
+msgstr ""
+". Los archivos escaneados aparecerán automáticamente en su espacio de "
+"trabajo. A continuación, procese sus documentos de forma masiva con la "
+"herramienta de división: lance acciones definidas por el usuario, solicite "
+"una firma, convierta en facturas de proveedores con AI, etc."
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2020"
-msgstr "2020"
+msgid "2021"
+msgstr "2021"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2021"
-msgstr ""
+msgid "2022"
+msgstr "2022"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
 msgstr ""
+"<b class=\"tip_title\">Consejo: Conviértase en una empresa libre de "
+"papel</b>"
 
 #. module: documents
 #: code:addons/documents/controllers/main.py:0
@@ -328,6 +344,106 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"                    <tbody>\n"
+"                        <!-- ENCABEZADO -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\">\n"
+"                                        <span style=\"font-size: 10px;\">\n"
+"                                            Solicitud de documento: <br/>\n"
+"                                            <t t-if=\"object.name\">\n"
+"                                                <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Bandeja de entrada financiera</span>\n"
+"                                            </t>\n"
+"                                        </span><br/>\n"
+"                                    </td><td valign=\"middle\" align=\"right\">\n"
+"                                        <img t-attf-src=\"/logo.png?company={{ object.create_uid.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.create_uid.company_id.name\"/>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- CONTENIDO -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                                        <div>\n"
+"                                            Hola <t t-out=\"object.owner_id.name or ''\">OdooBot</t>,\n"
+"                                            <br/><br/>\n"
+"                                            <t t-out=\"object.create_uid.name or ''\">OdooBot</t> (<t t-out=\"object.create_uid.email or ''\">odoobot@example.com</t>) le solicita proporcionar el siguiente documento:\n"
+"                                            <br/><br/>\n"
+"                                            <center>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.name\">\n"
+"                                                        <b t-out=\"object.name or ''\">Bandeja de entrada financiera</b>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.activity_note\">\n"
+"                                                        <i t-out=\"object.activity_note or ''\">Ejemplo de una nota.</i>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <br/>\n"
+"                                                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                    <a t-att-href=\"object.full_url\" style=\"background-color: #875A7B; padding: 20px 30px 20px 30px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                                        Subir el documento solicitado\n"
+"                                                    </a>\n"
+"                                                </div>\n"
+"                                            </center><br/>\n"
+"                                            Por favor, proporcione el documento faltante antes de que el enlace caduque (planeado para el <t t-out=\"object.date_deadline or ''\">2021-05-17</t>).\n"
+"                                            <t t-if=\"user and user.signature\">\n"
+"                                                <br/>\n"
+"                                                <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                                                <br/>\n"
+"                                            </t>\n"
+"                                        </div>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- PIE -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\" align=\"left\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.name or ''\">SuEmpresa</t>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.email\">\n"
+"                                            | <a t-attf-href=\"'mailto:%s' % {{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                                        </t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.website\">\n"
+"                                            | <a t-attf-href=\"'%s' % {{ object.create_uid.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.website or ''\">http://www.example.com</a>\n"
+"                                        </t>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </tbody>\n"
+"                    </table>\n"
+"                    </td></tr>\n"
+"                    <!-- CON TECNOLOGÍA DE -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                          <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"                            <t t-if=\"object.date_deadline\">\n"
+"                                Este enlace caduca el <b t-out=\"object.date_deadline or ''\">2021-05-17</b>.<br/>\n"
+"                            </t>\n"
+"                            Con tecnología de <a target=\"_blank\" href=\"https://www.odoo.com/app/documents\" style=\"color: #875A7B;\">Documentos de Odoo</a>\n"
+"                          </td></tr>\n"
+"                        </table>\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_defaults
@@ -554,7 +670,16 @@ msgstr "Te permite gestionar tus documentos. "
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Already linked Documents"
+msgstr "Documentos ya vinculados"
+
+#. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+"An easy way to process incoming mails is to configure your scanner to send "
+"PDFs to"
 msgstr ""
+"Una forma sencilla de procesar los correos entrantes es configurar el "
+"escáner para que envíe los PDF a"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
@@ -571,16 +696,6 @@ msgstr ""
 " Luego, procesa tus documentos en lotes con la herramienta de división: "
 "lanza acciones definidas por usuarios, solicita firmas, conviértelos a "
 "facturas de proveedor con IA, etc."
-
-#. module: documents
-#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
-msgid ""
-"An easy way to process incoming mails is to configure your scanner to send "
-"PDFs to {{ record.alias_id.display_name }}. Scanned files will appear "
-"automatically in your workspace. Then, process your documents in bulk with "
-"the split tool: launch user defined actions, request a signature, convert to"
-" vendor bills with AI, etc."
-msgstr ""
 
 #. module: documents
 #. openerp-web
@@ -608,7 +723,7 @@ msgstr "Archivado"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Are you confirm deletion ?"
-msgstr ""
+msgstr "¿Confirma la acción?"
 
 #. module: documents
 #. openerp-web
@@ -676,6 +791,10 @@ msgid ""
 "class=\"o_folder_description_alias\"><strong>inbox-financial</strong> email "
 "alias</span>."
 msgstr ""
+"Automatice su bandeja de entrada al utilizar documentos escaneados o correos"
+" electrónicos enviados a la <span "
+"class=\"o_folder_description_alias\"><strong>bandeja de entrada "
+"financiera</strong> del seudónimo de correo electrónico</span>."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__available_rule_ids
@@ -746,7 +865,7 @@ msgstr "Suma de verificación/SHA1"
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
-msgstr ""
+msgstr "Elegir un registro para vincular"
 
 #. module: documents
 #. openerp-web
@@ -800,7 +919,7 @@ msgstr "Configuración"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Configure Email Servers"
-msgstr ""
+msgstr "Configurar servidores de correo electrónico"
 
 #. module: documents
 #: model:ir.model,name:documents.model_res_partner
@@ -989,6 +1108,8 @@ msgstr "Solicitud de documento"
 msgid ""
 "Document Request {{ object.name != False and ': '+ object.name or '' }}"
 msgstr ""
+"Solicitud de documento {{ object.name != False and ': '+ object.name or '' "
+"}}"
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
@@ -1001,7 +1122,7 @@ msgstr "Solicitud de documento: %sSubido por:%s"
 #. module: documents
 #: model:mail.template,name:documents.mail_template_document_request
 msgid "Document Request: Send by email"
-msgstr ""
+msgstr "Solicitud de documento: Enviar por correo electrónico"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
@@ -1041,7 +1162,7 @@ msgstr "Documentos"
 #. module: documents
 #: model:ir.model,name:documents.model_documents_link_to_record_wizard
 msgid "Documents Link to Record"
-msgstr ""
+msgstr "Documentos vinculados para registrar"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_share
@@ -1127,7 +1248,7 @@ msgstr "Tipo de vencimiento"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Edit the linked Record"
-msgstr ""
+msgstr "Editar el registro vinculado"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__email_cc
@@ -1223,7 +1344,7 @@ msgstr "Seguidores"
 #: model:ir.model.fields,field_description:documents.field_documents_document__message_partner_ids
 #: model:ir.model.fields,field_description:documents.field_documents_share__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Seguidores (Partners)"
+msgstr "Seguidores (Contactos)"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__activity_type_icon
@@ -1233,7 +1354,7 @@ msgstr "Icono de Font Awesome ej. fa-tasks"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Generate URL"
-msgstr ""
+msgstr "Generar URL"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
@@ -1266,7 +1387,7 @@ msgstr "RRHH"
 #: model:ir.model.fields,field_description:documents.field_documents_document__has_message
 #: model:ir.model.fields,field_description:documents.field_documents_share__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Tiene un mensaje"
 
 #. module: documents
 #. openerp-web
@@ -1357,6 +1478,10 @@ msgid ""
 "Incoming letters sent to <span class=\"o_folder_description_alias\">inbox "
 "email alias</span> will be added to your inbox automatically."
 msgstr ""
+"Las cartas entrantes enviadas a la <span "
+"class=\"o_folder_description_alias\">bandeja de entrada del seudónimo de "
+"correo electrónico</span> serán agregadas a su bandeja de entrada de forma "
+"automática."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__index_content
@@ -1371,7 +1496,7 @@ msgstr "Interno"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_editable_attachment
 msgid "Is Editable Attachment"
-msgstr ""
+msgstr "Es un archivo adjunto editable"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_favorited
@@ -1467,6 +1592,8 @@ msgid ""
 "Let's tag this mail as legal<br/> <i>Tips: actions can be tailored to your "
 "process, according to the workspace.</i>"
 msgstr ""
+"Etiquetemos este correo como legal<br/> <i>Consejo: las acciones pueden "
+"adaptarse a su proceso, según el espacio de trabajo.</i>"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific
@@ -1478,6 +1605,7 @@ msgstr ""
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific_write
 msgid "Limit Write Groups to the documents of which they are owner."
 msgstr ""
+"Limita los grupos de lectura a los documentos de los que son propietarios."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_link_to_record_form_view
@@ -1487,7 +1615,7 @@ msgstr "Vínculo"
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_rule__create_model__link_to_record
 msgid "Link to record"
-msgstr ""
+msgstr "Vínculo por registrar"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__email_cc
@@ -1681,7 +1809,7 @@ msgstr "Nuevo grupo"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Siguiente evento en el calendario de actividades."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_date_deadline
@@ -1796,7 +1924,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Or send emails to"
-msgstr ""
+msgstr "O enviar correos electrónicos a"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_other
@@ -1812,7 +1940,7 @@ msgstr "Documentos propios solamente"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__user_specific_write
 msgid "Own Documents Only (Write)"
-msgstr ""
+msgstr "Documentos propios solamente (escritura)"
 
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_folder_check_user_specific
@@ -1820,6 +1948,8 @@ msgid ""
 "Own Documents Only may not be enabled for write groups if it is not enabled "
 "for read groups."
 msgstr ""
+"Tal vez Documentos propios solamente no esté habilitado para grupos de "
+"escritura si no está habilitado para grupos de lectura."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__owner_id
@@ -2085,8 +2215,8 @@ msgstr "Secuencia"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2021 Contracts"
-msgstr ""
+msgid "Set As 2022 Contracts"
+msgstr "Establecer como contratos 2022"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__partner_id
@@ -2205,7 +2335,7 @@ msgstr "Tamaño"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__link_model
 msgid "Specific Model Linked"
-msgstr ""
+msgstr "Modelo específico vinculado"
 
 #. module: documents
 #. openerp-web
@@ -2407,6 +2537,8 @@ msgstr "Miniatura"
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
 msgstr ""
+"Consejo: configure su escáner para enviar todos los documentos a esta "
+"dirección."
 
 #. module: documents
 #: model:digest.tip,name:documents.digest_tip_documents_0
@@ -2434,7 +2566,7 @@ msgstr "Tooltip"
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__is_editable_attachment
 msgid "True if we can edit the link attachment."
-msgstr ""
+msgstr "Es verdadero si podemos editar el archivo adjunto del enlace."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__type
@@ -2500,8 +2632,8 @@ msgstr "Subir"
 #. module: documents
 #: model_terms:ir.actions.act_window,help:documents.document_action
 msgid ""
-"Upload <span class=\"font-weight-normal\">a file or</span> drag <span class"
-"=\"font-weight-normal\">it here.</span>"
+"Upload <span class=\"font-weight-normal\">a file or</span> drag <span "
+"class=\"font-weight-normal\">it here.</span>"
 msgstr ""
 "Sube <span class=\"font-weight-normal\">un archivo o</span> arrástralo <span"
 " class=\"font-weight-normal\">aquí.</span>"
@@ -2522,7 +2654,7 @@ msgstr "Subir por correo electrónico"
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
-msgstr ""
+msgstr "Subir solicitud de archivo"
 
 #. module: documents
 #: model:res.groups,name:documents.group_documents_user
@@ -2750,27 +2882,27 @@ msgstr "ej. Discutir propuesta"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 msgid "e.g. Finance"
-msgstr ""
+msgstr "por ejemplo, finanzas"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
 msgid "e.g. Missing Expense"
-msgstr ""
+msgstr "ej. Gasto perdido"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "e.g. Status"
-msgstr ""
+msgstr "ej. Estado"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "e.g. To Validate"
-msgstr ""
+msgstr "ej. Por validad"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "e.g. Validate document"
-msgstr ""
+msgstr "ej. Validar documento"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_upload_url_view
@@ -2780,7 +2912,7 @@ msgstr "ej. https://www.youtube.com/watch?v=CP96yVnXNrY"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_link_to_record_wizard__is_readonly_model
 msgid "is_readonly_model"
-msgstr ""
+msgstr "is_readonly_model"
 
 #. module: documents
 #. openerp-web
@@ -2815,7 +2947,7 @@ msgstr "compartido por"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "status code: %s, message: %s"
-msgstr ""
+msgstr "código de estado: %s, mensaje: %s"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban

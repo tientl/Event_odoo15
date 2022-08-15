@@ -28,6 +28,17 @@ class QualityCheck(models.Model):
                 record_without_production |= qc
         return super(QualityCheck, record_without_production)._compute_qty_line()
 
+    @api.depends('production_id.lot_producing_id')
+    def _compute_lot_line_id(self):
+        res = super()._compute_lot_line_id()
+        for qc in self:
+            if qc.test_type not in ('register_consumed_materials', 'register_byproducts') \
+                    and qc.product_id == qc.production_id.product_id \
+                    and qc.production_id.lot_producing_id:
+                qc.lot_line_id = qc.production_id.lot_producing_id
+                qc.lot_id = qc.lot_line_id
+        return res
+
 
 class QualityAlert(models.Model):
     _inherit = "quality.alert"

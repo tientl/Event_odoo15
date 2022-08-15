@@ -184,25 +184,31 @@ class AccountGenericTaxReport(models.AbstractModel):
         else:
             additional_base_line_domain = []
 
+        if tax.amount_type == 'group':
+            tax_affecting_base_domain = [
+                ('tax_ids', 'in', tax.children_tax_ids.ids),
+                ('tax_repartition_line_id', '!=', False),
+            ]
+        else:
+            tax_affecting_base_domain = [
+                ('tax_ids', '=', tax.id),
+                ('tax_ids.type_tax_use', '=', type_tax_use),
+                ('tax_repartition_line_id', '!=', False),
+            ]
+
         domain = self._get_options_domain(options) + expression.OR((
             # Base lines
             [
                 ('tax_ids', 'in', tax.ids),
                 ('tax_ids.type_tax_use', '=', type_tax_use),
                 ('tax_repartition_line_id', '=', False),
-                *additional_base_line_domain,
-            ],
+            ] + additional_base_line_domain,
             # Tax lines
             [
                 ('group_tax_id', '=', tax.id) if tax.amount_type == 'group' else ('tax_line_id', '=', tax.id),
             ],
             # Tax lines acting as base lines
-            [
-                ('tax_ids', 'in', (tax.children_tax_ids if tax.amount_type == 'group' else tax).ids),
-                ('tax_ids.type_tax_use', '=', type_tax_use),
-                ('tax_repartition_line_id', '!=', False),
-                *additional_base_line_domain,
-            ],
+            tax_affecting_base_domain + additional_base_line_domain,
         ))
 
         return {
@@ -223,6 +229,168 @@ class AccountGenericTaxReport(models.AbstractModel):
     # -------------------------------------------------------------------------
 
     @api.model
+    def _read_default_tax_report_amounts_no_tax_details(self, options_list):
+        # Fetch the group of taxes.
+        # If all children taxes are 'none', all amounts are aggregated and only the group will appear on the report.
+        self._cr.execute(
+            '''
+                SELECT
+                    group_tax.id,
+                    group_tax.type_tax_use,
+                    ARRAY_AGG(child_tax.id) AS child_tax_ids,
+                    ARRAY_AGG(DISTINCT child_tax.type_tax_use) AS child_types
+                FROM account_tax_filiation_rel group_tax_rel
+                JOIN account_tax group_tax ON group_tax.id = group_tax_rel.parent_tax
+                JOIN account_tax child_tax ON child_tax.id = group_tax_rel.child_tax
+                WHERE group_tax.amount_type = 'group' AND group_tax.company_id IN %s
+                GROUP BY group_tax.id
+            ''',
+            [tuple(self.get_report_company_ids(options_list[0]))],
+        )
+        group_of_taxes_info = {}
+        child_to_group_of_taxes = {}
+        for row in self._cr.dictfetchall():
+            row['to_expand'] = set(row['child_types']) != {'none'}
+            group_of_taxes_info[row['id']] = row
+            for child_id in row['child_tax_ids']:
+                child_to_group_of_taxes[child_id] = row['id']
+
+        results = defaultdict(lambda: { # key: type_tax_use
+            'base_amount': [0.0] * len(options_list),
+            'tax_amount': [0.0] * len(options_list),
+            'children': defaultdict(lambda: { # key: tax_id
+                'base_amount': [0.0] * len(options_list),
+                'tax_amount': [0.0] * len(options_list),
+            }),
+        })
+
+        for i, options in enumerate(options_list):
+            tables, where_clause, where_params = self._query_get(options)
+
+            # Fetch the base amounts.
+            self._cr.execute(f'''
+                SELECT
+                    tax.id AS tax_id,
+                    tax.type_tax_use AS tax_type_tax_use,
+                    src_group_tax.id AS src_group_tax_id,
+                    src_group_tax.type_tax_use AS src_group_tax_type_tax_use,
+                    src_tax.id AS src_tax_id,
+                    src_tax.type_tax_use AS src_tax_type_tax_use,
+                    SUM(account_move_line.balance) AS base_amount
+                FROM account_move_line_account_tax_rel tax_rel
+                JOIN account_tax tax ON tax.id = tax_rel.account_tax_id
+                JOIN account_move_line ON account_move_line.id = tax_rel.account_move_line_id 
+                LEFT JOIN account_tax src_tax ON src_tax.id = account_move_line.tax_line_id
+                LEFT JOIN account_tax src_group_tax ON src_group_tax.id = account_move_line.group_tax_id
+                JOIN account_move account_move_line__move_id ON account_move_line__move_id.id = account_move_line.move_id
+                WHERE {where_clause}
+                    AND (
+                        /* CABA */
+                        account_move_line__move_id.always_tax_exigible
+                        OR account_move_line__move_id.tax_cash_basis_rec_id IS NOT NULL
+                        OR tax.tax_exigibility != 'on_payment'
+                    )
+                    AND (
+                        (
+                            /* Tax lines affecting the base of others. */
+                            account_move_line.tax_line_id IS NOT NULL
+                            AND (
+                                src_tax.type_tax_use IN ('sale', 'purchase')
+                                OR src_group_tax.type_tax_use IN ('sale', 'purchase')
+                            )
+                        )
+                        OR
+                        (
+                            /* For regular base lines. */
+                            account_move_line.tax_line_id IS NULL
+                            AND tax.type_tax_use IN ('sale', 'purchase')
+                        )
+                    )
+                GROUP BY tax.id, src_group_tax.id, src_tax.id
+                ORDER BY src_group_tax.sequence, src_group_tax.id, src_tax.sequence, src_tax.id, tax.sequence, tax.id
+            ''', where_params)
+
+            group_of_taxes_with_extra_base_amount = set()
+            for row in self._cr.dictfetchall():
+                is_tax_line = bool(row['src_tax_id'])
+                if is_tax_line:
+                    if row['src_group_tax_id'] \
+                            and not group_of_taxes_info[row['src_group_tax_id']]['to_expand'] \
+                            and row['tax_id'] in group_of_taxes_info[row['src_group_tax_id']]['child_tax_ids']:
+                        # Suppose a base of 1000 with a group of taxes 20% affect + 10%.
+                        # The base of the group of taxes must be 1000, not 1200 because the group of taxes is not
+                        # expanded. So the tax lines affecting the base of its own group of taxes are ignored.
+                        pass
+                    elif row['tax_type_tax_use'] == 'none' and child_to_group_of_taxes.get(row['tax_id']):
+                        # The tax line is affecting the base of a 'none' tax belonging to a group of taxes.
+                        # In that case, the amount is accounted as an extra base for that group. However, we need to
+                        # account it only once.
+                        # For example, suppose a tax 10% affect base of subsequent followed by a group of taxes
+                        # 20% + 30%. On a base of 1000.0, the tax line for 10% will affect the base of 20% + 30%.
+                        # However, this extra base must be accounted only once since the base of the group of taxes
+                        # must be 1100.0 and not 1200.0.
+                        group_tax_id = child_to_group_of_taxes[row['tax_id']]
+                        if group_tax_id in group_of_taxes_with_extra_base_amount:
+                            continue
+                        group_tax_info = group_of_taxes_info[group_tax_id]
+                        results[group_tax_info['type_tax_use']]['children'][group_tax_id]['base_amount'][i] += row['base_amount']
+                        group_of_taxes_with_extra_base_amount.add(group_tax_id)
+                    else:
+                        tax_type_tax_use = row['src_group_tax_type_tax_use'] or row['src_tax_type_tax_use']
+                        results[tax_type_tax_use]['children'][row['tax_id']]['base_amount'][i] += row['base_amount']
+                else:
+                    if row['tax_id'] in group_of_taxes_info and group_of_taxes_info[row['tax_id']]['to_expand']:
+                        # Expand the group of taxes since it contains at least one tax with a type != 'none'.
+                        group_info = group_of_taxes_info[row['tax_id']]
+                        for child_tax_id in group_info['child_tax_ids']:
+                            results[group_info['type_tax_use']]['children'][child_tax_id]['base_amount'][i] += row['base_amount']
+                    else:
+                        results[row['tax_type_tax_use']]['children'][row['tax_id']]['base_amount'][i] += row['base_amount']
+
+            # Fetch the tax amounts.
+            self._cr.execute(f'''
+                SELECT
+                    tax.id AS tax_id,
+                    tax.type_tax_use AS tax_type_tax_use,
+                    group_tax.id AS group_tax_id,
+                    group_tax.type_tax_use AS group_tax_type_tax_use,
+                    SUM(account_move_line.balance) AS tax_amount
+                FROM {tables}
+                JOIN account_tax tax ON tax.id = account_move_line.tax_line_id
+                LEFT JOIN account_tax group_tax ON group_tax.id = account_move_line.group_tax_id
+                WHERE {where_clause}
+                    AND (
+                        /* CABA */
+                        account_move_line__move_id.always_tax_exigible
+                        OR account_move_line__move_id.tax_cash_basis_rec_id IS NOT NULL
+                        OR tax.tax_exigibility != 'on_payment'
+                    )
+                    AND (
+                        (group_tax.id IS NULL AND tax.type_tax_use IN ('sale', 'purchase'))
+                        OR
+                        (group_tax.id IS NOT NULL AND group_tax.type_tax_use IN ('sale', 'purchase'))
+                    )
+                GROUP BY tax.id, group_tax.id
+            ''', where_params)
+
+            for row in self._cr.dictfetchall():
+                # Manage group of taxes.
+                # In case the group of taxes is mixing multiple taxes having a type_tax_use != 'none', consider
+                # them instead of the group.
+                tax_id = row['tax_id']
+                if row['group_tax_id']:
+                    tax_type_tax_use = row['group_tax_type_tax_use']
+                    if not group_of_taxes_info[row['group_tax_id']]['to_expand']:
+                        tax_id = row['group_tax_id']
+                else:
+                    tax_type_tax_use = row['group_tax_type_tax_use'] or row['tax_type_tax_use']
+
+                results[tax_type_tax_use]['tax_amount'][i] += row['tax_amount']
+                results[tax_type_tax_use]['children'][tax_id]['tax_amount'][i] += row['tax_amount']
+
+        return results
+
+    @api.model
     def _read_default_tax_report_amounts(self, options_list, groupby_fields):
         """ Read the tax details to compute the tax amounts.
 
@@ -234,8 +402,32 @@ class AccountGenericTaxReport(models.AbstractModel):
             tax_amount      The tax amount expressed in company's currency.
             children:       The children nodes following the same pattern as the current dictionary.
         """
-        select_clause_str = ','.join('%s.%s AS %s_%s' % (alias, field, alias, field) for alias, field in groupby_fields)
-        groupby_query_str = ','.join('%s.%s' % (alias, field) for alias, field in groupby_fields)
+        fetch_group_of_taxes = False
+
+        select_clause_list = []
+        groupby_query_list = []
+        for alias, field in groupby_fields:
+            select_clause_list.append('%s.%s AS %s_%s' % (alias, field, alias, field))
+            groupby_query_list.append('%s.%s' % (alias, field))
+
+            # Fetch both info from the originator tax and the child tax to manage the group of taxes.
+            if alias == 'src_tax':
+                select_clause_list.append('%s.%s AS %s_%s' % ('tax', field, 'tax', field))
+                groupby_query_list.append('%s.%s' % ('tax', field))
+                fetch_group_of_taxes = True
+
+        select_clause_str = ','.join(select_clause_list)
+        groupby_query_str = ','.join(groupby_query_list)
+
+        # Fetch the group of taxes.
+        # If all children taxes are 'none', all amounts are aggregated and only the group will appear on the report.
+        # If some children taxes are not 'none', the children are displayed.
+        group_of_taxes_to_expand = set()
+        if fetch_group_of_taxes:
+            group_of_taxes = self.env['account.tax'].with_context(active_test=False).search([('amount_type', '=', 'group')])
+            for group in group_of_taxes:
+                if set(group.children_tax_ids.mapped('type_tax_use')) != {'none'}:
+                    group_of_taxes_to_expand.add(group.id)
 
         res = {}
         for i, options in enumerate(options_list):
@@ -249,25 +441,41 @@ class AccountGenericTaxReport(models.AbstractModel):
             self._cr.execute(f'''
                 SELECT
                     {select_clause_str},
+                    trl.refund_tax_id IS NOT NULL AS is_refund,
                     SUM(tdr.base_amount) AS base_amount,
                     SUM(tdr.tax_amount) AS tax_amount
                 FROM ({tax_details_query}) AS tdr
+                JOIN account_tax_repartition_line trl ON trl.id = tdr.tax_repartition_line_id
                 JOIN account_tax tax ON tax.id = tdr.tax_id
                 JOIN account_tax src_tax ON
                     src_tax.id = COALESCE(tdr.group_tax_id, tdr.tax_id)
                     AND src_tax.type_tax_use IN ('sale', 'purchase')
                 JOIN account_account account ON account.id = tdr.base_account_id
                 WHERE tdr.tax_exigible
-                GROUP BY tax.sequence, tax.id, {groupby_query_str}
+                GROUP BY tdr.tax_repartition_line_id, trl.refund_tax_id, {groupby_query_str}
                 ORDER BY src_tax.sequence, src_tax.id, tax.sequence, tax.id
             ''', tax_details_params)
 
             for row in self._cr.dictfetchall():
                 node = res
 
-                cumulated_row_key = []
+                # tuple of values used to prevent adding multiple times the same base amount.
+                cumulated_row_key = [row['is_refund']]
+
                 for alias, field in groupby_fields:
-                    grouping_key = '%s_%s' % (alias, field)
+                    grouping_key = f'{alias}_{field}'
+
+                    # Manage group of taxes.
+                    # In case the group of taxes is mixing multiple taxes having a type_tax_use != 'none', consider
+                    # them instead of the group.
+                    if grouping_key == 'src_tax_id' and row['src_tax_id'] in group_of_taxes_to_expand:
+                        # Add the originator group to the grouping key, to make sure that its base amount is not
+                        # treated twice, for hybrid cases where a tax is both used in a group and independently.
+                        cumulated_row_key.append(row[grouping_key])
+
+                        # Ensure the child tax is used instead of the group.
+                        grouping_key = 'tax_id'
+
                     row_key = row[grouping_key]
                     cumulated_row_key.append(row_key)
                     cumulated_row_key_tuple = tuple(cumulated_row_key)
@@ -406,7 +614,7 @@ class AccountGenericTaxReport(models.AbstractModel):
                 lines,
                 sorting_map_list,
                 groupby_fields,
-                tax_amount_dict['children'],
+                tax_amount_dict.get('children'),
                 index=index + 1,
                 type_tax_use=type_tax_use,
             )
@@ -431,7 +639,10 @@ class AccountGenericTaxReport(models.AbstractModel):
             groupby_fields = [('src_tax', 'type_tax_use'), ('src_tax', 'id')]
             comodels = [None, 'account.tax']
 
-        tax_amount_hierarchy = self._read_default_tax_report_amounts(options_list, groupby_fields)
+        if options['tax_report'] in ('generic_grouped_tax_account', 'generic_grouped_account_tax'):
+            tax_amount_hierarchy = self._read_default_tax_report_amounts(options_list, groupby_fields)
+        else:
+            tax_amount_hierarchy = self._read_default_tax_report_amounts_no_tax_details(options_list)
 
         # Fetch involved records in order to ensure all lines are sorted according the comodel order.
         # To do so, we compute 'sorting_map_list' allowing to retrieve each record by id and the order
@@ -442,7 +653,8 @@ class AccountGenericTaxReport(models.AbstractModel):
             for k, v in node.items():
                 if k:
                     record_ids_gb[level].add(k)
-                    populate_record_ids_gb_recursively(v['children'], level=level + 1)
+                    if v.get('children'):
+                        populate_record_ids_gb_recursively(v['children'], level=level + 1)
 
         populate_record_ids_gb_recursively(tax_amount_hierarchy)
 
@@ -450,7 +662,7 @@ class AccountGenericTaxReport(models.AbstractModel):
         for i, comodel in enumerate(comodels):
             if comodel:
                 # Relational records.
-                records = self.env[comodel].search([('id', 'in', tuple(record_ids_gb[i]))])
+                records = self.env[comodel].with_context(active_test=False).search([('id', 'in', tuple(record_ids_gb[i]))])
                 sorting_map = {r.id: (r, j) for j, r in enumerate(records)}
                 sorting_map_list.append(sorting_map)
             else:
@@ -478,6 +690,9 @@ class AccountGenericTaxReport(models.AbstractModel):
         if self.env.user.has_group('account.group_account_user'):
             res.append({'name': _('Closing Entry'), 'action': 'periodic_vat_entries', 'sequence': 8})
         return res
+
+    def _get_vat_closing_entry_additional_domain(self):
+        return []
 
     def _compute_vat_closing_entry(self, company, options):
         """Compute the VAT closing entry.
@@ -517,7 +732,7 @@ class AccountGenericTaxReport(models.AbstractModel):
         new_options['date']['date_from'] = fields.Date.to_string(period_start)
         new_options['date']['date_to'] = fields.Date.to_string(period_end)
 
-        tables, where_clause, where_params = self._query_get(new_options)
+        tables, where_clause, where_params = self._query_get(new_options, self._get_vat_closing_entry_additional_domain())
         query = sql % (tables, where_clause)
         self.env.cr.execute(query, where_params)
         results = self.env.cr.dictfetchall()
@@ -966,8 +1181,20 @@ class AccountGenericTaxReport(models.AbstractModel):
         html_lines = []
         for line in lines:
             if line.get('line_code'):
-                amounts[line['line_code']] = line['columns'][0]['balance']
-                carried_over[line['line_code']] = line['columns'][0].get('carryover_bounds', False)
+                tax_report_line = line.get('tax_report_line', False)
+                carryover_bounds = line['columns'][0].get('carryover_bounds', False)
+                if tax_report_line and carryover_bounds:
+                    amounts[line['line_code']] = self.get_amounts_after_carryover(
+                        tax_report_line,
+                        line['columns'][0]['balance'],
+                        line['columns'][0]['carryover_bounds'],
+                        options,
+                        0,
+                        tax_report_line.is_carryover_persistent
+                    )[0]
+                else:
+                    amounts[line['line_code']] = line['columns'][0]['balance']
+                carried_over[line['line_code']] = carryover_bounds
 
         for i, calc in enumerate(tax_report.get_checks_to_perform(amounts, carried_over)):
             if calc[1]:
@@ -975,13 +1202,15 @@ class AccountGenericTaxReport(models.AbstractModel):
                     value = self.format_value(calc[1])
                 else:
                     value = calc[1]
-                controls.append({'name': calc[0], 'id': 'control_' + str(i), 'columns': [{'name': value,
+                id = self._get_generic_line_id(None, str(i), markup='control')
+                controls.append({'name': calc[0], 'id': id, 'columns': [{'name': value,
                                                                                           'style': 'white-space:nowrap;',
                                                                                           'balance': calc[1]}],
                                                                                           'is_control': True})
                 html_lines.append("<tr><td>{name}</td><td>{amount}</td></tr>".format(name=calc[0], amount=value))
         if controls:
-            lines.extend([{'id': 'section_control', 'name': _('Controls failed'), 'unfoldable': False,
+            id = self._get_generic_line_id(None, None, markup='section_control')
+            lines.extend([{'id': id, 'name': _('Controls failed'), 'unfoldable': False,
                            'columns': [{'name': '',
                                         'style': 'white-space:nowrap;',
                                         'balance': ''}] * col_nber, 'level': 0, 'line_code': False, 'is_control': True}] + controls)
@@ -1029,6 +1258,7 @@ class AccountGenericTaxReport(models.AbstractModel):
                 'name': '' if period_total is None else self.format_value(period_total),
                 'style': 'white-space:nowrap;',
                 'balance': period_total or 0.0,
+                'no_format': period_total,
             }
 
             carryover_bounds = report_line._get_carryover_bounds(options, period_total, carryover_account_balance)
@@ -1115,7 +1345,7 @@ class AccountGenericTaxReport(models.AbstractModel):
         :param options: The options for this report.
         :return: The formatted list of lines
         """
-        if options.get('tax_report'):
+        if not self._is_generic_layout(options):
             tax_report_line_report_line_mapping = {}
 
             for line in lines:
@@ -1133,13 +1363,13 @@ class AccountGenericTaxReport(models.AbstractModel):
 
                 # So that we can find that line if it is target of another one.
                 if line['tax_report_line'].carry_over_destination_line_id:
-                    destination_line_id = line['tax_report_line'].carry_over_destination_line_id.id
-                    if destination_line_id not in tax_report_line_report_line_mapping:
+                    destination_line = tax_report_line_report_line_mapping.get(line['tax_report_line'].carry_over_destination_line_id.id)
+                    if not destination_line:
                         continue
 
-                    columns = tax_report_line_report_line_mapping[destination_line_id]['columns']
+                    columns = destination_line['columns']
                     for index, column in enumerate(columns):
-                        self._format_column_after_carryover(line, column, index, options)
+                        self._format_column_after_carryover(destination_line, column, index, options)
 
             # Also update the section totals to represent those changes
             # Filter to ignore control lines if any
@@ -1159,6 +1389,9 @@ class AccountGenericTaxReport(models.AbstractModel):
         """
         tax_report_line = line.get('tax_report_line', False)
         carryover_bounds = column.get('carryover_bounds', None)
+        if not carryover_bounds:
+            return
+
         line_balance, carryover_balance = self.get_amounts_after_carryover(tax_report_line, column['balance'],
                                                                            carryover_bounds, options, period)
         carryover_balance = self.format_value(carryover_balance)
@@ -1247,8 +1480,8 @@ class AccountGenericTaxReport(models.AbstractModel):
         0 is the current period, and 1+ would be periods that are being compared to.
         :return: The newly adapted amount for the line, along with the one for the carryover
         """
-        if carryover_bounds is None:
-            return amount, self.get_carried_over_balance_before_date(tax_report_line, options, period)
+        if carryover_bounds in (None, (None, None)):
+            return amount, 0
 
         # Non-persistent carryover always bring the carryover balance to the balance of the line
         if not persistent:

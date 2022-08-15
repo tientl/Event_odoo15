@@ -381,6 +381,7 @@ var FollowupFormController = FormController.extend({
         this.model.doSendMail(this.handle);
         this.options = {
             partner_id: this._getPartner(),
+            keep_summary: true,
         };
         this._rpc({
             model: 'account.followup.report',

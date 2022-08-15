@@ -24,13 +24,14 @@ import {
     setCellContent,
     setGlobalFilterValue,
     setSelection,
+    waitForEvaluation,
 } from "./spreadsheet_test_utils";
 import MockSpreadsheetCollaborativeChannel from "./mock_spreadsheet_collaborative_channel";
-import { getBasicPivotArch } from "./spreadsheet_test_data";
+import { getBasicData, getBasicPivotArch } from "./spreadsheet_test_data";
 import { spreadsheetService } from "../src/actions/spreadsheet/spreadsheet_service";
 
 const { Model } = spreadsheet;
-const { toCartesian } = spreadsheet.helpers;
+const { toCartesian, createEmptyWorkbookData, toZone } = spreadsheet.helpers;
 const { cellMenuRegistry, topbarMenuRegistry } = spreadsheet.registries;
 
 const { module, test } = QUnit;
@@ -55,14 +56,7 @@ module(
             this.arch = getBasicPivotArch();
             this.data = {
                 "documents.document": {
-                    fields: {
-                        name: { string: "Name", type: "char" },
-                        raw: { string: "Data", type: "text" },
-                        thumbnail: { string: "Thumbnail", type: "text" },
-                        mimetype: { string: "Mimetype", type: "char" },
-                        favorited_ids: { string: "Name", type: "many2many" },
-                        is_favorited: { string: "Name", type: "boolean" },
-                    },
+                    fields: getBasicData()["documents.document"].fields,
                     records: [
                         { id: 1, name: "My spreadsheet", raw: "{}", is_favorited: false },
                         { id: 2, name: "", raw: "{}", is_favorited: true },
@@ -598,7 +592,7 @@ module(
                 sheetId,
             });
 
-            await nextTick();
+            await waitForEvaluation(model);
             assert.ok(getCell(model, "E10").evaluated.error);
             assert.equal(
                 getCell(model, "E10").evaluated.error,
@@ -623,7 +617,7 @@ module(
             });
             setCellContent(model, "F10", `=PIVOT.HEADER("1", "product", A25)`);
             assert.equal(getCell(model, "A25"), null, "the cell should be empty");
-            await nextTick();
+            await waitForEvaluation(model);
             assert.equal(getCellValue(model, "F10"), "(Undefined)");
         });
 
@@ -969,7 +963,7 @@ module(
                 pivot,
                 cache,
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
 
             assert.ok(
                 $(webClient.el).find("div[data-id='data']")[0],
@@ -1020,7 +1014,7 @@ module(
                 pivot,
                 cache,
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
 
             const root = topbarMenuRegistry.getAll().find((item) => item.id === "data");
             const children = topbarMenuRegistry.getChildren(root, env);
@@ -1072,7 +1066,7 @@ module(
                 pivot,
                 cache,
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
 
             env.dispatch("SELECT_CELL", { col: 11, row: 0 }); //target empty cell
             const root = cellMenuRegistry.getAll().find((item) => item.id === "pivot_properties");
@@ -1169,6 +1163,33 @@ module(
             const makeCopy = file.children.find((item) => item.id === "make_copy");
             makeCopy.action(env);
             assert.verifySteps(["copy"]);
+        });
+
+        test("Can create a new spreadsheet from File menu", async function (assert) {
+            const spreadsheet = this.data["documents.document"].records[1];
+            const { env, model } = await createSpreadsheet({
+                spreadsheetId: spreadsheet.id,
+                data: this.data,
+                mockRPC: async function (route, args) {
+                    if (args.method === "create" && args.model === "documents.document") {
+                        assert.step("create");
+                        assert.deepEqual(
+                            JSON.parse(args.args[0].raw),
+                            createEmptyWorkbookData("Sheet1"),
+                            "It should be an empty spreadsheet"
+                        )
+                        assert.equal(
+                            args.args[0].name,
+                            "Untitled spreadsheet",
+                            "It should have the default name"
+                        );
+                    }
+                },
+            });
+            const file = topbarMenuRegistry.getAll().find((item) => item.id === "file");
+            const newSpreadsheet = file.children.find((item) => item.id === "new_sheet");
+            newSpreadsheet.action(env);
+            assert.verifySteps(["create"]);
         });
 
         test("Check pivot measures with m2o field", async function (assert) {
@@ -1333,6 +1354,63 @@ module(
                 JSON.stringify(currentAction.domain),
                 `["|","&",["product","=",37],["bar","=",110],"&",["product","=",41],["bar","=",110]]`
             );
+        });
+
+        test("Can rebuild the Odoo domain of records based on the according merged pivot cell", async function (assert) {
+            assert.expect(1);
+            const archs = {
+                "partner,false,pivot": `
+                    <pivot string="Partners">
+                        <field name="product" type="col"/>
+                        <field name="bar" type="row"/>
+                        <field name="probability" type="measure"/>
+                    </pivot>
+                `,
+                "partner,false,list": `<List/>`,
+                "partner,false,search": `<Search/>`,
+            };
+            const { env } = await createSpreadsheetFromPivot({
+                pivotView: {
+                    model: "partner",
+                    data: this.data,
+                    archs,
+                },
+            });
+            env.dispatch("ADD_MERGE", {
+                sheetId: env.getters.getActiveSheetId(),
+                target: [toZone("C3:D3")],
+                force: true // there are data in D3
+            });
+            env.dispatch("SELECT_CELL", { col: 3, row: 2 });
+            await nextTick();
+            const root = cellMenuRegistry.getAll().find((item) => item.id === "see records");
+            await root.action(env);
+            const currentAction = env.services.action.currentController.action;
+            assert.equal(
+                JSON.stringify(currentAction.domain),
+                `["&",["product","=",41],["bar","=",110]]`
+            );
+        });
+
+        QUnit.test("See records is visible even if the formula is lowercase", async function (assert) {
+            const { env, model } = await createSpreadsheetFromPivot();
+            model.dispatch("SELECT_CELL", { col: 1, row: 3 });
+            await nextTick();
+            const root = cellMenuRegistry.getAll().find((item) => item.id === "see records");
+            assert.ok(root.isVisible(env));
+            setCellContent(model, "B4", getCellFormula(model, "B4").replace("PIVOT", "pivot"));
+            assert.ok(root.isVisible(env));
+        });
+
+        QUnit.test("See records is not visible if the formula is in error", async function (assert) {
+            const { env, model } = await createSpreadsheetFromPivot();
+            model.dispatch("SELECT_CELL", { col: 1, row: 3 });
+            await nextTick();
+            const root = cellMenuRegistry.getAll().find((item) => item.id === "see records");
+            assert.ok(root.isVisible(env));
+            setCellContent(model, "B4", getCellFormula(model, "B4").replace( `PIVOT("1`, `PIVOT("5)`)); //Invalid id
+            assert.ok(getCell(model, "B4").evaluated.error);
+            assert.notOk(root.isVisible(env));
         });
 
         module("Global filters panel");
@@ -1740,7 +1818,7 @@ module(
                 id: "42",
                 value: [17],
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
             await nextTick();
 
             // But it only fetches names once

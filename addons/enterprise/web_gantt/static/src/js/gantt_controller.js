@@ -152,7 +152,9 @@ var GanttController = AbstractController.extend({
                         value = value[0];
                     }
                 }
-                context[fieldName] = value;
+                if (value !== undefined) {
+                    context[fieldName] = value;
+                }
             });
         }
 

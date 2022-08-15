@@ -118,8 +118,8 @@ class AccountCashFlowReport(models.AbstractModel):
         self._cr.execute('''
             SELECT array_remove(ARRAY_AGG(DISTINCT default_account_id), NULL),
                    array_remove(ARRAY_AGG(DISTINCT apml.payment_account_id), NULL),
-                   ARRAY_AGG(DISTINCT rc.account_journal_payment_debit_account_id),
-                   ARRAY_AGG(DISTINCT rc.account_journal_payment_credit_account_id)
+                   array_remove(ARRAY_AGG(DISTINCT rc.account_journal_payment_debit_account_id), NULL),
+                   array_remove(ARRAY_AGG(DISTINCT rc.account_journal_payment_credit_account_id), NUll)
             FROM account_journal
             JOIN res_company rc ON account_journal.company_id = rc.id
             LEFT JOIN account_payment_method_line apml ON account_journal.id = apml.journal_id
@@ -464,7 +464,6 @@ class AccountCashFlowReport(models.AbstractModel):
                 'level': line['level'] + 1,
                 'parent_id': line['id'],
                 'columns': [{'name': 0.0, 'class': 'number'}],
-                'caret_options': 'account.account',
             })
             line['columns'][0]['name'] += amount
             line['unfolded_lines'][account_id]['columns'][0]['name'] += amount

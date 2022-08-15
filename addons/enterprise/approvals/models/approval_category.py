@@ -145,17 +145,13 @@ class ApprovalCategory(models.Model):
         self.ensure_one()
         # If category uses sequence, set next sequence as name
         # (if not, set category name as default name).
-        if self.automated_sequence:
-            name = self.sequence_id.next_by_id()
-        else:
-            name = self.name
         return {
             "type": "ir.actions.act_window",
             "res_model": "approval.request",
             "views": [[False, "form"]],
             "context": {
                 'form_view_initial_mode': 'edit',
-                'default_name': name,
+                'default_name': _('New') if self.automated_sequence else self.name,
                 'default_category_id': self.id,
                 'default_request_owner_id': self.env.user.id,
                 'default_request_status': 'new'

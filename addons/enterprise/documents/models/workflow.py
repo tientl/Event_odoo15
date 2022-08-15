@@ -194,7 +194,8 @@ class WorkflowTagAction(models.Model):
             if faceted_tags.ids:
                 for tag in faceted_tags:
                     document.write({'tag_ids': [(3, tag.id, False)]})
-            return document.write({'tag_ids': [(4, self.tag_id.id, False)]})
+            if self.tag_id:
+                return document.write({'tag_ids': [(4, self.tag_id.id, False)]})
         elif self.action == 'remove':
             if self.tag_id.id:
                 return document.write({'tag_ids': [(3, self.tag_id.id, False)]})

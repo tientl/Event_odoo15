@@ -4,7 +4,7 @@
 
         <!-- Workflow Rules -->
 
-        <record id="documents_project_rule" model="documents.workflow.rule">
+        <record id="documents_project_rule" model="documents.workflow.rule" forcecreate="0">
             <field name="sequence">3</field>
             <field name="name">Create a Task</field>
             <field name="activity_option">True</field>
@@ -14,7 +14,7 @@
             <field name="domain_folder_id" ref="documents.documents_internal_folder"/>
         </record>
 
-        <record id="documents_workflow_action_project" model="documents.workflow.action">
+        <record id="documents_workflow_action_project" model="documents.workflow.action" forcecreate="0">
             <field name="workflow_rule_id" ref="documents_project_rule"/>
             <field name="action">replace</field>
             <field name="facet_id" ref="documents.documents_internal_status"/>

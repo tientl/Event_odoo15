@@ -10,6 +10,7 @@ from odoo.tools.misc import format_datetime, format_date
 
 from datetime import datetime, date
 import psycopg2
+import itertools
 import ast
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ class DataMergeRecord(models.Model):
     record_create_uid = fields.Char(string='Created By', compute='_compute_fields')
     record_write_date = fields.Datetime(string='Updated On', compute='_compute_fields')
     record_write_uid = fields.Char(string='Updated By', compute='_compute_fields')
+    company_id = fields.Many2one('res.company', compute='_compute_fields', search='_search_company_id')
 
     differences = fields.Char(string='Differences',
         help='Differences with the master record', compute='_compute_differences', store=True)
@@ -44,6 +46,18 @@ class DataMergeRecord(models.Model):
     used_in = fields.Char(string='Used In',
         help='List of other models referencing this record', compute='_compute_usage', store=True)
 
+    #############
+    ### Searchs
+    #############
+    def _search_company_id(self, operator, value):
+        records = self.search([])
+        if operator == 'in':
+            records = records.filtered(lambda r: r.company_id.id in value)
+        elif operator == '=':
+            records = records.filtered(lambda r: r.company_id.id == value)
+        else:
+            raise NotImplementedError()
+        return [('id', 'in', records.ids)]
 
     #############
     ### Computes
@@ -75,7 +89,6 @@ class DataMergeRecord(models.Model):
         record_data = record.read(to_read)[0]
         return {str(field_description(key)):str(format_value(value, self.env)) for key, value in record_data.items() if value and not hidden_field(key)}
 
-
     @api.depends('res_id')
     def _compute_field_values(self):
         model_fields = {}
@@ -100,7 +113,7 @@ class DataMergeRecord(models.Model):
         for record in self:
             list_fields = model_list_fields[record.res_model_name]
             read_fields = record.group_id.divergent_fields.split(',') & list_fields
-            if read_fields != {''}:
+            if read_fields:
                 record.differences = ', '.join(['%s: %s' % (k, v) for k,v in record._render_values(read_fields).items()])
             else:
                 record.differences = ''
@@ -173,19 +186,25 @@ class DataMergeRecord(models.Model):
         else:
             self.used_in = ''
 
-    @api.depends('res_id')
+    @api.depends('res_model_name', 'res_id')
     def _compute_fields(self):
-        existing_records = {r.id:r for r in self._original_records().exists()}
-        for record in self:
-            original_record = existing_records.get(record.res_id) or self.env[record.res_model_name]
-            name = original_record.display_name
+        groups = itertools.groupby(self, key=lambda r: r.res_model_name)
+        for _, group_records in groups:
+            group_records_ids = [r.id for r in group_records]
+            records = self.browse(group_records_ids)
+            existing_records = {r.id:r for r in records._original_records()}
 
-            record.is_deleted = record.res_id not in existing_records.keys()
-            record.name = name if name else '*Record Deleted*'
-            record.record_create_date = original_record.create_date
-            record.record_create_uid = original_record.create_uid.name or '*Deleted*'
-            record.record_write_date = original_record.write_date
-            record.record_write_uid = original_record.write_uid.name or '*Deleted*'
+            for record in records:
+                original_record = existing_records.get(record.res_id) or self.env[record.res_model_name]
+                name = original_record.display_name
+                record.is_deleted = record.res_id not in existing_records.keys()
+                record.name = name if name else '*Record Deleted*'
+                record.company_id = original_record._fields.get('company_id') and original_record.company_id
+                record.record_create_date = original_record.create_date
+                record.record_create_uid = original_record.create_uid.name or '*Deleted*'
+                record.record_write_date = original_record.write_date
+                record.record_write_uid = original_record.write_uid.name or '*Deleted*'
+
 
     @api.depends('is_deleted', 'is_discarded')
     def _compute_active(self):
@@ -329,6 +348,8 @@ class DataMergeRecord(models.Model):
                             raise ValidationError('Query Failed.')
 
         self._merge_additional_models(destination, source_ids)
+        fields_to_recompute = [f.name for f in destination._fields.values() if f.compute and f.store]
+        destination.modified(fields_to_recompute)
         destination.recompute()
         self.invalidate_cache()
 

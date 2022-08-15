@@ -9,9 +9,11 @@ class HrDMFAReport(models.Model):
     _inherit = 'l10n_be.dmfa'
 
     def _get_rendering_data(self):
+        basis, onss = self._get_group_insurance_contribution()
         return dict(
             super()._get_rendering_data(),
-            group_insurance_cotisation=format_amount(self._get_group_insurance_contribution()),
+            group_insurance_basis=format_amount(basis),
+            group_insurance_amount=format_amount(onss),
         )
 
     def _get_group_insurance_contribution(self):
@@ -23,10 +25,12 @@ class HrDMFAReport(models.Model):
             ('struct_id', '=', regular_payslip.id),
             ('company_id', '=', self.company_id.id),
         ])
-        onss_amount = payslips_sudo._get_line_values(
-            ['GROUPINSURANCE'], compute_sum=True
-        )['GROUPINSURANCE']['sum']['total']
-        return round(onss_amount, 2)
+        line_values = payslips_sudo._get_line_values(
+            ['GROUPINSURANCE'], vals_list=['amount', 'total'], compute_sum=True
+        )
+        basis = line_values['GROUPINSURANCE']['sum']['amount']
+        onss_amount = line_values['GROUPINSURANCE']['sum']['total']
+        return (round(basis, 2), round(onss_amount, 2))
 
     def _get_global_contribution(self, employees_infos, double_onss):
         # https://www.socialsecurity.be/employer/instructions/dmfa/fr/latest/instructions/special_contributions/extralegal_pensions.html#h24
@@ -52,4 +56,4 @@ class HrDMFAReport(models.Model):
         # mentionnée dans les cotisations dues pour l’ensemble de l’entreprise et la cotisation est
         # calculée automatiquement.
         amount = super()._get_global_contribution(employees_infos, double_onss)
-        return amount + self._get_group_insurance_contribution()
+        return amount + self._get_group_insurance_contribution()[1]

@@ -225,7 +225,7 @@ var accountReportsWidget = AbstractAction.extend({
         if("default_filter_accounts" in (this.odoo_context || {}))
             this.$('.o_account_reports_filter_input').val(this.odoo_context.default_filter_accounts).trigger("input");
     },
-    destroy: function () {
+    on_detach_callback: function () {
         $(window).off('resize', recomputeHeader);
         this._super.apply(this, arguments);
     },
@@ -309,19 +309,20 @@ var accountReportsWidget = AbstractAction.extend({
         this.render_template();
         this.render_footnotes();
         this.render_searchview_buttons();
-        this.$('.js_account_report_foldable').each(function() {
-            if(!$(this).data('unfolded')) {
-                self.fold($(this));
-            }
-        });
+        this.batch_fold(this.$('.js_account_report_foldable').filter(function() {
+            return !$(this).data('unfolded');
+        }));
     },
     render_template: function() {
         this.$('.o_content').html(this.main_html);
         this.$('.o_content').scroll(moveScroll);
-        $(window).resize(recomputeHeader);
         this.$('.o_content').find('.o_account_reports_summary_edit').hide();
         this.$('[data-toggle="tooltip"]').tooltip();
         this._add_line_classes();
+    },
+    on_attach_callback: function() {
+        $(window).resize(recomputeHeader);
+        this._super.apply(this, arguments);
     },
     _init_line_popups: function(){
         /*
@@ -468,14 +469,14 @@ var accountReportsWidget = AbstractAction.extend({
             var line_id = $accountReportLineFoldable.find('.o_account_report_line').data('id');
             var $childs = self.$('tr[data-parent-id="'+$.escapeSelector(String(line_id))+'"]');
 
+            const lineNameEl = $accountReportLineFoldable.find('.account_report_line_name')[0];
             // Only the direct text node, not text situated in other child nodes
-            const lineContent = $accountReportLineFoldable.find('.account_report_line_name').contents();
-            const lineText = lineContent.length > 0 ? lineContent.get(0).nodeValue.trim() : '';
+            const displayName = lineNameEl.childNodes[0].nodeValue.trim().toLowerCase();
+            const accountCode = lineNameEl.dataset.accountCode || '';
+            const accountName = displayName.slice(accountCode ? accountCode.length + 1 : 0);
 
             // The python does this too
-            var queryFound = lineText.split(' ').some(function (str) {
-                return str.toLowerCase().startsWith(query);
-            });
+            const queryFound = accountCode.startsWith(query.split(' ')[0]) || accountName.includes(query);
 
             $accountReportLineFoldable.toggleClass('o_account_reports_filtered_lines', !queryFound);
             $childs.toggleClass('o_account_reports_filtered_lines', !queryFound);
@@ -483,6 +484,13 @@ var accountReportsWidget = AbstractAction.extend({
             if (!queryFound) {
                 self.filterOn = true;
             }
+        });
+        // Make sure all ancestors are displayed.
+        const $matchingChilds = this.$('tr[data-parent-id]:not(.o_account_reports_filtered_lines)');
+        $($matchingChilds.get().reverse()).each(function(index, el) {
+            const id = $.escapeSelector(String(el.dataset.parentId));
+            const $parent = self.$('.o_account_report_line[data-id="' + id + '"]');
+            $parent.closest('tr').toggleClass('o_account_reports_filtered_lines', false);
         });
         if (this.filterOn) {
             this.$('.o_account_reports_level1.total').hide();
@@ -926,7 +934,22 @@ var accountReportsWidget = AbstractAction.extend({
                     });
             }
         };
-        new Dialog(this, {title: 'Annotate', size: 'medium', $content: $content, buttons: [{text: 'Save', classes: 'btn-primary', close: true, click: save}, {text: 'Cancel', close: true}]}).open();
+        new Dialog(this, {
+            title: _t('Annotate'),
+            size: 'medium',
+            $content: $content,
+            buttons: [
+                {
+                    text: _t('Save'),
+                    classes: 'btn-primary',
+                    close: true,
+                    click: save,
+                }, {
+                    text: _t('Cancel'),
+                    close: true,
+                }
+            ]
+        }).open();
     },
     delete_footnote: function(e) {
         var self = this;
@@ -952,12 +975,53 @@ var accountReportsWidget = AbstractAction.extend({
         e.preventDefault();
         var line = $(e.target).parents('td');
         if (line.length === 0) {line = $(e.target);}
-        var method = line[0].dataset.unfolded === 'True' ? this.fold(line) : this.unfold(line);
+        var method = line[0].dataset.unfolded === 'True' ? this.batch_fold(line) : this.unfold(line);
         Promise.resolve(method).then(function() {
             self.render_footnotes();
             self.persist_options();
         });
     },
+    /**
+     * batch implementation of fold.
+     * Useful for 'render' function when
+     * number of lines > 5000.
+     */
+    batch_fold: function(lines) {
+        var parent_ids = new Map();
+        lines.each((it, line) => {
+            let $line = $(line);
+            $line.find('.fa-caret-down').toggleClass('fa-caret-right fa-caret-down');
+            $line.toggleClass('folded');
+            $line.parent('tr').removeClass('o_js_account_report_parent_row_unfolded');
+            parent_ids.set($line.data('id'), $line);
+            var index = this.report_options.unfolded_lines.indexOf($line.data('id'));
+            if (index > -1) {
+                this.report_options.unfolded_lines.splice(index, 1);
+            }
+        });
+        var rows = this.$el.find('tr');
+        var children = rows.map((it, row) => {
+            let $row = $(row);
+            if (parent_ids.has($row.data('parent-id'))) {
+                parent_ids.get($row.data('parent-id'))[0].dataset.unfolded = 'False';
+                $row.find('.js_account_report_line_footnote').addClass('folded');
+                $row.hide();
+                var child = $row.find('[data-id]:first');
+                if (child) {
+                    return child;
+                }
+            }
+        });
+        if (children.length > 0) {
+            this.batch_fold(children);
+        }
+    },
+    /**
+     * 
+     * @deprecated 
+     * Use batch_fold to fold lines.
+     * To be removed in master.
+     */
     fold: function(line) {
         var self = this;
         var line_id = line.data('id');
@@ -1006,7 +1070,8 @@ var accountReportsWidget = AbstractAction.extend({
                 .then(function(result){
                     $(line).parent('tr').replaceWith(result);
                     self._add_line_classes();
-                    self.$('.js_account_report_foldable').each(function() {
+                    var displayed_table = $('.o_account_reports_table:not(#table_header_clone)')
+                    displayed_table.find('.js_account_report_foldable').each(function() {
                         if(!$(this).data('unfolded')) {
                             self.fold($(this));
                         }

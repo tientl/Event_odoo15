@@ -50,8 +50,8 @@
                 <t t-elif="warning === 'user'">Log in as an administrator to correct the issue.</t>
             </t>
         </span>
-        <span t-if="state.message === 'success'" class="oe_instance_register oe_instance_success">Thank you, your registration was successful! Your database is valid until <span><t t-esc="state.expirationDate.toFormat('DDD')"/></span>.</span>
-        <span t-elif="state.message === 'update'" class="oe_instance_register oe_subscription_updated">Your subscription was updated and is valid until <span><t t-esc="state.expirationDate.toFormat('DDD')"/></span>.</span>
+        <span t-if="state.message === 'success'" class="oe_instance_register oe_instance_success">Thank you, your registration was successful! Your database is valid until <span><t t-esc="formatDate(state.expirationDate)"/></span>.</span>
+        <span t-elif="state.message === 'update'" class="oe_instance_register oe_subscription_updated">Your subscription was updated and is valid until <span><t t-esc="formatDate(state.expirationDate)"/></span>.</span>
         <span t-elif="state.message === 'error'" class="oe_instance_register oe_instance_error">Something went wrong while registering your database. You can try again or contact <a href="https://www.odoo.com/help" target="_blank">Odoo Support</a>.</span>
         <span t-elif="state.message === 'link'" class="oe_instance_register oe_database_already_linked">
             Your subscription is already linked to a database.<br/>

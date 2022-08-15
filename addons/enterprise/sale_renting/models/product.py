@@ -68,6 +68,9 @@ class ProductTemplate(models.Model):
             result.append((res[0], res[0] in rental_product_ids and "%s %s" % (res[1], _("(Rental)")) or res[1]))
         return result
 
+    def _can_be_added_to_cart(self):
+        """Override to allow rental products to be used in a sale order"""
+        return super()._can_be_added_to_cart() or self.rent_ok
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'

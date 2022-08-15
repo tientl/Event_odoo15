@@ -23,6 +23,11 @@ class StockMove(models.Model):
             quality_points_domain = self.env['quality.point']._get_domain_for_production(quality_points_domain)
             quality_points = self.env['quality.point'].sudo().search(quality_points_domain)
 
+            # Since move lines are created too late for the manufactured product, we create the QC of lot type directly here instead, excluding by-products
+            domain_lot_type = self.env['quality.point']._get_domain(production.product_id, production.picking_type_id, measure_on='product')
+            quality_points_lot_type = self.env['quality.point'].sudo().search(domain_lot_type)
+
+            quality_points = quality_points | quality_points_lot_type
             if not quality_points:
                 continue
             mo_check_vals_list = quality_points._get_checks_values(moves.product_id, production.company_id.id, existing_checks=production.sudo().check_ids)

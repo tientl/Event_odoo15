@@ -6,7 +6,6 @@
 # Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2021
 # Mehmet Demirel <mdemirell@gmail.com>, 2021
 # Ramiz Deniz Öner <deniz@denizoner.com>, 2021
-# Fırat Kaya <firat.kaya@mechsoft.com.tr>, 2021
 # Buket Şeker <buket_skr@hotmail.com>, 2021
 # Tugay Hatıl <tugayh@projetgrup.com>, 2021
 # Murat Durmuş <muratd@projetgrup.com>, 2021
@@ -15,11 +14,11 @@
 # Levent Karakaş <levent@mektup.at>, 2021
 # Murat Kaplan <muratk@projetgrup.com>, 2021
 # Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2021
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2021
 # Umur Akın <umura@projetgrup.com>, 2021
 # Nadir Gazioglu <nadirgazioglu@gmail.com>, 2021
 # abc Def <hdogan1974@gmail.com>, 2021
 # Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2021
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -27,7 +26,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2021\n"
+"Last-Translator: Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,23 +38,23 @@ msgstr ""
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "%s Goals"
-msgstr ""
+msgstr "%s Hedefler"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "1 Meeting"
-msgstr ""
+msgstr "1 Toplantı"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__100
 msgid "100 %"
-msgstr ""
+msgstr "%100"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__25
 msgid "25 %"
-msgstr ""
+msgstr "% 25"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__module_hr_appraisal_survey
@@ -65,12 +64,12 @@ msgstr "360 Feedback"
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__50
 msgid "50 %"
-msgstr ""
+msgstr "% 50"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__75
 msgid "75 %"
-msgstr ""
+msgstr "% 75"
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_confirm
@@ -92,6 +91,16 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\"><t t-out=\"ctx.get('employee_to_name', 'employee')\">Çalışanın</t> bir değerlendirmesi onaylandı.<br/><br/>Lütfen birlikte bir değerlendirme tarihi planlayın.                        <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">Değerlendirmeyi Görüntüle                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_request_from_employee
@@ -117,6 +126,21 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">Değerli <t t-out=\"ctx.get('employee_to_name', 'employee')\">çalışanımız</t>,                        <br/>\n"
+"                        <t t-out=\"ctx.get('author_name', '')\">Addison Olson</t> (<t t-out=\"ctx.get('author_mail', '')\">addison.olson28@example.com</t>) bir değerlendirme istiyor.                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">Yıllık değerlendirme.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; text-align: center;\">\n"
+"                                <a t-att-t-att-href=\"ctx.get('url')\" style=\" margin: auto; background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">Değerlendirmeyi Görüntüle                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_request
@@ -145,6 +169,22 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">Değerli <t t-out=\"ctx.get('employee_to_name', 'employee')\">çalışanımız</t>,                        <br/><t t-out=\"ctx.get('author_name', '')\">Addison Olson</t> tarafından bir değerlendirme talep edildi\n"
+"                        <br/>(<t t-out=\"ctx.get('author_mail', '')\">addison.olson28@example.com</t>).                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">Yıllık değerlendirme.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; padding: 8px 16px 8px 16px; text-align: center;\">\n"
+"                                <a t-att-t-att-href=\"ctx.get('url')\" style=\" margin: auto; background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">Değerlendirmeyi Görüntüle                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <br/>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_employee_base.py:0
@@ -156,22 +196,25 @@ msgid ""
 "                            Plan appraisals with your colleagues, collect and discuss feedback.\n"
 "                        </p>"
 msgstr ""
+"<p class=\"o_view_nocontent_smiling_face\">Bir değerlendirme planlayın"
+"                        </p><p>İş arkadaşlarınızla değerlendirmeler "
+"planlayın, geri bildirim toplayın ve tartışın.                        </p>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-info\">Ready</span>"
-msgstr ""
+msgstr "<span class=\"bg-info\">Hazır</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-secondary\">Canceled</span>"
-msgstr ""
+msgstr "<span class=\"bg-secondary\">İptal edilmiş</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<span class=\"bg-success\">Done</span>"
-msgstr ""
+msgstr "<span class=\"bg-success\">Yapılmış</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -179,6 +222,8 @@ msgid ""
 "<span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Employee</span>\n"
 "                                            <span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Visible to Employee</span>"
 msgstr ""
+"<span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Çalışan tarafından görülemez Çalışan</span>\n"
+"                                            <span class=\"col-4 text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">tarafından görünür</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -186,6 +231,8 @@ msgid ""
 "<span class=\"o_form_label\">360 Feedback</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">360° Geri Bildirim</span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -193,6 +240,8 @@ msgid ""
 "<span class=\"o_form_label\">Appraisals Plans</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">Değerlendirme Planları</span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -200,6 +249,8 @@ msgid ""
 "<span class=\"o_form_label\">Feedback Templates</span>\n"
 "                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">Geri bildirim şablonları</span>\n"
+"                                <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
@@ -209,16 +260,17 @@ msgid ""
 "                            Last Appraisal\n"
 "                        </span>"
 msgstr ""
+"<span class=\"o_stat_text\">Son Değerlendirme                        </span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_text\">Goals</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Hedef</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_value\">Prev. Appraisal</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_value\">Önceki Değerlendirme</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -226,6 +278,8 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Manager</span>\n"
 "                                            <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Visible to Manager</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Yönetici tarafından görülemez </span>\n"
+"                                            <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False), ('state', '=', 'done')]}\">Yönetici tarafından görülebilir</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -233,6 +287,8 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Not Visible to Employee</span>\n"
 "                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Visible to Employee</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Çalışan tarafından görülemez </span>\n"
+"                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', '|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False), ('state', '=', 'done')]}\">Çalışan tarafından görülebilir</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -240,22 +296,24 @@ msgid ""
 "<span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False)]}\">Not Visible to Manager</span>\n"
 "                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False)]}\">Visible to Manager</span>"
 msgstr ""
+"<span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', True), ('can_see_employee_publish', '=', False)]}\">Yönetici tarafından görülemez </span>\n"
+"                                        <span class=\"text-right\" attrs=\"{'invisible': ['|', ('employee_feedback_published', '=', False), ('can_see_employee_publish', '=', False)]}\">Yönetici tarafından görülebilir</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
 msgid "<strong><span>Meeting: </span></strong>"
-msgstr ""
+msgstr "<strong><span>Toplantı: </span></strong>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_report_view_gantt
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_view_gantt
 msgid "<strong>Date — </strong>"
-msgstr ""
+msgstr "<strong>Tarih — </strong>"
 
 #. module: hr_appraisal
 #: model:res.groups,name:hr_appraisal.group_hr_appraisal_user
 msgid "Access all appraisals"
-msgstr ""
+msgstr "Tüm değerlendirmelere erişin"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_needaction
@@ -290,12 +348,12 @@ msgstr "Aktivite Durumu"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_type_icon
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Aktivite Simge Tipi "
+msgstr "Aktivite Simge Tipi"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
 msgid "Add existing contacts..."
-msgstr "Varolan kişileri ekle"
+msgstr "Varolan kişileri ekle..."
 
 #. module: hr_appraisal
 #: model:res.groups,name:hr_appraisal.group_hr_appraisal_manager
@@ -305,7 +363,7 @@ msgstr "Yönetici"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
 msgid "Application Settings"
-msgstr ""
+msgstr "Uygulama Ayarları"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action
@@ -331,22 +389,22 @@ msgstr "İzin Analizi"
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_note
 msgid "Appraisal Assessment Note"
-msgstr ""
+msgstr "Değerleme Değerlendirme Notu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__appraisal_child_ids
 msgid "Appraisal Child"
-msgstr ""
+msgstr "Alt Değerlendirme"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_confirm_mail_template
 msgid "Appraisal Confirm Mail Template"
-msgstr ""
+msgstr "Değerlendirme Onay Posta Şablonu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__appraisal_count
 msgid "Appraisal Count"
-msgstr ""
+msgstr "Değerlendirme Sayısı"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__date_close
@@ -362,7 +420,7 @@ msgstr "Değerlendirme Personeli"
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_employee_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_employee_feedback_template
 msgid "Appraisal Employee Feedback Template"
-msgstr ""
+msgstr "Değerlendirme Çalışan Geri Bildirimi Şablonu"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -373,18 +431,18 @@ msgstr "Doldurulacak Değerlendirme Formu"
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_goal
 msgid "Appraisal Goal"
-msgstr ""
+msgstr "Değerlendirme Hedefi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_manager_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_manager_feedback_template
 msgid "Appraisal Manager Feedback Template"
-msgstr ""
+msgstr "Değerlendirme Yöneticisi Geri Bildirim Şablonu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__appraisal_plan_posted
 msgid "Appraisal Plan Posted"
-msgstr ""
+msgstr "Değerlendirme Planı Yayınlandı"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -412,20 +470,20 @@ msgstr "Değerlendirme İstatistikleri"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_department_view_form
 msgid "Appraisal Templates"
-msgstr ""
+msgstr "Değerlendirme Şablonları"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal of %s"
-msgstr ""
+msgstr "%s değerlendirmesi"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Appraisal to Confirm and Send"
-msgstr ""
+msgstr "Onaylanacak ve Gönderilecek Değerlendirme"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action_from_department
@@ -463,18 +521,18 @@ msgstr "Arşivlendi"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Ask to fill a survey to other employees"
-msgstr ""
+msgstr "Diğer çalışanlara anket doldurmalarını isteme"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Assessment"
-msgstr ""
+msgstr "Değerlendirme"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__assessment_note_ids
 msgid "Assessment Note"
-msgstr ""
+msgstr "Değerlendirme Notu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_attachment_count
@@ -496,12 +554,12 @@ msgstr "Mesajın yazarı."
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_plan
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_plan
 msgid "Automatically Generate Appraisals"
-msgstr ""
+msgstr "Otomatik Olarak Değerlendirme Oluştur"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Automatically generate appraisals"
-msgstr ""
+msgstr "Otomatik olarak değerlendirme oluştur"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__avatar_1920
@@ -526,17 +584,17 @@ msgstr "Takvim Etkinliği"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__can_edit_body
 msgid "Can Edit Body"
-msgstr ""
+msgstr "Gövdeyi Düzenleyebilir"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__can_see_employee_publish
 msgid "Can See Employee Publish"
-msgstr ""
+msgstr "Çalışan Yayınlanmışı Görebilir"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__can_see_manager_publish
 msgid "Can See Manager Publish"
-msgstr ""
+msgstr "Yönetici Yayınlanmışı Görebilir"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
@@ -547,12 +605,12 @@ msgstr "İptal"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_departure_wizard__cancel_appraisal
 msgid "Cancel Future Appraisals"
-msgstr ""
+msgstr "Gelecekteki Değerlendirmeleri İptal Et"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_departure_wizard__cancel_appraisal
 msgid "Cancel all appraisal after contract end date."
-msgstr ""
+msgstr "Sözleşme bitiş tarihinden sonra tüm değerlendirmeleri iptal edin."
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__cancel
@@ -594,7 +652,7 @@ msgstr "Yapılandırma"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Configure General Feedback Template"
-msgstr ""
+msgstr "Genel Geri Bildirim Şablonunu Yapılandırma"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -620,19 +678,19 @@ msgstr "Oluşturma Tarihi"
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_first_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_first_appraisal
 msgid "Create a first Appraisal after"
-msgstr ""
+msgstr "Sonra bir ilk Değerlendirme oluşturun"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_next_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_next_appraisal
 msgid "Create a second Appraisal after"
-msgstr ""
+msgstr "Sonra ikinci bir Değerlendirme oluşturun"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_after_recruitment
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_after_recruitment
 msgid "Create an Appraisal after recruitment"
-msgstr ""
+msgstr "İşe alımdan sonra bir Değerlendirme oluşturun"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__create_uid
@@ -658,7 +716,7 @@ msgstr "Oluşturulma Tarihi"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__custom_appraisal_templates
 msgid "Custom Appraisal Templates"
-msgstr ""
+msgstr "Özel Değerlendirme Şablonları"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
@@ -672,6 +730,8 @@ msgid ""
 "Date of the appraisal, automatically updated when the appraisal is Done or "
 "Cancelled."
 msgstr ""
+"Değerlendirme tarihi, değerlendirme Tamamlandığında veya İptal Edildiğinde "
+"otomatik olarak güncellenir."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__deadline
@@ -683,7 +743,7 @@ msgstr "Zaman Sınırı"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_view_activity
 msgid "Deadline:"
-msgstr "Zaman Sınırı"
+msgstr "Zaman Sınırı:"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__null_value
@@ -761,24 +821,24 @@ msgstr "Personel Değerlendirme"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_autocomplete_ids
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__employee_autocomplete_ids
 msgid "Employee Autocomplete"
-msgstr ""
+msgstr "Çalışan Otomatik Tamamlama"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback
 msgid "Employee Feedback"
-msgstr ""
+msgstr "Çalışan Geri Bildirimi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback_published
 msgid "Employee Feedback Published"
-msgstr ""
+msgstr "Çalışan Geri Bildirimi Yayınlandı"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__employee_feedback_template
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Employee Feedback Template"
-msgstr ""
+msgstr "Çalışan Geri Bildirimi Şablonu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_report__name
@@ -788,30 +848,30 @@ msgstr "Personel Adı"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_user_id
 msgid "Employee User"
-msgstr ""
+msgstr "Çalışan Kullanıcısı"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Employee's"
-msgstr ""
+msgstr "Çalışanın"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Employee's Feedback"
-msgstr ""
+msgstr "Çalışanın Geri Bildirimi"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.action_hr_appraisal_note
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__assessment_note_ids
 #: model:ir.ui.menu,name:hr_appraisal.menu_hr_appraisal_note
 msgid "Evaluation Scale"
-msgstr ""
+msgstr "Değerlendirme Ölçeği"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Exceeds expectations"
-msgstr ""
+msgstr "Beklentileri aşıyor"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
@@ -821,7 +881,7 @@ msgstr "Gelişmiş Filtreler..."
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Feedback Templates"
-msgstr ""
+msgstr "Geri bildirim şablonları"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__model_object_field
@@ -849,7 +909,7 @@ msgstr "Son Görüşme Tarihi"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__assessment_note
 msgid "Final Rating"
-msgstr ""
+msgstr "Son Değerlendirme"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__copyvalue
@@ -918,17 +978,17 @@ msgstr "Mesaj Var"
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_confirm
 msgid "Hr Appraisal: Confirm Appraisal"
-msgstr ""
+msgstr "İK Değerlendirmesi: Değerlemeyi Onaylayın"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid "Hr Appraisal: Request an Appraisal From Employee"
-msgstr ""
+msgstr "İK Değerlendirmesi: Çalışandan Değerlendirme İsteyin"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request
 msgid "Hr Appraisal: Request an Appraisal from Manager"
-msgstr ""
+msgstr "İK Değerlendirmesi: Yöneticiden Değerlendirme İsteyin"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__id
@@ -988,12 +1048,12 @@ msgstr "Görüşme"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__is_appraisal_manager
 msgid "Is Appraisal Manager"
-msgstr ""
+msgstr "Değerlendirme Yöneticisi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__is_mail_template_editor
 msgid "Is Editor"
-msgstr ""
+msgstr "İş Düzenleyicisi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_is_follower
@@ -1005,12 +1065,12 @@ msgstr "Takipçi mi"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__is_implicit_manager
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__is_implicit_manager
 msgid "Is Implicit Manager"
-msgstr ""
+msgstr "Bağlı Yönetici"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__is_manager
 msgid "Is Manager"
-msgstr ""
+msgstr "Yönetici"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__lang
@@ -1024,7 +1084,7 @@ msgstr "Dil"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__last_appraisal_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_users__last_appraisal_id
 msgid "Last Appraisal"
-msgstr ""
+msgstr "Son Değerlendirme Tarihi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__last_appraisal_date
@@ -1037,7 +1097,7 @@ msgstr "Son Değerlendirme Tarihi"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Last Meeting"
-msgstr ""
+msgstr "Son Toplantı"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal____last_update
@@ -1096,34 +1156,34 @@ msgstr "Yönetici"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Manager Assessment will show here"
-msgstr ""
+msgstr "Yönetici Değerlendirmesi burada gösterilecektir"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback
 msgid "Manager Feedback"
-msgstr ""
+msgstr "Yönetici Geri Bildirimi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback_published
 msgid "Manager Feedback Published"
-msgstr ""
+msgstr "Yönetici Geri Bildirimi Yayınlandı"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_feedback_template
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__manager_feedback_template
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Manager Feedback Template"
-msgstr ""
+msgstr "Yönetici Geri Bildirim Şablonu"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__manager_user_ids
 msgid "Manager Users"
-msgstr ""
+msgstr "Yöneticiler"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Manager's Feedback"
-msgstr ""
+msgstr "Yöneticinin Geri Bildirimi"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
@@ -1145,7 +1205,7 @@ msgstr "Toplantılar"
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Meets expectations"
-msgstr ""
+msgstr "Beklentileri karşılar"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_has_error
@@ -1187,7 +1247,7 @@ msgstr "Adı"
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Needs improvement"
-msgstr ""
+msgstr "İyileştirme gerekiyorr"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_calendar_event_id
@@ -1223,13 +1283,13 @@ msgstr "Sonraki Değerleme Tarihi"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Next Meeting"
-msgstr ""
+msgstr "Sonraki Toplantı"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "No Meeting"
-msgstr ""
+msgstr "Toplantı Yok"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -1275,6 +1335,10 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"E-posta gönderirken seçmek için isteğe bağlı çeviri dili (ISO kodu). "
+"Ayarlanmazsa, İngilizce sürüm kullanılacaktır. Bu genellikle uygun dili "
+"sağlayan bir yer tutucu ifadesi olmalıdır, örneğin {{ object.partner_id.lang"
+" }}."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__null_value
@@ -1303,16 +1367,18 @@ msgstr "Yer Tutucu İfade"
 #: model_terms:ir.actions.act_window,help:hr_appraisal.open_view_hr_appraisal_tree
 msgid "Plan appraisals with your colleagues, collect and discuss feedback."
 msgstr ""
+"İş arkadaşlarınızla değerlendirmeler planlayın, geri bildirim toplayın ve "
+"tartışın."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__previous_appraisal_id
 msgid "Previous Appraisal"
-msgstr ""
+msgstr "Önceki Değerlendirme"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__previous_appraisal_date
 msgid "Previous Appraisal Date"
-msgstr ""
+msgstr "Önceki Değerlendirme Tarihi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__note
@@ -1346,12 +1412,12 @@ msgstr "İlişkili İş Ortağı"
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee__parent_user_id
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee_base__parent_user_id
 msgid "Related user name for the resource to manage its access."
-msgstr "Kaynağın erişimini yönetmek için ilişkilendirilmiş kullanıcı"
+msgstr "Kaynağın erişimini yönetmek için ilişkilendirilmiş kullanıcı."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "İşleme Modeli"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -1373,7 +1439,7 @@ msgstr "Değerlendirme Talebi"
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.action_create_multi_appraisals
 msgid "Request Appraisals"
-msgstr ""
+msgstr "Değerlendirme İsteyin"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_request_appraisal
@@ -1389,7 +1455,7 @@ msgstr "Sorumlu Kullanıcı"
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.open_view_hr_appraisal_tree
 msgid "Schedule an appraisal"
-msgstr ""
+msgstr "Bir değerlendirme planlayın"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1408,7 +1474,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Self Assessment will show here"
-msgstr ""
+msgstr "Öz Değerlendirme burada gösterilecek"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
@@ -1434,12 +1500,12 @@ msgstr "Ayarlar"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__show_employee_feedback_full
 msgid "Show Employee Feedback Full"
-msgstr ""
+msgstr "Çalışan Geri Bildirimlerini Tam Göster"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__show_manager_feedback_full
 msgid "Show Manager Feedback Full"
-msgstr ""
+msgstr "Yönetici Geri Bildirimini Tam Göster"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1471,7 +1537,7 @@ msgstr ""
 #: code:addons/hr_appraisal/models/res_company.py:0
 #, python-format
 msgid "Strongly Exceed Expectations"
-msgstr ""
+msgstr "Beklentileri Güçlü Bir Şekilde Aşmak"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__sub_model_object_field
@@ -1496,22 +1562,30 @@ msgstr "Konu..."
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
+msgid "Such grouping is not allowed."
+msgstr "Böyle bir gruplamaya izin verilmez."
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
 msgid ""
 "Thanks to your Appraisal Plan, without any new manual Appraisal, the new "
 "Appraisal will be automatically created on %s."
 msgstr ""
+"Değerleme Planınız sayesinde, herhangi bir yeni manuel Değerlendirme "
+"olmadan, yeni Değerlendirme %s tarihinde otomatik olarak oluşturulacaktır."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__note
 msgid "The content of this note is not visible by the Employee."
-msgstr ""
+msgstr "Bu notun içeriği Çalışan tarafından görülmez."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__last_appraisal_date
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee__last_appraisal_date
 #: model:ir.model.fields,help:hr_appraisal.field_res_users__last_appraisal_date
 msgid "The date of the last appraisal"
-msgstr ""
+msgstr "Son değerlendirme tarihi"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee__next_appraisal_date
@@ -1526,7 +1600,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model:ir.model.constraint,message:hr_appraisal.constraint_res_company_positif_number_months
 msgid "The duration time must be bigger or equal to 1 month."
-msgstr ""
+msgstr "Süre 1 aya eşit veya daha büyük olmalıdır."
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1535,11 +1609,26 @@ msgid ""
 "The employee %s arrived %s months ago. An appraisal for %s is created. You "
 "can assess %s & determinate the date for '1to1' meeting before %s."
 msgstr ""
+"%s çalışanı %s ay önce geldi. %s için bir değerlendirme oluşturuldu. %s'yi "
+"değerlendirebilir ve %s'den önce birebir toplantı tarihini "
+"belirleyebilirsiniz."
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
+msgid "The employee feedback cannot be changed by managers."
+msgstr "Çalışan geri bildirimi yöneticiler tarafından değiştirilemez."
+
+#. module: hr_appraisal
+#: code:addons/hr_appraisal/models/hr_appraisal.py:0
+#, python-format
+msgid "The manager feedback cannot be changed by an employee."
+msgstr "Yönetici geri bildirimi bir çalışan tarafından değiştirilemez."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__assessment_note
 msgid "This field is not visible to the Employee."
-msgstr ""
+msgstr "Bu alan Çalışan tarafından görülemez."
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__new
@@ -1579,7 +1668,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__uncomplete_goals_count
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__uncomplete_goals_count
 msgid "Uncomplete Goals Count"
-msgstr ""
+msgstr "Tamamlanmamış Hedef Sayısı"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -1608,7 +1697,7 @@ msgstr "Kullanıcı"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__user_body
 msgid "User Contents"
-msgstr ""
+msgstr "Kullanıcı İçeriği"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_res_users
@@ -1618,7 +1707,7 @@ msgstr "Kullanıcılar"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__waiting_feedback
 msgid "Waiting Feedback from Employee/Managers"
-msgstr ""
+msgstr "Çalışan/Yöneticilerden Geri Bildirim Bekleme"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__sub_model_object_field
@@ -1645,6 +1734,9 @@ msgid ""
 "You arrived %s months ago. Your appraisal is created you can assess yourself"
 " here. Your manager will determinate the date for your '1to1' meeting."
 msgstr ""
+"%s ay önce geldiniz. Değerlendirmeniz oluşturulursa kendinizi buradan "
+"değerlendirebilirsiniz. Yöneticiniz birebir toplantınızın tarihini "
+"belirleyecektir."
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -1661,6 +1753,9 @@ msgid ""
 "created. You can assess %s & determinate the date for '1to1' meeting before "
 "%s."
 msgstr ""
+"Çalışanınızın son değerlendirmesi %s ay önceydi. %s için bir değerlendirme "
+"oluşturulur. %s değerlendirebilir ve %s önce birebir toplantı tarihini "
+"belirleyebilirsiniz."
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -1670,31 +1765,34 @@ msgid ""
 "assess yourself here. Your manager will determinate the date for your '1to1'"
 " meeting."
 msgstr ""
+"Son değerlendirmeniz %s ay önceydi. Değerlendirmeniz oluşturulursa kendinizi"
+" buradan değerlendirebilirsiniz. Yöneticiniz birebir toplantınızın tarihini "
+"belirleyecektir."
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "e.g. John Doe"
-msgstr "Örn. John Doe"
+msgstr "örn. John Doe"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
 msgid "e.g. Present yourself to your new team"
-msgstr ""
+msgstr "örn. kendinizi yeni ekibinize tanıtın"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months after recruitment,"
-msgstr ""
+msgstr "işe alımdan aylar sonra,"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months,"
-msgstr ""
+msgstr "aylar,"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months."
-msgstr ""
+msgstr "aylar."
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
@@ -1704,7 +1802,7 @@ msgstr "oe_kanban_text_red"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "once published"
-msgstr ""
+msgstr "yayınlandıktan sonra"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_view_activity
@@ -1714,20 +1812,21 @@ msgstr "text-tehlike"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "then after"
-msgstr ""
+msgstr "ondan sonra"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "then every"
-msgstr ""
+msgstr "sonra her"
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid ""
 "{{ hasattr(object, 'name') and object.name or '' }} requests an Appraisal"
 msgstr ""
+"{{ hasattr(object, 'name') and object.name or '' }} bir Değerleme talep eder"
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_confirm
 msgid "{{ object.employee_id.name }}: Appraisal Confirmed"
-msgstr ""
+msgstr "{{ object.employee_id.name }}: Değerlendirme Onaylandı"

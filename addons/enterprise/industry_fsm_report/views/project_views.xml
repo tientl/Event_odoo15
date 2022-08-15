@@ -87,7 +87,7 @@
         <field name="arch" type="xml">
             <field name="user_ids" position="before">
                 <field name="allow_worksheets" invisible="1"/>
-                <field name="worksheet_template_id" attrs="{'invisible':[('allow_worksheets', '=', False)]}" options="{'no_open': True}"/>
+                <field name="worksheet_template_id" attrs="{'invisible':[('allow_worksheets', '=', False)]}" options="{'no_open': True}" context="{'default_res_model': 'project.task'}"/>
             </field>
         </field>
     </record>
@@ -133,7 +133,7 @@
                         </div>
                         <div class="mt-3" attrs="{'invisible': [('allow_worksheets', '=', False)]}">
                             <label for="worksheet_template_id" string="Worksheet Template"/>
-                            <field name="worksheet_template_id"/>
+                            <field name="worksheet_template_id" class="oe_inline"/>
                         </div>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
                 <field name="display_sign_report_secondary" invisible="1"/>
                 <field name="display_send_report_primary" invisible="1"/>
                 <field name="display_send_report_secondary" invisible="1"/>
-                <field name="worksheet_template_id" context="{'form_view_ref': 'industry_fsm_report.worksheet_template_view_form_no_design_button', 'default_res_model_name': 'project.task'}" attrs="{'invisible': [('allow_worksheets', '=', False)]}"/>
+                <field name="worksheet_template_id" context="{'form_view_ref': 'industry_fsm_report.worksheet_template_view_form_no_design_button', 'default_res_model': 'project.task'}" attrs="{'invisible': [('allow_worksheets', '=', False)]}"/>
             </field>
             <field name="is_fsm" position="after">
                 <field name="fsm_is_sent" invisible="1"/>

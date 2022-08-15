@@ -1,7 +1,7 @@
 from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 import calendar
-import re
+from markupsafe import Markup
 
 
 class AccountGenericTaxReport(models.AbstractModel):
@@ -66,13 +66,13 @@ class AccountGenericTaxReport(models.AbstractModel):
                         'vat_no': complete_vat,
                         'only_vat': vat_no,
                         # Company name can contain only latin characters
-                        'cmpny_name': re.sub('[^-A-Za-z0-9/?:().,\'+ ]', ' ', sender_company.name),
+                        'cmpny_name': sender_company.name,
                         'address': "%s %s" % (address.street or "", address.street2 or ""),
                         'post_code': address.zip or "",
                         'city': address.city or "",
                         'country_code': address.country_id and address.country_id.code or "",
                         'email': address.email or "",
-                        'phone': address.phone.replace('.', '').replace('/', '').replace('(', '').replace(')', '').replace(' ', ''),
+                        'phone': self._raw_phonenumber(address.phone),
                         'send_ref': send_ref,
                         'quarter': quarter,
                         'month': starting_month,
@@ -81,11 +81,12 @@ class AccountGenericTaxReport(models.AbstractModel):
                         'ask_restitution': (data['ask_restitution'] and 'YES' or 'NO'),
                         'ask_payment': (data['ask_payment'] and 'YES' or 'NO'),
                         'comments': self._get_report_manager(options).summary or '',
+                        'representative_node': self._get_belgian_xml_export_representative_node(),
                      }
 
-        rslt = """<?xml version="1.0"?>
+        rslt = Markup(f"""<?xml version="1.0"?>
 <ns2:VATConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/VATConsignment" VATDeclarationsNbr="1">
-""" + self._get_belgian_xml_export_representative_node() + """
+    %(representative_node)s
     <ns2:VATDeclaration SequenceNumber="1" DeclarantReference="%(send_ref)s">
         <ns2:Declarant>
             <VATNumber xmlns="http://www.minfin.fgov.be/InputCommon">%(only_vat)s</VATNumber>
@@ -98,17 +99,10 @@ class AccountGenericTaxReport(models.AbstractModel):
             <Phone>%(phone)s</Phone>
         </ns2:Declarant>
         <ns2:Period>
-    """ % (file_data)
-
-        if starting_month != ending_month:
-            # starting month and ending month of selected period are not the same
-            # it means that the accounting isn't based on periods of 1 month but on quarters
-            rslt += '\t\t<ns2:Quarter>%(quarter)s</ns2:Quarter>\n\t\t' % (file_data)
-        else:
-            rslt += '\t\t<ns2:Month>%(month)s</ns2:Month>\n\t\t' % (file_data)
-        rslt += '\t<ns2:Year>%(year)s</ns2:Year>' % (file_data)
-        rslt += '\n\t\t</ns2:Period>\n'
-        rslt += '\t\t<ns2:Data>\t'
+            {"<ns2:Quarter>%(quarter)s</ns2:Quarter>" if starting_month != ending_month else "<ns2:Month>%(month)s</ns2:Month>"}
+            <ns2:Year>%(year)s</ns2:Year>
+        </ns2:Period>
+        <ns2:Data>""") % file_data
 
         grids_list = []
         currency_id = self.env.company.currency_id
@@ -147,6 +141,10 @@ class AccountGenericTaxReport(models.AbstractModel):
         if len([item for item in grids_list if item[0] == '71' or item[0] == '72']) == 0:
             grids_list.append(('71', 0, False, None))
 
+        # Government expects a value also in grid '00'
+        if len([item for item in grids_list if item[0] == '00']) == 0:
+            grids_list.append(('00', 0, False, None))
+
         grids_list = sorted(grids_list, key=lambda a: a[0])
         for code, amount, carryover_bounds, tax_line in grids_list:
             if carryover_bounds:
@@ -160,13 +158,16 @@ class AccountGenericTaxReport(models.AbstractModel):
                     'code': code,
                     'amount': '%.2f' % amount,
                     }
-            rslt += '\n\t\t\t<ns2:Amount GridNumber="%(code)s">%(amount)s</ns2:Amount''>' % (grid_amount_data)
+            rslt += Markup("""
+            <ns2:Amount GridNumber="%(code)s">%(amount)s</ns2:Amount>""") % grid_amount_data
 
-        rslt += '\n\t\t</ns2:Data>'
-        rslt += '\n\t\t<ns2:ClientListingNihil>%(client_nihil)s</ns2:ClientListingNihil>' % (file_data)
-        rslt += '\n\t\t<ns2:Ask Restitution="%(ask_restitution)s" Payment="%(ask_payment)s"/>' % (file_data)
-        rslt += '\n\t\t<ns2:Comment>%(comments)s</ns2:Comment>' % (file_data)
-        rslt += '\n\t</ns2:VATDeclaration> \n</ns2:VATConsignment>'
+        rslt += Markup("""
+        </ns2:Data>
+        <ns2:ClientListingNihil>%(client_nihil)s</ns2:ClientListingNihil>
+        <ns2:Ask Restitution="%(ask_restitution)s" Payment="%(ask_payment)s"/>
+        <ns2:Comment>%(comments)s</ns2:Comment>
+    </ns2:VATDeclaration>
+</ns2:VATConsignment>""") % file_data
 
         return rslt.encode()
 

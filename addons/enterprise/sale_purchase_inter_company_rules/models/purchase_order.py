@@ -68,7 +68,7 @@ class purchase_order(models.Model):
                 sale_order_data['order_line'] += [(0, 0, rec._prepare_sale_order_line_data(line, company))]
             sale_order = self.env['sale.order'].with_context(allowed_company_ids=inter_user.company_ids.ids).with_user(intercompany_uid).create(sale_order_data)
             sale_order.order_line._compute_tax_id()
-            msg = _("Automatically generated from %(origin)s of company %(company)s.", origin=self.name, company=company.name)
+            msg = _("Automatically generated from %(origin)s of company %(company)s.", origin=self.name, company=rec.company_id.name)
             sale_order.message_post(body=msg)
 
             # write vendor reference field on PO

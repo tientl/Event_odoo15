@@ -100,7 +100,7 @@ class Certificate(models.Model):
 
         edi_tree_c14n_str = etree.tostring(edi_tree_copy, method='c14n', exclusive=True, with_comments=False)
         digest_b64 = b64encode(hashlib.new('sha1', edi_tree_c14n_str).digest())
-        signature_str = self.env.ref('l10n_pe_edi.pe_ubl_2_1_signature')._render({'digest_value': digest_b64})
+        signature_str = self.env.ref('l10n_pe_edi.pe_ubl_2_1_signature')._render({'digest_value': digest_b64.decode()})
 
         # Eliminate all non useful spaces and new lines in the stream
         signature_str = signature_str.replace('\n', '').replace('  ', '')

@@ -75,7 +75,7 @@ class SocialStreamPostLinkedIn(models.Model):
             timeout=5).json()
 
         if 'created' not in response:
-            self.sudo().account_id.is_media_disconnected = True
+            self.sudo().account_id._action_disconnect_accounts(response)
             return {}
 
         return self._linkedin_format_comment(response)
@@ -92,7 +92,7 @@ class SocialStreamPostLinkedIn(models.Model):
             timeout=5)
 
         if response.status_code != 204:
-            self.sudo().account_id.is_media_disconnected = True
+            self.sudo().account_id._action_disconnect_accounts(response.json())
 
     def _linkedin_comment_fetch(self, comment_urn=None, offset=0, count=20):
         """Retrieve comments on a LinkedIn element.
@@ -115,7 +115,7 @@ class SocialStreamPostLinkedIn(models.Model):
             timeout=5).json()
 
         if 'elements' not in response:
-            self.sudo().account_id.is_media_disconnected = True
+            self.sudo().account_id._action_disconnect_accounts(response)
 
         comments = [self._linkedin_format_comment(comment) for comment in response.get('elements', [])]
         if 'comment' in element_urn:

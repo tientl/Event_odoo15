@@ -79,6 +79,7 @@ class HrExpense(models.Model):
                     to_tsquery(%(lang)s, %(description)s) query_plain
                     WHERE (p_search.document @@ query_plain)
                 ) AS f
+                JOIN product_product p ON p.id = f.product_id AND p.active
                 GROUP BY f.product_id
                 ORDER BY ranking desc, count desc
             """
@@ -106,6 +107,7 @@ class HrExpense(models.Model):
                     to_tsquery(%(lang)s,  %(description)s) query_plain
                     WHERE (p_search.document @@ query_plain)
                 ) AS f
+                JOIN product_product p ON p.id = f.product_id AND p.active
                 GROUP BY f.product_id
                 ORDER BY ranking desc, count desc
             """

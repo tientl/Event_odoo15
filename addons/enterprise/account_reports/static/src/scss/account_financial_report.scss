@@ -24,6 +24,8 @@
 }
 
 .o_account_reports_page {
+    // Define direction attribute here so when rtlcss preprocessor run, it converts it to rtl
+    direction: ltr;
     background-color: $o-view-background-color;
     color: $o-main-text-color;
 
@@ -143,11 +145,15 @@
     .o_account_reports_table {
         &#table_header_clone {
             position: fixed;
+            pointer-events: none;
             tbody {
                 visibility: collapse;
                 tr {
                     border: none;
                 }
+            }
+            thead {
+                pointer-events: auto;
             }
         }
 
@@ -510,7 +516,6 @@
 // -----------------------------------------
 .o_account_reports_body .o_account_reports_summary {
     display: inline-block;
-    position: relative;
 
 
     .o_account_report_summary_placeholder{
@@ -591,7 +596,9 @@ p.o_account_reports_contact_info {
     background-color: white;
 }
 
-.o_account_reports_filter_currency {
+[class*='o_account_reports_filter'] {
+    // TODO A more general fix might be warranted. The solution provided here
+    // still entails some minor glitches.
     > .dropdown-menu {
         overflow-y: auto;
         max-height: calc(100vh - #{$o-navbar-height} - 100px);  // 100px for the control panel

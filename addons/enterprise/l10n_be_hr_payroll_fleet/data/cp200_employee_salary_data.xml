@@ -5,13 +5,17 @@
         <record id="l10n_be_hr_payroll.cp200_employees_salary_company_car" model="hr.salary.rule">
             <field name="condition_python">result = bool(not payslip.is_outside_contract and contract.transport_mode_car and payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from))</field>
             <field name="amount_python_compute">
-result = payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from)
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.transport_mode_car)[0]
+result = payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from) if payslip.contract_id == first_period_contract else 0
             </field>
         </record>
         <record id="l10n_be_hr_payroll.cp200_employees_salary_company_car_2" model="hr.salary.rule">
             <field name="condition_python">result = bool(not payslip.is_outside_contract and contract.transport_mode_car and payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from))</field>
             <field name="amount_python_compute">
-result = -payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from)
+first_period_contract_ids = payslip.dict._get_period_contracts()
+first_period_contract = contract.browse(first_period_contract_ids).filtered(lambda c: c.transport_mode_car)[0]
+result = -payslip.dict.vehicle_id._get_car_atn(date=payslip.dict.date_from) if payslip.contract_id == first_period_contract else 0
             </field>
         </record>
         <!-- PFI -->

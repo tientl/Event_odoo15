@@ -16,10 +16,24 @@ class AssetSell(models.TransientModel):
     invoice_id = fields.Many2one('account.move', string="Customer Invoice", help="The disposal invoice is needed in order to generate the closing journal entry.", domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted')]")
     invoice_line_id = fields.Many2one('account.move.line', help="There are multiple lines that could be the related to this asset", domain="[('move_id', '=', invoice_id), ('exclude_from_invoice_tab', '=', False)]")
     select_invoice_line_id = fields.Boolean(compute="_compute_select_invoice_line_id")
-    gain_account_id = fields.Many2one('account.account', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]", related='company_id.gain_account_id', help="Account used to write the journal item in case of gain", readonly=False)
-    loss_account_id = fields.Many2one('account.account', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]", related='company_id.loss_account_id', help="Account used to write the journal item in case of loss", readonly=False)
+    gain_account_id = fields.Many2one('account.account', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]", compute="_compute_accounts", inverse="_inverse_gain_account", compute_sudo=True, help="Account used to write the journal item in case of gain", readonly=False)
+    loss_account_id = fields.Many2one('account.account', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]", compute="_compute_accounts", inverse="_inverse_loss_account", compute_sudo=True, help="Account used to write the journal item in case of loss", readonly=False)
 
     gain_or_loss = fields.Selection([('gain', 'Gain'), ('loss', 'Loss'), ('no', 'No')], compute='_compute_gain_or_loss', help="Technical field to know is there was a gain or a loss in the selling of the asset")
+
+    @api.depends('company_id')
+    def _compute_accounts(self):
+        for record in self:
+            record.gain_account_id = record.company_id.gain_account_id
+            record.loss_account_id = record.company_id.loss_account_id
+
+    def _inverse_gain_account(self):
+        for record in self:
+            record.company_id.sudo().gain_account_id = record.gain_account_id
+
+    def _inverse_loss_account(self):
+        for record in self:
+            record.company_id.sudo().loss_account_id = record.loss_account_id
 
     @api.depends('invoice_id', 'action')
     def _compute_select_invoice_line_id(self):

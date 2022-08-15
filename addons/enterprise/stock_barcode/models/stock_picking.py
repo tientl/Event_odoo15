@@ -62,7 +62,6 @@ class StockPicking(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("stock_barcode.stock_barcode_picking_client_action")
         action = dict(action, target='fullscreen')
         action['context'] = {'active_id': self.id}
-        action['res_id'] = self.id
         return action
 
     def action_print_barcode_pdf(self):
@@ -81,10 +80,10 @@ class StockPicking(models.Model):
         products = move_lines.product_id
         packagings = products.packaging_ids
 
-        uoms = products.uom_id
+        uoms = products.uom_id | move_lines.product_uom_id
         # If UoM setting is active, fetch all UoM's data.
         if self.env.user.has_group('uom.group_uom'):
-            uoms = self.env['uom.uom'].search([])
+            uoms |= self.env['uom.uom'].search([])
 
         # Fetch `stock.quant.package` and `stock.package.type` if group_tracking_lot.
         packages = self.env['stock.quant.package']
@@ -319,7 +318,7 @@ class StockPicking(models.Model):
         ]
 
     def on_barcode_scanned(self, barcode):
-        if not self.env.company.nomenclature_id:
+        if not self.env.company.nomenclature_id or self.env.company.nomenclature_id.is_gs1_nomenclature:
             # Logic for products
             product = self.env['product.product'].search(['|', ('barcode', '=', barcode), ('default_code', '=', barcode)], limit=1)
             if product:

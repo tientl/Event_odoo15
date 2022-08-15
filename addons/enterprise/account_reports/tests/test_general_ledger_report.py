@@ -294,6 +294,35 @@ class TestGeneralLedgerReport(TestAccountReportsCommon):
             currency_map={4: {'currency': self.currency_data['currency']}},
         )
 
+    def test_general_ledger_filter_accounts(self):
+        """ Test when a user filter on an account """
+        # Init options.
+        report = self.env['account.general.ledger']
+        options = self._init_options(report, fields.Date.from_string('2017-01-01'), fields.Date.from_string('2017-12-31'))
+        options['filter_accounts'] = '40'
+        self.assertLinesValues(
+            report._get_lines(options),
+            #   Name                                    Debit           Credit          Balance
+            [   0,                                      4,              5,              6],
+            [
+                ('400000 Product Sales',                20000.0,        0.0,            20000.0),
+                ('400000 Product Sales',                0.0,            200.0,          -200.0),
+                ('Total',                               20000.0,        200.0,          19800.0),
+            ],
+        )
+
+        options['filter_accounts'] = '9999'
+        self.assertLinesValues(
+            report._get_lines(options),
+            #   Name                                    Debit           Credit          Balance
+            [   0,                                      4,              5,              6],
+            [
+                ('999999 Undistributed Profits/Losses', 200.0,          300.0,          -100.0),
+                ('999999 Undistributed Profits/Losses', 0.0,            50.0,           -50.0),
+                ('Total',                               200.0,          350.0,          -150.0),
+            ],
+        )
+
     # -------------------------------------------------------------------------
     # TESTS: Trial Balance
     # -------------------------------------------------------------------------

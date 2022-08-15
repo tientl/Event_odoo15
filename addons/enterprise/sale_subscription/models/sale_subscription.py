@@ -11,10 +11,10 @@ from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 from uuid import uuid4
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, Command, _, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
-from odoo.tools import format_date, is_html_empty
+from odoo.tools import format_date, is_html_empty, config
 from odoo.tools.float_utils import float_is_zero
 
 _logger = logging.getLogger(__name__)
@@ -194,7 +194,8 @@ class SaleSubscription(models.Model):
         """ Add an invoice line on the sales order for the specified option and add a discount
         to take the partial recurring period into account """
         order_line_obj = self.env['sale.order.line']
-        ratio, message, period_msg = self._partial_recurring_invoice_ratio(date_from=date_from)
+        ratio, message, period_msg = self.with_context(lang=sale_order.partner_id.lang)\
+            ._partial_recurring_invoice_ratio(date_from=date_from)
         if message != "":
             sale_order.message_post(body=message)
         _discount = (1 - ratio) * 100
@@ -206,7 +207,8 @@ class SaleSubscription(models.Model):
             'product_uom': option_line.uom_id.id,
             'discount': _discount,
             'price_unit': self.pricelist_id.with_context(uom=option_line.uom_id.id).get_product_price(option_line.product_id, 1, False),
-            'name': option_line.name + '\n' + period_msg,
+            'name': order_line_obj.with_context(lang=sale_order.partner_id.lang).get_sale_order_line_multiline_description_sale(
+                option_line.product_id.with_context(lang=sale_order.partner_id.lang)) + '\n' + period_msg,
         }
         return order_line_obj.create(values)
 
@@ -222,7 +224,7 @@ class SaleSubscription(models.Model):
         recurring_last_invoice = recurring_next_invoice - invoicing_period
         time_to_invoice = recurring_next_invoice - date
         ratio = float(time_to_invoice.days) / float((recurring_next_invoice - recurring_last_invoice).days)
-        period_msg = _("Invoicing period") + ": %s - %s" % (format_date(self.env, date), format_date(self.env, recurring_next_invoice))
+        period_msg = _("Invoicing period") + ": %s - %s" % (format_date(self.env, date), format_date(self.env, recurring_next_invoice - relativedelta(days=1))) # The period does not include the next renewal date
         if (ratio < 0 or ratio > 1):
             message = _(
                 "Discount computation failed because the upsell date is not between the next "
@@ -350,7 +352,7 @@ class SaleSubscription(models.Model):
         subscription = super(SaleSubscription, self).create(vals)
         if vals.get('stage_id'):
             subscription._send_subscription_rating_mail(force_send=True)
-        if subscription.partner_id:
+        if subscription.partner_id and subscription.stage_category == "progress":
             subscription.message_subscribe(subscription.partner_id.ids)
         return subscription
 
@@ -361,8 +363,8 @@ class SaleSubscription(models.Model):
                 vals['recurring_invoice_day'] = recurring_next_date.day
             else:
                 vals['recurring_invoice_day'] = fields.Date.from_string(recurring_next_date).day
-        if vals.get('partner_id'):
-            self.message_subscribe([vals['partner_id']])
+        old_partners = {s.id: s.partner_id.id for s in self}
+        old_in_progress = {s.id: s.stage_category == "progress" for s in self}
         if vals.get('payment_token_id'):
             # check access rule for token to make sure the user is allowed to read it. This prevents
             # assigning unowned tokens through RPC calls
@@ -370,6 +372,14 @@ class SaleSubscription(models.Model):
         result = super(SaleSubscription, self).write(vals)
         if vals.get('stage_id'):
             self._send_subscription_rating_mail(force_send=True)
+        for subscription in self:
+            diff_partner = subscription.partner_id.id != old_partners[subscription.id]
+            diff_in_progress = (subscription.stage_category == "progress") != old_in_progress[subscription.id]
+            if diff_partner or diff_in_progress:
+                if subscription.stage_category == "progress":
+                    subscription.message_subscribe(subscription.partner_id.ids)
+                if diff_partner or subscription.stage_category != "progress":
+                    subscription.message_unsubscribe([old_partners[subscription.id]])
         return result
 
     def _init_column(self, column_name):
@@ -587,10 +597,8 @@ class SaleSubscription(models.Model):
         recurring_next_date = self._get_recurring_next_date(self.recurring_rule_type, self.recurring_interval, next_date, self.recurring_invoice_day)
         end_date = fields.Date.from_string(recurring_next_date) - relativedelta(days=1)     # remove 1 day as normal people thinks in term of inclusive ranges.
         addr = self.partner_id.address_get(['delivery', 'invoice'])
-        sale_order = self.env['sale.order'].search([('order_line.subscription_id', 'in', self.ids)], order="id desc", limit=1)
-        use_sale_order = sale_order and sale_order.partner_id == self.partner_id
-        partner_id = sale_order.partner_invoice_id.id if use_sale_order else self.partner_invoice_id.id or addr['invoice']
-        partner_shipping_id = sale_order.partner_shipping_id.id if use_sale_order else self.partner_shipping_id.id or addr['delivery']
+        partner_id = self.partner_invoice_id.id or addr['invoice']
+        partner_shipping_id = self.partner_shipping_id.id or addr['delivery']
         fpos = self.env['account.fiscal.position'].with_company(company).get_fiscal_position(self.partner_id.id, partner_shipping_id)
         narration = _("This invoice covers the following period: %s - %s") % (format_date(self.env, next_date), format_date(self.env, end_date))
         if not is_html_empty(self.description):
@@ -610,6 +618,8 @@ class SaleSubscription(models.Model):
             'invoice_user_id': self.user_id.id,
             'partner_bank_id': company.partner_id.bank_ids.filtered(lambda b: not b.company_id or b.company_id == company)[:1].id,
         }
+        if self.env.context.get('new_invoice_ref'):
+            res['ref'] = self.env.context['new_invoice_ref']
         if self.team_id:
             res['team_id'] = self.team_id.id
         return res
@@ -645,7 +655,7 @@ class SaleSubscription(models.Model):
         if fiscal_position and tax_ids:
             tax_ids = self.env['account.fiscal.position'].browse(fiscal_position).map_tax(tax_ids)
             price_unit = self.env['account.tax']._fix_tax_included_price_company(line.price_unit, line.product_id.taxes_id, tax_ids, self.company_id)
-        return {
+        values = {
             'name': line.name,
             'subscription_id': line.analytic_account_id.id,
             'price_unit': price_unit or 0.0,
@@ -654,17 +664,23 @@ class SaleSubscription(models.Model):
             'product_uom_id': line.uom_id.id,
             'product_id': line.product_id.id,
             'tax_ids': [(6, 0, tax_ids.ids)],
-            'analytic_account_id': line.analytic_account_id.analytic_account_id.id,
-            'analytic_tag_ids': [(6, 0, line.analytic_account_id.tag_ids.ids)],
             'subscription_start_date': date_start,
             'subscription_end_date': date_stop,
         }
-
+        # only adding analytic_account_id and tag_ids if they exist in the sale.subscription.
+        # if not, they will be computed used the analytic default rule
+        if line.analytic_account_id.analytic_account_id.id:
+            values.update({'analytic_account_id': line.analytic_account_id.analytic_account_id.id})
+        if line.analytic_account_id.tag_ids.ids:
+            values.update({'analytic_tag_ids': [(6, 0, line.analytic_account_id.tag_ids.ids)]})
+        return values
     def _prepare_invoice_lines(self, fiscal_position):
         self.ensure_one()
         revenue_date_start = self.recurring_next_date
         revenue_date_stop = revenue_date_start + relativedelta(**{PERIODS[self.recurring_rule_type]: self.recurring_interval}) - relativedelta(days=1)
-        return [(0, 0, self._prepare_invoice_line(line, fiscal_position, revenue_date_start, revenue_date_stop)) for line in self.recurring_invoice_line_ids]
+        return [(0, 0, self._prepare_invoice_line(line, fiscal_position, revenue_date_start, revenue_date_stop)) for line in self.recurring_invoice_line_ids.filtered(
+            lambda l: not float_is_zero(l.quantity, precision_rounding=l.product_id.uom_id.rounding)
+        )]
 
     def _prepare_invoice(self):
         """
@@ -937,36 +953,78 @@ class SaleSubscription(models.Model):
             return True
         return False
 
+    def _get_subscription_domain_for_invoicing(self, current_date, tags):
+        """
+        Get the domain for subscriptions to invoice
+        """
+        return [
+            ('tag_ids', 'not in', tags.ids),
+            ('recurring_next_date', '<=', current_date),
+            ('template_id.payment_mode', '!=', 'manual'),
+            '|',
+            ('stage_category', '=', 'progress'),
+            ('to_renew', '=', True),
+        ]
+
     def _recurring_create_invoice(self, automatic=False, batch_size=20):
         auto_commit = self.env.context.get('auto_commit', True)
         cr = self.env.cr
         invoices = self.env['account.move']
         current_date = datetime.date.today()
+        # To avoid triggering the cron infinitely, we will add a temporary tag that will be removed by the last
+        # call of the cron. The domain search will include the subscriptions without the tag.
+        subscription_payment_exception_tag = self.env.ref('sale_subscription.subscription_payment_exception', raise_if_not_found=False)
+        batch_tag = self.env.ref('sale_subscription.subscription_invalid_payment', raise_if_not_found=False)
+        if automatic:
+            if not subscription_payment_exception_tag:
+                subscription_payment_exception_tag = self.env['account.analytic.tag'].sudo().create({'name': 'Subscription Payment Exception', 'color': 4})
+                self.env['ir.model.data'].create({
+                    'name': 'subscription_payment_exception',
+                    'module': 'sale_subscription',
+                    'res_id': subscription_payment_exception_tag.id,
+                    'model': 'account.analytic.tag',
+                    'noupdate': True
+                })
+            if not batch_tag:
+                batch_tag = self.env['account.analytic.tag'].sudo().create(
+                    {'name': 'Subscription Batch Invoicing', 'color': 4})
+                self.env['ir.model.data'].create({
+                    'name': 'subscription_invalid_payment',
+                    'module': 'sale_subscription',
+                    'res_id': batch_tag.id,
+                    'model': 'account.analytic.tag',
+                    'noupdate': True
+                })
+            if automatic and auto_commit:
+                cr.commit()
 
+        # To avoid charging without updating the subscription, we will add a temporary tag that will be removed when the invoice is properly processed
         if len(self) > 0:
             subscriptions = self
             need_cron_trigger = False
         else:
-            subscriptions = self.search([
-                ('recurring_next_date', '<=', current_date),
-                ('template_id.payment_mode', '!=','manual'),
-                '|',
-                ('stage_category', '=', 'progress'),
-                ('to_renew', '=', True),
-            ], limit=batch_size + 1)
+            subscriptions = self.search(self._get_subscription_domain_for_invoicing(current_date, subscription_payment_exception_tag | batch_tag), limit=batch_size + 1)
             need_cron_trigger = len(subscriptions) > batch_size
             if need_cron_trigger:
                 subscriptions = subscriptions[:batch_size]
-
         if subscriptions:
             sub_data = subscriptions.read(fields=['id', 'company_id'])
             for company_id in set(data['company_id'][0] for data in sub_data):
                 sub_ids = [s['id'] for s in sub_data if s['company_id'][0] == company_id]
                 subs = self.with_company(company_id).with_context(company_id=company_id).browse(sub_ids)
+                # We tag the subscription. If something happen, it will prevent multiple payment attempt
                 Invoice = self.env['account.move'].with_context(move_type='out_invoice', company_id=company_id).with_company(company_id)
                 subs_order_lines = self.env['sale.order.line'].search([('subscription_id', 'in', sub_ids)])
                 for subscription in subs:
                     subscription = subscription[0]  # Trick to not prefetch other subscriptions, as the cache is currently invalidated at each iteration
+                    sub_so = subs_order_lines.filtered(lambda ol: ol.subscription_id.id == subscription.id).order_id
+                    sub_so_renewal = sub_so.filtered(lambda so: so.subscription_management == 'renew')
+                    reference_so = max(sub_so_renewal, key=lambda so: so.date_order, default=False) or min(sub_so,
+                                                                                                           key=lambda so: so.date_order,
+                                                                                                           default=False)
+                    invoice_ctx = {'lang': subscription.partner_id.lang}
+                    if reference_so and reference_so.client_order_ref:
+                        invoice_ctx['new_invoice_ref'] = reference_so.client_order_ref
                     if automatic and auto_commit:
                         cr.commit()
 
@@ -977,18 +1035,23 @@ class SaleSubscription(models.Model):
 
                     # payment + invoice (only by cron)
                     if subscription.template_id.payment_mode == 'success_payment' and subscription.recurring_total and automatic:
+                        subscription.with_context(mail_notrack=True).write({'tag_ids': [(4, subscription_payment_exception_tag.id)]}) # flag the sub in exception
+                        if auto_commit:
+                            cr.commit()
                         try:
                             payment_token = subscription.payment_token_id
                             tx = None
                             if payment_token:
-                                invoice_values = subscription.with_context(lang=subscription.partner_id.lang)._prepare_invoice()
+
+                                invoice_values = subscription.with_context(invoice_ctx)._prepare_invoice()
                                 new_invoice = Invoice.create(invoice_values)
                                 if subscription.analytic_account_id or subscription.tag_ids:
+                                    useful_tags = subscription.tag_ids - subscription_payment_exception_tag - batch_tag
                                     for line in new_invoice.invoice_line_ids:
                                         if subscription.analytic_account_id:
                                             line.analytic_account_id = subscription.analytic_account_id
-                                        if subscription.tag_ids:
-                                            line.analytic_tag_ids = subscription.tag_ids
+                                        if useful_tags:
+                                            line.analytic_tag_ids = useful_tags
                                 new_invoice.message_post_with_view(
                                     'mail.message_origin_link',
                                     values={'self': new_invoice, 'origin': subscription},
@@ -998,6 +1061,7 @@ class SaleSubscription(models.Model):
                                 if auto_commit:
                                     cr.commit()
                                 if tx.renewal_allowed:
+                                    subscription.with_context(mail_notrack=True).write({'tag_ids': [(3, subscription_payment_exception_tag.id)]})
                                     msg_body = _('Automatic payment succeeded. Payment reference: <a href=# data-oe-model=payment.transaction data-oe-id=%d>%s</a>; Amount: %s. Invoice <a href=# data-oe-model=account.move data-oe-id=%d>View Invoice</a>.') % (tx.id, tx.reference, tx.amount, new_invoice.id)
                                     subscription.message_post(body=msg_body)
                                     # success_payment
@@ -1039,7 +1103,10 @@ class SaleSubscription(models.Model):
                                     msg_body = _('Automatic payment failed after multiple attempts. Subscription closed automatically.')
                                     subscription.message_post(body=msg_body)
                                     subscription.set_close()
+                                    # remove the exception flag as we are done with this sub
+                                    subscription.with_context(mail_notrack=True).write({'tag_ids': [(3, subscription_payment_exception_tag.id)]})
                                 else:
+                                    subscription.write({'tag_ids': [Command.link(batch_tag.id)]})
                                     template = self.env.ref('sale_subscription.email_payment_reminder')
                                     msg_body = _('Automatic payment failed. Subscription set to "To Renew".')
                                     if (datetime.date.today() - subscription.recurring_next_date).days in [0, 3, 7, 14]:
@@ -1048,6 +1115,8 @@ class SaleSubscription(models.Model):
                                         msg_body += _(' E-mail sent to customer.')
                                     subscription.message_post(body=msg_body)
                                     subscription.set_to_renew()
+                                    # remove the flag as we are done with this sub
+                                    subscription.with_context(mail_notrack=True).write({'tag_ids': [(3, subscription_payment_exception_tag.id)]})
                             if auto_commit:
                                 cr.commit()
                         except Exception:
@@ -1068,7 +1137,7 @@ class SaleSubscription(models.Model):
                             if subscription.date and subscription.recurring_next_date >= subscription.date:
                                 return
                             else:
-                                invoice_values = subscription.with_context(lang=subscription.partner_id.lang)._prepare_invoice()
+                                invoice_values = subscription.with_context(invoice_ctx)._prepare_invoice()
                                 new_invoice = Invoice.create(invoice_values)
                                 if subscription.analytic_account_id or subscription.tag_ids:
                                     for line in new_invoice.invoice_line_ids:
@@ -1076,10 +1145,6 @@ class SaleSubscription(models.Model):
                                             line.analytic_account_id = subscription.analytic_account_id
                                         if subscription.tag_ids:
                                             line.analytic_tag_ids = subscription.tag_ids
-                                sub_so = subs_order_lines.filtered(lambda ol: ol.subscription_id.id == subscription.id).order_id
-                                sub_so_renewal = sub_so.filtered(lambda so: so.subscription_management == 'renew')
-                                reference_so = max(sub_so_renewal, key=lambda so: so.date_order, default=False) or min(sub_so, key=lambda so: so.date_order, default=False)
-                                new_invoice.ref = reference_so.client_order_ref if reference_so else False
                                 new_invoice.message_post_with_view(
                                     'mail.message_origin_link',
                                     values={'self': new_invoice, 'origin': subscription},
@@ -1118,12 +1183,22 @@ class SaleSubscription(models.Model):
         invoices_to_send = self.env['account.move'].browse(invoice_to_send_ids)
         for invoice in invoices_to_send:
             if invoice._is_ready_to_be_sent():
-                subscription = invoice.line_ids.subscription_id
+                subscription = invoice.line_ids.subscription_id[:1]  # Only select one in case of multiple subscriptions on the invoice
                 subscription.validate_and_send_invoice(invoice)
 
         # There is still some subscriptions to process. Then, make sure the CRON will be triggered again asap.
         if need_cron_trigger:
-            self.env.ref('sale_subscription.account_analytic_cron_for_invoice')._trigger()
+            if config['test_enable'] or config['test_file']:
+                # Test environnement: we launch the next iteration in the same thread
+                self.env['sale.subscription']._recurring_create_invoice(automatic, batch_size)
+            else:
+                self.env.ref('sale_subscription.account_analytic_cron_for_invoice')._trigger()
+
+        # If this is the last call of the cron and if the invalid_payment_tag is defined, we can remove the tag used
+        # mark the payment failed subscriptions.
+        if not need_cron_trigger and batch_tag:
+            failing_subscriptions = self.search([('tag_ids', 'in', batch_tag.ids)])
+            failing_subscriptions.write({'tag_ids': [Command.unlink(batch_tag.id)]})
 
         return invoices
 
@@ -1149,6 +1224,13 @@ class SaleSubscription(models.Model):
         })
         _logger.debug("Sending Payment Confirmation Mail to %s for subscription %s", self.partner_id.email, self.id)
         template = self.env.ref('sale_subscription.email_payment_success')
+
+        # This function can be called by the public user via the callback_method set in
+        # /my/subscription/transaction/. The email template contains the invoice PDF in
+        # attachment, so to render it successfully sudo() is not enough.
+        if self.env.su:
+            template = template.with_user(SUPERUSER_ID)
+
         return template.with_context(email_context).send_mail(invoice.id)
 
     def validate_and_send_invoice(self, invoice):
@@ -1220,18 +1302,35 @@ class SaleSubscriptionLine(models.Model):
             self.price_unit = 0.0
         else:
             subscription = self.analytic_account_id
+            pricelist = subscription.pricelist_id
 
             self = self.with_company(subscription.company_id)
-            product = self.product_id.with_context(
-                pricelist=subscription.pricelist_id.id,
-                quantity=self.quantity,
-            )
-            self.price_unit = product.price
 
-            if not self.uom_id or product.uom_id.category_id.id != self.uom_id.category_id.id:
-                self.uom_id = product.uom_id.id
-            if self.uom_id.id != product.uom_id.id:
-                self.price_unit = product.uom_id._compute_price(self.price_unit, self.uom_id)
+            if not self.uom_id or self.product_id.uom_id.category_id.id != self.uom_id.category_id.id:
+                self.uom_id = self.product_id.uom_id.id
+
+            product = self.product_id.with_context(
+                pricelist=pricelist.id,
+                quantity=self.quantity,
+                uom=self.uom_id.id
+            )
+            pricelist_price = product.price     # Price according to pricelist in pricelist currency in self.uom
+            base_price = product.lst_price      # Base price of the product in self.uom
+
+            if product.currency_id != pricelist.currency_id:
+                base_price = product.currency_id._convert(base_price, pricelist.currency_id, product.company_id or self.env.company, fields.Date.today())
+
+            if pricelist.discount_policy == 'without_discount' and pricelist_price:
+                discount = max(0, (base_price - pricelist_price) * 100 / base_price)
+                price_unit = base_price
+            else:
+                price_unit = pricelist_price
+                discount = 0
+
+            self.update({
+                'price_unit': price_unit,
+                'discount': discount
+            })
 
     @api.onchange('uom_id')
     def onchange_uom_id(self):
@@ -1421,7 +1520,7 @@ class SaleSubscriptionLog(models.Model):
     category = fields.Selection([
         ('draft', 'Draft'),
         ('progress', 'In Progress'),
-        ('closed', 'Closed')], required=True, default='draft', help="Subscription stage category when the change occured")
+        ('closed', 'Closed')], required=True, default='draft', help="Subscription stage category when the change occurred")
 
     user_id = fields.Many2one('res.users', string='Salesperson')
     team_id = fields.Many2one('crm.team', string='Sales Team', ondelete="set null")

@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     def action_cost_structure(self):
-        products = self.mapped('product_variant_id')
+        products = self.product_variant_ids
         return self.env.ref('mrp_account_enterprise.action_cost_struct_product_template').report_action(products, config=False)
 
 

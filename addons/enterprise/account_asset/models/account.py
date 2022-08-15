@@ -42,6 +42,12 @@ class AccountAccount(models.Model):
                 'expense': 'account_asset.view_account_asset_expense_form',
             }.get(record.asset_type)
 
+    @api.onchange('create_asset')
+    def _onchange_multiple_assets_per_line(self):
+        for record in self:
+            if record.create_asset == 'no':
+                record.multiple_assets_per_line = False
+
     def auto_generate_asset(self):
         return self.user_type_id in self.get_asset_accounts_type()
 

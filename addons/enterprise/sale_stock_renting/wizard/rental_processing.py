@@ -151,12 +151,31 @@ class RentalProcessingLine(models.TransientModel):
                     raise ValidationError(_("Please specify the serial numbers returned for the tracked products."))
 
     def _apply(self):
-        msg = super(RentalProcessingLine, self)._apply()
-        for wizard_line in self.filtered(lambda line: line.tracking == 'serial'):
-            if wizard_line.status == 'pickup':
-                wizard_line.order_line_id.pickedup_lot_ids += wizard_line.pickedup_lot_ids
-            elif wizard_line.status == 'return':
-                wizard_line.order_line_id.returned_lot_ids += wizard_line.returned_lot_ids
+        serial_lines = self.filtered(lambda line: line.tracking == 'serial')
+
+        # First, we deduct from the wizard the lots already picked up/returned
+        for line in serial_lines:
+            sol = line.order_line_id
+            if line.status == 'pickup':
+                pickedup_lot_ids = line.pickedup_lot_ids - sol.pickedup_lot_ids
+                line.write({
+                    'qty_delivered': len(pickedup_lot_ids),
+                    'pickedup_lot_ids': [(6, 0, pickedup_lot_ids.ids)],
+                })
+            elif line.status == 'return':
+                returned_lot_ids = line.returned_lot_ids - sol.returned_lot_ids
+                line.write({
+                    'qty_returned': len(returned_lot_ids),
+                    'returned_lot_ids': [(6, 0, returned_lot_ids.ids)],
+                })
+
+        msg = super()._apply()
+        for line in serial_lines:
+            sol = line.order_line_id
+            if line.status == 'pickup':
+                sol.pickedup_lot_ids |= line.pickedup_lot_ids
+            elif line.status == 'return':
+                sol.returned_lot_ids |= line.returned_lot_ids
         return msg
 
     def _generate_log_message(self):

@@ -5,7 +5,6 @@
 # Translators:
 # Christelle Wehbe <libanon_cristelle@hotmail.com>, 2021
 # Haojun Zou <apollo_zhj@msn.com>, 2021
-# 03992e16f8df6e39b9d1cc0ff635887e, 2021
 # Anto Nilsson <anton.nilsson@vertel.se>, 2021
 # lasch a <bmail440@gmail.com>, 2021
 # Zou Haojun <haojunzou84@gmail.com>, 2021
@@ -15,11 +14,16 @@
 # Martin Trigaux, 2021
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2021
 # Martin Wilderoth <martin.wilderoth@linserv.se>, 2021
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2021
-# STefan Rundgren <stefanrundgren@cellglas.com>, 2021
+# 3eec91a23d05c632ffac786ac42b81b8_b6fff7b <8985b7bc57db860af29969457dbb51b3_1018915>, 2021
+# Victor Ekström, 2021
 # Simon S, 2021
-# Kim Asplund <kim.asplund@gmail.com>, 2021
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
+# Robin Calvin, 2022
+# Daniel Löfgren, 2022
+# Mikael Carlsson, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -27,7 +31,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Kim Asplund <kim.asplund@gmail.com>, 2021\n"
+"Last-Translator: Kim Asplund <kim.asplund@gmail.com>, 2022\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,12 +42,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__open_ticket_count
 msgid "# Open Tickets"
-msgstr ""
+msgstr "# Öppna ärenden"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_count
 msgid "# Ratings"
-msgstr ""
+msgstr "# Betyg"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_policy_count
@@ -64,13 +68,15 @@ msgstr ""
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "<b class=\"tip_title\">Tip: Create tickets from incoming emails</b>"
 msgstr ""
+"<b class=\"tip_title\">Tips: Skapa ärende från inkommande "
+"e-postmeddelanden</b>"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "<b>Drag &amp; drop</b> the card to change the stage of your ticket."
-msgstr ""
+msgstr "<b>Dra &amp; släpp</b> kortet för att ändra etapp på ditt ärende."
 
 #. module: helpdesk
 #. openerp-web
@@ -143,6 +149,63 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object.rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object.rating_get_partner_id()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; margin:0;\">\n"
+"    <tbody>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\">\n"
+"                Hej <t t-out=\"partner.name or ''\">Brandon Freeman</t>,<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                Hej,<br/>\n"
+"            </t>\n"
+"            Skulle ni vara vänlig att ta en stund för att betygsätta våra tjänster relaterade till ärende \"<strong t-out=\"object.name or ''\">Bordsbenen är i obalans</strong>\"\n"
+"            <t t-if=\"object.rating_get_rated_partner_id().name\">\n"
+"                tilldelad till <strong t-out=\"object.rating_get_rated_partner_id().name or ''\">Mitchell Admin</strong>.<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                .<br/>\n"
+"            </t>\n"
+"        </td></tr>\n"
+"        <tr><td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"o_mail_notification\" style=\"width:100%; margin: 32px 0px 32px 0px;\">\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <strong>Berätta vad du tycker om vår service</strong><br/>\n"
+"                    <span style=\"text-color: #888888\">(klicka på en av dessa smileys)</span>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"                        <tr>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/5\">\n"
+"                                    <img alt=\"Satisfied\" src=\"/rating/static/src/img/rating_5.png\" title=\"Satisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/3\">\n"
+"                                    <img alt=\"Okay\" src=\"/rating/static/src/img/rating_3.png\" title=\"Okay\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/1\">\n"
+"                                    <img alt=\"Dissatisfied\" src=\"/rating/static/src/img/rating_1.png\" title=\"Dissatisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td></tr>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            Vi uppskattar din feedback. Det hjälper oss att ständigt förbättra oss.\n"
+"            <br/><span style=\"margin: 0px 0px 0px 0px; font-size: 12px; opacity: 0.5; color: #454748;\">Denna enkät har skickats eftersom ditt ärende har flyttats till etapp <b t-out=\"object.stage_id.name or ''\">Pågår</b></span>\n"
+"        </td></tr>\n"
+"    </tbody>\n"
+"    </table>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.solved_ticket_request_email_template
@@ -158,6 +221,15 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"Kära <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\"></t>,<br/><br/>\n"
+"Detta automatiska meddelande informerar dig om att vi har stängt ditt ärende (referens <t t-out=\"object.id or ''\">15</t>).\n"
+"Vi hoppas att de tjänster som tillhandahålls har motsvarat dina förväntningar.\n"
+"Om du har fler frågor eller kommentarer, tveka inte att svara på det här e-postmeddelandet för att öppna ditt ärende igen.<br/><br/>\n"
+"Tack för ditt samarbete.<br/>\n"
+"Vänliga hälsningar,<br/><br/>\n"
+"<t t-out=\"object.team_id.name or 'Helpdesk'\">Kundtjänst</t> Team.\n"
+"</div>"
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -182,11 +254,29 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"Kära <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\"></t>,<br/><br/>\n"
+"Er begäran\n"
+"<t t-if=\"object.get_portal_url()\">\n"
+"<a t-attf-href=\"/my/ticket/{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or ''\"/>\n"
+"</t>\n"
+"har tagits emot och granskas av vårt <t t-out=\"object.team_id.name or ''\">Bordsbenen är ojämna </t> team.\n"
+"Referensen för ärende är <t t-out=\"object.id or ''\">15</t>.<br/>\n"
+"\n"
+"<div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"<a style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\">Se ärende</a><br/>\n"
+"</div>\n"
+"\n"
+"För att lägga till ytterligare kommentarer, svara på det här e-postmeddelandet.<br/><br/>\n"
+"\n"
+"Tack, <br/><br/>\n"
+"<t t-out=\"object.team_id.name or 'Helpdesk'\">Kundtjänst</t> Team.\n"
+"</div>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<em class=\"font-weight-normal text-muted\">Tickets in stage:</em>"
-msgstr ""
+msgstr "<em class=\"font-weight-normal text-muted\">Ärende i etapp:</em>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -242,7 +332,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "<small><b>Close this ticket</b></small>"
-msgstr ""
+msgstr "<small><b>Stäng detta ärende</b></small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -462,12 +552,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Allow customers to close their tickets"
-msgstr ""
+msgstr "Tillåt kunder att stänga sina ärenden"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Allow your customers to close their own tickets"
-msgstr ""
+msgstr "Tillåt dina kunder stänga sina egna ärenden"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -710,12 +800,12 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close the ticket"
-msgstr ""
+msgstr "Stäng ärendet"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close ticket"
-msgstr ""
+msgstr "Stäng ärende"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -732,13 +822,13 @@ msgstr "Avslutad"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #, python-format
 msgid "Closed Tickets"
-msgstr ""
+msgstr "Stängda ärenden"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_7days_analysis
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_close_analysis
 msgid "Closed Tickets Analysis"
-msgstr ""
+msgstr "Analys av stängda ärenden"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__closed_by_partner
@@ -815,7 +905,7 @@ msgstr "Konfiguration"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Configure a custom domain"
-msgstr ""
+msgstr "Konfigurera en anpassad domän"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.action_upcoming_sla_fail_all_tickets
@@ -874,7 +964,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__create_date
 msgid "Created On"
-msgstr ""
+msgstr "Skapad Den"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__create_uid
@@ -919,7 +1009,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_bounced_content
 msgid "Custom Bounced Message"
-msgstr ""
+msgstr "Anpassat studs-meddelande"
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
@@ -1038,7 +1128,7 @@ msgstr "Policybeskrivning..."
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Description of the ticket..."
-msgstr "Beskrivning av biljett..."
+msgstr "Beskrivning av ärende..."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_digest_digest
@@ -1130,6 +1220,8 @@ msgstr ""
 msgid ""
 "Emails sent to a Helpdesk Team alias generate tickets in your pipeline."
 msgstr ""
+"E-post som skickas till ett Kundtjänst Team-alias genererar ärenden i din "
+"kanal."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_slides
@@ -1175,7 +1267,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_fsm
 msgid "Field Service"
-msgstr ""
+msgstr "Fältservice"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
@@ -1303,7 +1395,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Happy face"
-msgstr ""
+msgstr "Lyckligt ansikte"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_external_mail_server
@@ -1330,22 +1422,22 @@ msgstr "Kundtjänst"
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_team_dashboard_action_main
 msgid "Helpdesk Overview"
-msgstr "Helpdesköversikt"
+msgstr "Kundtjänstöversikt"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla
 msgid "Helpdesk SLA Policies"
-msgstr ""
+msgstr "Kundtjänst SLA Policy"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_stage
 msgid "Helpdesk Stage"
-msgstr ""
+msgstr "Kundtjänst Etapp"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag
 msgid "Helpdesk Tags"
-msgstr ""
+msgstr "Kundtjänst Taggar"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_team
@@ -1357,38 +1449,38 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_search_inherit_helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_tree_inherit_helpdesk
 msgid "Helpdesk Team"
-msgstr ""
+msgstr "Kundtjänstteam"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_team_action
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__team_ids
 #: model:ir.ui.menu,name:helpdesk.helpdesk_team_menu
 msgid "Helpdesk Teams"
-msgstr ""
+msgstr "Kundtjänst Teams"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Helpdesk Ticket"
-msgstr "Helpdeskärende"
+msgstr "Kundtjänstärende"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket_type
 msgid "Helpdesk Ticket Type"
-msgstr ""
+msgstr "Kundtjänst Ärendetyp"
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.ir_cron_auto_close_ticket_ir_actions_server
 #: model:ir.cron,cron_name:helpdesk.ir_cron_auto_close_ticket
 #: model:ir.cron,name:helpdesk.ir_cron_auto_close_ticket
 msgid "Helpdesk Ticket: Automatically close the tickets"
-msgstr ""
+msgstr "Kundtjänst Ärende: Stäng biljetterna automatiskt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Helpdesk Tickets"
-msgstr ""
+msgstr "Kundtjänst Ärenden"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1447,6 +1539,8 @@ msgid ""
 "ID of the parent record holding the alias (example: project holding the task"
 " creation alias)"
 msgstr ""
+"ID på överliggande post med aliaset (exempel: projekt som har alias för "
+"skapa uppgift)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_exception_icon
@@ -1488,12 +1582,14 @@ msgid ""
 "If set, this content will automatically be sent out to unauthorized users "
 "instead of the default message."
 msgstr ""
+"Om angiven kommer detta innehåll automatiskt att skickas ut till obehöriga "
+"användare istället för standardmeddelandet."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__time
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "In"
-msgstr ""
+msgstr "I"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -1507,6 +1603,9 @@ msgid ""
 "In Channel: You can create a new ticket by typing /helpdesk [ticket title]. "
 "You can search ticket by typing /helpdesk_search [Keyword1],[Keyword2],."
 msgstr ""
+"I kanal: Du kan skapa ett nytt ärende genom att skriva /helpdesk [ticket "
+"title]. Du kan söka ärende genom att skriva /helpdesk_search "
+"[Keyword1],[Keyword2],."
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -1601,7 +1700,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed_value
 msgid "Kpi Helpdesk Tickets Closed Value"
-msgstr ""
+msgstr "Kpi Kundtjänst Stängningsvärde på Ärenden"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
@@ -1728,12 +1827,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__email_cc
 msgid "List of cc from incoming emails."
-msgstr ""
+msgstr "Lista på CC från inkommande e-post"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
 msgid "Live Chat"
-msgstr ""
+msgstr "Livechatt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1943,7 +2042,7 @@ msgstr "Namn"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Neutral face"
-msgstr ""
+msgstr "Neutralt ansikte"
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -2085,7 +2184,7 @@ msgstr "Antal olästa meddelanden"
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__ongoing
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_status__status__ongoing
 msgid "Ongoing"
-msgstr ""
+msgstr "Pågående"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__ticket_type_id
@@ -2184,7 +2283,7 @@ msgstr "Parent Model"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_parent_thread_id
 msgid "Parent Record Thread ID"
-msgstr ""
+msgstr "Överordnad post tråd ID"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_parent_model_id
@@ -2193,6 +2292,9 @@ msgid ""
 " necessarily the model given by alias_model_id (example: project "
 "(parent_model) and task (model))"
 msgstr ""
+"Överordnad modell innehåller alias. Modellen som innehåller aliasreferensen "
+"är inte nödvändigtvis den modell som ges av alias_model_id (exempel: projekt"
+" (parent_model) och aktivitet (modell))"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_ids
@@ -2202,7 +2304,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
 msgid "Percentage of happy ratings"
-msgstr ""
+msgstr "Procent av glada betyg"
 
 #. module: helpdesk
 #. openerp-web
@@ -2254,6 +2356,10 @@ msgid ""
 "- partners: only authenticated partners\n"
 "- followers: only followers of the related document or members of following channels\n"
 msgstr ""
+"Princip för att publicera ett meddelande på dokumentet med hjälp av mailgateway.\n"
+"- alla: alla kan posta\n"
+"- partner: endast autentiserade partner\n"
+"- följare: endast följare av det relaterade dokumentet eller medlemmar av följande kanaler\n"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_url
@@ -2329,7 +2435,7 @@ msgstr "Betyg Senaste Värde"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
 msgid "Rating Satisfaction"
-msgstr ""
+msgstr "Betyggsättning"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_count
@@ -2339,7 +2445,7 @@ msgstr "Betyg Antal"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_ids
 msgid "Ratings"
-msgstr ""
+msgstr "Betyg"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -2437,12 +2543,12 @@ msgstr "Krediteringar"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Reinvoice the time spent on ticket through tasks."
-msgstr ""
+msgstr "Återfakturera spenderad tid på ärende via uppgifter."
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_repair
 msgid "Repair"
-msgstr ""
+msgstr "Reparera"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_repair_done
@@ -2455,7 +2561,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_repairs
 msgid "Repairs"
-msgstr ""
+msgstr "Reparationer"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu_main
@@ -2488,7 +2594,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_returns
 msgid "Returns"
-msgstr ""
+msgstr "Returer"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_id
@@ -2606,7 +2712,7 @@ msgstr "SMS leveransfel"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Sad face"
-msgstr ""
+msgstr "Sorgset ansikte"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2653,7 +2759,7 @@ msgstr ""
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
-msgstr ""
+msgstr "Sök på allt"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2797,7 +2903,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Stage Search"
-msgstr "Lägessökning"
+msgstr "Etappsökning"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__to_stage_id
@@ -3132,7 +3238,7 @@ msgstr "Ärende"
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket_report_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_analysis
 msgid "Ticket Analysis"
-msgstr "Ärende Analys"
+msgstr "Ärendeanalys"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
@@ -3200,7 +3306,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_type_id
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "Ticket Type"
-msgstr "Biljettyp"
+msgstr "Ärendetyp"
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -3211,7 +3317,7 @@ msgstr ""
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_ticket_new
 msgid "Ticket created"
-msgstr ""
+msgstr "Ärende skapat"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.rating_ticket_request_email_template
@@ -3254,7 +3360,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 #, python-format
 msgid "Tickets"
-msgstr "Biljetter"
+msgstr "Ärenden"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu
@@ -3556,6 +3662,8 @@ msgid ""
 "Want to <b>boost your customer satisfaction</b>?<br/><i>Click Helpdesk to "
 "start.</i>"
 msgstr ""
+"Vill du <b>öka din kundnöjdhet</b>?<br/><i>Klicka på Kundtjänst för att "
+"starta.</i>"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_website
@@ -3565,7 +3673,7 @@ msgstr "Webbplats"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_form
 msgid "Website Form"
-msgstr ""
+msgstr "Webbplatsformulär"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__website_message_ids
@@ -3630,7 +3738,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "eLearning"
-msgstr ""
+msgstr "eLearning"
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0

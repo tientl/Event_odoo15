@@ -111,15 +111,15 @@ class HmrcVatObligation(models.Model):
             if not obligation:
                 self.sudo().create({'date_start': new_obligation['start'],
                                     'date_end': new_obligation['end'],
-                                    'date_received': new_obligation.get('received_date'),
+                                    'date_received': new_obligation.get('received'),
                                     'date_due': new_obligation['due'],
                                     'status': status,
                                     'period_key': new_obligation['periodKey'],
                                     'company_id': self.env.company.id,
                                     })
-            elif obligation.status != status or obligation.date_received != new_obligation.get('received_date'):
+            elif obligation.status != status or obligation.date_received != new_obligation.get('received'):
                 obligation.sudo().write({'status': status,
-                                         'date_received': new_obligation.get('received_date')})
+                                         'date_received': new_obligation.get('received')})
 
     def _fetch_values_from_report(self, lines):
         translation_table = {
@@ -155,7 +155,7 @@ class HmrcVatObligation(models.Model):
     def action_submit_vat_return(self):
         self.ensure_one()
         report = self.env['account.generic.tax.report']
-        options = report._get_options()
+        options = report._get_options(previous_options={'tax_report':self.env.ref('l10n_uk.tax_report').id})
         options['date'].update({'date_from': fields.Date.to_string(self.date_start),
                         'date_to': fields.Date.to_string(self.date_end),
                         'filter': 'custom',

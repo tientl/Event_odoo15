@@ -12,15 +12,18 @@
 # Susanna Pujol, 2021
 # Martin Trigaux, 2021
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2021
-# jabelchi, 2021
+# jabelchi, 2022
+# Harcogourmet, 2022
+# Jonatan Gk, 2022
+# marcescu, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2022-01-24 08:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: jabelchi, 2021\n"
+"Last-Translator: marcescu, 2022\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -71,19 +74,32 @@ msgid ", expired on"
 msgstr ", caducat el"
 
 #. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+". Scanned files will appear automatically in your workspace. Then, process "
+"your documents in bulk with the split tool: launch user defined actions, "
+"request a signature, convert to vendor bills with AI, etc."
+msgstr ""
+". Els fitxers explorats apareixeran automàticament a l'espai de treball. "
+"Després, processeu els vostres documents en gran manera amb l'eina de "
+"divisió: llançar accions definides per l'usuari, sol·licitar una signatura, "
+"convertir a factures de venedor amb IA, etc."
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2020"
-msgstr "2020"
+msgid "2021"
+msgstr "2021"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2021"
-msgstr "2021"
+msgid "2022"
+msgstr "2022"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
 msgstr ""
+"<b class=\"tip_title\">Consell: Convertir-se en una empresa sense paper</b>"
 
 #. module: documents
 #: code:addons/documents/controllers/main.py:0
@@ -114,6 +130,8 @@ msgstr "<b>Bytes</b>"
 #, python-format
 msgid "<b>Deselect this page</b> as we plan to process all bills first."
 msgstr ""
+"<b>Desselecciona aquesta pàgina</b>mentre pensem processar primer totes les "
+"factures."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.format_file_size
@@ -332,6 +350,106 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"                    <tbody>\n"
+"                        <!-- CAPÇALERA -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\">\n"
+"                                        <span style=\"font-size: 10px;\">\n"
+"                                            Sol·licitud de document: <br/>\n"
+"                                            <t t-if=\"object.name\">\n"
+"                                                <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Entrada financera</span>\n"
+"                                            </t>\n"
+"                                        </span><br/>\n"
+"                                    </td><td valign=\"middle\" align=\"right\">\n"
+"                                        <img t-attf-src=\"/logo.png?company={{ object.create_uid.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.create_uid.company_id.name\"/>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- CONTINGUT -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                                        <div>\n"
+"                                            Hola <t t-out=\"object.owner_id.name or ''\">OdooBot</t>,\n"
+"                                            <br/><br/>\n"
+"                                            <t t-out=\"object.create_uid.name or ''\">OdooBot</t> (<t t-out=\"object.create_uid.email or ''\">odoobot@example.com</t>) li demana que presenti el següent document:\n"
+"                                            <br/><br/>\n"
+"                                            <center>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.name\">\n"
+"                                                        <b t-out=\"object.name or ''\">Entrada financera</b>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.activity_note\">\n"
+"                                                        <i t-out=\"object.activity_note or ''\">Exemple d'una nota.</i>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <br/>\n"
+"                                                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                    <a t-att-href=\"object.full_url\" style=\"background-color: #875A7B; padding: 20px 30px 20px 30px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                                       Puja el document sol·licitat\n"
+"                                                    </a>\n"
+"                                                </div>\n"
+"                                            </center><br/>\n"
+"                                            Si us plau, faciliti'ns el document que falta abans que caduqui l'enllaç (previst en <t t-out=\"object.date_deadline or ''\">2021-05-17</t>).\n"
+"                                            <t t-if=\"user and user.signature\">\n"
+"                                                <br/>\n"
+"                                                <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                                                <br/>\n"
+"                                            </t>\n"
+"                                        </div>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- PEU -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\" align=\"left\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.name or ''\">YourCompany</t>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.email\">\n"
+"                                            | <a t-attf-href=\"'mailto:%s' % {{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                                        </t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.website\">\n"
+"                                            | <a t-attf-href=\"'%s' % {{ object.create_uid.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.website or ''\">http://www.example.com</a>\n"
+"                                        </t>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </tbody>\n"
+"                    </table>\n"
+"                    </td></tr>\n"
+"                    <!-- IMPULSAT PER -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                          <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"                            <t t-if=\"object.date_deadline\">\n"
+"                                Aquest enllaç caduca <b t-out=\"object.date_deadline or ''\">2021-05-17</b>.<br/>\n"
+"                            </t>\n"
+"                            Impulsat per <a target=\"_blank\" href=\"https://www.odoo.com/app/documents\" style=\"color: #875A7B;\">Odoo Documents</a>\n"
+"                          </td></tr>\n"
+"                        </table>\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_defaults
@@ -511,7 +629,7 @@ msgstr "Administrador"
 #. module: documents
 #: model:documents.tag,name:documents.documents_marketing_assets_ads
 msgid "Ads"
-msgstr ""
+msgstr "Anuncis"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__alias_id
@@ -564,21 +682,26 @@ msgstr "Documents ja enllaçats"
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid ""
 "An easy way to process incoming mails is to configure your scanner to send "
-"PDFs to your workspace email. Scanned files will appear automatically in "
-"your workspace. Then, process your documents in bulk with the split tool: "
-"launch user defined actions, request a signature, convert to vendor bills "
-"with AI, etc."
+"PDFs to"
 msgstr ""
+"Una manera fàcil de processar els correus entrants és configurar l'escàner "
+"per enviar els PDF"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid ""
 "An easy way to process incoming mails is to configure your scanner to send "
-"PDFs to {{ record.alias_id.display_name }}. Scanned files will appear "
-"automatically in your workspace. Then, process your documents in bulk with "
-"the split tool: launch user defined actions, request a signature, convert to"
-" vendor bills with AI, etc."
+"PDFs to your workspace email. Scanned files will appear automatically in "
+"your workspace. Then, process your documents in bulk with the split tool: "
+"launch user defined actions, request a signature, convert to vendor bills "
+"with AI, etc."
 msgstr ""
+"Una manera fàcil de processar els correus entrants és configurar l'escàner "
+"per enviar PDF al vostre correu electrònic de l'espai de treball. Els "
+"fitxers explorats apareixeran automàticament a l'espai de treball. Després, "
+"processeu els vostres documents en gran manera amb l'eina de divisió: "
+"llançar accions definides per l'usuari, sol·licitar una signatura, convertir"
+" a factures de venedor amb IA, etc."
 
 #. module: documents
 #. openerp-web
@@ -606,7 +729,7 @@ msgstr "Arxivat"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Are you confirm deletion ?"
-msgstr ""
+msgstr "¿Confirmes la supressió ?"
 
 #. module: documents
 #. openerp-web
@@ -615,6 +738,8 @@ msgstr ""
 msgid ""
 "As this PDF contains multiple documents, let's split and process in bulk."
 msgstr ""
+"Com aquest PDF conté diversos documents, ho dividirem i processar-ho en "
+"bloc."
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_afv
@@ -646,7 +771,7 @@ msgstr "Nombre d'adjunts"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__description
 msgid "Attachment Description"
-msgstr ""
+msgstr "Descripció de l'annex"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__attachment_name
@@ -656,14 +781,14 @@ msgstr "Nom del document adjunt"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__attachment_type
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tipus d'adjunt"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/documents_kanban_view.js:0
 #, python-format
 msgid "Attachments Kanban"
-msgstr ""
+msgstr "Adjunts Kanban"
 
 #. module: documents
 #: model_terms:documents.folder,description:documents.documents_finance_folder
@@ -672,11 +797,15 @@ msgid ""
 "class=\"o_folder_description_alias\"><strong>inbox-financial</strong> email "
 "alias</span>."
 msgstr ""
+"Automatitzeu la vostra bústia d'entrada utilitzant els documents o correus "
+"escanejats enviats a <span "
+"class=\"o_folder_description_alias\"><strong>inbox-financial</strong> email "
+"alias</span>."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__available_rule_ids
 msgid "Available Rules"
-msgstr ""
+msgstr "Regles disponibles"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_documents_bill
@@ -686,22 +815,23 @@ msgstr "Factura "
 #. module: documents
 #: model:documents.folder,name:documents.documents_marketing_brand1_folder
 msgid "Brand 1"
-msgstr ""
+msgstr "Marca 1"
 
 #. module: documents
 #: model:documents.folder,name:documents.documents_marketing_brand2_folder
 msgid "Brand 2"
-msgstr ""
+msgstr "Marca 2"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_marketing_assets_brochures
 msgid "Brochures"
-msgstr ""
+msgstr "Fulletons"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_mail_activity_type__folder_id
 msgid "By defining a folder, the upload activities will generate a document"
 msgstr ""
+"En definir una carpeta, les activitats de pujada generaran un document"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__can_upload
@@ -719,7 +849,7 @@ msgstr "Cancel·lar"
 #. module: documents
 #: model_terms:documents.folder,description:documents.documents_internal_folder
 msgid "Categorize, share and keep track of all your internal documents."
-msgstr ""
+msgstr "Categoritza, comparteix i segueix tots els documents interns."
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_facet
@@ -740,21 +870,21 @@ msgstr "Suma verificació/SHA1"
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
-msgstr ""
+msgstr "Trieu un registre per enllaçar"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a card to <b>select the document</b>."
-msgstr ""
+msgstr "Fes clic en una targeta per <b>seleccionar el document</b>."
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a thumbnail to <b>preview the document</b>."
-msgstr ""
+msgstr "Feu clic en una miniatura a<b>previsualizar el document</b>."
 
 #. module: documents
 #. openerp-web
@@ -764,6 +894,8 @@ msgid ""
 "Click on the <b>page separator</b>: we don't want to split these two pages "
 "as they belong to the same document."
 msgstr ""
+"Feu clic a <b>separador de pàgina</b>: No volem dividir aquestes dues "
+"pàgines perquè pertanyen al mateix document."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__company_id
@@ -774,7 +906,7 @@ msgstr "Empresa"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__condition_type
 msgid "Condition type"
-msgstr ""
+msgstr "Tipus de condició"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
@@ -790,7 +922,7 @@ msgstr "Configuració"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Configure Email Servers"
-msgstr ""
+msgstr "Configurar servidors de correu electrònic"
 
 #. module: documents
 #: model:ir.model,name:documents.model_res_partner
@@ -826,12 +958,12 @@ msgstr "Crear factura"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__create_share_id
 msgid "Create Share"
-msgstr ""
+msgstr "Crea una compartició"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__activity_option
 msgid "Create a new activity"
-msgstr ""
+msgstr "Crea una activitat nova"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__create_uid
@@ -868,12 +1000,12 @@ msgstr "Data de creació"
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_rule__condition_type__criteria
 msgid "Criteria"
-msgstr ""
+msgstr "Criteris"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__alias_bounced_content
 msgid "Custom Bounced Message"
-msgstr ""
+msgstr "Missatge personalitzat de rebot"
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_request_wizard__activity_date_deadline_range_type__days
@@ -885,7 +1017,7 @@ msgstr "Dies"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_mail_activity_type__default_user_id
 msgid "Default User"
-msgstr ""
+msgstr "Usuari per omissió"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__alias_defaults
@@ -896,7 +1028,7 @@ msgstr "Valors per defecte"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Default values for uploaded documents"
-msgstr ""
+msgstr "Valors predeterminats per als documents carregats"
 
 #. module: documents
 #. openerp-web
@@ -909,7 +1041,7 @@ msgstr "Eliminar"
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_internal_deprecate
 msgid "Deprecate"
-msgstr ""
+msgstr "Obsolet"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_status_deprecated
@@ -929,7 +1061,7 @@ msgstr "Descripció"
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Discard"
-msgstr "Destartar"
+msgstr "Descartar"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__display_name
@@ -956,7 +1088,7 @@ msgstr "Document"
 #: model:ir.model.fields,field_description:documents.field_documents_folder__document_count
 #: model:ir.model.fields,field_description:documents.field_res_partner__document_count
 msgid "Document Count"
-msgstr ""
+msgstr "Recompte de documents"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
@@ -967,18 +1099,20 @@ msgstr "Nom del document"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__owner_id
 msgid "Document Owner"
-msgstr ""
+msgstr "Propietari del document"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_request_wizard
 msgid "Document Request"
-msgstr ""
+msgstr "Sol·licitud de document"
 
 #. module: documents
 #: model:mail.template,subject:documents.mail_template_document_request
 msgid ""
 "Document Request {{ object.name != False and ': '+ object.name or '' }}"
 msgstr ""
+"Sol·licitud de document {{ object.name != False and ': '+ object.name or '' "
+"}}"
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
@@ -986,27 +1120,27 @@ msgstr ""
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Document Request: %s Uploaded by: %s"
-msgstr ""
+msgstr "Sol·licitud de document: %sPujat per: %s"
 
 #. module: documents
 #: model:mail.template,name:documents.mail_template_document_request
 msgid "Document Request: Send by email"
-msgstr ""
+msgstr "Sol·licitud de document: Envia per correu electrònic"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
 msgid "Document Thumbnail"
-msgstr ""
+msgstr "Miniatures del document"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_workflow_action
 msgid "Document Workflow Tag Action"
-msgstr ""
+msgstr "Acció d'etiqueta de flux de treball del document"
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_share__type__ids
 msgid "Document list"
-msgstr ""
+msgstr "Llista de documents"
 
 #. module: documents
 #. openerp-web
@@ -1031,27 +1165,27 @@ msgstr "Documents"
 #. module: documents
 #: model:ir.model,name:documents.model_documents_link_to_record_wizard
 msgid "Documents Link to Record"
-msgstr ""
+msgstr "Documents enllaç a registre"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_share
 msgid "Documents Share"
-msgstr ""
+msgstr "Documents compartits"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_folder
 msgid "Documents Workspace"
-msgstr ""
+msgstr "Espai de treball dels documents"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_mixin
 msgid "Documents creation mixin"
-msgstr ""
+msgstr "Mescla de creació de documents"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "Does not contain"
-msgstr ""
+msgstr "No conté"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__domain
@@ -1070,7 +1204,7 @@ msgstr "Fet"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 msgid "Downlaod all files"
-msgstr ""
+msgstr "Descarregar tots els arxius"
 
 #. module: documents
 #. openerp-web
@@ -1084,19 +1218,19 @@ msgstr "Descarregar"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 msgid "Download all files"
-msgstr ""
+msgstr "Descarregar tots els arxius"
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_share__action__downloadupload
 msgid "Download and Upload"
-msgstr ""
+msgstr "Descarregar i carregar"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Drop files here to upload"
-msgstr ""
+msgstr "Deixi anar els arxius aquí per a carregar-los"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_request_wizard__activity_date_deadline_range
@@ -1117,12 +1251,12 @@ msgstr "Tipus de venciment"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Edit the linked Record"
-msgstr ""
+msgstr "Modificar el registre enllaçat"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__email_cc
 msgid "Email cc"
-msgstr ""
+msgstr "cc de correu electrònic"
 
 #. module: documents
 #. openerp-web
@@ -1135,7 +1269,7 @@ msgstr "Error"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__excluded_tag_ids
 msgid "Excluded Tags"
-msgstr ""
+msgstr "Etiquetes excloses"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_documents_expense
@@ -1150,7 +1284,7 @@ msgstr "Expirat"
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_facet_name_unique
 msgid "Facet already exists in this folder"
-msgstr ""
+msgstr "La faceta ja existeix en aquesta carpeta"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__favorited_ids
@@ -1166,7 +1300,7 @@ msgstr "Fitxer"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__datas
 msgid "File Content (base64)"
-msgstr ""
+msgstr "Contingut del fitxer (base64)"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__file_size
@@ -1176,32 +1310,32 @@ msgstr "Mida del fitxer"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.res_config_settings_view_form
 msgid "Files Centralization"
-msgstr ""
+msgstr "Centralització dels fitxers"
 
 #. module: documents
 #: model:documents.folder,name:documents.documents_finance_folder
 msgid "Finance"
-msgstr ""
+msgstr "Finances"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_documents_financial
 msgid "Financial"
-msgstr ""
+msgstr "Financer"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_documents_fiscal
 msgid "Fiscal"
-msgstr ""
+msgstr "Fiscal"
 
 #. module: documents
 #: model:documents.facet,name:documents.documents_finance_fiscal_year
 msgid "Fiscal years"
-msgstr ""
+msgstr "Anys fiscals"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_mail_activity_type__folder_id
 msgid "Folder"
-msgstr ""
+msgstr "Carpeta"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__message_follower_ids
@@ -1223,7 +1357,7 @@ msgstr "Icona Font Awesome p.e. fa-tasks"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Generate URL"
-msgstr ""
+msgstr "Genera Enllaç"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
@@ -1237,16 +1371,20 @@ msgid ""
 "Groups able to see the workspace and read its documents without create/edit "
 "rights."
 msgstr ""
+"Els grups poden veure l'espai de treball i llegir els seus documents sense "
+"drets de creació/modificar"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__group_ids
 msgid "Groups able to see the workspace and read/create/edit its documents."
 msgstr ""
+"Els grups poden veure l'espai de treball i llegir/crear/modificar els seus "
+"documents."
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_hr
 msgid "HR"
-msgstr ""
+msgstr "HR"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__has_message
@@ -1317,11 +1455,13 @@ msgid ""
 "If set, this content will automatically be sent out to unauthorized users "
 "instead of the default message."
 msgstr ""
+"Si està seleccionat, aquest contingut s' enviarà automàticament als usuaris "
+"no autoritzats enlloc del missatge per omissió."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
 msgid "Image/Video"
-msgstr ""
+msgstr "Imatge/Vídeo"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_marketing_assets_images
@@ -1341,6 +1481,9 @@ msgid ""
 "Incoming letters sent to <span class=\"o_folder_description_alias\">inbox "
 "email alias</span> will be added to your inbox automatically."
 msgstr ""
+"Cartes entrants enviades <span class=\"o_folder_description_alias\">àlies de"
+" correu electrònic de la bústia d'entrada</span> s'afegirà automàticament a "
+"la safata d'entrada."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__index_content
@@ -1355,12 +1498,12 @@ msgstr "Intern"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_editable_attachment
 msgid "Is Editable Attachment"
-msgstr ""
+msgstr "És un annex editable"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_favorited
 msgid "Is Favorited"
-msgstr ""
+msgstr "Es Favorit"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__message_is_follower
@@ -1415,7 +1558,7 @@ msgstr "Última actualització el"
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_legal
 msgid "Legal"
-msgstr ""
+msgstr "Legal"
 
 #. module: documents
 #. openerp-web
@@ -1425,6 +1568,9 @@ msgid ""
 "Let's process documents in your Inbox.<br/><i>Tip: Use Tags to filter "
 "documents and structure your process.</i>"
 msgstr ""
+"Processem els documents a la vostra bústia d'entrada.<br/><i>Consell: "
+"Utilitza les etiquetes per filtrar documents i estructurar el vostre "
+"procés.</i>"
 
 #. module: documents
 #. openerp-web
@@ -1432,13 +1578,14 @@ msgstr ""
 #, python-format
 msgid "Let's process these bills: send to Finance workspace."
 msgstr ""
+"Procedim a aquestes factures: enviar a l'espai de treball de finances."
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Let's process this document, coming from our scanner."
-msgstr ""
+msgstr "Processem aquest document, que ve del nostre escàner."
 
 #. module: documents
 #. openerp-web
@@ -1448,16 +1595,19 @@ msgid ""
 "Let's tag this mail as legal<br/> <i>Tips: actions can be tailored to your "
 "process, according to the workspace.</i>"
 msgstr ""
+"Etiquetarem aquest correu com a legal<br/> <i>Consells: les accions es poden"
+" adaptar al vostre procés, d'acord amb l'espai de treball.</i>"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific
 msgid "Limit Read Groups to the documents of which they are owner."
-msgstr ""
+msgstr "Limita els grups de lectura als documents dels quals són propietaris."
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific_write
 msgid "Limit Write Groups to the documents of which they are owner."
 msgstr ""
+"Limita els grups d'escriptura als documents dels quals són propietaris."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_link_to_record_form_view
@@ -1467,17 +1617,17 @@ msgstr "Enllaç"
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_rule__create_model__link_to_record
 msgid "Link to record"
-msgstr ""
+msgstr "Enllaç a registrar"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__email_cc
 msgid "List of cc from incoming emails."
-msgstr ""
+msgstr "Llista de l' cc des de correus entrants."
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_share__state__live
 msgid "Live"
-msgstr ""
+msgstr "En viu"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_single
@@ -1501,7 +1651,7 @@ msgstr "Bloquejat"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__lock_uid
 msgid "Locked by"
-msgstr ""
+msgstr "Bloquejat per"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
@@ -1525,7 +1675,7 @@ msgstr "Tancar sessió"
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__message_main_attachment_id
@@ -1536,12 +1686,12 @@ msgstr "Adjunt principal"
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_internal_mad
 msgid "Mark As Draft"
-msgstr ""
+msgstr "Marca com a esborrany"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__remove_activities
 msgid "Mark all as Done"
-msgstr ""
+msgstr "Marca-ho tot com a fet"
 
 #. module: documents
 #: model:documents.folder,name:documents.documents_marketing_folder
@@ -1591,19 +1741,19 @@ msgstr "Mesos"
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_mti
 msgid "Move To Inbox"
-msgstr ""
+msgstr "Mou a la bústia d'entrada"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__folder_id
 msgid "Move to Workspace"
-msgstr ""
+msgstr "Mou a l'espai de treball"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/documents_inspector.js:0
 #, python-format
 msgid "Multiple values"
-msgstr ""
+msgstr "Valors múltiples"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__my_activity_date_deadline
@@ -1635,33 +1785,33 @@ msgstr "Nom"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Name of the share link"
-msgstr ""
+msgstr "Nom de l'enllaç de compartició"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/documents_inspector.js:0
 #, python-format
 msgid "Name or Category contains: %s"
-msgstr ""
+msgstr "El nom o la categoria conté: %s"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New File"
-msgstr ""
+msgstr "Nou Arxiu"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New Group"
-msgstr ""
+msgstr "Grup Nou"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Proper esdeveniment del calendari d'activitats"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_date_deadline
@@ -1683,24 +1833,24 @@ msgstr "Tipus de la següent activitat"
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "No document has been selected"
-msgstr ""
+msgstr "No s'ha seleccionat cap document"
 
 #. module: documents
 #: model_terms:ir.actions.act_window,help:documents.share_action
 msgid "No shared links"
-msgstr ""
+msgstr "No hi ha enllaços compartits"
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not a file"
-msgstr ""
+msgstr "No és un Arxiu"
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not attached"
-msgstr ""
+msgstr "No s'adjunta"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_request_wizard__activity_note
@@ -1746,19 +1896,19 @@ msgstr "Logo Odoo"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.public_page_layout
 msgid "Odoo Website"
-msgstr ""
+msgstr "Lloc web d'Odoo"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__limited_to_single_record
 msgid "One record limit"
-msgstr ""
+msgstr "Un límit de registre"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Open chatter"
-msgstr ""
+msgstr "Obre el xat"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_force_thread_id
@@ -1776,7 +1926,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Or send emails to"
-msgstr ""
+msgstr "O enviar correus electrònics a"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_other
@@ -1787,12 +1937,12 @@ msgstr "Altres"
 #: model:ir.model.fields,field_description:documents.field_documents_folder__user_specific
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 msgid "Own Documents Only"
-msgstr ""
+msgstr "Només documents propis"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__user_specific_write
 msgid "Own Documents Only (Write)"
-msgstr ""
+msgstr "Només documents propis (escriptura)"
 
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_folder_check_user_specific
@@ -1800,6 +1950,8 @@ msgid ""
 "Own Documents Only may not be enabled for write groups if it is not enabled "
 "for read groups."
 msgstr ""
+"Només els documents propis no es poden activar per a grups d'escriptura si "
+"no està habilitat per a grups de lectura."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__owner_id
@@ -1813,12 +1965,12 @@ msgstr "Propietari"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 msgid "Owner: #{document.create_uid.name}"
-msgstr ""
+msgstr "Propietari: #{document.create_uid.name}"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
 msgid "PDF/Document"
-msgstr ""
+msgstr "PDF/Document"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__alias_parent_model_id
@@ -1834,7 +1986,7 @@ msgstr "Id del registre pare"
 #: model:ir.model.fields,field_description:documents.field_documents_folder__parent_folder_id
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_search
 msgid "Parent Workspace"
-msgstr ""
+msgstr "Espai de treball superior"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_parent_model_id
@@ -1878,7 +2030,7 @@ msgstr "Accés de lectura "
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__read_group_ids
 msgid "Read Groups"
-msgstr ""
+msgstr "Llegeix els grups"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_link_to_record_wizard__resource_ref
@@ -1893,7 +2045,7 @@ msgstr "Id del registre del fil"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__domain_folder_id
 msgid "Related Workspace"
-msgstr ""
+msgstr "Espai de treball relacionat"
 
 #. module: documents
 #. openerp-web
@@ -1901,7 +2053,7 @@ msgstr ""
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "Remaining Pages"
-msgstr ""
+msgstr "Pàgines restants"
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_action__action__remove
@@ -1913,12 +2065,12 @@ msgstr "Eliminar"
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Replace"
-msgstr ""
+msgstr "Reemplaça"
 
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_action__action__replace
 msgid "Replace by"
-msgstr ""
+msgstr "Reemplaça per"
 
 #. module: documents
 #. openerp-web
@@ -1932,45 +2084,45 @@ msgstr "Sol·licitud"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__request_activity_id
 msgid "Request Activity"
-msgstr ""
+msgstr "Sol·licitud d'activitat"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
 msgid "Request To"
-msgstr ""
+msgstr "Sol·licitud a"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/systray.xml:0
 #, python-format
 msgid "Request a Document"
-msgstr ""
+msgstr "Sol·licitar un document"
 
 #. module: documents
 #: model:ir.actions.act_window,name:documents.action_request_form
 msgid "Request a file"
-msgstr ""
+msgstr "Solicitar un fitxer"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
 #: model_terms:ir.ui.view,arch_db:documents.share_single
 msgid "Requested"
-msgstr ""
+msgstr "Sol·licitat"
 
 #. module: documents
 #: model:mail.activity.type,name:documents.mail_documents_activity_data_md
 msgid "Requested Document"
-msgstr ""
+msgstr "Document sol·licitat"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__required_tag_ids
 msgid "Required Tags"
-msgstr ""
+msgstr "Etiquetes requerides"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__res_model_name
 msgid "Res Model Name"
-msgstr ""
+msgstr "Nom del model Res"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__res_id
@@ -2026,21 +2178,21 @@ msgstr "Planificar activitat"
 #: code:addons/documents/static/src/js/documents_inspector.js:0
 #, python-format
 msgid "Search more..."
-msgstr ""
+msgstr "Cerca més..."
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Select All: Shift + A"
-msgstr ""
+msgstr "Selecciona-ho tot: Maj + A"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/documents_inspector.js:0
 #, python-format
 msgid "Select tags"
-msgstr ""
+msgstr "Selecciona les etiquetes"
 
 #. module: documents
 #. openerp-web
@@ -2048,11 +2200,12 @@ msgstr ""
 #, python-format
 msgid "Send this letter to the legal department, by assigning the right tags."
 msgstr ""
+"Envia aquesta carta al departament legal, assignant les etiquetes correctes."
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_internal_legal
 msgid "Send to Legal"
-msgstr ""
+msgstr "Enviar a Legal"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_facet__sequence
@@ -2064,28 +2217,28 @@ msgstr "Seqüència"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2021 Contracts"
-msgstr ""
+msgid "Set As 2022 Contracts"
+msgstr "Estableix com a 2022 contractes"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__partner_id
 msgid "Set Contact"
-msgstr ""
+msgstr "Estableix el contacte"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__user_id
 msgid "Set Owner"
-msgstr ""
+msgstr "Estableix el propietari"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__tag_action_ids
 msgid "Set Tags"
-msgstr ""
+msgstr "Estableix les etiquetes"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__has_owner_activity
 msgid "Set the activity on the document owner"
-msgstr ""
+msgstr "Estableix l'activitat al propietari del document"
 
 #. module: documents
 #: model:ir.actions.act_window,name:documents.configuration_action
@@ -2105,54 +2258,54 @@ msgstr "Compartir"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__share_link_ids
 msgid "Share Links"
-msgstr ""
+msgstr "Comparteix els enllaços"
 
 #. module: documents
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share domain"
-msgstr ""
+msgstr "Comparteix el domini"
 
 #. module: documents
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid "Share link"
-msgstr ""
+msgstr "Comparteix l'enllaç"
 
 #. module: documents
 #: model:ir.actions.act_window,name:documents.share_action
 msgid "Share links"
-msgstr ""
+msgstr "Comparteix enllaços"
 
 #. module: documents
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share selected records"
-msgstr ""
+msgstr "Comparteix els registres seleccionats"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Share this domain"
-msgstr ""
+msgstr "Comparteix aquest domini"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Share this selection"
-msgstr ""
+msgstr "Comparteix aquesta selecció"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__type
 msgid "Share type"
-msgstr ""
+msgstr "Tipus de compartició"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__create_share_id
 msgid "Share used to create this document"
-msgstr ""
+msgstr "Compartició utilitzada per crear aquest document"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
@@ -2162,17 +2315,17 @@ msgstr "Compartit "
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__document_ids
 msgid "Shared Documents"
-msgstr ""
+msgstr "Documents compartits"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__tag_ids
 msgid "Shared Tags"
-msgstr ""
+msgstr "Etiquetes compartides"
 
 #. module: documents
 #: model:ir.ui.menu,name:documents.share_menu
 msgid "Shares & Emails"
-msgstr ""
+msgstr "Comparticions & Correus"
 
 #. module: documents
 #. openerp-web
@@ -2184,7 +2337,7 @@ msgstr "Mida"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__link_model
 msgid "Specific Model Linked"
-msgstr ""
+msgstr "Model específic enllaçat"
 
 #. module: documents
 #. openerp-web
@@ -2202,7 +2355,7 @@ msgstr "Divideix"
 #: code:addons/documents/static/src/xml/documents_thread.xml:0
 #, python-format
 msgid "Split PDF"
-msgstr ""
+msgstr "Divideix el PDF"
 
 #. module: documents
 #: model:documents.facet,name:documents.documents_finance_status
@@ -2227,7 +2380,7 @@ msgstr ""
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__children_folder_ids
 msgid "Sub workspaces"
-msgstr ""
+msgstr "Subespais de treball"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__activity_summary
@@ -2248,12 +2401,12 @@ msgstr "Etiqueta"
 #: model:ir.model.fields,field_description:documents.field_documents_folder__facet_ids
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_tree
 msgid "Tag Categories"
-msgstr ""
+msgstr "Categories d'etiquetes"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "Tag Category"
-msgstr ""
+msgstr "Categoria d'etiquetes"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
@@ -2263,12 +2416,12 @@ msgstr "Nom de l'etiqueta"
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_tag_facet_name_unique
 msgid "Tag already exists for this facet"
-msgstr ""
+msgstr "L'etiqueta ja existeix per a aquesta faceta"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__facet_ids
 msgid "Tag categories defined for this workspace"
-msgstr ""
+msgstr "Categories d'etiquetes definides per a aquest espai de treball"
 
 #. module: documents
 #. openerp-web
@@ -2299,6 +2452,8 @@ msgstr "Text"
 #: model:ir.model.fields,help:documents.field_documents_facet__tooltip
 msgid "Text shown when hovering on this tag category or its tags"
 msgstr ""
+"Text que es mostra en passar per sobre d'aquesta categoria d'etiquetes o les"
+" seves etiquetes"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_model_id
@@ -2337,17 +2492,19 @@ msgstr ""
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_share_share_unique
 msgid "This access token already exists"
-msgstr ""
+msgstr "Aquest token d'accés ja existeix"
 
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_document_attachment_unique
 msgid "This attachment is already a document"
-msgstr ""
+msgstr "Aquest annex ja és un document"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__group_ids
 msgid "This attachment will only be available for the selected user groups"
 msgstr ""
+"Aquest arxiu adjunt només estarà disponible per als grups d'usuaris "
+"seleccionats"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_single
@@ -2355,17 +2512,20 @@ msgid ""
 "This document has been requested.\n"
 "                <b onclick=\"$('.o_request_upload').trigger('click')\" style=\"cursor:pointer;\">Upload it</b>."
 msgstr ""
+"S'ha sol·licitat aquest document.\n"
+"                <b onclick=\"$('.o_request_upload').trigger('click')\" style=\"cursor:pointer;\">Puja</b>."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.not_available
 msgid "This link has expired"
-msgstr ""
+msgstr "Aquest enllaç ha caducat"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__company_id
 #: model:ir.model.fields,help:documents.field_documents_folder__company_id
 msgid "This workspace will only be available to the selected company"
 msgstr ""
+"Aquest espai de treball només estarà disponible per a l'empresa seleccionada"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__thumbnail
@@ -2378,11 +2538,13 @@ msgstr "Miniatura"
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
 msgstr ""
+"Consell: configurar l'escàner per enviar tots els documents a aquesta "
+"adreça."
 
 #. module: documents
 #: model:digest.tip,name:documents.digest_tip_documents_0
 msgid "Tip: Become a paperless company"
-msgstr ""
+msgstr "Consell: Convertir-se en una empresa sense paper"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_status_tc
@@ -2393,19 +2555,19 @@ msgstr "Per a validar"
 #. module: documents
 #: model:mail.activity.type,name:documents.mail_documents_activity_data_tv
 msgid "To validate"
-msgstr ""
+msgstr "Per validar"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_facet__tooltip
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__note
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "Tooltip"
-msgstr ""
+msgstr "Informació sobre eines"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__is_editable_attachment
 msgid "True if we can edit the link attachment."
-msgstr ""
+msgstr "Veritat si podem modificar l'adjunt de l'enllaç."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__type
@@ -2434,7 +2596,7 @@ msgstr "URL"
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Un-archive"
-msgstr ""
+msgstr "Desarxiva"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
@@ -2471,27 +2633,29 @@ msgstr "Pujar"
 #. module: documents
 #: model_terms:ir.actions.act_window,help:documents.document_action
 msgid ""
-"Upload <span class=\"font-weight-normal\">a file or</span> drag <span class"
-"=\"font-weight-normal\">it here.</span>"
+"Upload <span class=\"font-weight-normal\">a file or</span> drag <span "
+"class=\"font-weight-normal\">it here.</span>"
 msgstr ""
+"Pujar <span class=\"font-weight-normal\">un fitxer o</span> arrosega <span "
+"class=\"font-weight-normal\">aquí.</span>"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Upload Document"
-msgstr ""
+msgstr "Puja el document"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_share__email_drop
 msgid "Upload by Email"
-msgstr ""
+msgstr "Puja per correu"
 
 #. module: documents
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
-msgstr ""
+msgstr "Sol·licitud de càrrega d'arxius"
 
 #. module: documents
 #: model:res.groups,name:documents.group_documents_user
@@ -2531,6 +2695,7 @@ msgstr "Vídeos"
 msgid ""
 "Want to become a <b>paperless company</b>? Let's discover Odoo Documents."
 msgstr ""
+"Vols convertir-te en <b>empresa sense paper</b>? Descobrim documents d'Odoo."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__website_message_ids
@@ -2554,12 +2719,12 @@ msgstr "Setmanes"
 #. module: documents
 #: model:ir.actions.act_window,name:documents.workflow_rule_action
 msgid "Workflow Actions"
-msgstr ""
+msgstr "Accions del flux de treball"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_action__workflow_rule_id
 msgid "Workflow Rule"
-msgstr ""
+msgstr "Regla de flux de treball"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__folder_id
@@ -2570,13 +2735,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_search
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_tree
 msgid "Workspace"
-msgstr ""
+msgstr "Espai de treball"
 
 #. module: documents
 #: model:ir.actions.act_window,name:documents.folder_action
 #: model:ir.ui.menu,name:documents.folder_menu
 msgid "Workspaces"
-msgstr ""
+msgstr "Espais de treball"
 
 #. module: documents
 #. openerp-web
@@ -2586,6 +2751,8 @@ msgid ""
 "Wow... 6 documents processed in a few seconds, You're good.<br/>The tour is "
 "complete. Try uploading your own documents now."
 msgstr ""
+"Wow... 6 documents processats en uns pocs segons, ets bo.<br/>El recorregut "
+"està complet. Intenti carregar els seus propis documents ara."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
@@ -2595,12 +2762,12 @@ msgstr "Permís d'escriptura"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__group_ids
 msgid "Write Groups"
-msgstr ""
+msgstr "Grups d'escriptura"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "Write a tooltip for the action here"
-msgstr ""
+msgstr "Escriu un consell d'eina per a l'acció aquí"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__attachment_type
@@ -2615,14 +2782,14 @@ msgstr ""
 #: code:addons/documents/models/folder.py:0
 #, python-format
 msgid "You cannot create recursive folders."
-msgstr ""
+msgstr "No podeu crear carpetes recursives."
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "Youtube Video"
-msgstr ""
+msgstr "Vídeo Youtube"
 
 #. module: documents
 #. openerp-web
@@ -2630,7 +2797,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_search_panel.xml:0
 #, python-format
 msgid "_onDragEnter(section.id, valueId)"
-msgstr ""
+msgstr "_onDragEnter(section.id, valueId)"
 
 #. module: documents
 #. openerp-web
@@ -2638,7 +2805,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_search_panel.xml:0
 #, python-format
 msgid "_onDragLeave"
-msgstr ""
+msgstr "_onDragLeave"
 
 #. module: documents
 #. openerp-web
@@ -2646,7 +2813,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_search_panel.xml:0
 #, python-format
 msgid "_onDrop(section.id, valueId)"
-msgstr ""
+msgstr "_onDrop(section.id, valueId)"
 
 #. module: documents
 #. openerp-web
@@ -2668,19 +2835,19 @@ msgstr "document"
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "documents"
-msgstr ""
+msgstr "documents"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "documents selected"
-msgstr ""
+msgstr "documents seleccionats"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 msgid "documents shared by"
-msgstr ""
+msgstr "documents compartits per"
 
 #. module: documents
 #. openerp-web
@@ -2688,14 +2855,14 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_search_panel.xml:0
 #, python-format
 msgid "documents.SearchPanel.Category"
-msgstr ""
+msgstr "documents.CercaPanel.Categoria"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_search_panel.xml:0
 #, python-format
 msgid "documents.SearchPanel.FiltersGroup"
-msgstr ""
+msgstr "documents.CercaPanel.FiltresGrup"
 
 #. module: documents
 #. openerp-web
@@ -2703,7 +2870,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "download"
-msgstr ""
+msgstr "descarregar"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
@@ -2715,37 +2882,37 @@ msgstr "p. ex. Discussió d'una proposta"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 msgid "e.g. Finance"
-msgstr ""
+msgstr "p. ex. Finances"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
 msgid "e.g. Missing Expense"
-msgstr ""
+msgstr "p. ex. Falta la despesa"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "e.g. Status"
-msgstr ""
+msgstr "p. ex. Estat"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "e.g. To Validate"
-msgstr ""
+msgstr "p. ex. Per validar"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "e.g. Validate document"
-msgstr ""
+msgstr "p. ex. Valida el document"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_upload_url_view
 msgid "e.g. https://www.youtube.com/watch?v=CP96yVnXNrY"
-msgstr ""
+msgstr "p. ex. https://www.youtube.com/watch?v=CP96yVnXNrY"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_link_to_record_wizard__is_readonly_model
 msgid "is_readonly_model"
-msgstr ""
+msgstr "is_readonly_model"
 
 #. module: documents
 #. openerp-web
@@ -2753,7 +2920,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "restore"
-msgstr ""
+msgstr "Restaurar"
 
 #. module: documents
 #. openerp-web
@@ -2761,35 +2928,35 @@ msgstr ""
 #: code:addons/documents/static/src/owl/components/pdf_page/pdf_page.xml:0
 #, python-format
 msgid "select"
-msgstr ""
+msgstr "selecciona"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/xml/documents_inspector.xml:0
 #, python-format
 msgid "selected"
-msgstr ""
+msgstr "Seleccionat"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.public_page_layout
 msgid "shared by"
-msgstr ""
+msgstr "compartit per"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "status code: %s, message: %s"
-msgstr ""
+msgstr "codi d'estat: %s, missatge: %s"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
 msgid "toggle favorite"
-msgstr ""
+msgstr "alternar favorit"
 
 #. module: documents
 #. openerp-web
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "unnamed"
-msgstr ""
+msgstr "sense nom"

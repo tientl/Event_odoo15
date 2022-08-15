@@ -17,6 +17,13 @@ class AccountAnalyticLine(models.Model):
         if any(timesheet.task_id and timesheet.helpdesk_ticket_id for timesheet in self):
             raise ValidationError(_("A timesheet cannot be linked to a task and a ticket at the same time."))
 
+    @api.depends('helpdesk_ticket_id.partner_id')
+    def _compute_partner_id(self):
+        super(AccountAnalyticLine, self)._compute_partner_id()
+        for line in self:
+            if line.helpdesk_ticket_id:
+                line.partner_id = line.helpdesk_ticket_id.partner_id or line.partner_id
+
     def _timesheet_preprocess(self, vals):
         helpdesk_ticket_id = vals.get('helpdesk_ticket_id')
         if helpdesk_ticket_id:

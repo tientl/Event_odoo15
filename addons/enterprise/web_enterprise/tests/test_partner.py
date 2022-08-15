@@ -29,6 +29,7 @@ class TestPartnerVCard(HttpCase):
             'email': 'john.doe@test.example.com',
             'mobile': '+1 202 555 0888',
             'phone': '+1 202 555 0122',
+            'function': 'Painter',
             'street': 'Cookieville Minimum-Security Orphanarium',
             'city': 'New York',
             'country_id': self.env.ref('base.us').id,
@@ -49,8 +50,9 @@ class TestPartnerVCard(HttpCase):
         self.assertEqual(vcard.contents["url"][0].value, self.partner.website, "Vcard should have the same website")
         self.assertEqual(vcard.contents["tel"][0].params['TYPE'], ["work"], "Vcard should have the same phone")
         self.assertEqual(vcard.contents["tel"][0].value, self.partner.phone, "Vcard should have the same phone")
-        self.assertEqual(vcard.contents["tel"][1].params['TYPE'], ["mobile"], "Vcard should have the same mobile")
+        self.assertEqual(vcard.contents["tel"][1].params['TYPE'], ["cell"], "Vcard should have the same mobile")
         self.assertEqual(vcard.contents["tel"][1].value, self.partner.mobile, "Vcard should have the same mobile")
+        self.assertEqual(vcard.contents["title"][0].value, self.partner.function, "Vcard should have the same function")
         self.assertEqual(len(vcard.contents['photo'][0].value), len(b64decode(self.partner.avatar_512)), "Vcard should have the same photo")
 
     @unittest.skip

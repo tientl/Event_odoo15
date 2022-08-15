@@ -5,9 +5,9 @@
 # Translators:
 # Martin Trigaux, 2021
 # Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2021
-# Prawit Boonthue <prawit.boonthue@gmail.com>, 2021
 # Pornvibool Tippayawat <pornvibool.t@gmail.com>, 2021
 # Odoo Thaidev <odoothaidev@gmail.com>, 2021
+# Wichanon Jamwutthipreecha, 2022
 # 
 msgid ""
 msgstr ""
@@ -15,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:38+0000\n"
-"Last-Translator: Odoo Thaidev <odoothaidev@gmail.com>, 2021\n"
+"Last-Translator: Wichanon Jamwutthipreecha, 2022\n"
 "Language-Team: Thai (https://www.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,29 +32,35 @@ msgstr " (สำเนา)"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__appointment_count
 msgid "# Appointments"
-msgstr ""
+msgstr "# การนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_calendar
 msgid "#{day['today_cls'] and 'Today' or ''}"
+msgstr "#{day['today_cls'] and 'Today' or ''}"
+
+#. module: appointment
+#: code:addons/appointment/models/calendar_appointment_type.py:0
+#, python-format
+msgid "%s - Let's meet"
 msgstr ""
 
 #. module: appointment
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "%s with %s"
-msgstr ""
+msgstr "%s กับ%s"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "(timezone:"
-msgstr ""
+msgstr "(โซนเวลา:"
 
 #. module: appointment
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid ", All Day"
-msgstr ""
+msgstr " ทั้งวัน"
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_booked_mail_template
@@ -62,8 +68,9 @@ msgid ""
 "<div>\n"
 "    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    Appointment booked for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"    Appointment booked for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>.\n"
 "    </p>\n"
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
@@ -74,19 +81,24 @@ msgid ""
 "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
 "            <td width=\"130px;\">\n"
 "                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
 "                        <div>\n"
-"                            <t t-out=\"format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
+"                            <t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
 "                        </div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
 "                    </t>\n"
 "                </div>\n"
 "            </td>\n"
@@ -129,23 +141,29 @@ msgid ""
 "<div>\n"
 "    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    The appointment for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t> has been canceled.\n"
+"    The appointment for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t> has been canceled.\n"
 "    </p>\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
 "            <td width=\"130px;\">\n"
 "                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
-"                        <div><t t-out=\"format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <div><t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
 "                    </t>\n"
 "                </div>\n"
 "            </td>\n"
@@ -187,17 +205,17 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Add to Google Calendar"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>เพิ่มใน Google ปฏิทิน"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Add to iCal/Outlook"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>เพิ่มใน iCal/Outlook"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<i class=\"fa fa-fw fa-times\"/>Cancel / Reschedule"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-times\"/>ยกเลิก / กำหนดเวลาใหม่"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -205,46 +223,48 @@ msgid ""
 "<i class=\"fa fa-pencil mr-2\" role=\"img\" aria-label=\"Edit\" "
 "title=\"Create custom questions in backend\"/><em>Add Custom Questions</em>"
 msgstr ""
+"<i class=\"fa fa-pencil mr-2\" role=\"img\" aria-label=\"Edit\" "
+"title=\"Create custom questions in backend\"/><em>เพิ่มคำถามที่กำหนดเอง</em>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span> days</span>"
-msgstr ""
+msgstr "<span> วัน</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span> hours before</span>"
-msgstr ""
+msgstr "<span>ชั่วโมงก่อน</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span> hours</span>"
-msgstr ""
+msgstr "<span>ชั่วโมง</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span>and not after </span>"
-msgstr ""
+msgstr "<span>และไม่ภายหลัง </span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span>at least </span>"
-msgstr ""
+msgstr "<span>อย่างน้อย </span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "<span>until </span>"
-msgstr ""
+msgstr "<span>จนกระทั่ง </span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "<strong class=\"mr-2\">Duration:</strong>"
-msgstr ""
+msgstr "<strong class=\"mr-2\">ระยะเวลา:</strong>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "<strong class=\"mr-2\">Location:</strong>"
-msgstr ""
+msgstr "<strong class=\"mr-2\">ตำแหน่ง:</strong>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -253,6 +273,8 @@ msgid ""
 "<strong>Appointment canceled!</strong>\n"
 "                            You can schedule another appointment from here."
 msgstr ""
+"<strong>ยกเลิกการนัดหมาย!</strong>\n"
+"                            คุณสามารถกำหนดเวลานัดหมายอื่นได้จากที่นี่"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -262,6 +284,10 @@ msgid ""
 "                            Someone has booked the same time slot a few\n"
 "                            seconds before you."
 msgstr ""
+"<strong>การนัดหมายล้มเหลว!</strong>\n"
+"                            ช่วงเวลาที่เลือกไม่สามารถใช้ได้อีกต่อไป\n"
+"                           มีคนจองช่วงเวลาเดียวกันไว้ไม่กี่\n"
+"                            วินาทีก่อนหน้าคุณ"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -270,45 +296,48 @@ msgid ""
 "                            The selected timeslot is not available.\n"
 "                            It appears you already have another meeting with us at that date."
 msgstr ""
+"<strong>การนัดหมายล้มเหลว!</strong>\n"
+"                            ช่วงเวลาที่เลือกไม่สามารถใช้งานได้\n"
+"                            ดูเหมือนว่าคุณจะมีประชุมกับเราอยู่แล้วในวันนั้น"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_select_timezone
 msgid "<strong>Timezone</strong>"
-msgstr ""
+msgstr "<strong>โซนเวลา</strong>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<strong>Your appointment has been successfully booked!</strong><br/>"
-msgstr ""
+msgstr "<strong>การนัดหมายของคุณได้รับการจองเรียบร้อยแล้ว!</strong><br/>"
 
 #. module: appointment
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid ""
 "A list of slots information is needed to create a custom appointment type"
-msgstr ""
+msgstr "รายการช่องข้อมูลจำเป็นเพื่อสร้างประเภทการนัดหมายที่กำหนดเอง"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "A text message reminder is sent to you before your appointment"
-msgstr ""
+msgstr "ข้อความแจ้งเตือนจะถูกส่งถึงคุณก่อนการนัดหมายของคุณ"
 
 #. module: appointment
 #: code:addons/appointment/controllers/calendar.py:0
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid "Access Denied"
-msgstr "ไม่ได้รับอนุญาตให้เข้าใช้"
+msgstr "การเข้าถึงถูกปฏิเสธ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_event__access_token
 msgid "Access Token"
-msgstr "เข้าถึง"
+msgstr "เข้าถึงโทเคน"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_needaction
 msgid "Action Needed"
-msgstr "ต้องดำเนินการ"
+msgstr "จำเป็นต้องดำเนินการ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__active
@@ -330,7 +359,7 @@ msgstr "ทั้งหมด"
 #: model:ir.actions.act_window,name:appointment.calendar_event_action_report
 #: model:ir.ui.menu,name:appointment.menu_schedule_report_online
 msgid "All Appointments"
-msgstr ""
+msgstr "การนัดหมายทั้งหมด"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
@@ -342,26 +371,33 @@ msgstr "ทั้งวัน"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Allow Cancelling"
-msgstr ""
+msgstr "อนุญาตให้ยกเลิก"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
 #, python-format
 msgid ""
 "An employee should be set on the actual user to create the appointment type"
+msgstr "พนักงานควรตั้งค่าให้กับผู้ใช้จริงเพื่อสร้างประเภทการนัดหมาย"
+
+#. module: appointment
+#: code:addons/appointment/models/calendar_appointment_type.py:0
+#, python-format
+msgid ""
+"An employee should be set on the current user to create the appointment type"
 msgstr ""
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
-msgstr ""
+msgstr "ช่องประเภทที่ไม่ซ้ำควรมีวันที่เริ่มต้นและสิ้นสุด"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__name
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_answer_view_form
 msgid "Answer"
-msgstr ""
+msgstr "ตอบ"
 
 #. module: appointment
 #: model:mail.message.subtype,description:appointment.mt_calendar_event_booked
@@ -369,12 +405,12 @@ msgstr ""
 #: model:mail.message.subtype,name:appointment.mt_calendar_event_booked
 #: model:mail.template,name:appointment.appointment_booked_mail_template
 msgid "Appointment Booked"
-msgstr ""
+msgstr "จองนัดหมายแล้ว"
 
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_booked_mail_template
 msgid "Appointment Booked: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "จองนัดหมายแล้ว: {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model:mail.message.subtype,description:appointment.mt_calendar_event_canceled
@@ -382,39 +418,39 @@ msgstr ""
 #: model:mail.message.subtype,name:appointment.mt_calendar_event_canceled
 #: model:mail.template,name:appointment.appointment_canceled_mail_template
 msgid "Appointment Canceled"
-msgstr ""
+msgstr "ยกเลิกการนัดหมาย"
 
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_canceled_mail_template
 msgid "Appointment Canceled: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "ยกเลิกการนัดหมาย: {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Appointment Confirmation"
-msgstr ""
+msgstr "ยืนยันการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__appointment_duration
 msgid "Appointment Duration"
-msgstr ""
+msgstr "ระยะเวลานัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Appointment Introduction"
-msgstr ""
+msgstr "แนะนำการนัดหมาย"
 
 #. module: appointment
 #: model:ir.actions.act_window,name:appointment.calendar_appointment_type_action_custom_and_work_hours
 #: model:ir.ui.menu,name:appointment.menu_calendar_appointment_type_custom_and_work_hours
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_tree_invitation
 msgid "Appointment Invitations"
-msgstr ""
+msgstr "คำเชิญการนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "Appointment Name"
-msgstr ""
+msgstr "ชื่อการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_type
@@ -425,17 +461,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_tree
 msgid "Appointment Type"
-msgstr ""
+msgstr "ประเภทการนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_search
 msgid "Appointment Types"
-msgstr ""
+msgstr "ประเภทการนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Appointment:"
-msgstr ""
+msgstr "การนัดหมาย:"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__appointment_type_ids
@@ -446,12 +482,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_home_appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_home_menu_appointment
 msgid "Appointments"
-msgstr "Appointments"
+msgstr "การนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "Appointments by"
-msgstr ""
+msgstr "การนัดหมายโดย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
@@ -462,7 +498,7 @@ msgstr "เก็บถาวร"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__assign_method
 msgid "Assignment Method"
-msgstr ""
+msgstr "วิธีการมอบหมาย"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
@@ -471,6 +507,8 @@ msgid ""
 "Atleast one slot duration from start to end is invalid: a slot should end "
 "after start"
 msgstr ""
+"ช่วงเวลาอย่างน้อยหนึ่งช่วงตั้งแต่ต้นจนจบไม่ถูกต้อง: "
+"ช่องควรสิ้นสุดหลังจากเริ่ม"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
@@ -479,6 +517,7 @@ msgid ""
 "Atleast one slot duration is not enough to create a slot with the duration "
 "set in the appointment type"
 msgstr ""
+"อย่างน้อยหนึ่งช่วงระยะเวลาไม่เพียงพอที่จะสร้างช่องด้วยระยะเวลาที่กำหนดไว้ในประเภทการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_attachment_count
@@ -488,27 +527,27 @@ msgstr "จํานวนสิ่งที่แนบมา"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Attendees:"
-msgstr ""
+msgstr "ผู้เข้าร่วม:"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__slot_ids
 msgid "Availabilities"
-msgstr ""
+msgstr "ความพร้อม"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Availability"
-msgstr "ที่มีอยู่"
+msgstr "ความพร้อม"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__answer_ids
 msgid "Available Answers"
-msgstr ""
+msgstr "คำตอบที่มีอยู่"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Available Employees"
-msgstr ""
+msgstr "พนักงานที่มีอยู่"
 
 #. module: appointment
 #: model:ir.ui.menu,name:appointment.calendar_appointment_type_menu_action
@@ -518,44 +557,44 @@ msgstr "ปฏิทิน"
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_share
 msgid "Calendar Appointment Share Wizard"
-msgstr ""
+msgstr "ตัวช่วยสร้างการแชร์การนัดหมายในปฏิทิน"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_attendee
 msgid "Calendar Attendee Information"
-msgstr ""
+msgstr "ข้อมูลผู้เข้าร่วมปฏิทิน"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_event
 msgid "Calendar Event"
-msgstr "ปฎิทินกิจกรรม"
+msgstr "ปฎิทินอีเวนต์"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__min_cancellation_hours
 msgid "Cancel Before (hours)"
-msgstr ""
+msgstr "ยกเลิกก่อน (ชั่วโมง)"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__category
 msgid "Category"
-msgstr "หมวด"
+msgstr "หมวดหมู่"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_question__question_type__checkbox
 msgid "Checkboxes (multiple answers)"
-msgstr ""
+msgstr "ช่องทำเครื่องหมาย (หลายคำตอบ)"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_type__assign_method__chosen
 msgid "Chosen by the Customer"
-msgstr ""
+msgstr "เลือกโดยลูกค้า"
 
 #. module: appointment
 #. openerp-web
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals."
-msgstr ""
+msgstr "คลิกในปฏิทินของคุณเพื่อเลือกข้อเสนอเวลาประชุม"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_share_view_form
@@ -567,28 +606,28 @@ msgstr "ปิด"
 msgid ""
 "Configure your service opening hours and let attendees book time slots "
 "online."
-msgstr ""
+msgstr "กำหนดค่าเวลาเปิดบริการของคุณและให้ผู้เข้าร่วมจองช่วงเวลาออนไลน์"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Confirm Appointment <span class=\"fa fa-arrow-right\"/>"
-msgstr ""
+msgstr "ยืนยันการนัดหมาย <span class=\"fa fa-arrow-right\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Confirm your details"
-msgstr ""
+msgstr "ยืนยันรายละเอียดของคุณ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_confirmation
 msgid "Confirmation Message"
-msgstr ""
+msgstr "ข้อความยืนยัน"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Confirmation<span class=\"chevron\"/>"
-msgstr ""
+msgstr "การยืนยัน<span class=\"chevron\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -605,12 +644,12 @@ msgstr "ติดต่อ"
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Copied !"
-msgstr ""
+msgstr "คัดลอกแล้ว !"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_appointment_type_action
 msgid "Create an Appointment Type"
-msgstr ""
+msgstr "สร้างประเภทการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__create_uid
@@ -638,7 +677,7 @@ msgstr "ที่กำหนดเอง"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Customer Preview"
-msgstr ""
+msgstr "ตัวอย่างลูกค้า"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -650,7 +689,7 @@ msgstr "วันที่"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Declined"
-msgstr "ปรับตัวลดลง"
+msgstr "ปฏิเสธแล้ว"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__slot_type
@@ -660,6 +699,10 @@ msgid ""
 "        The one shot type is only used when an user create a custom appointment type for a client by\n"
 "        defining non-recurring time slot (e.g. 10th of April 2021 from 10 to 11 am) from its calendar."
 msgstr ""
+"คุณกำหนดประเภทของช่วง ช่วงที่เกิดซ้ำเป็นประเภทเริ่มต้นที่ใช้สำหรับ\n"
+"        ประเภทการนัดหมายที่ใช้ประจำในประเภทเช่นการนัดหมายแพทย์\n"
+"       ประเภทอย่างสั้นจะใช้เฉพาะเมื่อผู้ใช้สร้างประเภทการนัดหมายแบบกำหนดเองสำหรับลูกค้าโดย\n"
+"        กำหนดช่วงเวลาที่ไม่เกิดซ้ำ (เช่น วันที่ 10 เมษายน 2021 เวลา 10.00 น. ถึง 11.00 น.) จากปฏิทิน"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -672,6 +715,7 @@ msgid ""
 "Determine if the slot englobe the whole day, mainly used for unique slot "
 "type"
 msgstr ""
+"ตรวจสอบว่าช่วงครอบคลุมทั้งวันหรือไม่ ส่วนใหญ่ใช้สำหรับประเภทช่วงที่ไม่ซ้ำกัน"
 
 #. module: appointment
 #. openerp-web
@@ -680,7 +724,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_insert_share_view_form
 #, python-format
 msgid "Discard"
-msgstr "ยกเลิก"
+msgstr "ละทิ้ง"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__display_name
@@ -689,17 +733,17 @@ msgstr "ยกเลิก"
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__display_name
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__display_name
 msgid "Display Name"
-msgstr "ชื่อที่ใช้แสดง"
+msgstr "แสดงชื่อ"
 
 #. module: appointment
 #: model:calendar.appointment.type,name:appointment.calendar_appointment_1
 msgid "Doctor Appointment"
-msgstr ""
+msgstr "การนัดหมายแพทย์"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_question__question_type__select
 msgid "Dropdown (one answer)"
-msgstr ""
+msgstr "ดรอปดาวน์ (หนึ่งคำตอบ)"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__duration
@@ -709,35 +753,35 @@ msgstr "ระยะเวลา"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Duration:"
-msgstr ""
+msgstr "ระยะเวลา:"
 
 #. module: appointment
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "Email: %s"
-msgstr ""
+msgstr "อีเมล: %s"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__employee_ids
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__employee_ids
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Employees"
-msgstr "บุคลากร"
+msgstr "พนักงาน"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__end_datetime
 msgid "End datetime for unique slot type management"
-msgstr ""
+msgstr "วันที่สิ้นสุดสำหรับการจัดการประเภทช่วงที่ไม่ซ้ำกัน"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__end_hour
 msgid "Ending Hour"
-msgstr ""
+msgstr "ชั่วโมงสิ้นสุด"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Every"
-msgstr ""
+msgstr "ทุก"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_follower_ids
@@ -747,7 +791,7 @@ msgstr "ผู้ติดตาม"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "ผู้ติดตาม (คู่ค้า)"
+msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__5
@@ -768,7 +812,7 @@ msgstr "จาก"
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Get Share Link"
-msgstr ""
+msgstr "รับการแชร์ลิงก์"
 
 #. module: appointment
 #: model_terms:calendar.appointment.type,message_intro:appointment.calendar_appointment_0
@@ -776,6 +820,8 @@ msgid ""
 "Get a <strong>customized demo</strong> and an <strong>analysis of your "
 "needs</strong>."
 msgstr ""
+"รับ <strong>การสาธิตที่กำหนดเอง</strong>และ "
+"<strong>การวิเคราะห์ความต้องการของคุณ</strong>"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_share__suggested_employee_ids
@@ -783,17 +829,19 @@ msgid ""
 "Get the employees link to the appointment type selected to apply a domain on"
 " the employees that can be selected"
 msgstr ""
+"รับลิงก์พนักงานไปยังประเภทการนัดหมายที่เลือกเพื่อใช้โดเมนกับพนักงานที่สามารถเลือกได้"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "มีข้อความ"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__assign_method
 msgid ""
 "How employees will be assigned to meetings customers book on your website."
 msgstr ""
+"พนักงานจะได้รับมอบหมายให้เข้าร่วมการประชุมที่ลูกค้าจองบนเว็บไซต์ของคุณได้อย่างไร"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__id
@@ -802,7 +850,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__id
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__id
 msgid "ID"
-msgstr "รหัส"
+msgstr "ไอดี"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__message_needaction
@@ -819,12 +867,12 @@ msgstr "ถ้าเลือก ข้อความบางข้อคว�
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_insert_share_view_form
 msgid "Insert link"
-msgstr ""
+msgstr "แทรกลิงก์"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_intro
 msgid "Introduction Message"
-msgstr ""
+msgstr "ข้อความแนะนำ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_is_follower
@@ -837,6 +885,8 @@ msgid ""
 "It's too late to cancel online, please contact the attendees another way if "
 "you really can't make it."
 msgstr ""
+"สายเกินไปที่จะยกเลิกทางออนไลน์ โปรดติดต่อผู้เข้าร่วมด้วยวิธีอื่น "
+"หากคุณทำไม่ได้จริง ๆ"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__country_ids
@@ -844,6 +894,8 @@ msgid ""
 "Keep empty to allow visitors from any country, otherwise you only allow "
 "visitors from selected countries"
 msgstr ""
+"เว้นว่างไว้เพื่ออนุญาตให้ผู้เข้าชมจากประเทศใด ๆ "
+"มิฉะนั้นคุณจะอนุญาตเฉพาะผู้เยี่ยมชมจากประเทศที่เลือกเท่านั้น"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer____last_update
@@ -852,7 +904,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot____last_update
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type____last_update
 msgid "Last Modified on"
-msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__write_uid
@@ -861,7 +913,7 @@ msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__write_uid
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__write_uid
 msgid "Last Updated by"
-msgstr "อัพเดทครั้งสุดท้ายโดย"
+msgstr "อัปเดตครั้งล่าสุดโดย"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__write_date
@@ -870,24 +922,24 @@ msgstr "อัพเดทครั้งสุดท้ายโดย"
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__write_date
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__write_date
 msgid "Last Updated on"
-msgstr "อัพเดทครั้งสุดท้ายเมื่อ"
+msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__share_link
 msgid "Link"
-msgstr "ลิงค์"
+msgstr "ลิงก์"
 
 #. module: appointment
 #. openerp-web
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Link Copied in your clipboard !"
-msgstr ""
+msgstr "คัดลอกลิงก์ไปยังคลิปบอร์ด"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_share_view_form
 msgid "Link Generator"
-msgstr ""
+msgstr "การสร้างลิงก์"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__location
@@ -897,12 +949,12 @@ msgstr "ตำแหน่ง"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__location
 msgid "Location of the appointments"
-msgstr ""
+msgstr "ตำแหน่งที่นัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Location:"
-msgstr ""
+msgstr "ตำแหน่ง:"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_main_attachment_id
@@ -913,7 +965,7 @@ msgstr "เอกสารหลักที่แนบมา"
 #: code:addons/appointment/models/calendar_appointment_type.py:0
 #, python-format
 msgid "Meeting with %s"
-msgstr ""
+msgstr "ประชุมกับ %s"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_has_error
@@ -930,7 +982,7 @@ msgstr "ข้อความ"
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "Mobile: %s"
-msgstr ""
+msgstr "มือถือ: %s"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__1
@@ -940,12 +992,12 @@ msgstr "วันจันทร์"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_question__question_type__text
 msgid "Multi-line text"
-msgstr ""
+msgstr "ข้อความหลายบรรทัด"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_search
 msgid "My Appointments"
-msgstr ""
+msgstr "การนัดหมายของฉัน"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -956,18 +1008,18 @@ msgstr "ชื่อ"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "No appointment found."
-msgstr ""
+msgstr "ไม่พบการนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_appointment_type_action_custom_and_work_hours
 msgid "No custom appointment type has been created !"
-msgstr ""
+msgstr "ไม่มีการสร้างประเภทการนัดหมายที่กำหนดเอง!"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "No data yet!"
-msgstr ""
+msgstr "ยังไม่มีข้อมูล!"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -1003,27 +1055,27 @@ msgstr "จํานวนข้อความที่ยังไม่ได
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__slot_type__unique
 msgid "One Shot"
-msgstr ""
+msgstr "หนึ่งนัด"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_event__appointment_type_id
 msgid "Online Appointment"
-msgstr "นัดหมายออนไลน์"
+msgstr "การนัดหมายออนไลน์"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_answer
 msgid "Online Appointment : Answers"
-msgstr ""
+msgstr "การนัดหมายออนไลน์ : คำตอบ"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_question
 msgid "Online Appointment : Questions"
-msgstr ""
+msgstr "การนัดหมายออนไลน์ : คำถาม"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_slot
 msgid "Online Appointment : Time Slot"
-msgstr ""
+msgstr "การนัดหมายออนไลน์ : ช่วงเวลา"
 
 #. module: appointment
 #: model:ir.actions.act_window,name:appointment.calendar_appointment_type_action
@@ -1033,14 +1085,14 @@ msgstr ""
 #: model:ir.ui.menu,name:appointment.menu_schedule_report_all
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_event_view_search_inherit_appointment
 msgid "Online Appointments"
-msgstr ""
+msgstr "การนัดหมายออนไลน์"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
 #, python-format
 msgid ""
 "Only one work hours appointment type is allowed for a specific employee."
-msgstr ""
+msgstr "ประเภทการนัดหมายชั่วโมงทำงานเท่านั้นที่ได้รับอนุญาตสำหรับพนักงานเฉพาะ"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -1051,23 +1103,23 @@ msgstr "อดีต"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__placeholder
 msgid "Placeholder"
-msgstr "Placeholder"
+msgstr "ตัวอย่างข้อความ"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
 #, python-format
 msgid "Please enter a valid hour between 0:00 and 24:00 for your slots."
-msgstr ""
+msgstr "โปรดป้อนชั่วโมงที่ถูกต้องระหว่าง 0:00 ถึง 24:00 น. สำหรับช่องของคุณ"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Please, select another date."
-msgstr ""
+msgstr "โปรดเลือกวันที่อื่น"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__suggested_employee_ids
 msgid "Possible employees"
-msgstr ""
+msgstr "พนักงานที่เป็นไปได้"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__name
@@ -1077,7 +1129,7 @@ msgstr "คำถาม"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__question_type
 msgid "Question Type"
-msgstr ""
+msgstr "ประเภทคำถาม"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__question_id
@@ -1089,22 +1141,22 @@ msgstr "คำถาม"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_question__question_type__radio
 msgid "Radio (one answer)"
-msgstr ""
+msgstr "วิทยุ (หนึ่งคำตอบ)"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_type__assign_method__random
 msgid "Random"
-msgstr "สุ่มค่า"
+msgstr "สุ่ม"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__slot_type__recurring
 msgid "Recurring"
-msgstr ""
+msgstr "เกิดซ้ำ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__reminder_ids
 msgid "Reminders"
-msgstr ""
+msgstr "ตัวเตือนความจำ"
 
 #. module: appointment
 #: model:ir.ui.menu,name:appointment.menu_schedule_report
@@ -1114,7 +1166,7 @@ msgstr "การรายงาน"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__question_required
 msgid "Required Answer"
-msgstr ""
+msgstr "คำตอบที่จำเป็น"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -1125,12 +1177,12 @@ msgstr "รับผิดชอบ"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__country_ids
 msgid "Restrict Countries"
-msgstr ""
+msgstr "จำกัดประเทศ"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_kanban
 msgid "SCHEDULED"
-msgstr ""
+msgstr "กำหนดการ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_has_sms_error
@@ -1140,7 +1192,7 @@ msgstr "ข้อผิดพลาดในการส่ง SMS"
 #. module: appointment
 #: model:calendar.alarm,name:appointment.calendar_alarm_data_1h_sms
 msgid "SMS Text Message - 1 Hours"
-msgstr ""
+msgstr "ข้อความ SMS - 1 ชั่วโมง"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__6
@@ -1150,67 +1202,67 @@ msgstr "วันเสาร์"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Schedule Appointment"
-msgstr ""
+msgstr "กำหนดการนัดหมาย"
 
 #. module: appointment
 #: model:calendar.appointment.type,name:appointment.calendar_appointment_0
 msgid "Schedule a Demo"
-msgstr ""
+msgstr "กำหนดเวลาการสาธิต"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "Schedule an Appointment"
-msgstr ""
+msgstr "กำหนดการนัดหมาย"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "Schedule appointments to get statistics"
-msgstr ""
+msgstr "กำหนดเวลาการนัดหมายเพื่อรับสถิติ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__min_schedule_hours
 msgid "Schedule before (hours)"
-msgstr ""
+msgstr "กำหนดการก่อน (ชั่วโมง)"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__max_schedule_days
 msgid "Schedule not after (days)"
-msgstr ""
+msgstr "กำหนดการไม่หลังจาก (วัน)"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Scheduling"
-msgstr "การตั้งเวลา"
+msgstr "การกำหนดเวลา"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
-msgstr ""
+msgstr "ค้นหาในทั้งหมด"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Description"
-msgstr ""
+msgstr "ค้นหาในคำอธิบาย"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
-msgstr ""
+msgstr "ค้นหาในชื่อ"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
-msgstr ""
+msgstr "ค้นหาในความรับผิดชอบ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__appointment_type_count
 msgid "Selected Appointments Count"
-msgstr ""
+msgstr "จำนวนการนัดหมายที่เลือก"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__sequence
@@ -1222,7 +1274,7 @@ msgstr "ลำดับ"
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_kanban
 msgid "Share"
-msgstr "แบ่งปัน"
+msgstr "แชร์"
 
 #. module: appointment
 #. openerp-web
@@ -1231,33 +1283,33 @@ msgstr "แบ่งปัน"
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Share Availabilities"
-msgstr ""
+msgstr "แชร์ความพร้อม"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
 #, python-format
 msgid "Share Link"
-msgstr "แบ่งปันลิงค์"
+msgstr "แชร์ลิงก์"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_question__question_type__char
 msgid "Single line text"
-msgstr ""
+msgstr "ข้อความบรรทัดเดียว"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__slot_type
 msgid "Slot type"
-msgstr ""
+msgstr "ประเภทช่วง"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__start_datetime
 msgid "Start datetime for unique slot type management"
-msgstr ""
+msgstr "เริ่มวันที่และเวลาสำหรับการจัดการประเภทช่วงเฉพาะ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__start_hour
 msgid "Starting Hour"
-msgstr ""
+msgstr "ชั่วโมงเริ่มต้น"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__7
@@ -1267,25 +1319,25 @@ msgstr "วันอาทิตย์"
 #. module: appointment
 #: model:calendar.appointment.question,name:appointment.calendar_appointment_1_question_1
 msgid "Symptoms"
-msgstr ""
+msgstr "อาการ"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_share__employee_ids
 msgid ""
 "The employees that will be display/filter for the user to make its "
 "appointment"
-msgstr ""
+msgstr "พนักงานที่จะแสดง/กรองให้ผู้ใช้ทำการนัดหมาย"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
-msgstr ""
+msgstr "ฟิลด์ '%s' ไม่มีอยู่ในโมเดลเป้าหมาย"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "There is no appointment linked to your account."
-msgstr ""
+msgstr "ไม่มีการนัดหมายที่เชื่อมโยงกับบัญชีของคุณ"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
@@ -1293,12 +1345,12 @@ msgstr ""
 msgid ""
 "This category of appointment type should only have one employee but got %s "
 "employees"
-msgstr ""
+msgstr "การนัดหมายประเภทนี้ควรมีพนักงานเพียงคนเดียวแต่มี %sพนักงานหลายคน "
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "This is a preview of the customer appointment form."
-msgstr ""
+msgstr "นี่คือตัวอย่างแบบฟอร์มนัดหมายลูกค้า"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__4
@@ -1308,24 +1360,24 @@ msgstr "วันพฤหัสบดี"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_calendar
 msgid "Time displayed in"
-msgstr ""
+msgstr "เวลาที่แสดงใน"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Time<span class=\"chevron\"/>"
-msgstr ""
+msgstr "เวลา<span class=\"chevron\"/>"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__appointment_tz
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_kanban
 msgid "Timezone"
-msgstr "เขตเวลา"
+msgstr "โซนเวลา"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__appointment_tz
 msgid "Timezone where appointment take place"
-msgstr ""
+msgstr "โซนเวลาที่ทำการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__end_datetime
@@ -1356,18 +1408,18 @@ msgstr "ตัวนับข้อความที่ยังไม่ได
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "Until (max)"
-msgstr ""
+msgstr "จนถึง (สูงสุด)"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Upcoming"
-msgstr ""
+msgstr "กำลังจะมาถึง"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "Use the top button '<b>+ New</b>' to create an appointment type."
-msgstr ""
+msgstr "ใช้ปุ่มด้านบน'<b>+ ใหม่</b>' เพื่อสร้างประเภทการนัดหมาย"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__category
@@ -1380,11 +1432,18 @@ msgid ""
 "                employee as availabilities. This one uses recurring slot that englobe the entire week to display all possible slots\n"
 "                based on its working hours and availabilities"
 msgstr ""
+"ใช้เพื่อกำหนดหมวดหมู่ของการนัดหมายนี้\n"
+"        สามารถเป็นหนึ่งใน:\n"
+"            - เว็บไซต์: หมวดหมู่เริ่มต้น ผู้คนสามารถเข้าถึงและกำหนดการนัดหมายกับพนักงานได้จากเว็บไซต์\n"
+"            - กำหนดเอง: พนักงานจะสร้างและแชร์ประเภทการนัดหมายที่กำหนดเองกับผู้ใช้พร้อมช่วงเวลาที่เลือกเอง\n"
+"            - ชั่วโมงการทำงาน: ประเภทการนัดหมายพิเศษที่ใช้โดยพนักงานคนหนึ่งและใช้เวลาทำงานของ\n"
+"                พนักงานที่พร้อม อันนี้ใช้ช่วงที่เกิดซ้ำซึ่งครอบคลุมทั้งสัปดาห์เพื่อแสดงช่วงที่เป็นไปได้ทั้งหมด\n"
+"                ขึ้นอยู่กับชั่วโมงการทำงานและความพร้อม"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "View Availabilities <span class=\"fa fa-arrow-right\"/>"
-msgstr ""
+msgstr "ดูความพร้อม <span class=\"fa fa-arrow-right\"/>"
 
 #. module: appointment
 #: model_terms:calendar.appointment.type,message_confirmation:appointment.calendar_appointment_0
@@ -1392,6 +1451,8 @@ msgid ""
 "We thank you for your interest in our products!<br>\n"
 "               Please make sure to arrive <strong>10 minutes</strong> before your appointment."
 msgstr ""
+"เราขอขอบคุณสำหรับความสนใจในผลิตภัณฑ์ของเรา!<br>\n"
+"               กรุณามาถึงที่หมาย <strong>10 นาที</strong> ก่อนการนัดหมายของคุณ"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_type__category__website
@@ -1416,17 +1477,17 @@ msgstr "วันพุธ"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__weekday
 msgid "Week Day"
-msgstr ""
+msgstr "วันธรรมดา"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "When:"
-msgstr ""
+msgstr "เมื่อ:"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.employee_select
 msgid "With"
-msgstr ""
+msgstr "กับ"
 
 #. module: appointment
 #. openerp-web
@@ -1434,7 +1495,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_type__category__work_hours
 #, python-format
 msgid "Work Hours"
-msgstr ""
+msgstr "ชั่วโมงทำงาน"
 
 #. module: appointment
 #. openerp-web
@@ -1442,43 +1503,43 @@ msgstr ""
 #: code:addons/appointment/static/src/js/calendar_renderer.js:0
 #, python-format
 msgid "You can not create a slot in the past."
-msgstr ""
+msgstr "คุณไม่สามารถสร้างช่วงในอดีตได้"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Email *"
-msgstr ""
+msgstr "อีเมลของคุณ *"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Name *"
-msgstr ""
+msgstr "ชื่อของคุณ *"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Phone *"
-msgstr ""
+msgstr "โทรศัพท์ของคุณ *"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Your appointment is in less than"
-msgstr ""
+msgstr "การนัดหมายของคุณน้อยกว่า"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "e.g. Schedule a demo"
-msgstr ""
+msgstr "เช่น กำหนดเวลาการสาธิต"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "hour"
-msgstr ""
+msgstr "ชั่วโมง"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "hours from now!"
-msgstr ""
+msgstr "ชั่วโมงจากนี้!"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -1488,9 +1549,9 @@ msgstr "บน"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_calendar
 msgid "timezone"
-msgstr ""
+msgstr "โซนเวลา"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "with"
-msgstr ""
+msgstr "กับ"

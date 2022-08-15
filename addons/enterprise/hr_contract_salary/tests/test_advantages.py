@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
 from unittest.mock import patch
 
-from odoo.fields import Date, Datetime
-from odoo.tests.common import TransactionCase
-from dateutil.relativedelta import relativedelta
+from odoo.tests.common import TransactionCase, tagged
 from odoo.addons.hr_contract_salary.models.hr_contract import HrContract
 
 
+@tagged('advantages')
 class TestAdvantages(TransactionCase):
 
     @classmethod
@@ -58,3 +56,17 @@ class TestAdvantages(TransactionCase):
             self.contract.wage_with_holidays = 6076.57
             self.assertAlmostEqual(base_yearly_cost, self.contract.final_yearly_costs, 2,
                 'Yearly costs should stay the same')
+
+    def test_final_yearly_costs(self):
+        # Yearly costs should not change when set manually on the interface
+        # 100000 € / 12 = 8333.33333333
+        # Wage is rounded, then 8333.33 * 12 = 99999.96
+        self.contract.final_yearly_costs = 100000
+        self.contract._onchange_final_yearly_costs()
+        self.assertAlmostEqual(self.contract.final_yearly_costs, 100000, 2) # And not 99999.96
+
+        self.contract.holidays = 10
+        self.contract.final_yearly_costs = 100000
+        self.contract._onchange_final_yearly_costs()
+        self.contract._onchange_wage_with_holidays()
+        self.assertAlmostEqual(self.contract.final_yearly_costs, 100000, 2) # And not 99999.96

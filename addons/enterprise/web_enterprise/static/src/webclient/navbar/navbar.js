@@ -2,7 +2,6 @@
 
 import { NavBar } from "@web/webclient/navbar/navbar";
 import { useService } from "@web/core/utils/hooks";
-import { isMobileOS } from "@web/core/browser/feature_detection";
 
 const { hooks } = owl;
 const { useRef } = hooks;
@@ -20,9 +19,6 @@ export class EnterpriseNavBar extends NavBar {
         hooks.onPatched(() => {
             this._updateMenuAppsIcon();
         });
-    }
-    get currentApp() {
-        return !isMobileOS() ? super.currentApp : undefined;
     }
     get hasBackgroundAction() {
         return this.hm.hasBackgroundAction;

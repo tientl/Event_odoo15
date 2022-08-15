@@ -50,6 +50,15 @@ class CalendarAppointmentType(models.Model):
             else:
                 appointment_type.website_url = False
 
+    def create_and_get_website_url(self, **kwargs):
+        if 'appointment_tz' not in kwargs:
+            # appointment_tz is a mandatory field defaulting to the environment user's timezone
+            # however, sometimes the current user timezone is not defined, let's use a fallback
+            website_visitor = self.env['website.visitor']._get_visitor_from_request(force_create=False)
+            kwargs['appointment_tz'] = self.env.user.tz or website_visitor.timezone or 'UTC'
+
+        return super().create_and_get_website_url(**kwargs)
+
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         """ Force False manually for all categories of appointment type when duplicating

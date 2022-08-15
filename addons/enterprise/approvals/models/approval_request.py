@@ -85,6 +85,14 @@ class ApprovalRequest(models.Model):
         for request in self:
             request.attachment_number = attachment.get(request.id, 0)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            category = 'category_id' in vals and self.env['approval.category'].browse(vals['category_id'])
+            if category and category.automated_sequence:
+                vals['name'] = category.sequence_id.next_by_id()
+        return super().create(vals_list)
+
     def action_get_attachment_view(self):
         self.ensure_one()
         res = self.env['ir.actions.act_window']._for_xml_id('base.action_attachment')
@@ -162,7 +170,7 @@ class ApprovalRequest(models.Model):
         for request in self:
             status_lst = request.mapped('approver_ids.status')
             required_statuses = request.approver_ids.filtered('required').mapped('status')
-            required_approved = not required_statuses or (len(required_statuses) == 1 and required_statuses[0] == 'approved')
+            required_approved = required_statuses.count('approved') == len(required_statuses)
             minimal_approver = request.approval_minimum if len(status_lst) >= request.approval_minimum else len(status_lst)
             if status_lst:
                 if status_lst.count('cancel'):

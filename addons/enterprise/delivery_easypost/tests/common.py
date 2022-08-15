@@ -84,7 +84,7 @@ class EasypostTestCommon(TransactionCase):
             {
                 "name": "EASYPOST FedEx",
                 "delivery_type": "easypost",
-                "easypost_test_api_key": "oEYcRdeaXMQYjypBCx0nlg",
+                "easypost_test_api_key": "EZTKc116818834b24215a47fafc556e46340LYwlOtD5xn1m1euw0HmZ5A",
                 "easypost_production_api_key": "zhiDnLnzKCVkelNzVAfWEQ",
                 "product_id": self.easypost_fedex_carrier_product.id,
             }

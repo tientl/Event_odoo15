@@ -18,7 +18,11 @@ It also provides new tools to analyse your data.
     'license': 'OEEL-1',
     'assets': {
         'web.assets_backend': [
-            'website_sale_dashboard/static/src/js/**/*',
+            'website_sale_dashboard/static/src/js/website_sale_dashboard_view.js',
+        ],
+        'web.assets_backend_legacy_lazy': [
+            'website_sale_dashboard/static/src/js/website_sale_dashboard_legacy.js',
+            'website_sale_dashboard/static/src/js/website_sale_dashboard_controller.js',
         ],
         'web.qunit_suite_tests': [
             'website_sale_dashboard/static/tests/**/*',

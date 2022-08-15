@@ -112,7 +112,7 @@ class SocialAccountTwitter(models.Model):
         )
 
         if isinstance(result.json(), dict) and result.json().get('errors'):
-            self.sudo().write({'is_media_disconnected': True})
+            self._action_disconnect_accounts(result.json())
             return False
 
         return result.json()
@@ -143,7 +143,7 @@ class SocialAccountTwitter(models.Model):
         )
 
         if isinstance(result.json(), dict) and result.json().get('errors'):
-            self.sudo().write({'is_media_disconnected': True})
+            self._action_disconnect_accounts(result.json())
             return False
 
         last_tweets_stats = {

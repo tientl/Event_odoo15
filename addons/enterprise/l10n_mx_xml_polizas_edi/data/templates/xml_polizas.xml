@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="xml_polizas_edi" inherit_id="l10n_mx_xml_polizas.xml_polizas">
+        <xpath expr="//*[name()='PLZ:Transaccion']" position="inside">
+            <PLZ:CompNal
+                t-if="line.get('uuid')"
+                xmlns:PLZ="http://www.sat.gob.mx/esquemas/ContabilidadE/1_3/PolizasPeriodo"
+                t-att-UUID_CFDI="line['uuid']"
+                t-att-RFC="line['customer_vat']"
+                t-att-MontoTotal="line['amount_total']"
+                t-att-Moneda="line['currency_name']"
+                t-att-TipCamb="line['currency_conversion_rate']"/>
+        </xpath>
+    </template>
+</odoo>
+

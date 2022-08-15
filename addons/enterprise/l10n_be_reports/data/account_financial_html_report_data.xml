@@ -138,7 +138,7 @@
             <field name="name">29/58 - Actif circulants</field>
             <field name="code">BE_29_58</field>
             <field name="parent_id" ref='account_financial_report_be_actif_title0'/>
-            <field name="formulas">BE_29 + BE_3 + BE_40_41 + BE_50_53 + BE_54_58 + BE_490_1_6</field>
+            <field name="formulas">BE_29 + BE_3 + BE_40_41 + BE_50_53 + BE_54_58 + BE_49</field>
             <field name="sequence" eval="2"/>
             <field name="level" eval="1" />
         </record>
@@ -246,19 +246,35 @@
             <field name="sequence" eval="5"/>
             <field name="level" eval="2" />
         </record>
-        <record id="account_financial_report_be_regularisation0" model="account.financial.html.report.line">
-            <field name="name">490/1/6 - Comptes de régularisation</field>
-            <field name="code">BE_490_1_6</field>
+        <record id="account_financial_report_be_regularisation_attente0" model="account.financial.html.report.line">
+            <field name="name">49 - Comptes de régularisation et d'attente</field>
+            <field name="code">BE_49</field>
             <field name="parent_id" ref='account_financial_report_be_actif_circ0'/>
-            <field name="domain" eval="[
-                '|', ('account_id.code', '=like', '490%'),
-                '|', ('account_id.code', '=like', '491%'),
-                     ('account_id.code', '=like', '496%')
-            ]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">BE_490_1 + BE_499</field>
+            <field name="sequence" eval="4"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_report_be_regularisation0" model="account.financial.html.report.line">
+            <field name="name">490/1 - Comptes de régularisation</field>
+            <field name="code">BE_490_1</field>
+            <field name="parent_id" ref='account_financial_report_be_regularisation_attente0'/>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '490%'), ('account_id.code', '=like', '491%')]" />
             <field name="groupby">account_id</field>
             <field name="formulas">sum</field>
-            <field name="sequence" eval="6"/>
-            <field name="level" eval="2" />
+            <field name="sequence" eval="1"/>
+            <field name="level" eval="3" />
+        </record>
+        <record id="account_financial_report_be_attente0" model="account.financial.html.report.line">
+            <field name="name">499 - Comptes d'attente</field>
+            <field name="code">BE_499</field>
+            <field name="parent_id" ref='account_financial_report_be_regularisation_attente0'/>
+            <field name="domain" eval="[('account_id.code', '=like', '499%')]" />
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="3" />
+            <field name="hide_if_zero" eval="True" />
         </record>
         <record id="account_financial_report_be_passif_title0" model="account.financial.html.report.line">
             <field name="name">PASSIF</field>
@@ -480,7 +496,7 @@
             <field name="name">17/49 - Dettes</field>
             <field name="code">BE_17_49</field>
             <field name="parent_id" ref='account_financial_report_be_passif_title0'/>
-            <field name="formulas">BE_17 + BE_42_48 + BE_49</field>
+            <field name="formulas">BE_17 + BE_42_48 + BE_492_3</field>
             <field name="sequence" eval="3"/>
             <field name="level" eval="1" />
         </record>
@@ -682,35 +698,15 @@
             <field name="sequence" eval="6"/>
             <field name="level" eval="3" />
         </record>
-        <record id="account_financial_report_be_regularisation_attente0" model="account.financial.html.report.line">
-            <field name="name">49 - Comptes de régularisation et d'attente</field>
-            <field name="code">BE_49</field>
-            <field name="parent_id" ref='account_financial_report_be_dettes0'/>
-            <field name="groupby">account_id</field>
-            <field name="formulas">BE_492_3 + BE_499</field>
-            <field name="sequence" eval="3"/>
-            <field name="level" eval="2" />
-        </record>
         <record id="account_financial_report_be_regularisation1" model="account.financial.html.report.line">
             <field name="name">492/3 - Comptes de régularisation</field>
             <field name="code">BE_492_3</field>
-            <field name="parent_id" ref='account_financial_report_be_regularisation_attente0'/>
+            <field name="parent_id" ref='account_financial_report_be_dettes0'/>
             <field name="domain" eval="['|', ('account_id.code', '=like', '492%'), ('account_id.code', '=like', '493%')]" />
             <field name="groupby">account_id</field>
             <field name="formulas">-sum</field>
             <field name="sequence" eval="3"/>
-            <field name="level" eval="3" />
-        </record>
-        <record id="account_financial_report_be_attente0" model="account.financial.html.report.line">
-            <field name="name">499 - Comptes d'attente</field>
-            <field name="code">BE_499</field>
-            <field name="parent_id" ref='account_financial_report_be_regularisation_attente0'/>
-            <field name="domain" eval="[('account_id.code', '=like', '499%')]" />
-            <field name="groupby">account_id</field>
-            <field name="formulas">-sum</field>
-            <field name="sequence" eval="4"/>
-            <field name="level" eval="3" />
-            <field name="hide_if_zero" eval="True" />
+            <field name="level" eval="2" />
         </record>
         <record id="account_financial_report_be_0_total" model="account.financial.html.report.line">
             <field name="name">0 - Total</field>
@@ -867,7 +863,7 @@
             <field name="name">Différence sur les comptes 4</field>
             <field name="code">BE_4_CONTROL</field>
             <field name="financial_report_id" ref="account_financial_report_be_balancesheet0"/>
-            <field name="formulas">BE_4_TOTAL - BE_40_41 + BE_42_48 - BE_490_1_6 + BE_49</field>
+            <field name="formulas">BE_4_TOTAL - BE_40_41 + BE_42_48 - BE_49 + BE_492_3</field>
             <field name="sequence" eval="40"/>
             <field name="level" eval="1"/>
             <field name="hide_if_zero" eval="True" />
@@ -1124,9 +1120,7 @@
             <field name="name">75 - Produits financiers</field>
             <field name="code">BE_75</field>
             <field name="financial_report_id" ref="account_financial_report_be_profitandloss0"/>
-            <field name="domain" eval="[('account_id.code', '=like', '75%')]" />
-            <field name="formulas">-sum</field>
-            <field name="groupby">account_id</field>
+            <field name="formulas">BE_750 + BE_751 + BE_752_9</field>
             <field name="sequence" eval="5"/>
             <field name="level" eval="1" />
         </record>
@@ -1164,9 +1158,7 @@
             <field name="name">65 - Charges financières</field>
             <field name="code">BE_65</field>
             <field name="financial_report_id" ref="account_financial_report_be_profitandloss0"/>
-            <field name="domain" eval="[('account_id.code', '=like', '65%')]" />
-            <field name="formulas">sum</field>
-            <field name="groupby">account_id</field>
+            <field name="formulas">BE_650 + BE_651 + BE_652_9</field>
             <field name="sequence" eval="6"/>
             <field name="level" eval="1" />
         </record>
@@ -1220,9 +1212,7 @@
             <field name="name">76 - Produits exceptionnels</field>
             <field name="code">BE_76</field>
             <field name="financial_report_id" ref="account_financial_report_be_profitandloss0"/>
-            <field name="domain" eval="[('account_id.code', '=like', '76%')]" />
-            <field name="formulas">-sum</field>
-            <field name="groupby">account_id</field>
+            <field name="formulas">BE_760 + BE_761 + BE_762 + +BE_763 + BE_764_9</field>
             <field name="sequence" eval="9"/>
             <field name="level" eval="1" />
         </record>
@@ -1280,9 +1270,7 @@
             <field name="name">66 - Charges exceptionnelles</field>
             <field name="code">BE_66</field>
             <field name="financial_report_id" ref="account_financial_report_be_profitandloss0"/>
-            <field name="domain" eval="[('account_id.code', '=like', '66%')]" />
-            <field name="formulas">sum</field>
-            <field name="groupby">account_id</field>
+            <field name="formulas">BE_660 + BE_661 + BE_662 + BE_663 + BE_664_8 + BE_669</field>
             <field name="sequence" eval="10"/>
             <field name="level" eval="1" />
         </record>
@@ -1576,7 +1564,7 @@
             <field name="name">694/6 - Bénéfice à distribuer</field>
             <field name="code">BE_694_6</field>
             <field name="financial_report_id" ref="account_financial_report_be_profitandloss0"/>
-            <field name="domain" eval="['|', ('account_id.code', '=like', '694%'), ('account_id.code', '=like', '695%'), ('account_id.code', '=like', '696%')]" />
+            <field name="domain" eval="['|', '|', ('account_id.code', '=like', '694%'), ('account_id.code', '=like', '695%'), ('account_id.code', '=like', '696%')]" />
             <field name="formulas">sum</field>
             <field name="sequence" eval="29"/>
             <field name="level" eval="1" />

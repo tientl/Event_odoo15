@@ -13,7 +13,7 @@ class HelpdeskTicketReport(models.Model):
 
     ticket_id = fields.Many2one('helpdesk.ticket', string='Ticket', readonly=True)
     sla_fail = fields.Boolean(related="ticket_id.sla_fail", readonly=True)
-    create_date = fields.Date("Created On", readonly=True)
+    create_date = fields.Datetime("Created On", readonly=True)
     priority = fields.Selection(TICKET_PRIORITY, string='Minimum Priority', readonly=True)
     user_id = fields.Many2one('res.users', string="Assigned To", readonly=True)
     partner_id = fields.Many2one('res.partner', string="Customer", readonly=True)

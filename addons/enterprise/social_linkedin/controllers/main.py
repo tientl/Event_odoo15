@@ -42,6 +42,7 @@ class SocialLinkedinController(SocialController):
 
                 request.env['social.account']._create_linkedin_accounts(access_token, media)
 
+            # Both _get_linkedin_access_token and _create_linkedin_accounts may raise a SocialValidationException
             except SocialValidationException as e:
                 return request.render('social.social_http_error_view', {'error_message': str(e)})
 

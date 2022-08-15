@@ -59,9 +59,9 @@ class ResCompany(models.Model):
         self.ensure_one()
         if self.l10n_be_ffe_employer_type == 'commercial':
             if worker_count < 20:
-                rate = 0.0013
+                rate = 0.0007
             else:
-                rate = 0.0018
+                rate = 0.0013
         else:
             rate = 0.0002
         return rate

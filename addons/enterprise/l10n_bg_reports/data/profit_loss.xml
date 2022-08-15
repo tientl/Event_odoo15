@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_bg_pl" model="account.financial.html.report">
+        <field name="name">Profit and loss</field>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="parent_id" ref="l10n_bg.bg_reports_menu"/>
+        <field name="country_id" ref="base.bg"/>
+    </record>
+
+    <record id="action_account_report_bg_pl" model="ir.actions.client">
+        <field name="name">Profit and loss</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.financial.html.report', 'id': ref('l10n_bg_pl')}" />
+    </record>
+
+    <record id="l10n_bg_bs_liabilities_a_6" model="account.financial.html.report.line">
+        <field name="action_id" ref='action_account_report_bg_pl' />
+    </record>
+
+    <record id="l10n_bg_pl_expenses" model="account.financial.html.report.line">
+        <field name="name">Expenses</field>
+        <field name="sequence">1000</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_bg_pl"/>
+        <field name="code">bg_pl_expenses</field>
+        <field name="formulas">bg_pl_expenses_total_costs + bg_pl_expenses_10 + bg_pl_expenses_11 + bg_pl_expenses_12</field>
+    </record>
+
+        <record id="l10n_bg_pl_expenses_1" model="account.financial.html.report.line">
+            <field name="name">Decrease in production stocks and work in progress</field>
+            <field name="sequence">1010</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_1</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '611%'),
+                     ('account_id.code', '=like', '612%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum_if_pos</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_2" model="account.financial.html.report.line">
+            <field name="name">Costs for raw materials and external services</field>
+            <field name="sequence">1020</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_2</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '601%'),
+                     ('account_id.code', '=like', '602%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_3" model="account.financial.html.report.line">
+            <field name="name">Costs for staff</field>
+            <field name="sequence">1030</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_3</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '604%'),
+                     ('account_id.code', '=like', '605%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_4" model="account.financial.html.report.line">
+            <field name="name">Depreciation and impairment expenses</field>
+            <field name="sequence">1040</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_4</field>
+            <field name="formulas">bg_pl_expenses_4_1 + bg_pl_expenses_4_2</field>
+        </record>
+
+            <record id="l10n_bg_pl_expenses_4_1" model="account.financial.html.report.line">
+                <field name="name">Amortization and impairment losses on property, plant and equipment and intangible assets</field>
+                <field name="sequence">1041</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_4"/>
+                <field name="code">bg_pl_expenses_4_1</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '603%'),
+                         ('account_id.code', '=like', '631%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_4_2" model="account.financial.html.report.line">
+                <field name="name">Impairment losses on current assets</field>
+                <field name="sequence">1042</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_4"/>
+                <field name="code">bg_pl_expenses_4_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '632%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+        <record id="l10n_bg_pl_expenses_5" model="account.financial.html.report.line">
+            <field name="name">Other costs</field>
+            <field name="sequence">1050</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_5</field>
+            <field name="formulas">bg_pl_expenses_5_1 + bg_pl_expenses_5_2 + bg_pl_expenses_5_3 + bg_pl_expenses_5_4 + bg_pl_expenses_5_5 + bg_pl_expenses_5_6 + bg_pl_expenses_5_7 + bg_pl_expenses_5_8 + bg_pl_expenses_5_9</field>
+        </record>
+
+            <record id="l10n_bg_pl_expenses_5_1" model="account.financial.html.report.line">
+                <field name="name">Provisions</field>
+                <field name="sequence">1051</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '607%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_2" model="account.financial.html.report.line">
+                <field name="name">Expenses from subsequent valuations of assets</field>
+                <field name="sequence">1052</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '608%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_3" model="account.financial.html.report.line">
+                <field name="name">Other expenses</field>
+                <field name="sequence">1053</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '609%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_4" model="account.financial.html.report.line">
+                <field name="name">Other operating expenses</field>
+                <field name="sequence">1054</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_4</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '614%'),
+                    '|', ('account_id.code', '=like', '615%'),
+                    '|', ('account_id.code', '=like', '616%'),
+                    '|', ('account_id.code', '=like', '617%'),
+                         ('account_id.code', '=like', '618%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_5" model="account.financial.html.report.line">
+                <field name="name">Deferred expenses</field>
+                <field name="sequence">1055</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '65%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- Direct insurance expenses -->
+            <record id="l10n_bg_pl_expenses_5_6" model="account.financial.html.report.line">
+                <field name="name">Direct insurance expenses</field>
+                <field name="sequence">1060</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '66%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_7" model="account.financial.html.report.line">
+                <field name="name">Passive reinsurance expenses</field>
+                <field name="sequence">1057</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '67%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_8" model="account.financial.html.report.line">
+                <field name="name">Active reinsurance expenses</field>
+                <field name="sequence">1058</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_8</field>
+                <field name="domain" eval="[('account_id.code', '=like', '68%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_expenses_5_9" model="account.financial.html.report.line">
+                <field name="name">Extraordinary expenses</field>
+                <field name="sequence">1059</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_expenses_5"/>
+                <field name="code">bg_pl_expenses_5_9</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '69%'),
+                         ('account_id.code', '=like', '999001%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum</field>
+            </record>
+
+        <record id="l10n_bg_pl_expenses_total_operating" model="account.financial.html.report.line">
+            <field name="name">Total operating expenses</field>
+            <field name="sequence">1060</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_total_operating</field>
+            <field name="formulas">bg_pl_expenses_1 + bg_pl_expenses_2 + bg_pl_expenses_3 + bg_pl_expenses_4 + bg_pl_expenses_5</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_total_financial" model="account.financial.html.report.line">
+            <field name="name">Total financial costs</field>
+            <field name="sequence">1070</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_total_financial</field>
+            <field name="domain" eval="[('account_id.code', '=like', '62%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_8" model="account.financial.html.report.line">
+            <field name="name">Profit from ordinary activities</field>
+            <field name="sequence">1080</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_8</field>
+            <field name="formulas">max(0, (bg_pl_income_total_revenue - bg_pl_expenses_total_costs))</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_total_costs" model="account.financial.html.report.line">
+            <field name="name">Total costs</field>
+            <field name="sequence">1090</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_total_costs</field>
+            <field name="formulas">bg_pl_expenses_total_operating + bg_pl_expenses_total_financial</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_9" model="account.financial.html.report.line">
+            <field name="name">Accounting profit</field>
+            <field name="sequence">1100</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_9</field>
+            <field name="formulas">max(0, bg_pl_income_total_revenue - bg_pl_expenses_total_costs)</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_10" model="account.financial.html.report.line">
+            <field name="name">Income tax expense</field>
+            <field name="sequence">1110</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_10</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '6060%'),
+                '|', ('account_id.code', '=like', '606452%'),
+                     ('account_id.code', '=like', '606454%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_11" model="account.financial.html.report.line">
+            <field name="name">Other taxes, alternative to the corporate tax</field>
+            <field name="sequence">1120</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_11</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '606451%'),
+                     ('account_id.code', '=like', '606459%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_expenses_12" model="account.financial.html.report.line">
+            <field name="name">Profit</field>
+            <field name="sequence">1130</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_expenses"/>
+            <field name="code">bg_pl_expenses_12</field>
+            <field name="formulas">max(0, (bg_pl_expenses_9 - bg_pl_expenses_10 - bg_pl_expenses_11))</field>
+        </record>
+
+    <record id="l10n_bg_pl_income" model="account.financial.html.report.line">
+        <field name="name">Income</field>
+        <field name="sequence">2000</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_bg_pl"/>
+        <field name="code">bg_pl_income</field>
+        <field name="formulas">bg_pl_income_total_revenue + bg_pl_income_10</field>
+    </record>
+
+        <record id="l10n_bg_pl_income_1" model="account.financial.html.report.line">
+            <field name="name">Net sales revenue</field>
+            <field name="sequence">2010</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_1</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '701%'),
+                '|', ('account_id.code', '=like', '702%'),
+                     ('account_id.code', '=like', '703%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_2" model="account.financial.html.report.line">
+            <field name="name">Increase in inventories and work in progress</field>
+            <field name="sequence">2020</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_2</field>
+            <field name="domain" eval="[
+                '|', ('account_id.code', '=like', '611%'),
+                     ('account_id.code', '=like', '612%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum_if_neg</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_3" model="account.financial.html.report.line">
+            <field name="name">Expenses for acquisition of assets in a business way</field>
+            <field name="sequence">2030</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_3</field>
+            <field name="domain" eval="[('account_id.code', '=like', '613%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_4" model="account.financial.html.report.line">
+            <field name="name">Other income</field>
+            <field name="sequence">2040</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_4</field>
+            <field name="formulas">bg_pl_income_4_1 + bg_pl_income_4_2</field>
+        </record>
+
+            <record id="l10n_bg_pl_income_4_1" model="account.financial.html.report.line">
+                <field name="name">Income from sales revenue</field>
+                <field name="sequence">2041</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_4"/>
+                <field name="code">bg_pl_income_4_1</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '704%'),
+                    '|', ('account_id.code', '=like', '705%'),
+                    '|', ('account_id.code', '=like', '706%'),
+                    '|', ('account_id.code', '=like', '707%'),
+                         ('account_id.code', '=like', '709%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_4_2" model="account.financial.html.report.line">
+                <field name="name">Income from non-profit</field>
+                <field name="sequence">2042</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_4"/>
+                <field name="code">bg_pl_income_4_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '71%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+>
+        <record id="l10n_bg_pl_income_total_operating" model="account.financial.html.report.line">
+            <field name="name">Total operating income</field>
+            <field name="sequence">2050</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_total_operating</field>
+            <field name="formulas">bg_pl_income_1 + bg_pl_income_2 + bg_pl_income_3 + bg_pl_income_4</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_5" model="account.financial.html.report.line">
+            <field name="name">Financial income</field>
+            <field name="sequence">2060</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_5</field>
+            <field name="domain" eval="[('account_id.code', '=like', '72%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">-sum</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_6" model="account.financial.html.report.line">
+            <field name="name">Other interest and financial income</field>
+            <field name="sequence">2070</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_6</field>
+            <field name="formulas">bg_pl_income_6_1 + bg_pl_income_6_2 + bg_pl_income_6_3 + bg_pl_income_6_4 + bg_pl_income_6_5 + bg_pl_income_6_6</field>
+        </record>
+            <record id="l10n_bg_pl_income_6_1" model="account.financial.html.report.line">
+                <field name="name">Income from recovered impairment losses</field>
+                <field name="sequence">2071</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '73%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_6_2" model="account.financial.html.report.line">
+                <field name="name">Deferred income and financing</field>
+                <field name="sequence">2072</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '75%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_6_3" model="account.financial.html.report.line">
+                <field name="name">Income from direct insurance</field>
+                <field name="sequence">2073</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '76%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_6_4" model="account.financial.html.report.line">
+                <field name="name">Income from passive reinsurance</field>
+                <field name="sequence">2074</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '77%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_6_5" model="account.financial.html.report.line">
+                <field name="name">Income from active reinsurance</field>
+                <field name="sequence">2075</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '78%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_pl_income_6_6" model="account.financial.html.report.line">
+                <field name="name">Extraordinary income</field>
+                <field name="sequence">2076</field>
+                <field name="level" eval="3"/>
+                <field name="parent_id" ref="l10n_bg_pl_income_6"/>
+                <field name="code">bg_pl_income_6_6</field>
+                <field name="domain" eval="['|',('account_id.code', '=like', '79%'),('account_id.code', '=like', '999002%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+        <record id="l10n_bg_pl_income_total_financial" model="account.financial.html.report.line">
+            <field name="name">Total financial income</field>
+            <field name="sequence">2080</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_total_financial</field>
+            <field name="formulas">bg_pl_income_5 + bg_pl_income_6</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_8" model="account.financial.html.report.line">
+            <field name="name">Loss from ordinary activities</field>
+            <field name="sequence">2090</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_8</field>
+            <field name="formulas">max(0, (bg_pl_expenses_total_costs - bg_pl_income_total_revenue))</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_total_revenue" model="account.financial.html.report.line">
+            <field name="name">Total revenue</field>
+            <field name="sequence">2100</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_total_revenue</field>
+            <field name="formulas">bg_pl_income_total_operating + bg_pl_income_total_financial</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_9" model="account.financial.html.report.line">
+            <field name="name">Accounting loss</field>
+            <field name="sequence">2110</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_9</field>
+            <field name="formulas">max(0, (bg_pl_expenses_total_costs - bg_pl_income_total_revenue))</field>
+        </record>
+
+        <record id="l10n_bg_pl_income_10" model="account.financial.html.report.line">
+            <field name="name">Loss</field>
+            <field name="sequence">2120</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_pl_income"/>
+            <field name="code">bg_pl_income_10</field>
+            <field name="formulas">max(0, (bg_pl_income_9 + bg_pl_expenses_10 + bg_pl_expenses_11 - bg_pl_expenses_9))</field>
+        </record>
+</odoo>

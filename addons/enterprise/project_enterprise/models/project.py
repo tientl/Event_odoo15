@@ -118,6 +118,8 @@ class Task(models.Model):
             FROM project_task T1
             INNER JOIN project_task T2 ON T1.id <> T2.id
             INNER JOIN project_task_user_rel U1 ON T1.id = U1.task_id
+            INNER JOIN project_task_user_rel U2 ON T2.id = U2.task_id
+                AND U1.user_id = U2.user_id
             WHERE
                 T1.planned_date_begin < T2.planned_date_end
                 AND T1.planned_date_end > T2.planned_date_begin
@@ -453,10 +455,10 @@ class Task(models.Model):
         for task in tasks_to_auto_shift:
             new_planned_date_begin, new_planned_date_end = False, False
             if task.planned_hours:
-                new_planned_date_begin, new_planned_date_end, intervals_cache = task._action_auto_shift_with_planned_hours(
+                new_planned_date_begin, new_planned_date_end, intervals_cache = task.sudo()._action_auto_shift_with_planned_hours(
                     mapped_dependent, mapped_depend_on, intervals_cache)
             else:
-                new_planned_date_begin, new_planned_date_end, intervals_cache = task._action_auto_shift_without_planned_hours(
+                new_planned_date_begin, new_planned_date_end, intervals_cache = task.sudo()._action_auto_shift_without_planned_hours(
                     mapped_dependent, mapped_depend_on, intervals_cache)
 
             task._write_planned_dates_if_in_future(new_planned_date_begin, new_planned_date_end)
@@ -810,10 +812,10 @@ class Task(models.Model):
         intervals_cache = defaultdict(Intervals)
 
         if trigger_task.planned_hours:
-            new_planned_date_begin, new_planned_date_end, intervals_cache = trigger_task._action_auto_shift_with_planned_hours(
+            new_planned_date_begin, new_planned_date_end, intervals_cache = trigger_task.sudo()._action_auto_shift_with_planned_hours(
                 mapped_dependent, mapped_depend_on, intervals_cache)
         else:
-            new_planned_date_begin, new_planned_date_end, intervals_cache = trigger_task._action_auto_shift_without_planned_hours(
+            new_planned_date_begin, new_planned_date_end, intervals_cache = trigger_task.sudo()._action_auto_shift_without_planned_hours(
                 mapped_dependent, mapped_depend_on, intervals_cache)
 
         if not trigger_task._write_planned_dates_if_in_future(new_planned_date_begin, new_planned_date_end):

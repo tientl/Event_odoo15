@@ -13,6 +13,7 @@
 # Martin Trigaux, 2021
 # Manuela Silva <mmsrs@sky.com>, 2021
 # Pedro Filipe <pedro2.10@hotmail.com>, 2021
+# Luiz Fernando <lfpsgs@outlook.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -20,13 +21,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-22 09:02+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Pedro Filipe <pedro2.10@hotmail.com>, 2021\n"
+"Last-Translator: Luiz Fernando <lfpsgs@outlook.com>, 2022\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: pt\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: documents_spreadsheet
 #: code:addons/documents_spreadsheet/wizard/save_spreadsheet_template.py:0
@@ -1281,6 +1282,15 @@ msgstr ""
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid ""
+"Function %s expects its parameters to be single values or single cell "
+"references, not ranges."
+msgstr ""
+
+#. module: documents_spreadsheet
+#. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid ""
 "Function %s expects the parameter %s to be a single value or a single cell "
 "reference, not a range."
 msgstr ""
@@ -1817,6 +1827,15 @@ msgstr ""
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Invalid reference"
+msgstr ""
+
+#. module: documents_spreadsheet
+#. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "Invalid sheet"
 msgstr ""
@@ -2122,7 +2141,6 @@ msgstr ""
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.xml:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.xml:0
 #, python-format
 msgid "Link menu in spreadsheet"
 msgstr ""
@@ -2502,6 +2520,7 @@ msgstr ""
 
 #. module: documents_spreadsheet
 #. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/components/spreadsheet_template_dialog.js:0
 #: code:addons/documents_spreadsheet/static/src/js/spreadsheet_selector_dialog.xml:0
 #, python-format
 msgid "New Spreadsheet"
@@ -2516,8 +2535,7 @@ msgstr ""
 
 #. module: documents_spreadsheet
 #. openerp-web
-#: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.js:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.js:0
+#: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_service.js:0
 #: code:addons/documents_spreadsheet/static/src/js/list_controller.js:0
 #: code:addons/documents_spreadsheet/static/src/js/pivot_view.js:0
 #, python-format
@@ -2539,8 +2557,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_action.js:0
-#: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.js:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.js:0
+#: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_service.js:0
 #: code:addons/documents_spreadsheet/static/src/js/list_controller.js:0
 #: code:addons/documents_spreadsheet/static/src/js/pivot_view.js:0
 #, python-format
@@ -4278,6 +4295,8 @@ msgstr ""
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/js/components/spreadsheet_pivot_dialog.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_autofill_plugin.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_autofill_plugin.js:0
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_structure_plugin.js:0
 #, python-format
 msgid "Total"
@@ -4594,7 +4613,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.res_config_settings_view_form_inherit_documents_spreadsheet
 msgid "Workspace"
-msgstr ""
+msgstr "Espaço de trabalho"
 
 #. module: documents_spreadsheet
 #. openerp-web
@@ -4714,13 +4733,6 @@ msgstr "e"
 #: code:addons/documents_spreadsheet/static/src/xml/pivot_dialog.xml:0
 #, python-format
 msgid "has no cell missing from this sheet"
-msgstr ""
-
-#. module: documents_spreadsheet
-#. openerp-web
-#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
-#, python-format
-msgid "invalid range %s:%s"
 msgstr ""
 
 #. module: documents_spreadsheet

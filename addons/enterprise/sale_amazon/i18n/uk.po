@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:42+0000\n"
-"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,6 +39,21 @@ msgid ""
 "        </div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"            <p>Cинхронізація замовлення Amazon з референсом <t t-out=\"ctx.get('amazon_order_ref') or ''\">REF</t> виникликала помилку та не була завершена.</p>\n"
+"            <p>Якщо замовлення не скасовано в SellerCentral, інші спроби синхронізації не будуть.</p>\n"
+"            <p>Щоб запланувати нову спробу синхронізації, виконайте наступні дії:\n"
+"                <ol>\n"
+"                    <li>Включіть інструменти розробника.</li>\n"
+"                    <li>Відкрийте форму облікового запису Amazon, на якому було розміщено замовлення.</li>\n"
+"                    <li>Перейдіть до вкладки Подальше виконання замовлення.</li>\n"
+"                    <li>Встановіть дату <em>останньої синхронізації замовлень</em> тобто до останнього оновлення статусу замовлення.</li>\n"
+"                    <li>Збережіть зміни та натисніть кнопку <em>СИНХРОНІЗУВАТИ ЗАМОВЛЕННЯ</em>.</li>\n"
+"                </ol>\n"
+"            </p>\n"
+"            <p>Якщо проблема не зникне, зверніться до <a href=\"https://www.odoo.com/help/\">Служби підтримки Odoo</a>.</p>\n"
+"        </div>\n"
+"        "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__name
@@ -178,6 +193,9 @@ msgid ""
 "Since the current carrier doesn't automatically provide a tracking "
 "reference, you need to set one manually."
 msgstr ""
+"Amazon вимагає, щоб референс відстеження надавався з кожною доставкою. "
+"Оскільки поточний оператор не надає автоматично референс відстеження, вам "
+"потрібно встановити його вручну."
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -186,6 +204,8 @@ msgid ""
 "Amazon requires that a tracking reference is provided with each delivery. "
 "You need to assign a carrier to this delivery."
 msgstr ""
+"Amazon вимагає, щоби посилання на відстеження надавалося з кожною доставкою."
+" Вам потрібно призначити перевізника для цієї доставки."
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_item_ref
@@ -195,7 +215,7 @@ msgstr "Референс визначеного елемента Amazon"
 #. module: sale_amazon
 #: model:mail.template,name:sale_amazon.order_sync_failure
 msgid "Amazon: Order Synchronization Failure"
-msgstr ""
+msgstr "Amazon: Невдала синхронізація замовлення"
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_orders_ir_actions_server
@@ -642,6 +662,7 @@ msgstr "Синхронізувати комплектування"
 msgid ""
 "Synchronization of Amazon order {{ ctx.get('amazon_order_ref') }} has failed"
 msgstr ""
+"Синхронізація замовлення Amazon {{ ctx.get('amazon_order_ref') }} не вдалося"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__tax_included

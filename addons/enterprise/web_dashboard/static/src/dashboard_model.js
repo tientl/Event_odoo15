@@ -275,7 +275,8 @@ export class DashboardModel extends Model {
                                         values: new Array(meta.domains.length),
                                     };
                                 }
-                                data[agg.name].values[i] = group[agg.name] || 0;
+                                const { type: fieldType } = meta.fields[agg.field];
+                                data[agg.name].values[i] = group[agg.name] || (["date", "datetime"].includes(fieldType) ? NaN : 0);
                             }
                         })
                 );

@@ -5,31 +5,41 @@ from odoo.tests import common, tagged
 import base64
 import requests
 
+TESTURL = 'https://s3.amazonaws.com/winbooks-public/softwares/winbooks-classic-and-virtual-invoice/Tools/PARFILUX_2013.04.08.zip'
+FILENAME = 'PARFILUX_2013.04.08.zip'
+
 
 @tagged('post_install', '-at_install', 'external', '-standard')
 class TestWinbooksImport(common.TransactionCase):
 
     def download_test_db(self):
-        url = 'https://s3.amazonaws.com/winbooks-public/softwares/winbooks-classic-and-virtual-invoice/Tools/PARFILUX_2013.04.08.zip'
-        response = requests.get(url, timeout=30)
+        response = requests.get(TESTURL, timeout=30)
         response.raise_for_status()
-        attachment = self.env['ir.attachment'].create({
+        return self.env['ir.attachment'].create({
             'datas': base64.b64encode(response.content),
-            'name': 'PARFILUX_2013.04.08.zip',
+            'name': FILENAME,
             'mimetype': 'application/zip',
         })
 
     def test_winbooks_import(self):
-        self.download_test_db()
+        attachment = (
+            self.env['ir.attachment'].search([('name', '=', FILENAME)])
+            or self.download_test_db()
+        )
+        # self.env.cr.commit(); return  # uncomment to avoid fetching multiple times locally
         test_company = self.env['res.company'].create({
             'name': 'My Winbooks Company',
             'currency_id': self.env['res.currency'].search([('name', '=', 'EUR')]).id,
             'country_id': self.env.ref('base.be').id,
         })
-        attachment = self.env['ir.attachment'].search([('name', '=', 'PARFILUX_2013.04.08.zip')])
+        self.env['account.chart.template'].search([
+            ('currency_id.name', '=', 'EUR'),
+        ], limit=1).try_loading(test_company)
         wizard = self.env['account.winbooks.import.wizard'].with_company(test_company).create({
             'zip_file': attachment.datas,
         })
-        wizard.with_company(test_company).import_winbooks_file()
-
-        self.assertTrue(self.env['account.move'].search([('company_id', '=', test_company.id)], limit=1))
+        before = self.env['account.move'].search_count([('company_id', '=', test_company.id)])
+        wizard.with_company(test_company).with_context(winbooks_import_hard_fail=False).import_winbooks_file()
+        wizard.flush()  # be sure to trigger SQL constraints
+        after = self.env['account.move'].search_count([('company_id', '=', test_company.id)])
+        self.assertGreater(after, before)

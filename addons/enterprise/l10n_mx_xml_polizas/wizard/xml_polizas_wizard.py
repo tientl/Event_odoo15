@@ -178,6 +178,25 @@ class XmlPolizasExportWizard(models.TransientModel):
     #
     # ------------------------------
 
+    def _get_move_line_export_data(self, line):
+        return {
+            'line_label': textwrap.shorten(
+                line['journal_name'] + ((' - ' + line['name']) if line['name'] else ''),
+                width=200),
+            'account_name': line['account_name'],
+            'account_code': line['account_code'],
+            'credit': '%.2f' % line['credit'],
+            'debit': '%.2f' % line['debit'],
+        }
+
+    def _get_move_export_data(self, accounts_results):
+        move_data = MoveExportData()
+        for _key, (results, *_rest) in accounts_results:
+            for line in results.get('lines', []):
+                data = self._get_move_line_export_data(line)
+                move_data.append(line['date'], line['journal_name'], line['move_name'], data)
+        return move_data
+
     def _get_moves_data(self):
         """ Retrieve the moves data to be rendered with the template """
 
@@ -204,18 +223,7 @@ class XmlPolizasExportWizard(models.TransientModel):
         accounts_results, _dummy = ledger._do_query(options_list)
 
         # Group data for (year, month / move)
-        move_data = MoveExportData()
-        for _key, (results, *_rest) in accounts_results:
-            for line in results.get('lines', []):
-                move_data.append(line['date'], line['journal_name'], line['move_name'], {
-                    'line_label': textwrap.shorten(
-                        line['journal_name'] + ((' - ' + line['name']) if line['name'] else ''),
-                        width=200),
-                    'account_name': line['account_name'],
-                    'account_code': line['account_code'],
-                    'credit': '%.2f' % line['credit'],
-                    'debit': '%.2f' % line['debit']
-                })
+        move_data = self._get_move_export_data(accounts_results)
 
         # Sort the lines by name, to have a consistent order
         for period, moves in move_data.items():
@@ -281,7 +289,7 @@ class XmlPolizasExportWizard(models.TransientModel):
         elif len(xml_records) == 1:
             record = xml_records[0]
             self.write({
-                'report_data': base64.b64encode(record['content']),
+                'report_data': base64.b64encode(record['content'].encode()),
                 'report_filename': record['filename'],
                 'mimetype': 'application/xml',
             })

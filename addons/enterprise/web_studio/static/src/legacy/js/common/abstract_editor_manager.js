@@ -327,20 +327,21 @@ var AbstractEditorManager = Widget.extend({
         return this._getSidebarState(mode, params).then(function (newState) {
             var oldSidebar = self.sidebar;
             var previousState = oldSidebar.getLocalState ? oldSidebar.getLocalState() : undefined;
-            self.sidebar = self._instantiateSidebar(newState, previousState);
+            const newSidebar = self._instantiateSidebar(newState, previousState);
+            self.sidebar = newSidebar;
 
             var fragment = document.createDocumentFragment();
-            return self.sidebar.appendTo(fragment).then(function () {
+            return newSidebar.appendTo(fragment).then(function () {
                 oldSidebar.destroy();
-                if (!self.sidebar.isDestroyed()) {
-                    self.sidebar.$el.prependTo(self.$el);
-                    if (self.sidebar.on_attach_callback) {
-                        self.sidebar.on_attach_callback();
+                if (!newSidebar.isDestroyed()) {
+                    newSidebar.$el.prependTo(self.$el);
+                    if (newSidebar.on_attach_callback) {
+                        newSidebar.on_attach_callback();
                     }
-                    self.sidebar.$el.scrollTop(self.sidebarScrollTop);
+                    newSidebar.$el.scrollTop(self.sidebarScrollTop);
                     // the XML editor replaces the sidebar in this case
                     if (self.mode === 'rendering') {
-                        self.sidebar.$el.detach();
+                        newSidebar.$el.detach();
                     }
                 }
             });

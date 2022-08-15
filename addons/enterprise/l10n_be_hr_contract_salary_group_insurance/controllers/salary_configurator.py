@@ -7,7 +7,7 @@ from odoo.http import route, request
 
 class HrContractSalary(main.HrContractSalary):
 
-    @route(['/salary_package/onchange_advantage/'], type='json', auth='public')
+    @route(['/salary_package/onchange_advantage'], type='json', auth='public')
     def onchange_advantage(self, advantage_field, new_value, contract_id, advantages):
         res = super().onchange_advantage(advantage_field, new_value, contract_id, advantages)
         insurance_fields = [

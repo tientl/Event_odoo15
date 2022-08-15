@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
 "Last-Translator: trendspotter <jirka.p@volny.cz>, 2021\n"
 "Language-Team: Czech (https://www.transifex.com/odoo/teams/41243/cs/)\n"
@@ -40,6 +40,18 @@ msgstr "# Výplatní páska"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Výplatní pásky"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -2741,10 +2753,8 @@ msgstr "Potvrzení potvrdí"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
-"Některá část %s's kalendář není zahrnut v žádné pracovní položce. Vyplňte "
-"prosím plán."
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
@@ -2882,13 +2892,13 @@ msgstr "Metoda výpočtu velikosti pravidla."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "Smlouva, na kterou se tento vstup vztahuje"
+msgid "The contract this input should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "Smlouva, na kterou se vztahují tyto pracovní dny"
+msgid "The contract this worked days should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3004,6 +3014,12 @@ msgstr ""
 "To se použije k výpočtu hodnot% polí; obecně je to základní, ale můžete také"
 " použít pole kódu kategorií malými písmeny jako názvy proměnných (hra, ma, "
 "lta atd.) a proměnnou basic."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3378,44 +3394,32 @@ msgstr "Pracovní plán"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong percentage base or quantity defined for:"
 msgstr ""
-"Chybný procentní základ nebo množství definované pro pravidlo platu %s (%s).\n"
-"Chyba: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python code defined for:"
 msgstr ""
-"Chybný kód pythonu definovaný pro pravidlo mzdy %s (%s).\n"
-"Chyba: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Špatná podmínka python definovaná pro platové pravidlo %s (%s)."
-
-#. module: hr_payroll
-#: code:addons/hr_payroll/models/hr_salary_rule.py:0
-#, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python condition defined for:"
 msgstr ""
-"Chybné množství definované pro pravidlo platu %s (%s).\n"
-"Chyba: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Podmínka nesprávného rozsahu definovaná pro pravidlo platu %s (%s)."
+msgid "Wrong quantity defined for:"
+msgstr ""
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid "Wrong range condition defined for:"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

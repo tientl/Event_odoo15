@@ -1,13 +1,25 @@
 .o_fsm_product_quantity {
     z-index: 1;
     font-size: $font-size-lg * 1.5;
-
-    span {
-        min-width: 40px;
-
+    input {
+        width: 104px;
+        &:not(.small){
+            width: 74px;
+        }
         &.o_input {
             // to prevent the "mini flicker" on the display name of the product.
             margin-bottom: -1px;
         }
+        &:not(.o_input){
+            border: 0;
+        }
+        // Remove arrow buttons input type="number"
+        appearance: textfield;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            appearance: none;
+            margin: 0;
+        } 
+
     }
 }

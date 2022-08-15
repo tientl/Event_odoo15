@@ -26,6 +26,8 @@ def _account_accountant_post_init(cr, registry):
             module_list.append('account_bank_statement_import_camt')
         if country_code in ('AU', 'CA', 'US'):
             module_list.append('account_reports_cash_basis')
+        if country_code == 'LU':
+            module_list.append('account_saft')
 
         module_ids = env['ir.module.module'].search([('name', 'in', module_list), ('state', '=', 'uninstalled')])
         if module_ids:

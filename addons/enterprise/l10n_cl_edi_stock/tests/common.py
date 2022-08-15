@@ -34,6 +34,8 @@ class TestL10nClEdiStockCommon(TestStockCommon):
             'vat': 'CL762012243',
             'l10n_cl_activity_description': 'activity_test',
         })
+        cls.warehouse = cls.env['stock.warehouse'].search([('company_id', '=', cls.company.id)])
+        cls.stock_location = cls.warehouse.lot_stock_id.id
         cls.chilean_partner_a = cls.env['res.partner'].create({
             'name': 'Chilean Partner A',
             'is_company': 1,

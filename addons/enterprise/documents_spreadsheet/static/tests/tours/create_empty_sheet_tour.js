@@ -26,7 +26,7 @@ odoo.define("documents_spreadsheet.create_empty_sheet_tour", function (require) 
                 run: "click",
             },
             {
-                trigger: 'span[title="Fill Color"]',
+                trigger: 'div[title="Fill Color"]',
                 content: "Choose a color",
                 run: "click",
             },

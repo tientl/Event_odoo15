@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, time, date
 from odoo import api, fields, models, _
 from odoo.tools import format_time
 from odoo.addons.resource.models.resource import float_to_time
+from odoo.exceptions import ValidationError
 
 
 class PlanningTemplate(models.Model):
@@ -26,11 +27,25 @@ class PlanningTemplate(models.Model):
         ('check_duration_positive', 'CHECK(duration >= 0)', 'You cannot have a negative duration')
     ]
 
+    # remove me in master, and update the sql contraint
+    @api.constrains('start_time')
+    def _validate_start_time(self):
+        if self.filtered(lambda x: x.start_time >= 24):
+            raise ValidationError(_('You cannot have a start hour greater than 24.'))
+
+    @api.constrains('duration')
+    def _validate_duration(self):
+        try:
+            for shift_template in self:
+                datetime.today() + shift_template._get_duration()
+        except OverflowError:
+            raise ValidationError(_("The selected duration creates a date too far into the future."))
+
     @api.depends('start_time', 'duration')
     def _compute_name(self):
         for shift_template in self:
             start_time = time(hour=int(shift_template.start_time), minute=round(math.modf(shift_template.start_time)[0] / (1 / 60.0)))
-            duration = timedelta(hours=int(shift_template.duration), minutes=round(math.modf(shift_template.duration)[0] / (1 / 60.0)))
+            duration = shift_template._get_duration()
             end_time = datetime.combine(date.today(), start_time) + duration
             shift_template.name = '%s - %s %s' % (
                 format_time(shift_template.env, start_time, time_format='short').replace(':00 ', ' '),
@@ -57,3 +72,7 @@ class PlanningTemplate(models.Model):
             res.append(data)
 
         return res
+
+    def _get_duration(self):
+        self.ensure_one()
+        return timedelta(hours=int(self.duration), minutes=round(math.modf(self.duration)[0] / (1 / 60.0)))

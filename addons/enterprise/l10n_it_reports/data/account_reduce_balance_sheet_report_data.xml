@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="account_financial_report_it_sp_reduce" model="account.financial.html.report">
+        <field name="name">Stato Patrimoniale (Semplificazioni)</field>
+        <field name="date_range" eval="False" />
+        <field name="analytic" eval="True" />
+        <field name="unfold_all_filter" eval="True" />
+        <field name='parent_id' ref='account_reports_it_statements_menu' />
+        <field name="country_id" ref="base.it" />
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_assets" model="account.financial.html.report.line">
+        <field name="name">ATTIVO</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="0" />
+        <field name="financial_report_id" ref="account_financial_report_it_sp_reduce" />
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_B" model="account.financial.html.report.line">
+        <field name="name">B. IMMOBILIZZAZIONI</field>
+        <field name="code">ITR_ATT_B</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_assets" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_B_ATT'))]" />
+        <field name="formulas">ITR_ATT_B_I + ITR_ATT_B_II + ITR_ATT_B_III</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_B_I" model="account.financial.html.report.line">
+        <field name="name">I. Immobilizzazioni immaterial</field>
+        <field name="code">ITR_ATT_B_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '11%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_B_II" model="account.financial.html.report.line">
+        <field name="name">II. Immobilizzazioni materiali</field>
+        <field name="code">ITR_ATT_B_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '12%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_B_III" model="account.financial.html.report.line">
+        <field name="name">III. Immobilizzazioni finanziarie</field>
+        <field name="code">ITR_ATT_B_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '13%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_C" model="account.financial.html.report.line">
+        <field name="name">C. ATTIVO CIRCOLANTE</field>
+        <field name="code">ITR_ATT_C</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_assets" />
+        <field name="control_domain" eval="['|',
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_C_ATT')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_D_ATT'))]" />
+        <field name="formulas">ITR_ATT_C_I + ITR_ATT_C_II + ITR_ATT_C_III + ITR_ATT_C_IV</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_C_I" model="account.financial.html.report.line">
+        <field name="name">I. Rimanenze</field>
+        <field name="code">ITR_ATT_C_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_C" />
+        <field name="domain" eval="[('account_id.code', '=like', '14%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_C_II" model="account.financial.html.report.line">
+        <field name="name">II. Crediti</field>
+        <field name="code">ITR_ATT_C_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_C" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '15%'),
+            ('account_id.code', '=like', '16%'),
+            ('account_id.code', '=like', '19%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_C_III" model="account.financial.html.report.line">
+        <field name="name">III. Attività finanziarie</field>
+        <field name="code">ITR_ATT_C_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_C" />
+        <field name="domain" eval="[('account_id.code', '=like', '17%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_ATT_C_IV" model="account.financial.html.report.line">
+        <field name="name">IV. Disponibilità liquide</field>
+        <field name="code">ITR_ATT_C_IV</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_ATT_C" />
+        <field name="domain" eval="[('account_id.code', '=like', '18%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_assets_total" model="account.financial.html.report.line">
+        <field name="name">TOTALE ATTIVO</field>
+        <field name="code">ITR_ASSETS_TOTAL</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="0" />
+        <field name="financial_report_id" ref="account_financial_report_it_sp_reduce" />
+        <field name="control_domain" eval="['|', '|', '|',
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_A_ATT')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_B_ATT')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_C_ATT')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_D_ATT'))]" />
+        <field name="formulas">ITR_ATT_B + ITR_ATT_C</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_passif" model="account.financial.html.report.line">
+        <field name="name">PASSIVO</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="0" />
+        <field name="financial_report_id" ref="account_financial_report_it_sp_reduce" />
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A" model="account.financial.html.report.line">
+        <field name="name">A. PATRIMONIO NETTO</field>
+        <field name="code">ITR_PASS_A</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_passif" />
+        <field name="control_domain" eval="['|','|',
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_A_PASS')),
+            ('account_id.user_type_id.internal_group', '=like', 'income'),
+            ('account_id.user_type_id.internal_group', '=like', 'expense')]" />
+        <field name="formulas">ITR_PASS_A_I + ITR_PASS_A_II + ITR_PASS_A_III + ITR_PASS_A_IV + ITR_PASS_A_V + ITR_PASS_A_VI + ITR_PASS_A_VIII + ITR_PASS_A_IX + ITR_PASS_A_X</field>
+
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_I" model="account.financial.html.report.line">
+        <field name="name">I. Capitale</field>
+        <field name="code">ITR_PASS_A_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '2104%'),
+            ('account_id.code', '=like', '2105%'),
+            ('account_id.code', '=like', '2101%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_II" model="account.financial.html.report.line">
+        <field name="name">II. Riserva da sovrapprezzo azioni</field>
+        <field name="code">ITR_PASS_A_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2106%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_III" model="account.financial.html.report.line">
+        <field name="name">III. Riserve di rivalutazione</field>
+        <field name="code">ITR_PASS_A_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2107%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_IV" model="account.financial.html.report.line">
+        <field name="name">IV. Riserva legale</field>
+        <field name="code">ITR_PASS_A_IV</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2108%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_V" model="account.financial.html.report.line">
+        <field name="name">V. Riserve statutarie</field>
+        <field name="code">ITR_PASS_A_V</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2109%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_VI" model="account.financial.html.report.line">
+        <field name="name">VI. Altre riserve</field>
+        <field name="code">ITR_PASS_A_VI</field>
+        <field name="sequence" eval="6" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2110%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_VIII" model="account.financial.html.report.line">
+        <field name="name">VIII. Utili (perdite) portati a nuovo</field>
+        <field name="code">ITR_PASS_A_VIII</field>
+        <field name="sequence" eval="8" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2112%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_IX" model="account.financial.html.report.line">
+        <field name="name">IX. Utile (perdita) d'esercizio</field>
+        <field name="code">ITR_PASS_A_IX</field>
+        <field name="sequence" eval="9" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '2102%'),
+            ('account_id.code', '=like', '2103%'),
+            ('account_id.code', '=like', '9101%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum + UTILE_PERDITA</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_A_X" model="account.financial.html.report.line">
+        <field name="name">X. Riserva negativa per azioni proprie in portafoglio</field>
+        <field name="code">ITR_PASS_A_X</field>
+        <field name="sequence" eval="10" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_PASS_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '2113%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_B" model="account.financial.html.report.line">
+        <field name="name">B. FONDI PER RISCHI E ONERI</field>
+        <field name="code">ITR_PASS_B</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_passif" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_B_PASS'))]" />
+        <field name="domain" eval="[('account_id.code', '=like', '22%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_C" model="account.financial.html.report.line">
+        <field name="name">C. TRATTAMENTO DI FINE RAPPORTO DI LAVORO SUBORDINATO</field>
+        <field name="code">ITR_PASS_C</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_passif" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_C_PASS'))]" />
+        <field name="domain" eval="[('account_id.code', '=like', '2301%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_PASS_D" model="account.financial.html.report.line">
+        <field name="name">D. DEBITI</field>
+        <field name="code">ITR_PASS_D</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_passif" />
+        <field name="control_domain" eval="['|',
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_D_PASS')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_E_PASS'))]" />
+        <field name="domain" eval="['|', '|', '|',
+            ('account_id.code', '=like', '24%'),
+            ('account_id.code', '=like', '25%'),
+            ('account_id.code', '=like', '26%'),
+            ('account_id.code', '=like', '27%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_passif_total" model="account.financial.html.report.line">
+        <field name="name">TOTALE PASSIVO</field>
+        <field name="code">ITR_PASSIF_TOTAL</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="0" />
+        <field name="financial_report_id" ref="account_financial_report_it_sp_reduce" />
+        <field name="formulas">ITR_PASS_A + ITR_PASS_B + ITR_PASS_C + ITR_PASS_D</field>
+        <field name="control_domain" eval="['|', '|', '|', '|', '|', '|',
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_A_PASS')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_B_PASS')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_C_PASS')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_D_PASS')),
+            ('account_id.tag_ids', 'in', ref('l10n_it.account_tag_E_PASS')),
+            ('account_id.user_type_id.internal_group', '=like', 'income'),
+            ('account_id.user_type_id.internal_group', '=like', 'expense')]" />
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_CONTI_ORDINE" model="account.financial.html.report.line">
+        <field name="name">CONTI D'ORDINE</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="0" />
+        <field name="financial_report_id" ref="account_financial_report_it_sp_reduce" />
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_CONTI_ORDINE_RISCHI" model="account.financial.html.report.line">
+        <field name="name">Rischi</field>
+        <field name="code">ITR_RISCHI</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_CONTI_ORDINE" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_RISCHI'))]" />
+        <field name="domain" eval="['|', '|','|',
+            ('account_id.code', '=like', '2921%'),
+            ('account_id.code', '=like', '2922%'),
+            ('account_id.code', '=like', '2926%'),
+            ('account_id.code', '=like', '2931%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_CONTI_ORDINE_IMPEGNI" model="account.financial.html.report.line">
+        <field name="name">Impegni</field>
+        <field name="code">ITR_IMPEGNI</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_CONTI_ORDINE" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_IMPEGNI'))]" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '291%'),
+            ('account_id.code', '=like', '2927%'),
+            ('account_id.code', '=like', '2932%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_sp_reduce_CONTI_ORDINE_BENI" model="account.financial.html.report.line">
+        <field name="name">Beni di terzi</field>
+        <field name="code">ITR_BENI</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="1" />
+        <field name="parent_id" ref="account_financial_report_line_it_sp_reduce_CONTI_ORDINE" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_BENI'))]" />
+        <field name="domain" eval="[('account_id.code', '=like', '290%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+    </record>
+
+</odoo>

@@ -4,6 +4,7 @@
 from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import AccessError
+from odoo.fields import Command
 
 from datetime import datetime
 
@@ -51,6 +52,13 @@ class TestUserAccess(TransactionCase):
             'user_id': self.internal_user.id,
         })
         self.res_internal_user = self.hr_internal_user.resource_id
+
+        self.portal_user = self.env['res.users'].create({
+            'name': 'Portal User (Test)',
+            'login': 'portal_user',
+            'password': 'portal_user',
+            'groups_id': [Command.link(self.env.ref('base.group_portal').id)]
+        })
 
         # create several slots for users
         self.env['planning.slot'].create({
@@ -155,3 +163,121 @@ class TestUserAccess(TransactionCase):
                 'repeat_until': datetime(2022, 7, 28, 17, 0, 0),
                 'repeat_interval': 1,
             })
+
+    def test_internal_user_can_see_own_progress_bar(self):
+        """
+        An internal user shall be able to see its own progress bar.
+        """
+        self.res_internal_user.with_user(self.internal_user).get_planning_hours_info(
+            '2015-11-08 00:00:00', '2015-11-21 23:59:59'
+        )
+
+    def test_internal_user_can_see_others_progress_bar(self):
+        """
+        An internal user shall be able to see others progress bar.
+        """
+        self.res_planning_user.with_user(self.internal_user).get_planning_hours_info(
+            '2015-11-08 00:00:00', '2015-11-21 23:59:59'
+        )
+
+    def test_portal_user_cannot_access_progress_bar(self):
+        """
+        A portal user shall not be able to see any progress bar.
+        """
+        with self.assertRaises(AccessError):
+            progress_bar = self.res_internal_user.with_user(self.portal_user).get_planning_hours_info(
+                '2015-11-08 00:00:00', '2015-11-21 23:59:59'
+            )
+
+    def test_internal_user_cannot_copy_previous(self):
+        """
+        An internal user shall be able to call a non-void copy previous.
+
+        i.e. If the copy previous doesn't select any slot, through the domain and the ir.rules, then it will do nothing and
+        won't raise AccessError.
+        """
+        self.env['planning.slot'].create({
+            'start_datetime': datetime(2019, 6, 25, 8, 0, 0),
+            'end_datetime': datetime(2019, 6, 25, 17, 0, 0),
+            'resource_id': self.res_internal_user.id,
+            'state': 'published',
+        })
+        with self.assertRaises(AccessError):
+            self.env['planning.slot'].with_user(self.internal_user).action_copy_previous_week(
+                '2019-07-01 00:00:00',
+                [['start_datetime', '<=', '2019-06-30 21:59:59'], ['end_datetime', '>=', '2019-06-22 23:00:00']]
+            )
+
+    def test_planning_user_cannot_copy_previous(self):
+        """
+        An internal user shall not be able to call a non-void copy previous.
+
+        i.e. If the copy previous doesn't select any slot, through the domain and the ir.rules, then it will do nothing and
+        won't raise AccessError.
+        """
+        self.env['planning.slot'].create({
+            'start_datetime': datetime(2019, 6, 25, 8, 0, 0),
+            'end_datetime': datetime(2019, 6, 25, 17, 0, 0),
+            'resource_id': self.res_planning_user.id,
+            'state': 'published',
+        })
+        with self.assertRaises(AccessError):
+            self.env['planning.slot'].with_user(self.planning_user).action_copy_previous_week(
+                '2019-07-01 00:00:00',
+                [['start_datetime', '<=', '2019-06-30 21:59:59'], ['end_datetime', '>=', '2019-06-22 23:00:00']]
+            )
+
+    def test_planning_mgr_can_copy_previous(self):
+        """
+        An internal user shall be able to call copy previous.
+        """
+        test_slot = self.env['planning.slot'].create({
+            'start_datetime': datetime(2019, 6, 25, 8, 0, 0),
+            'end_datetime': datetime(2019, 6, 25, 17, 0, 0),
+            'resource_id': self.res_planning_user.id,
+        })
+        self.env['planning.slot'].with_user(self.planning_mgr).action_copy_previous_week(
+            '2019-07-01 00:00:00',
+            [['start_datetime', '<=', '2019-06-30 21:59:59'], ['end_datetime', '>=', '2019-06-22 23:00:00']]
+        )
+        self.assertTrue(test_slot.was_copied, "Test slot should be copied")
+
+    def test_portal_user_cannot_access_copy_previous(self):
+        """
+        A public user shall not be able to see any progress bar.
+        """
+        with self.assertRaises(AccessError):
+            self.env['planning.slot'].with_user(self.portal_user).action_copy_previous_week(
+                '2019-07-01 00:00:00',
+                [['start_datetime', '<=', '2019-06-30 21:59:59'], ['end_datetime', '>=', '2019-06-22 23:00:00']]
+            )
+    def test_multicompany_access_slots(self):
+        """
+        A user shall NOT be able to access other companies' slots when sending plannings.
+        """
+        in_user = self.planning_mgr
+        out_user = self.planning_user
+        out_user.groups_id = [(6, 0, [self.env.ref('planning.group_planning_manager').id])]
+        other_company = self.env['res.company'].create({
+            'name': 'Other Co',
+        })
+        out_user.write({
+            'company_ids': other_company.ids,
+            'company_id': other_company.id,
+        })
+        out_user.employee_id.company_id = other_company
+
+        slot = self.env['planning.slot'].with_user(out_user).create({
+            'start_datetime': datetime(2019, 7, 28, 8, 0, 0),
+            'end_datetime': datetime(2019, 7, 28, 17, 0, 0),
+            'employee_id': out_user.employee_id.id,
+            'repeat': False,
+        })
+        send = self.env['planning.send'].with_user(in_user).create({
+            'start_datetime': datetime(2019, 7, 28, 8, 0, 0),
+            'end_datetime': datetime(2019, 7, 28, 17, 0, 0),
+        })
+        # Trigger _compute_slots_data
+        send.start_datetime = datetime(2019, 7, 25, 8, 0, 0)
+
+        self.assertNotIn(slot, send.slot_ids, "User should not be able to send planning to users from other companies")

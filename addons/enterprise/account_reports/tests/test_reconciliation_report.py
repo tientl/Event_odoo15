@@ -383,3 +383,67 @@ class TestReconciliationReport(TestAccountReportsCommon):
             ],
             currency_map={3: {'currency': bank_journal.currency_id}},
         )
+
+    def test_reconciliation_report_non_statement_payment(self):
+        ''' Test that moves not linked to a bank statement/payment but linked for example to expanses are used in the
+        report
+        '''
+
+        bank_journal = self.env['account.journal'].create({
+            'name': 'Bank',
+            'code': 'BNKKK',
+            'type': 'bank',
+            'company_id': self.company_data['company'].id,
+        })
+
+        # ==== Misc ====
+
+        self.env['account.move'].create({
+            'journal_id': bank_journal.id,
+            'date': '2014-12-31',
+            'line_ids': [
+                (0, 0, {
+                    'name': 'Source',
+                    'debit': 800,
+                    'credit': 0,
+                    'account_id': self.company_data['default_account_expense'].id,
+                }),
+                (0, 0, {
+                    'name': 'Destination',
+                    'debit': 0,
+                    'credit': 800,
+                    'account_id': bank_journal.company_id.account_journal_payment_credit_account_id.id,
+                }),
+            ]
+        }).action_post()
+
+        # ==== Report ====
+
+        report = self.env['account.bank.reconciliation.report'].with_context(active_id=bank_journal.id)
+
+        # report._get_lines() makes SQL queries without flushing
+        report.flush()
+
+        with freeze_time('2016-01-02'):
+
+            options = report._get_options()
+
+            self.assertLinesValues(
+                report._get_lines(options),
+                #   Name                                                            Date            Amount
+                [   0,                                                              1,              3],
+                [
+                    ('Balance of 101405 Bank',                                      '01/02/2016',   0.0),
+
+                    ('Total Balance of 101405 Bank',                                '01/02/2016',   0.0),
+
+                    ('Outstanding Payments/Receipts',                               '',             -800.0),
+
+                    ('(-) Outstanding Payments',                                    '',             -800.0),
+                    ('BNKKK/2014/12/0001',                                          '12/31/2014',   -800.0),
+                    ('Total (-) Outstanding Payments',                              '',             -800.0),
+
+                    ('Total Outstanding Payments/Receipts',                         '',             -800.0),
+                ],
+                currency_map={3: {'currency': bank_journal.currency_id}},
+            )

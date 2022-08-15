@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
 import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
-from odoo.tools.misc import formatLang, format_date, parse_date
+from odoo.tools.misc import formatLang, format_date, parse_date, frozendict
 from odoo.tools import html2plaintext
 
 
@@ -37,7 +38,7 @@ class AccountReconciliation(models.AbstractModel):
                 st_line.write({'partner_id': datum['partner_id']})
 
             st_line.with_context(ctx).reconcile(datum.get('lines_vals_list', []), to_check=datum.get('to_check', False))
-        return {'statement_line_ids': st_lines}
+        return {'statement_line_ids': st_lines, 'moves': st_lines.move_id}
 
     @api.model
     def get_move_lines_for_bank_statement_line(self, st_line_id, partner_id=None, excluded_ids=None, search_str=False, offset=0, limit=None, mode=None):
@@ -51,7 +52,7 @@ class AccountReconciliation(models.AbstractModel):
                 result
             :param search_str: optional search (can be the amout, display_name,
                 partner name, move line name)
-            :param offset: offset of the search result (to display pager)
+            :param offset: offset of the search result (to display pager) DEPRECATED
             :param limit: number of the result to search
             :param mode: 'rp' for receivable/payable or 'other'
         """
@@ -73,7 +74,7 @@ class AccountReconciliation(models.AbstractModel):
         else:
             query, params = self._get_query_reconciliation_widget_miscellaneous_matching_lines(statement_line, domain=domain)
 
-        trailing_query, trailing_params = self._get_trailing_query(statement_line, limit=limit, offset=offset)
+        trailing_query, trailing_params = self._get_trailing_query(statement_line, limit=limit)
 
         self._cr.execute(query + trailing_query, params + trailing_params)
         results = self._cr.dictfetchall()
@@ -261,7 +262,7 @@ class AccountReconciliation(models.AbstractModel):
 
         domain = self._domain_move_lines_for_manual_reconciliation(account_id, partner_id, excluded_ids, search_str)
         recs_count = Account_move_line.search_count(domain)
-        lines = Account_move_line.search(domain, offset=offset, limit=limit, order="date_maturity desc, id desc")
+        lines = Account_move_line.search(domain, limit=limit, order="date_maturity desc, id desc")
         if target_currency_id:
             target_currency = Currency.browse(target_currency_id)
         else:
@@ -718,7 +719,7 @@ class AccountReconciliation(models.AbstractModel):
             amount_str = formatLang(self.env, abs(balance), currency_obj=line.company_currency_id)
             amount_currency_str = ''
             total_amount_currency_str = ''
-            total_amount_str = formatLang(self.env, abs(rec_vals['debit'] - rec_vals['credit']), currency_obj=line.company_currency_id)
+            total_amount_str = formatLang(self.env, abs(rec_vals['debit'] - rec_vals['credit']), currency_obj=line.currency_id)
 
         js_vals = {
             'id': line.id,
@@ -955,6 +956,14 @@ class AccountReconciliation(models.AbstractModel):
             return Account_move_line.browse(pairs[0])
         return Account_move_line
 
+    def _prepare_writeoff_move_vals(self, move_lines, vals_list):
+        aggr = defaultdict(list)
+        for vals in vals_list:
+            move_vals = self._prepare_writeoff_moves(move_lines, vals)
+            grouping = frozendict({k: v for k, v in move_vals.items() if k != 'line_ids'})
+            aggr[grouping].extend(move_vals['line_ids'])
+        return [{**grouping, 'line_ids': line_ids} for grouping, line_ids in aggr.items()]
+
     @api.model
     def _prepare_writeoff_moves(self, move_lines, vals):
         if 'account_id' not in vals or 'journal_id' not in vals:
@@ -1018,7 +1027,7 @@ class AccountReconciliation(models.AbstractModel):
 
         # Create writeoff move lines
         if len(new_mv_line_dicts) > 0:
-            move_vals_list = [self._prepare_writeoff_moves(move_lines, vals) for vals in new_mv_line_dicts]
+            move_vals_list = self._prepare_writeoff_move_vals(move_lines, new_mv_line_dicts)
             moves = self.env['account.move'].create(move_vals_list)
             moves.action_post()
             account = move_lines[0].account_id

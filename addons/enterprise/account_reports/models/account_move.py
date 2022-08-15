@@ -46,10 +46,6 @@ class AccountMove(models.Model):
                     amount = 0
                     if not move.currency_id.is_zero(carryover_delta):
                         amount = carryover_delta
-                    # We have a non-persistent carryover, but we are not not carrying anything to it this period.
-                    # So we must make sure to set it back to 0.
-                    elif not tax_line.is_carryover_persistent and not move.currency_id.is_zero(old_carryover_balance):
-                        amount = -old_carryover_balance
 
                     if not move.currency_id.is_zero(amount):
                         self.env['account.tax.carryover.line'].create({

@@ -27,8 +27,9 @@ class AccountMoveReversal(models.TransientModel):
     def _prepare_default_reversal(self, move):
         # OVERRIDE
         values = super()._prepare_default_reversal(move)
-        values.update({
-            'l10n_pe_edi_refund_reason': self.l10n_pe_edi_refund_reason or '01',
-            'l10n_latam_document_type_id': self.l10n_latam_document_type_id.id or self.env.ref('l10n_pe_edi.document_type07').id,
-        })
+        if move.company_id.country_id.code == "PE" and move.journal_id.l10n_latam_use_documents:
+            values.update({
+                'l10n_pe_edi_refund_reason': self.l10n_pe_edi_refund_reason or '01',
+                'l10n_latam_document_type_id': self.l10n_latam_document_type_id.id or self.env.ref('l10n_pe.document_type07').id,
+            })
         return values

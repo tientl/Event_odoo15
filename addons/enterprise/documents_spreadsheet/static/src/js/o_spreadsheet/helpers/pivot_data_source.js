@@ -2,10 +2,12 @@
 /* global moment */
 
 import { _t } from "web.core";
+import Domain from "web.Domain";
+import pyUtils from "web.py_utils";
 import { BasicDataSource } from "./basic_data_source";
 import PivotCache from "./pivot_cache";
 import { formats } from "../constants";
-import { intersect } from "./helpers";
+import { intersect, removeContextUserInfo } from "./helpers";
 /**
  * @typedef {import("../plugins/core/pivot_plugin").SpreadsheetPivotForRPC} SpreadsheetPivotForRPC
  * @typedef {import("./basic_data_source").Field} Field
@@ -20,6 +22,7 @@ export default class PivotDataSource extends BasicDataSource {
         super(params);
         this.definition = params.definition;
         this.computedDomain = this.definition.domain;
+        this.context = removeContextUserInfo(this.definition.context);
     }
     /**
      * @override
@@ -31,7 +34,7 @@ export default class PivotDataSource extends BasicDataSource {
         const result = await this.rpc({
             model: this.definition.model,
             method: "read_group",
-            context: this.definition.context,
+            context: this.context,
             domain: params.initialDomain ? this.definition.domain : this.computedDomain,
             fields: this.definition.measures.map((elt) =>
                 elt.field === "__count" ? elt.field : elt.field + ":" + elt.operator
@@ -200,11 +203,10 @@ export default class PivotDataSource extends BasicDataSource {
      *
      * @param {Object} params rpc params
      * @param {string} params.model model name
-     * @param {Object} params.context
      * @param {Object} groupBys
      * @returns {Object}
      */
-    async _getOrderedValues({ model, context }, groupBys) {
+    async _getOrderedValues({ model, domain }, groupBys) {
         return Object.fromEntries(
             await Promise.all(
                 Object.entries(groupBys).map(async ([groupBy, measures]) => {
@@ -217,7 +219,7 @@ export default class PivotDataSource extends BasicDataSource {
                               values.filter((value) => value !== "false"),
                               aggregationFunction
                           )
-                        : await this._orderValues(values, fieldName, field, model, context);
+                        : await this._orderValues(values, fieldName, field, model, domain);
                     if (hasUndefined && field.type !== "boolean") {
                         values.push("false");
                     }
@@ -234,12 +236,10 @@ export default class PivotDataSource extends BasicDataSource {
      * @returns {Array<string>}
      */
     _orderDateValues(values, aggregationFunction) {
-        return aggregationFunction === "quarter"
-            ? values.sort()
-            : values
-                  .map((value) => moment(value, formats[aggregationFunction].out))
-                  .sort((a, b) => a - b)
-                  .map((value) => value.format(formats[aggregationFunction].out));
+        return values
+          .map((value) => moment(value, formats[aggregationFunction].out))
+          .sort((a, b) => a - b)
+          .map((value) => value.format(formats[aggregationFunction].out));
     }
 
     /**
@@ -249,18 +249,23 @@ export default class PivotDataSource extends BasicDataSource {
      * @param {string} fieldName
      * @param {Field} field
      * @param {string} model
-     * @param {Object} context
+     * @param {Array} domain
      * @returns {Array}
      */
-    async _orderValues(values, fieldName, field, model, context) {
+    async _orderValues(values, fieldName, field, model, baseDomain) {
         const requestField = field.relation ? "id" : fieldName;
         values = ["boolean", "many2one", "many2many", "integer", "float"].includes(field.type)
             ? values.map((value) => JSON.parse(value))
             : values;
+        const domainString = pyUtils.assembleDomains([
+            field.relation ? "[]" : Domain.prototype.arrayToString(baseDomain),
+            Domain.prototype.arrayToString([[requestField, "in", values]]),
+            ], "AND");
+        const domain = pyUtils.eval("domain", domainString, {});
         const records = await this.rpc({
             model: field.relation ? field.relation : model,
-            domain: [[requestField, "in", values]],
-            context: Object.assign({}, context, { active_test: false }),
+            domain,
+            context: { ...this.context, active_test: false },
             method: "search_read",
             fields: [requestField],
             // orderby is omitted for relational fields on purpose to have the default order of the model

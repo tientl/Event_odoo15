@@ -368,6 +368,63 @@ class TestWorkOrderProcessCommon(TestMrpCommon):
         self.assertEqual(workorder1.state, 'done')
         self.assertEqual(workorder2.state, 'done')
 
+    def test_backorder_2(self):
+        """Test if all the quality checks are retained when a backorder is created from the tablet view"""
+
+        finished_product = self.env['product.product'].create({
+            'name': 'finished_product',
+            'type': 'product',
+            'tracking': 'serial',
+        })
+        component = self.env['product.product'].create({
+            'name': 'component',
+            'type': 'product',
+        })
+        workcenter = self.env['mrp.workcenter'].create({
+            'name': 'workcenter',
+        })
+        bom = self.env['mrp.bom'].create({
+            'product_id': finished_product.id,
+            'product_tmpl_id': finished_product.product_tmpl_id.id,
+            'product_uom_id': self.uom_unit.id,
+            'product_qty': 1,
+            'consumption': 'flexible',
+            'type': 'normal',
+            'bom_line_ids': [
+                (0, 0, {'product_id': component.id, 'product_qty': 1}),
+            ],
+            'operation_ids': [
+                (0, 0, {'sequence': 1, 'name': 'finished operation 1', 'workcenter_id': workcenter.id}),
+            ],
+        })
+        bom.bom_line_ids[0].operation_id = bom.operation_ids[0].id
+
+        self.env['quality.point'].create({
+            'product_ids': [(4, finished_product.id)],
+            'picking_type_ids': [
+                (4, self.env['stock.picking.type'].search([('code', '=', 'mrp_operation')], limit=1).id)],
+            'operation_id': bom.operation_ids[0].id,
+            'test_type_id': self.env.ref('quality.test_type_instructions').id,
+            'note': 'Installing VIM (pcs xi ipzth adi du ixbt)',
+        })
+
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.product_id = finished_product
+        mo_form.bom_id = bom
+        mo_form.product_qty = 2.0
+        mo = mo_form.save()
+        mo.action_confirm()
+        mo.button_plan()
+
+        wo = mo.workorder_ids[0]
+        wo.button_start()
+        wo.action_generate_serial()
+        wo.action_next()
+        wo.action_next()
+        result = wo.do_finish()
+        wo_backorder = self.env['mrp.workorder'].browse(result['res_id'])
+        self.assertEqual(len(wo_backorder.check_ids), len(wo.check_ids))
+
 class TestWorkOrderProcess(TestWorkOrderProcessCommon):
     def full_availability(self):
         """set full availability for all calendars"""
@@ -1150,6 +1207,82 @@ class TestWorkOrderProcess(TestWorkOrderProcessCommon):
         self.assertAlmostEqual(workorder.date_planned_start, date_start, delta=timedelta(seconds=1), msg="Workorder should be planned tomorrow.")
         self.assertAlmostEqual(workorder.date_planned_finished, date_start + timedelta(hours=1), delta=timedelta(seconds=1), msg="Workorder should be done one hour later.")
 
+    def test_unlink_workorder(self):
+        drawer = self.env['product.product'].create({
+            'name': 'Drawer',
+            'type': 'product',
+            'tracking': 'lot',
+        })
+        drawer_drawer = self.env['product.product'].create({
+            'name': 'Drawer Black',
+            'type': 'product',
+            'tracking': 'lot',
+        })
+        drawer_case = self.env['product.product'].create({
+            'name': 'Drawer Case Black',
+            'type': 'product',
+            'tracking': 'lot',
+        })
+        bom = self.env['mrp.bom'].create({
+            'product_tmpl_id': drawer.product_tmpl_id.id,
+            'product_uom_id': self.env.ref('uom.product_uom_unit').id,
+            'consumption': 'flexible',
+            'sequence': 2,
+            'operation_ids': [
+                (0, 0, {
+                    'workcenter_id': self.mrp_workcenter_1.id,
+                    'name': 'Packing',
+                    'time_cycle': 30,
+                    'sequence': 5}),
+                (0, 0, {
+                    'workcenter_id': self.mrp_workcenter_3.id,
+                    'name': 'Testing',
+                    'time_cycle': 60,
+                    'sequence': 10}),
+                (0, 0, {
+                    'workcenter_id': self.mrp_workcenter_3.id,
+                    'name': 'Long time assembly',
+                    'time_cycle': 180,
+                    'sequence': 15}),
+            ],
+            'bom_line_ids': [(0, 0, {
+                'product_id': drawer_drawer.id,
+                'product_qty': 1,
+                'product_uom_id': self.env.ref('uom.product_uom_unit').id,
+                'sequence': 1,
+            }), (0, 0, {
+                'product_id': drawer_case.id,
+                'product_qty': 1,
+                'product_uom_id': self.env.ref('uom.product_uom_unit').id,
+                'sequence': 2,
+            })]
+        })
+
+        production_table_form = Form(self.env['mrp.production'])
+        production_table_form.product_id = drawer
+        production_table_form.bom_id = bom
+        production_table_form.product_qty = 2.0
+        production_table_form.product_uom_id = drawer.uom_id
+        production_table = production_table_form.save()
+        production_table.action_confirm()
+
+        production_table.button_plan()
+
+        self.assertEqual(len(production_table.workorder_ids), 3)
+
+        workorders = production_table.workorder_ids
+
+        for i in range(len(workorders)-1):
+            self.assertEqual(workorders[i].next_work_order_id, workorders[i+1])
+
+        production_table.workorder_ids[1].unlink()
+
+        self.assertEqual(len(production_table.workorder_ids), 2)
+
+        workorders = production_table.workorder_ids
+        for i in range(len(workorders)-1):
+            self.assertEqual(workorders[i].next_work_order_id, workorders[i+1])
+
     def test_planning_overlaps_wo(self):
         """ Test that workorder doesn't overlaps between then when plan the MO """
         self.full_availability()
@@ -1281,7 +1414,7 @@ class TestWorkOrderProcess(TestWorkOrderProcessCommon):
 
     def test_planning_1(self):
         """ Testing planning workorder with alternative workcenters
-        Plan 6 times the same MO, the workorders should be split accross workcenters
+        Plan 6 times the same MO, the workorders should be split across workcenters
         The 3 workcenters are free, this test plans 3 workorder in a row then three next.
         The workcenters have not exactly the same parameters (efficiency, start time) so the
         the last 3 workorder are not dispatched like the 3 first.

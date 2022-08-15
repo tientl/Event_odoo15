@@ -3,6 +3,7 @@ odoo.define('documents.DocumentsListController', function (require) {
 
 const DocumentsControllerMixin = require('documents.controllerMixin');
 const ListController = require('web.ListController');
+const framework = require('web.framework');
 
 const { qweb } = require('web.core');
 
@@ -12,6 +13,18 @@ const DocumentsListController = ListController.extend(DocumentsControllerMixin, 
         documents_view_rendered: '_onDocumentsViewRendered',
         toggle_all: '_onToggleAll',
     }),
+
+    async _renderDocumentsInspector(state) {
+        const existingRecordIds = new Set();
+        for (const record of state.data) {
+            existingRecordIds.add(record.res_id);
+        }
+        const missingRecordIds = this._selectedRecordIds.filter(e => !existingRecordIds.has(e));
+        if (missingRecordIds.length > 0) {
+            await this.model.loadMissingData({state, ids: missingRecordIds});
+        }
+        await DocumentsControllerMixin._renderDocumentsInspector.call(this, state);
+    },
 
     /**
      * @override
@@ -80,6 +93,22 @@ const DocumentsListController = ListController.extend(DocumentsControllerMixin, 
             }
         }
     },
+
+    _onSelectDomain(ev) {
+        this._super(...arguments);
+        framework.blockUI();
+        this.getSelectedIdsWithDomain()
+            .then(ids => this._selectedRecordIds = ids)
+            .then(() => {
+                const state = this.model.get(this.handle);
+                return Promise.all([
+                    this._updateChatter(state),
+                    this._renderDocumentsInspector(state)
+                ])
+            })
+            .finally(() => framework.unblockUI());
+    },
+
     /**
      *
      * @private

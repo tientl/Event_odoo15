@@ -197,12 +197,22 @@ class TestMrpPlm(TestPlmCommon):
         op1 = eco1.new_bom_id.operation_ids.filtered(lambda x: x.workcenter_id == self.workcenter_1)
         op1.time_cycle_manual = 20
 
+        # Check correctness
+        op1_change = eco1.routing_change_ids.filtered(lambda x: x.workcenter_id == self.workcenter_1)
+        self.assertEqual(op1_change[0].change_type, 'add', "Wrong type on opration change line.")
+        self.assertEqual(op1_change[1].change_type, 'remove', "Wrong type on opration change line.")
+        self.assertEqual(op1_change[0].new_time_cycle_manual, 20.0, "Wrong duration change.")
+        self.assertEqual(op1_change[1].old_time_cycle_manual, 10.0, "Wrong duration change.")
+
         # ---------------------------------------------------------------
         # ECO 1 : Remove operation2
         # ---------------------------------------------------------------
 
         op2 = eco1.new_bom_id.operation_ids.filtered(lambda x: x.workcenter_id == self.workcenter_2)
         op2.unlink()
+
+        op2_change = eco1.routing_change_ids.filtered(lambda x: x.workcenter_id == self.workcenter_2)
+        self.assertEqual(op2_change.change_type, 'remove', "Wrong type on opration change line.")
 
         # ---------------------------------------------------------------
         # ECO 1 : Add operation3
@@ -216,17 +226,9 @@ class TestMrpPlm(TestPlmCommon):
             'sequence': 2,
         })
 
-        # Check correctness
-        op1_change = eco1.routing_change_ids.filtered(lambda x: x.workcenter_id == self.workcenter_1)
-        self.assertEqual(op1_change.change_type, 'update', "Wrong type on opration change line.")
-        self.assertEqual(op1_change.upd_time_cycle_manual, 10.0, "Wrong duration change.")
-
-        op2_change = eco1.routing_change_ids.filtered(lambda x: x.workcenter_id == self.workcenter_2)
-        self.assertEqual(op2_change.change_type, 'remove', "Wrong type on opration change line.")
-
         op3_change = eco1.routing_change_ids.filtered(lambda x: x.workcenter_id == self.workcenter_3)
         self.assertEqual(op3_change.change_type, 'add', "Wrong type on opration change line.")
-        self.assertEqual(op1_change.upd_time_cycle_manual, 10.0, "Wrong duration change.")
+        self.assertEqual(op3_change.upd_time_cycle_manual, 10.0, "Wrong duration change.")
 
     def test_operation_eco_counting(self):
         """ Test when count ECOs for a bom, all ECOs, including the ones for previous
@@ -288,17 +290,58 @@ class TestMrpPlm(TestPlmCommon):
             'type': 'bom'
         })
         mrp_eco.action_new_revision()
-        # Default BoM Changes behavior in 14.0
-        self.assertRecordValues(mrp_eco.bom_change_ids, [
-            {'change_type': 'add', 'upd_product_qty': 2},
-            {'change_type': 'add', 'upd_product_qty': 3},
-            {'change_type': 'remove', 'upd_product_qty': -2},
-            {'change_type': 'remove', 'upd_product_qty': -3},
-        ])
+        self.assertEqual(len(mrp_eco.bom_change_ids), 0)
         mrp_eco.new_bom_id.bom_line_ids[0].product_qty = 13  # Change from 2 to 13
         self.assertRecordValues(mrp_eco.bom_change_ids, [
-            {'change_type': 'add', 'upd_product_qty': 13},
-            {'change_type': 'add', 'upd_product_qty': 3},
-            {'change_type': 'remove', 'upd_product_qty': -2},
-            {'change_type': 'remove', 'upd_product_qty': -3},
+            {'change_type': 'update', 'upd_product_qty': 11},
         ])
+
+    def test_bom_changes(self):
+        """
+            Test that when creating a `mrp.eco` for a BOM with operations and components consumed in the operations,
+            the difference lines between the old and the new BOM is done correctly
+        """
+        workcenter = self.env['mrp.workcenter'].create({'name': 'wc 1'})
+        operation_1 = self.env['mrp.routing.workcenter'].create({
+            'name': 'op1',
+            'workcenter_id': workcenter.id,
+            'bom_id': self.bom_table.id
+        })
+        operation_2 = self.env['mrp.routing.workcenter'].create({
+            'name': 'op2',
+            'workcenter_id': workcenter.id,
+            'bom_id': self.bom_table.id
+        })
+        self.bom_table.operation_ids = [(6, 0, (operation_1 + operation_2).ids)]
+        # Consume the first component in the first operation
+        self.bom_table.bom_line_ids[0].operation_id = self.bom_table.operation_ids[0]
+        # Create eco for bill of material.
+        eco1 = self._create_eco('ECO1', self.bom_table, self.eco_type.id, self.eco_stage.id)
+        # Start new revision of eco1.
+        eco1.action_new_revision()
+        self.assertEqual(eco1.state, 'progress', "Wrong state on eco1.")
+        # Make sure there is no change between the two BOMs
+        self.assertEqual(len(eco1.bom_change_ids), 0)
+        # Modify the new BOM to consume the first component in the second operation
+        eco1.new_bom_id.bom_line_ids[0].operation_id = eco1.new_bom_id.operation_ids[1]
+        # A bom changes must be created
+        self.assertRecordValues(eco1.bom_change_ids, [
+            {'change_type': 'add', 'operation_change': 'op2'},
+            {'change_type': 'remove', 'operation_change': 'op1'},
+        ])
+
+    def test_product_version(self):
+        """Test product version number will be increase after a product ECO is done.
+        """
+        version_num = self.table.product_tmpl_id.version
+        mrp_eco = self.env['mrp.eco'].create({
+            'name': 'a plm',
+            'product_tmpl_id': self.table.product_tmpl_id.id,
+            'stage_id': self.eco_stage.id,
+            'type_id': self.eco_type.id,
+            'type': 'product',
+        })
+        mrp_eco.action_new_revision()
+        mrp_eco.action_apply()
+        self.assertEqual(mrp_eco.state, 'done')
+        self.assertEqual(self.table.product_tmpl_id.version, version_num + 1)

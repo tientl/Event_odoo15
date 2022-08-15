@@ -71,3 +71,62 @@ class TestSaleTimesheetInTicket(TestCommonSaleTimesheet):
         })
         self.assertEqual(ticket.sale_line_id, self.so.order_line[0], "The SOL in the ticket should be the one chosen.")
         self.assertEqual(timesheet.so_line, ticket.sale_line_id, "The SOL in the timesheet should be the one in the ticket.")
+
+    def test_change_customer_and_SOL_after_invoiced_timesheet(self):
+        """ Test to check if the partner computed for an invoiced timesheet in the ticket is the expected one.
+
+            Test Case:
+            =========
+            1) Create ticket with a partner set,
+            2) Create timesheet and check if the partner in the timesheet is the one in the ticket,
+            3) Invoice and post the SOL linked to the timesheet,
+            4) Create a new timesheet entry in the ticket,
+            5) Change the ticket's partner and check if the first timesheet's partner stayed the same but the second one changed.
+        """
+        helpdesk_ticket = self.env['helpdesk.ticket'].create({
+            'name': 'Test Ticket',
+            'team_id': self.helpdesk_team.id,
+            'partner_id': self.partner_b.id,
+        })
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_b.id,
+            'partner_invoice_id': self.partner_b.id,
+            'partner_shipping_id': self.partner_b.id,
+        })
+        so_line_order_no_task = self.env['sale.order.line'].create({
+            'name': self.product_delivery_timesheet1.name,
+            'product_id': self.product_delivery_timesheet1.id,
+            'product_uom_qty': 1,
+            'product_uom': self.product_delivery_timesheet1.uom_id.id,
+            'price_unit': self.product_delivery_timesheet1.list_price,
+            'order_id': sale_order.id,
+        })
+
+        sale_order.action_confirm()
+
+        timesheet_entry = self.env['account.analytic.line'].create({
+            'name': 'the only timesheet. So lonely...',
+            'helpdesk_ticket_id': helpdesk_ticket.id,
+            'project_id': self.helpdesk_team.project_id.id,
+            'unit_amount': 3,
+        })
+        helpdesk_ticket.write({
+            'sale_line_id': so_line_order_no_task.id,
+        })
+
+        self.assertEqual(timesheet_entry.partner_id, self.partner_b, "The Timesheet entry's partner should be equal to the ticket's partner/customer")
+
+        invoice = sale_order._create_invoices()
+        invoice.action_post()
+
+        timesheet_entry_2 = self.env['account.analytic.line'].create({
+            'name': 'A brother for the lonely timesheet',
+            'helpdesk_ticket_id': helpdesk_ticket.id,
+            'project_id': self.helpdesk_team.project_id.id,
+            'unit_amount': 2,
+        })
+
+        helpdesk_ticket.write({'partner_id': self.partner_a.id})
+
+        self.assertEqual(timesheet_entry.partner_id, self.partner_b, "The invoiced and posted Timesheet entry should have its partner unchanged")
+        self.assertEqual(timesheet_entry_2.partner_id, self.partner_a, "The second Timesheet entry should have its partner changed, as it was not invoiced and posted")

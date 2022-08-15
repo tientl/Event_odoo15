@@ -15,7 +15,7 @@ class AmazonAccount(models.Model):
                 subtotal, tax_amount, taxes, currency)
 
     def _get_order(self, order_data, items_data, amazon_order_ref):
-        """ Override to let TaxCloud set the right taxes on newly created orders. """
+        """ Override to let TaxCloud set the right taxes on newly created orders from MWS. """
         order, order_found, status = super(AmazonAccount, self)._get_order(
             order_data, items_data, amazon_order_ref)
         # Order has just been created and has a TaxCloud fiscal position
@@ -27,3 +27,15 @@ class AmazonAccount(models.Model):
             if was_locked:
                 order.with_context(mail_notrack=True).write({'state': 'done'})
         return order, order_found, status
+
+    def _create_order_from_data(self, order_data):
+        """ Override to let TaxCloud set the right taxes when creating orders from the SP-API. """
+        order = super()._create_order_from_data(order_data)
+        if order.fiscal_position_id.is_taxcloud:
+            was_locked = order.state == 'done'
+            if was_locked:
+                order.with_context(mail_notrack=True).write({'state': 'sale'})
+            order.validate_taxes_on_sales_order()
+            if was_locked:
+                order.with_context(mail_notrack=True).write({'state': 'done'})
+        return order

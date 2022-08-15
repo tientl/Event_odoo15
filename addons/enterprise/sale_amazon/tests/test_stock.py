@@ -208,3 +208,16 @@ class TestStock(TestAmazonCommon, TestStockCommon):
             picking.carrier_id = self.carrier
             picking.carrier_tracking_ref = "dummy tracking ref"
             picking._check_carrier_details_compliance()  # Everything is fine, don't raise
+
+    def test_get_carrier_details_returns_carrier_name_when_unsupported(self):
+        """Test that we fall back on the custom carrier's name if it's not supported by Amazon."""
+        self.picking.carrier_id = self.carrier
+        carrier_name = self.picking._get_formatted_carrier_name()
+        self.assertEqual(carrier_name, self.carrier.name)
+
+    def test_get_carrier_details_returns_formatted_carrier_name_when_supported(self):
+        """Test that we use the formatted carrier name when it is supported by Amazon."""
+        self.carrier.name = 'd_H l)'
+        self.picking.carrier_id = self.carrier
+        carrier_name = self.picking._get_formatted_carrier_name()
+        self.assertEqual(carrier_name, 'DHL')

@@ -13,7 +13,7 @@ class HrEmployee(models.Model):
     document_count = fields.Integer(compute='_compute_document_count')
 
     def _get_document_folder(self):
-        return self.company_id.documents_hr_folder
+        return self.company_id.documents_hr_folder if self.company_id.documents_hr_settings else False
 
     def _get_document_owner(self):
         return self.user_id
@@ -30,16 +30,12 @@ class HrEmployee(models.Model):
         if self.user_id:
             user_domain = expression.OR([user_domain,
                                         [('owner_id', '=', self.user_id.id)]])
-        hr_folder = self._get_document_folder()
-        if not hr_folder:
-            return user_domain
-        return expression.AND([user_domain, [('folder_id', 'child_of', hr_folder.id)]])
+        return user_domain
 
     def _compute_document_count(self):
         # Method not optimized for batches since it is only used in the form view.
         for employee in self:
-            hr_folder = self._get_document_folder()
-            if hr_folder and employee.address_home_id:
+            if employee.address_home_id:
                 employee.document_count = self.env['documents.document'].search_count(
                     employee._get_employee_document_domain())
             else:
@@ -56,7 +52,7 @@ class HrEmployee(models.Model):
         # Also makes sure that the views starts on the hr_holder
         action['context'] = {
             'default_partner_id': self.address_home_id.id,
-            'searchpanel_default_folder_id': hr_folder.id,
+            'searchpanel_default_folder_id': hr_folder and hr_folder.id,
         }
         action['domain'] = self._get_employee_document_domain()
         return action

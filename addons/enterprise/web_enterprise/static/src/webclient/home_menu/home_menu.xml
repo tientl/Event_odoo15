@@ -6,7 +6,8 @@
         <ExpirationPanel/>
         <div class="o_menu_search">
             <span class="fa fa-search o_menu_search_icon" role="img" aria-label="Search" title="Search"/>
-            <input t-ref="input" type="text" placeholder="Search..." class="o_menu_search_input" t-on-input="_onInputSearch"
+            <input t-ref="input" type="text" placeholder="Search..." class="o_menu_search_input" t-on-blur="_onBlurSearch"
+                t-on-input="_onInputSearch"
                 role="combobox"
                 t-att-aria-activedescendant="state.isSearching and (appIndex === null ? 'result_menu_' + menuIndex : 'result_app_' + appIndex)"
                 t-att-aria-expanded="state.isSearching ? 'true' : 'false'"

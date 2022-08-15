@@ -11,8 +11,13 @@ import logging
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError, RedirectWarning
+from odoo.tools import float_repr, float_is_zero
 
 _logger = logging.getLogger(__name__)
+
+
+class UnbalancedMovesError(UserError):
+    pass
 
 
 class FecImportWizard(models.TransientModel):
@@ -84,7 +89,9 @@ class FecImportWizard(models.TransientModel):
 
         # Print a friendly message to the user
         except csv.Error as e:
-            raise UserError(_("Cannot read the attached file: %s", e.message))
+            _logger.warning("csv.Error: %s", e)
+            raise UserError(_("This file could not be recognised.\n"
+                              "Please check that it is encoded in utf-8 or iso8859_15"))
 
         # Block the processing if there are incomplete lines
         if incomplete_lines:
@@ -131,12 +138,46 @@ class FecImportWizard(models.TransientModel):
 
                     yield data
 
+    def _shorten_code(self, field_name, value, max_len, cache, reserved_digits=2):
+        """ In case that given value is too long, this function shortens it like this:
+
+            PACMAN, max_len=5, reserved_digits = 2 -> PAC01
+            if PAC01 already exists                -> PAC02
+            ...
+
+            If all PACnn exist until PAC99, False is returned.
+            If a value is found, or the code isn't too long to begin with,
+            then the shortened value is returned.
+
+            If a value is found, a cache entry "mapping_<field_name>"
+            is created/updated with the mapping old_value->new_value
+        """
+
+        if len(value) <= max_len:
+            return value
+
+        mapping_key = "mapping_%s" % field_name
+        cache.setdefault(mapping_key, {})
+
+        if value in cache[mapping_key]:
+            return cache[mapping_key][value]
+
+        prefix = value[0:(max_len - reserved_digits)]
+        for idx in range(1, 10 ** reserved_digits):
+            new_value = ("%%s%%0%dd" % reserved_digits) % (prefix, idx)
+            if new_value not in cache[mapping_key].values():
+                cache[mapping_key][value] = new_value
+                return new_value
+
+        return False
+
     def _generator_fec_account_journal(self, rows, cache):
         """ Import the journals from fec data files """
 
         journals_set = set()
         for record in rows:
             journal_code = record.get("JournalCode")
+            journal_code = self._shorten_code('journal_code', journal_code, 5, cache)
             journal_name = record.get("JournalLib")
 
             # Check for an existing journal
@@ -192,8 +233,13 @@ class FecImportWizard(models.TransientModel):
             when a rounding issue is found. """
 
         # Get the accounts for the debit and credit differences
-        conditions = [('code', 'in', ('658000', '758000')), ('company_id', '=', self.company_id.id)]
-        debit_account, credit_account = self.env["account.account"].search(conditions, order='code')
+        debit_account, credit_account = [
+            self.env["account.account"].search(
+                [('code', '=like', code), ('company_id', '=', self.company_id.id)],
+                order='code',
+                limit=1,
+            ) for code in ('6580%', '7580%')
+        ]
 
         # Check the moves for rounding issues
         currency = self.company_id.currency_id
@@ -219,42 +265,91 @@ class FecImportWizard(models.TransientModel):
 
         return imbalanced_journals
 
-    def _check_imbalanced_journals(self, moves_dict, balance_dict, imbalanced_journals, imbalances):
+    def _try_balance_moves(self, key_function, currency, journal_id, journal_code, lines_grouped_by_date):
+        """ Try to balance moves by grouping them by date.
+            The key_function is applied on the date to group lines toghether.
+            Throws UnbalancedMovesError if the grouping cannot produce zero-balanced moves,
+            Returns {date_key: list_of_lines}"""
+
+        # Compute the balance, using the key_function to group the lines
+        groups = {}
+        for lines_date, lines in lines_grouped_by_date.items():
+            key = key_function(lines_date)
+            balance = sum([line["debit"] - line["credit"] for line in lines])
+            old_balance, old_lines = groups.get(key, (0.0, []))
+            groups[key] = [old_balance + balance, old_lines + lines]
+
+        # Check if there's any group with a non-zero balance
+        rebalanced_moves = {}
+        for key, (balance, lines) in groups.items():
+
+            # If there is a non-zero balance, rebalanced_moves is invalid
+            # Exit the function indicating failure.
+            if not float_is_zero(balance, precision_rounding=currency.rounding):
+                raise UnbalancedMovesError("Cannot group moves")
+
+            # Build the keys with the same format that was used in moves_dict
+            if len(key) == 2:
+                move_key = "%s/%04d%02d" % (journal_code, *key)
+                move_date = datetime.date(*key, 1)
+            else:
+                move_key = "%s/%04d%02d%02d" % (journal_code, *key)
+                move_date = datetime.date(*key)
+
+            # Store the valid move in a dictionary
+            rebalanced_moves[move_key] = {
+                "company_id": self.company_id.id,
+                "name": move_key,
+                "date": move_date,
+                "journal_id": journal_id,
+                "line_ids": [fields.Command.create(line) for line in lines]
+            }
+
+        return rebalanced_moves
+
+    def _check_imbalanced_journals(self, cache, moves_dict, balance_dict, imbalanced_journals, imbalances):
         """ If there are still imbalanced moves, try to re-group the lines by journal/date
             for the imbalanced journals, to see if now they balance altogether. """
+        currency = self.company_id.currency_id
 
-        # If there still are imbalanced journals, clear the moves_dict of all the moves with the imbalanced journal_id
+        # If there still are imbalanced journals, clear the moves_dict
+        # of all the moves with the imbalanced journal_id and put them aside
         imbalanced_moves = []
         for move_key in list(moves_dict.keys()):
             if moves_dict[move_key]["journal_id"] in imbalanced_journals:
                 imbalanced_moves.append(moves_dict.pop(move_key))
 
-        currency = self.company_id.currency_id
+        # For each journal, try to group it with different key functions
+        # until you find one that produces groups of lines which are zero-balanced
+        journal_codes = {journal.id: journal_code for journal_code, journal in cache["account.journal"].items()}
         for journal_id in imbalanced_journals:
-            lines_by_date = imbalances[journal_id]
-            for lines_date, lines in lines_by_date.items():
-                date_balance = currency.round(sum([currency.round(line["credit"] - line["debit"]) for line in lines]))
+            journal_code = journal_codes[journal_id]
+            lines_grouped_by_date = imbalances[journal_id]
+            for _grouping, key_function in [
+                ("day", lambda x: (x.year, x.month, x.day)),
+                ("month", lambda x: (x.year, x.month))
+            ]:
+                # If a grouping that makes all moves have a zero-balance has been found,
+                # we save the moves and stop looking for other ways of grouping them.
+                try:
+                    rebalanced_moves = self._try_balance_moves(
+                        key_function, currency, journal_id, journal_code, lines_grouped_by_date)
+                    moves_dict.update(rebalanced_moves)
+                    break
+                except UnbalancedMovesError:
+                    pass
 
-                # If the journal is still not balanced, raise an error to the user with all the unbalanced moves
-                if date_balance != 0.0:
-                    balance_issues = ""
-                    for move in imbalanced_moves:
-                        move_name = move["name"]
-                        move_key = "%s/%s" % (journal_id, move_name)
-                        balance = balance_dict[move_key]["balance"]
-                        balance_issues += _("Move with name '%s' has a balance of %s\n", move_name, balance)
-                    raise UserError(_("Moves report incorrect balances:\n%s", balance_issues))
-
-                # Otherwise, insert the new grouped-up move in the moves_dict
-                new_move_name = lines_date.strftime("%Y%m%d")
-                new_move_key = "%s/%s" % (journal_id, new_move_name)
-                moves_dict[new_move_key] = {
-                    "company_id": self.company_id.id,
-                    "name": new_move_name,
-                    "date": lines_date,
-                    "journal_id": journal_id,
-                    "line_ids": [fields.Command.create(line) for line in lines]
-                }
+            # If no grouping (day/month) can make all moves be balanced,
+            # then alert the user that the file cannot be understood
+            else:
+                balance_issues = ""
+                for move in imbalanced_moves:
+                    balance_key = "%s/%s" % (journal_code, move["name"])
+                    balance = balance_dict[balance_key]["balance"]
+                    if not float_is_zero(balance, precision_rounding=currency.rounding):
+                        balance_issues += _("Move with name '%s' has a balance of %s\n",
+                                            move["name"], float_repr(balance, currency.decimal_places))
+                raise UserError(_("Moves report incorrect balances:\n%s", balance_issues))
 
     def _normalize_float_value(self, record, key):
         """ Normalize a float string value inside a dictionary """
@@ -275,6 +370,11 @@ class FecImportWizard(models.TransientModel):
 
         credit = currency.round(credit)
         debit = currency.round(debit)
+
+        # Negative values must be inverted
+        if credit < 0 or debit < 0:
+            debit, credit = -credit, -debit
+
         balance = currency.round(credit - debit)
 
         return credit, debit, balance
@@ -321,7 +421,7 @@ class FecImportWizard(models.TransientModel):
             move_line_name = record.get("EcritureLib", "")
             account_code = record.get("CompteNum", "")
             currency_name = record.get("Idevise", "")
-            amount_currency = self._normalize_float_value(record, "MontantDevise")
+            amount_currency = self._normalize_float_value(record, "Montantdevise")
             matching = record.get("EcritureLet", "")
 
             # Move import --------------------------------------
@@ -329,10 +429,17 @@ class FecImportWizard(models.TransientModel):
             # Journal
             journal = cache["account.journal"].get(journal_code, None)
             if not journal:
-                raise UserError(_("Line %s has an invalid journal code", idx))
+
+                # Look for a shortened code
+                journal_code = cache.get("mapping_journal_code", {}).get(journal_code, None)
+                if journal_code:
+                    journal = cache["account.journal"].get(journal_code, None)
+
+                if not journal:
+                    raise UserError(_("Line %s has an invalid journal code", idx))
 
             # Use the journal and the move_name as key for the move in the moves_dict
-            move_key = "%s/%s" % (journal.id, move_name)
+            move_key = "%s/%s" % (journal.code, move_name)
 
             # Many move_lines may belong to the same move, the move info gets saved in the moves_dict
             data = moves_dict.get(move_key, {
@@ -405,7 +512,7 @@ class FecImportWizard(models.TransientModel):
         # If there are still imbalanced, journals, try to re-group the lines by journal/date,
         # to see if now they balance altogether
         if imbalanced_journals:
-            self._check_imbalanced_journals(moves_dict, balance_dict, imbalanced_journals, imbalances)
+            self._check_imbalanced_journals(cache, moves_dict, balance_dict, imbalanced_journals, imbalances)
 
         yield from moves_dict.values()
 
@@ -419,10 +526,10 @@ class FecImportWizard(models.TransientModel):
             For accounts, user_type_id and reconcile flags are used.  """
 
         # account.account templates
-        conditions = [('chart_template_id', '=', self.env.company.chart_template_id.id)]
-        account_templates = self.env["account.account.template"].search_read(conditions, ['code', 'display_name', 'user_type_id', 'reconcile'])
+        domain = [('chart_template_id', '=', self.env.company.chart_template_id.id)]
+        account_templates = self.env["account.account.template"].search_read(domain, ['code', 'display_name', 'user_type_id', 'reconcile'])
 
-        all_templates = {"account.account": {x['code'] : x for x in account_templates}}
+        all_templates = {"account.account": {x['code']: x for x in account_templates}}
         return all_templates
 
     def _apply_template(self, templates, model, record):
@@ -431,7 +538,8 @@ class FecImportWizard(models.TransientModel):
         """
         if model == "account.account":
             for limit in [999, 3, 2]:
-                normalize_code = lambda x: x[:limit].rstrip('0')
+                def normalize_code(x):
+                    return x[:limit].rstrip('0')
                 template = next((v for k, v in templates.items() if normalize_code(k) == normalize_code(record['code'])), {})
                 if template:
                     for key, value in template.items():
@@ -634,8 +742,8 @@ class FecImportWizard(models.TransientModel):
         # The workaround is to set the sequence.mixin.constraint_start_date parameter
         # to the date of the oldest move (defaulting to today if there is no move at all).
         if "account.move" in models:
-            conditions = [("company_id", "=", self.company_id.id)]
-            start_date = self.env["account.move"].search(conditions, limit=1, order="date asc").date or fields.Date.today()
+            domain = [("company_id", "=", self.company_id.id)]
+            start_date = self.env["account.move"].search(domain, limit=1, order="date asc").date or fields.Date.today()
             start_date_str = start_date.strftime("%Y-%m-%d")
             self.env["ir.config_parameter"].sudo().set_param("sequence.mixin.constraint_start_date", start_date_str)
 

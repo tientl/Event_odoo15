@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Profit and loss -->
+    <record id="l10n_hu_profit_loss" model="account.financial.html.report">
+        <field name="name">Eredménykimuta (összköltség eljárással)</field>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="parent_id" ref="l10n_hu.hu_reports_menu"/>
+        <field name="country_id" ref="base.hu"/>
+    </record>
+            <!-- 01. Net sales of domestic sales -->
+            <record id="l10n_hu_profit_loss_1" model="account.financial.html.report.line">
+                <field name="name">01. Belföldi értékesítés nettó árbevétele</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_1</field>
+                <field name="domain" eval="[('account_id.code', '=like', '911%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <!-- 02. Net sales of export sales -->
+            <record id="l10n_hu_profit_loss_2" model="account.financial.html.report.line">
+                <field name="name">02. Exportértékesítés nettó árbevétele</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '931%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+
+        <!-- I. Net sales revenue (01+02) -->
+        <record id="l10n_hu_profit_loss_I" model="account.financial.html.report.line">
+            <field name="name">I. Értékesítés nettó árbevétele (01+02)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_I</field>
+            <field name="formulas">hu_profit_loss_1 + hu_profit_loss_2</field>
+        </record>
+
+            <!-- 03. Change in stocks of own-produced inventories -->
+            <record id="l10n_hu_profit_loss_3" model="account.financial.html.report.line">
+                <field name="name">03. Saját termelésű készletek állományváltozása</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_3</field>
+                <field name="domain" eval="[('account_id.code', '=like', '581%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 04. Capitalized value of self-produced assets -->
+            <record id="l10n_hu_profit_loss_4" model="account.financial.html.report.line">
+                <field name="name">04. Saját előállítású eszközök aktivált értéke</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '582%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+        <!-- II. Value of activated own power (±03+04) -->
+        <record id="l10n_hu_profit_loss_II" model="account.financial.html.report.line">
+            <field name="name">II. Aktivált saját teljesítmények értéke (±03+04)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_II</field>
+            <field name="formulas">hu_profit_loss_3 + hu_profit_loss_4</field>
+        </record>
+
+        <!-- III. Other revenues -->
+        <record id="l10n_hu_profit_loss_III" model="account.financial.html.report.line">
+            <field name="name">III. Egyéb bevételek</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_III</field>
+            <field name="domain" eval="[('account_id.code', '=like', '96%')]"/>
+            <field name="formulas">-sum</field>
+        </record>
+                <!-- Of which: reversal of impairment -->
+                <record id="l10n_hu_profit_loss_III_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: visszaírt értékvesztés</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_III"/>
+                    <field name="code">hu_profit_loss_III_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '966%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <!-- 05. Cost of materials -->
+            <record id="l10n_hu_profit_loss_5" model="account.financial.html.report.line">
+                <field name="name">05. Anyagköltség</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_5</field>
+                <field name="domain" eval="[('account_id.code', '=like', '811%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 06. Value of services used -->
+            <record id="l10n_hu_profit_loss_6" model="account.financial.html.report.line">
+                <field name="name">06. Igénybe vett szolgáltatások értéke</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_6</field>
+                <field name="domain" eval="[('account_id.code', '=like', '812%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 07. Value of other services -->
+            <record id="l10n_hu_profit_loss_7" model="account.financial.html.report.line">
+                <field name="name">07. Egyéb szolgáltatások értéke</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_7</field>
+                <field name="domain" eval="[('account_id.code', '=like', '813%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 08. Purchase value of goods sold -->
+            <record id="l10n_hu_profit_loss_8" model="account.financial.html.report.line">
+                <field name="name">08. Eladott áruk beszerzési értéke</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_8</field>
+                <field name="domain" eval="[('account_id.code', '=like', '814%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 09. Value of services sold (brokered) -->
+            <record id="l10n_hu_profit_loss_9" model="account.financial.html.report.line">
+                <field name="name">09. Eladott (közvetített) szolgáltatások értéke</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_9</field>
+                <field name="domain" eval="[('account_id.code', '=like', '815%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+        <!-- IV. Expenditure of a material nature (05+06+07+08+09) -->
+        <record id="l10n_hu_profit_loss_IV" model="account.financial.html.report.line">
+            <field name="name">IV. Anyagjellegű ráfordítások (05+06+07+08+09)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_IV</field>
+            <field name="formulas">hu_profit_loss_5 + hu_profit_loss_6 + hu_profit_loss_7 + hu_profit_loss_8 + hu_profit_loss_9</field>
+        </record>
+
+            <!-- 10. Wage cost -->
+            <record id="l10n_hu_profit_loss_10" model="account.financial.html.report.line">
+                <field name="name">10. Bérköltség</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_10</field>
+                <field name="domain" eval="[('account_id.code', '=like', '821%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 11. Other payments of a personal nature -->
+            <record id="l10n_hu_profit_loss_11" model="account.financial.html.report.line">
+                <field name="name">11. Személyi jellegű egyéb kifizetések</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_11</field>
+                <field name="domain" eval="[('account_id.code', '=like', '822%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 12. Wage contributions -->
+            <record id="l10n_hu_profit_loss_12" model="account.financial.html.report.line">
+                <field name="name">12. Bérjárulékok</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_12</field>
+                <field name="domain" eval="[('account_id.code', '=like', '823%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+        <!-- V. Personnel expenses (10+11+12) -->
+        <record id="l10n_hu_profit_loss_V" model="account.financial.html.report.line">
+            <field name="name">V. Személyi jellegű ráfordítások (10+11+12)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_V</field>
+            <field name="formulas">hu_profit_loss_10 + hu_profit_loss_11 + hu_profit_loss_12</field>
+        </record>
+
+        <!-- VI. Depreciation -->
+        <record id="l10n_hu_profit_loss_VI" model="account.financial.html.report.line">
+            <field name="name">VI. Értékcsökkenési leírás</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_VI</field>
+        </record>
+
+        <!-- VII. Other expenses -->
+        <record id="l10n_hu_profit_loss_VII" model="account.financial.html.report.line">
+            <field name="name">VII. Egyéb ráfordítások</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_VII</field>
+            <field name="domain" eval="[('account_id.code', '=like', '86%')]"/>
+            <field name="formulas">sum</field>
+        </record>
+                <!-- Of which: Impairment -->
+                <record id="l10n_hu_profit_loss_VII_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: értékvesztés</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_VII"/>
+                    <field name="code">hu_profit_loss_VII_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '866%')]"/>
+                    <field name="formulas">sum</field>
+                </record>
+
+    <!-- A. Operating (business) result (I±II+III–IV–V–VI–VII) -->
+    <record id="l10n_hu_profit_loss_A" model="account.financial.html.report.line">
+        <field name="name">A. Üzemi (üzleti) tevékenység eredménye (I±II+III–IV–V–VI–VII)</field>
+        <field name="level" eval="1"/>
+        <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+        <field name="code">hu_profit_loss_A</field>
+        <field name="formulas">hu_profit_loss_I + hu_profit_loss_II + hu_profit_loss_III - hu_profit_loss_IV - hu_profit_loss_V - hu_profit_loss_VI - hu_profit_loss_VII</field>
+    </record>
+
+            <!-- 13. Dividends and participations received (due) -->
+            <record id="l10n_hu_profit_loss_13" model="account.financial.html.report.line">
+                <field name="name">13. Kapott (járó) osztalék és részesedés</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_13</field>
+                <field name="domain" eval="[('account_id.code', '=like', '971%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: from affiliated company -->
+                <record id="l10n_hu_profit_loss_13_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozástól kapott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_13"/>
+                    <field name="code">hu_profit_loss_13_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '9711%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <!-- 14. Income from shares, foreign exchange gains -->
+            <record id="l10n_hu_profit_loss_14" model="account.financial.html.report.line">
+                <field name="name">14. Részesedésekből származó bevételek, árfolyamnyereségek</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_14</field>
+                <field name="domain" eval="[('account_id.code', '=like', '972%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: from affiliated company -->
+                <record id="l10n_hu_profit_loss_14_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozástól kapott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_14"/>
+                    <field name="code">hu_profit_loss_14_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '9721%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <!-- 15. Income from fixed financial assets (securities, loans), foreign exchange gains -->
+            <record id="l10n_hu_profit_loss_15" model="account.financial.html.report.line">
+                <field name="name">15. Befektetett pénzügyi eszközökből (értékpapírokból, kölcsönökből) származó bevételek, árfolyamnyereségek</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_15</field>
+                <field name="domain" eval="[('account_id.code', '=like', '973%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: from affiliated company -->
+                <record id="l10n_hu_profit_loss_15_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozástól kapott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_15"/>
+                    <field name="code">hu_profit_loss_15_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '9731%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <!-- 16. Other interest receivable and similar income -->
+            <record id="l10n_hu_profit_loss_16" model="account.financial.html.report.line">
+                <field name="name">16. Egyéb kapott (járó) kamatok és kamatjellegű bevételek</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_16</field>
+                <field name="domain" eval="[('account_id.code', '=like', '974%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: from affiliated company -->
+                <record id="l10n_hu_profit_loss_16_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozástól kapott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_16"/>
+                    <field name="code">hu_profit_loss_16_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '9741%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <!-- 17. Other income from financial operations -->
+            <record id="l10n_hu_profit_loss_17" model="account.financial.html.report.line">
+                <field name="name">17. Pénzügyi műveletek egyéb bevételei</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_17</field>
+                <field name="domain" eval="[('account_id.code', '=like', '979%')]"/>
+                <field name="formulas">-sum</field>
+            </record>
+                <!-- Of which: valuation difference -->
+                <record id="l10n_hu_profit_loss_17_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: értékelési különbözet</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_17"/>
+                    <field name="code">hu_profit_loss_17_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '9791%')]"/>
+                    <field name="formulas">-sum</field>
+                </record>
+
+        <!-- VIII. Revenue from financial operations (13+14+15+16+17) -->
+        <record id="l10n_hu_profit_loss_VIII" model="account.financial.html.report.line">
+            <field name="name">VIII. Pénzügyi műveletek bevételei (13+14+15+16+17)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_VIII</field>
+            <field name="formulas">hu_profit_loss_13 + hu_profit_loss_14 + hu_profit_loss_15 + hu_profit_loss_16 + hu_profit_loss_17</field>
+        </record>
+
+            <!-- 18. Expenses from shares, exchange rate losses -->
+            <record id="l10n_hu_profit_loss_18" model="account.financial.html.report.line">
+                <field name="name">18. Részesedésekből származó ráfordítások, árfolyamveszteségek</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_18</field>
+                <field name="domain" eval="[('account_id.code', '=like', '871%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+                <!-- Of which: to affiliated -->
+                <record id="l10n_hu_profit_loss_18_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozásnak adott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_18"/>
+                    <field name="code">hu_profit_loss_18_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '8711%')]"/>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <!-- 19. Expenses from foreign financial assets (securities, loans), exchange rate losses -->
+            <record id="l10n_hu_profit_loss_19" model="account.financial.html.report.line">
+                <field name="name">19. Befektetett pénzügyi eszközökből (értékpapírokból, kölcsönökből) származó ráfordítások, árfolyamveszteségek</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_19</field>
+                <field name="domain" eval="[('account_id.code', '=like', '872%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+                <!-- Of which: to affiliated -->
+                <record id="l10n_hu_profit_loss_19_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozásnak adott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_19"/>
+                    <field name="code">hu_profit_loss_19_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '8721%')]"/>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <!-- 20. Interest payable (interest paid) and interest-like expenses -->
+            <record id="l10n_hu_profit_loss_20" model="account.financial.html.report.line">
+                <field name="name">20. Fizetendő (fizetett) kamatok és kamatjellegű ráfordítások</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_20</field>
+                <field name="domain" eval="[('account_id.code', '=like', '873%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+                <!-- Of which: to affiliated -->
+                <record id="l10n_hu_profit_loss_20_details" model="account.financial.html.report.line">
+                    <field name="name">Ebből: kapcsolt vállalkozásnak adott</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_20"/>
+                    <field name="code">hu_profit_loss_20_details</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '8731%')]"/>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <!-- 21. Impairment of shares, securities, long-term loans, bank deposit -->
+            <record id="l10n_hu_profit_loss_21" model="account.financial.html.report.line">
+                <field name="name">21. Részesedések, értékpapírok, tartósan adott kölcsönök, bankbetétek értékvesztése</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_21</field>
+                <field name="domain" eval="[('account_id.code', '=like', '874%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+
+            <!-- 22. Other financial expenses -->
+            <record id="l10n_hu_profit_loss_22" model="account.financial.html.report.line">
+                <field name="name">22. Pénzügyi műveletek egyéb ráfordításai</field>
+                <field name="level" eval="3"/>
+                <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+                <field name="code">hu_profit_loss_22</field>
+                <field name="domain" eval="[('account_id.code', '=like', '879%')]"/>
+                <field name="formulas">sum</field>
+            </record>
+                <!-- Of which: valuation difference -->
+                <record id="l10n_hu_profit_loss_24" model="account.financial.html.report.line">
+                    <field name="name">Ebből: értékelési különbözet</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_hu_profit_loss_22"/>
+                    <field name="code">hu_profit_loss_24</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '8791%')]"/>
+                    <field name="formulas">sum</field>
+                </record>
+
+        <!-- IX. Expenditure on financial operations (18+19+20+21+22) -->
+        <record id="l10n_hu_profit_loss_IX" model="account.financial.html.report.line">
+            <field name="name">IX. Pénzügyi műveletek ráfordításai (18+19+20+21+22)</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_IX</field>
+            <field name="formulas">hu_profit_loss_18 + hu_profit_loss_19 + hu_profit_loss_20 + hu_profit_loss_21 + hu_profit_loss_22</field>
+        </record>
+
+    <!-- B. Result on financial operations (VIII-IX) -->
+    <record id="l10n_hu_profit_loss_B" model="account.financial.html.report.line">
+        <field name="name">B. Pénzügyi műveletek eredménye (VIII–IX)</field>
+        <field name="level" eval="1"/>
+        <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+        <field name="code">hu_profit_loss_B</field>
+        <field name="formulas">hu_profit_loss_VIII + hu_profit_loss_IX</field>
+    </record>
+
+    <!-- C. Profit before tax (±A±B) -->
+    <record id="l10n_hu_profit_loss_C" model="account.financial.html.report.line">
+        <field name="name">C. Adózás előtti eredmény (±A±B)</field>
+        <field name="level" eval="1"/>
+        <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+        <field name="code">hu_profit_loss_C</field>
+        <field name="formulas">hu_profit_loss_A + hu_profit_loss_B</field>
+    </record>
+
+        <!-- X. Tax liability -->
+        <record id="l10n_hu_profit_loss_X" model="account.financial.html.report.line">
+            <field name="name">X. Adófizetési kötelezettség</field>
+            <field name="level" eval="2"/>
+            <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+            <field name="code">hu_profit_loss_X</field>
+            <field name="domain" eval="[('account_id.code', '=like', '891%')]"/>
+            <field name="formulas">sum</field>
+        </record>
+
+    <!-- D. Profit after tax (±C–X) -->
+    <record id="l10n_hu_profit_loss_D" model="account.financial.html.report.line">
+        <field name="name">D. Adózott eredmény (±C–X)</field>
+        <field name="level" eval="1"/>
+        <field name="financial_report_id" ref="l10n_hu_profit_loss"/>
+        <field name="code">hu_profit_loss_D</field>
+        <field name="formulas">hu_profit_loss_C - hu_profit_loss_X</field>
+    </record>
+</odoo>

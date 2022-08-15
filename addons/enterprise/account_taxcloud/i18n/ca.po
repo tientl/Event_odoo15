@@ -7,6 +7,8 @@
 # Quim - eccit <quim@eccit.com>, 2021
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2021
 # jabelchi, 2021
+# Jonatan Gk, 2022
+# marcescu, 2022
 # 
 msgid ""
 msgstr ""
@@ -14,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 07:57+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: jabelchi, 2021\n"
+"Last-Translator: marcescu, 2022\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +27,7 @@ msgstr ""
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.res_config_settings_view_form
 msgid "<i class=\"fa fa-fw fa-arrow-right\"/>How to Get Credentials"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Com obtenir les credencials"
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.res_config_settings_view_form
@@ -33,16 +35,18 @@ msgid ""
 "<i title=\"Import/update TICs from TaxCloud\" role=\"img\" aria-"
 "label=\"Import/update TICs from TaxCloud\" class=\"fa fa-refresh fa-fw\"/>"
 msgstr ""
+"<i title=\"Import/update TICs from TaxCloud\" role=\"img\" aria-"
+"label=\"Import/update TICs from TaxCloud\" class=\"fa fa-refresh fa-fw\"/>"
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.res_config_settings_view_form
 msgid "API ID"
-msgstr ""
+msgstr "ID DE L'API"
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.res_config_settings_view_form
 msgid "API KEY"
-msgstr ""
+msgstr "CLAU API"
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_res_company
@@ -67,13 +71,13 @@ msgstr "Creat el"
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.res_config_settings_view_form
 msgid "Default Category"
-msgstr ""
+msgstr "Categoria per defecte"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_company__tic_category_id
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_config_settings__tic_category_id
 msgid "Default TIC Code"
-msgstr ""
+msgstr "Codi TIC per defecte"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_tic_category__display_name
@@ -86,6 +90,8 @@ msgid ""
 "Enable <b>Detect Automatically</b> to automatically use TaxCloud when "
 "selling to American customers."
 msgstr ""
+"Habilitar <b>Detecta automàticament</b> per utilitzar automàticament "
+"TaxCloud en vendre als clients americans."
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_account_fiscal_position
@@ -96,7 +102,7 @@ msgstr "Posició fiscal"
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.account_position_taxcloud_inherit_from_view
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.invoice_form_inherit
 msgid "Go to Settings."
-msgstr ""
+msgstr "Ves a la configuració."
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_tic_category__id
@@ -110,7 +116,7 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:account_taxcloud.field_account_payment__is_taxcloud_configured
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_company__is_taxcloud_configured
 msgid "Is Taxcloud Configured"
-msgstr ""
+msgstr "Està configurat el taxcloud"
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_account_move
@@ -144,6 +150,8 @@ msgid ""
 "Please configure taxcloud credentials on the current company or use a "
 "different fiscal position"
 msgstr ""
+"Si us plau, configuri les credencials de taxcloud en l'empresa actual o "
+"utilitzi una posició fiscal diferent"
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.account_position_taxcloud_inherit_from_view
@@ -151,6 +159,8 @@ msgstr ""
 msgid ""
 "Please enter your Taxcloud credentials to compute tax rates automatically."
 msgstr ""
+"Introduïu les vostres credencials de Taxcloud per calcular els tipus "
+"d'impostos automàticament."
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_product_category
@@ -160,12 +170,12 @@ msgstr "Categoria del producte"
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.account_taxcloud_tic_category_search
 msgid "Product TIC Categories"
-msgstr ""
+msgstr "Categories TIC del producte"
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_product_tic_category
 msgid "Product TIC Category"
-msgstr ""
+msgstr "Categoria TIC del producte"
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_product_template
@@ -182,50 +192,56 @@ msgid ""
 "By default, TaxCloud relies on the TIC *[0] Uncategorized* default referring"
 " to general goods and services."
 msgstr ""
+"TIC (Codis d'Informació sobre la Imponibilidat) permet obtenir tipus "
+"impositius específics per a cada tipus de producte. Aquest valor per defecte"
+" s'aplica si no s'utilitza cap producte en el l'ordre/factura, o si no "
+"s'estableixen TIC en el producte o en la seva categoria de producte. Per "
+"defecte, TaxCloud es basa en el valor per defecte TIC * [0} Uncategorized* "
+"referint-se a béns i serveis generals."
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.account_taxcloud_tic_category_tree
 msgid "TIC Category"
-msgstr ""
+msgstr "Categoria TIC"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_tic_category__code
 msgid "TIC Category Code"
-msgstr ""
+msgstr "Codi de categoria TIC"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_category__tic_category_id
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.account_taxcloud_tic_category_search
 msgid "TIC Code"
-msgstr ""
+msgstr "Codi TIC"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_tic_category__description
 msgid "TIC Description"
-msgstr ""
+msgstr "Descripció TIC"
 
 #. module: account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.product_category_view_form_inherit_account_taxcloud
 msgid "TaxCloud"
-msgstr ""
+msgstr "RecaptadorCulod"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_company__taxcloud_api_id
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_config_settings__taxcloud_api_id
 msgid "TaxCloud API ID"
-msgstr ""
+msgstr "ID de l'API de TaxCloud"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_company__taxcloud_api_key
 #: model:ir.model.fields,field_description:account_taxcloud.field_res_config_settings__taxcloud_api_key
 msgid "TaxCloud API KEY"
-msgstr ""
+msgstr "CLAU API TaxCloud"
 
 #. module: account_taxcloud
 #: model:ir.actions.act_window,name:account_taxcloud.account_taxcloud_tic_category_action
 #: model:ir.ui.menu,name:account_taxcloud.menu_taxcloud_tic_category_action
 msgid "TaxCloud Categories"
-msgstr ""
+msgstr "Categories de taxCloud"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_product_product__tic_category_id
@@ -233,7 +249,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.product_category_view_form_inherit_account_taxcloud
 #: model_terms:ir.ui.view,arch_db:account_taxcloud.product_template_taxcloud_inherit_form
 msgid "TaxCloud Category"
-msgstr ""
+msgstr "Categoria de taxCloud"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,help:account_taxcloud.field_account_bank_statement_line__is_taxcloud
@@ -241,6 +257,8 @@ msgstr ""
 #: model:ir.model.fields,help:account_taxcloud.field_account_payment__is_taxcloud
 msgid "Technical field to determine whether to hide taxes in views or not."
 msgstr ""
+"Camp tècnic per determinar si s'han d'ocultar els impostos en les vistes o "
+"no."
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_account_fiscal_position_template
@@ -253,6 +271,8 @@ msgstr "Plantilla per posició fiscal"
 msgid ""
 "The tax rates have been updated, you may want to check it before validation"
 msgstr ""
+"Els tipus impositius s'han actualitzat, potser voldreu comprovar-ho abans de"
+" la validació"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,help:account_taxcloud.field_product_product__tic_category_id
@@ -262,6 +282,10 @@ msgid ""
 "TaxCloud to compute specific tax rates for each product type. The value set "
 "here prevails over the one set on the product category."
 msgstr ""
+"Això es refereix a les TIC (Codis d'informació de la capacitat), que són "
+"utilitzats per TaxCloud per calcular tipus d'impost específics per a cada "
+"tipus de producte. El valor establert aquí preval sobre el que s'estableix "
+"en la categoria del producte."
 
 #. module: account_taxcloud
 #: model:ir.model.fields,help:account_taxcloud.field_product_category__tic_category_id
@@ -271,6 +295,11 @@ msgid ""
 "used when no TIC is set on the product. If no value is set here, the default"
 " value set in Invoicing settings is used."
 msgstr ""
+"Es refereix als TIC (Codis d'Informació de Imponibilidat), que són "
+"utilitzats per TaxCloud per a calcular els tipus impositius específics per a"
+" cada tipus de producte. Aquest valor s'utilitza quan no s'estableix cap TIC"
+" en el producte. Si no s'estableix cap valor aquí, s'utilitza el valor per "
+"defecte establert en els ajustos de facturació."
 
 #. module: account_taxcloud
 #: code:addons/account_taxcloud/models/account_invoice.py:0
@@ -286,7 +315,7 @@ msgstr "Incapaç de recuperar els impostos de TaxCloud:"
 #: model:ir.model.fields,field_description:account_taxcloud.field_account_move__is_taxcloud
 #: model:ir.model.fields,field_description:account_taxcloud.field_account_payment__is_taxcloud
 msgid "Use TaxCloud API"
-msgstr ""
+msgstr "Utilitza l'API de TaxCloud"
 
 #. module: account_taxcloud
 #: model:ir.model.fields,help:account_taxcloud.field_account_bank_statement_line__is_taxcloud_configured
@@ -297,6 +326,8 @@ msgstr ""
 msgid ""
 "Used to determine whether or not to warn the user to configure TaxCloud."
 msgstr ""
+"S'utilitza per determinar si s'ha d'avisar a l'usuari per configurar "
+"TaxCloud."
 
 #. module: account_taxcloud
 #: code:addons/account_taxcloud/models/account_invoice.py:0
@@ -306,9 +337,12 @@ msgid ""
 "You need to issue a refund (credit note) for it instead.\n"
 "This way the tax entries will be cancelled in TaxCloud."
 msgstr ""
+"No podeu cancel·lar una factura enviada a TaxCloud.\n"
+"En el seu lloc has d'emetre un reemborsament (nota de crèdit) per a ell.\n"
+"D'aquesta manera es cancel·laran les entrades d'impostos en TaxCloud."
 
 #. module: account_taxcloud
 #: code:addons/account_taxcloud/models/product.py:0
 #, python-format
 msgid "[%s] %s"
-msgstr ""
+msgstr "[%s] %s"

@@ -10,4 +10,9 @@
     ],
     'auto_install': True,
     'license': 'OEEL-1',
+    'assets': {
+        'web.assets_tests': [
+            'website_sale_taxcloud_delivery/static/tests/**/*',
+        ],
+    }
 }

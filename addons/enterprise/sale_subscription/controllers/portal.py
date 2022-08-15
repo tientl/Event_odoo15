@@ -26,12 +26,11 @@ class CustomerPortal(portal.CustomerPortal):
         """ Add subscription details to main account page """
         values = super()._prepare_home_portal_values(counters)
         if 'subscription_count' in counters:
-            partner = request.env.user.partner_id
-            values['subscription_count'] = (
-                request.env['sale.subscription'].search_count(self._get_subscription_domain(partner))
-                if request.env['sale.subscription'].check_access_rights('read', raise_exception=False)
-                else 0
-            )
+            if request.env['sale.subscription'].check_access_rights('read', raise_exception=False):
+                partner = request.env.user.partner_id
+                values['subscription_count'] = request.env['sale.subscription'].search_count(self._get_subscription_domain(partner))
+            else:
+                values['subscription_count'] = 0
         return values
 
     @http.route(['/my/subscription', '/my/subscription/page/<int:page>'], type='http', auth="user", website=True)
@@ -67,7 +66,7 @@ class CustomerPortal(portal.CustomerPortal):
         domain += searchbar_filters[filterby]['domain']
 
         # pager
-        account_count = SaleSubscription.sudo().search_count(domain)
+        account_count = SaleSubscription.search_count(domain)
         pager = portal_pager(
             url="/my/subscription",
             url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby},
@@ -75,7 +74,7 @@ class CustomerPortal(portal.CustomerPortal):
             page=page,
             step=self._items_per_page
         )
-        accounts = SaleSubscription.sudo().search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        accounts = SaleSubscription.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_subscriptions_history'] = accounts.ids[:100]
 
         values.update({
@@ -111,6 +110,11 @@ class SaleSubscription(http.Controller):
             subscription = Subscription.browse(subscription_id).exists()
         if not subscription:
             return request.redirect('/my')
+
+        # Make sure that the partner's company matches the subscription's company.
+        payment_portal.PaymentPortal._ensure_matching_companies(
+            subscription.partner_id, subscription.company_id
+        )
 
         acquirers_sudo = request.env['payment.acquirer'].sudo()._get_compatible_acquirers(
             subscription.company_id.id,
@@ -202,6 +206,19 @@ class SaleSubscription(http.Controller):
 
 class PaymentPortal(payment_portal.PaymentPortal):
 
+    def _create_invoice(self, subscription):
+        """ Creates a temporary invoice to compute the total amount of this subscription.
+
+        :param recordset subscription: `sale.subscription` for which the invoice should be made
+
+        :return: the invoice as an `account.move` record
+        :rtype: recordset
+        """
+        # Create an invoice to compute the total amount with tax, and the currency
+        invoice_values = subscription.sudo().with_context(lang=subscription.partner_id.lang) \
+            ._prepare_invoice()  # In sudo mode to read on account.fiscal.position fields
+        return request.env['account.move'].sudo().create(invoice_values)
+
     @http.route('/my/subscription/transaction/<int:subscription_id>', type='json', auth='public')
     def subscription_transaction(
         self, subscription_id, access_token, is_validation=False, **kwargs
@@ -236,10 +253,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
             'callback_res_id': subscription.id,
         }
         if not is_validation:  # Renewal transaction
-            # Create an invoice to compute the total amount with tax, and the currency
-            invoice_values = subscription.sudo().with_context(lang=subscription.partner_id.lang) \
-                ._prepare_invoice()  # In sudo mode to read on account.fiscal.position fields
-            invoice_sudo = request.env['account.move'].sudo().create(invoice_values)
+            invoice_sudo = self._create_invoice(subscription)
             kwargs.update({
                 'reference_prefix': subscription.code,  # There is no sub_id field to rely on
                 'amount': invoice_sudo.amount_total,

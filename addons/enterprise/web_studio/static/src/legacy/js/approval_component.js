@@ -106,7 +106,7 @@ odoo.define('web_studio.ApprovalComponent', function (require) {
         }
 
         /**
-         * Notifies other widgets that an approval change has occured server-side,
+         * Notifies other widgets that an approval change has occurred server-side,
          * this is useful if more than one button with the same action is in the view
          * to avoid displaying conflicting approval data.
          * @private

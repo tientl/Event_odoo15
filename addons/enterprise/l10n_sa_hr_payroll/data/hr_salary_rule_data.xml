@@ -1,5 +1,5 @@
 <odoo>
-    <data noupdate="1">
+    <data>
         <!--   Saudi Employee Rules     -->
         <record id="ksa_saudi_housing_allowance_salary_rule" model="hr.salary.rule">
             <field name="name">Housing Allowance</field>
@@ -30,7 +30,7 @@
         </record>
         <record id="ksa_saudi_social_insurance_contribution" model="hr.salary.rule">
             <field name="name">Social Insurance Contribution</field>
-            <field name="category_id" ref="hr_payroll.DED"/>
+            <field name="category_id" ref="hr_payroll.COMP"/>
             <field name="code">SIC</field>
             <field name="sequence">5</field>
             <field name="amount_select">code</field>
@@ -48,7 +48,7 @@
             </field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = -(worked_days.LEAVE90.number_of_days * (contract.wage + contract.l10n_sa_transportation_allowance + contract.l10n_sa_housing_allowance + contract.l10n_sa_other_allowances) / payslip.sum_worked_hours / contract.resource_calendar_id.hours_per_day)
+result = -(worked_days.LEAVE90.number_of_days * (contract.wage + contract.l10n_sa_transportation_allowance + contract.l10n_sa_housing_allowance + contract.l10n_sa_other_allowances) / (payslip.sum_worked_hours / contract.resource_calendar_id.hours_per_day))
             </field>
             <field name="struct_id" ref="l10n_sa_hr_payroll.ksa_saudi_employee_payroll_structure"/>
         </record>
@@ -81,18 +81,19 @@ end_date = contract.date_end
 difference = relativedelta(end_date, start_date)
 total_days = difference.years * 360 + difference.months * 30 + difference.days
 compensation = contract.wage + contract.l10n_sa_housing_allowance + contract.l10n_sa_transportation_allowance + contract.l10n_sa_other_allowances
-if employee.departure_reason_id == self.env.ref('hr.departure_fired'):
-    if 360 &lt; total_days &lt;= 5 * 360:
-        result = compensation / 2 * total_days / 360
+if employee.departure_reason_id in [contract.env.ref('hr.departure_fired'), contract.env.ref('hr.departure_resigned')]:
+    if employee.departure_reason_id in [contract.env.ref('hr.departure_fired')]:
+        if 360 &lt;= total_days &lt;= 5 * 360:
+            result = compensation / 2 * total_days / 360
+        elif 5*360 &lt; total_days:
+            result = (compensation / 2 * 5 * 360 + compensation * (total_days - 5 * 360)) / 360
     else:
-        result = (compensation / 2 * 5 * 360 + compensation * (total_days - 5 * 360)) / 360
-else:
-    if 2 * 360 &lt;= total_days &lt;= 5 * 360:
-        result = compensation / 6 * total_days / 360
-    elif 5 * 360 &lt; total_days &lt; 10 * 360:
-        result = (compensation / 3 * 5 * 360 + compensation * 2 / 3 * (total_days - 5 * 360)) / 360
-    elif 10 * 360 &lt;= total_days:
-        result = (compensation / 2 * 5 * 360 + compensation * (total_days - 5 * 360)) / 360
+        if 2 * 360 &lt;= total_days &lt;= 5 * 360:
+            result = compensation / 6 * total_days / 360
+        elif 5 * 360 &lt; total_days &lt; 10 * 360:
+            result = (compensation / 3 * 5 * 360 + compensation * 2 / 3 * (total_days - 5 * 360)) / 360
+        elif 10 * 360 &lt;= total_days:
+            result = (compensation / 2 * 5 * 360 + compensation * (total_days - 5 * 360)) / 360
 result = payslip.dict.company_id.currency_id.round(result)
             </field>
             <field name="struct_id" ref="l10n_sa_hr_payroll.ksa_saudi_employee_payroll_structure"/>
@@ -173,7 +174,7 @@ result = 1.5 * worked_days.OT.number_of_hours * (contract.wage + contract.l10n_s
                 <field name="code">EOSB</field>
                 <field name="sequence">6</field>
                 <field name="condition_select">python</field>
-                <field name="condition_python">result = not employee.active and employee.departure_reason_id == self.env.ref('hr.departure_fired')"</field>
+                <field name="condition_python">result = not employee.active and employee.departure_reason_id in [contract.env.ref('hr.departure_fired'), contract.env.ref('hr.departure_resigned')]</field>
                 <field name="amount_select">code</field>
                 <field name="amount_python_compute">
 result = 0

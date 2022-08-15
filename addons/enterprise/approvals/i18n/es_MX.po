@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2021
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2021
-# Lucia Pacheco <lpo@odoo.com>, 2021
+# Lucia Pacheco <lpo@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -13,13 +13,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 10:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:38+0000\n"
-"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2021\n"
+"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
@@ -34,7 +34,7 @@ msgstr "<span>Desde:</span>"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "<span>to: </span>"
-msgstr "<span>a:</span>"
+msgstr "<span>hasta:</span>"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__message_needaction
@@ -272,7 +272,7 @@ msgstr "Cancelar"
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_car_rental_application
 msgid "Car Rental Application"
-msgstr "Solicitud de alquiler de autos"
+msgstr "Aplicación de alquiler de autos"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_product_line__product_uom_category_id
@@ -425,7 +425,7 @@ msgstr "Editar solicitud"
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__manager_approval
 msgid "Employee's Manager"
-msgstr "Manager del empleado"
+msgstr "Gerente del empleado"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__existing_request_user_ids
@@ -677,7 +677,7 @@ msgstr "Archivo adjunto principal"
 #. module: approvals
 #: model:ir.ui.menu,name:approvals.approvals_menu_manager
 msgid "Manager"
-msgstr "Manager"
+msgstr "Gerente"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__message_has_error
@@ -738,6 +738,7 @@ msgstr "Nombre"
 #. module: approvals
 #: model:ir.model.fields.selection,name:approvals.selection__approval_approver__status__new
 #: model:ir.model.fields.selection,name:approvals.selection__approval_request__user_status__new
+#: code:addons/approvals/models/approval_category.py:0
 msgid "New"
 msgstr "Nuevo"
 
@@ -1028,8 +1029,8 @@ msgid ""
 "This request needs to be approved by your manager. There is no manager "
 "linked to your employee profile."
 msgstr ""
-"Esta solicitud la debe aprobar su gerente. No hay ningún gerente vinculado a"
-" su perfil de empleado."
+"Su gerente debe aprobar esta solicitud. No hay ningún gerente vinculado a su"
+" perfil de empleado."
 
 #. module: approvals
 #: code:addons/approvals/models/approval_request.py:0
@@ -1038,8 +1039,8 @@ msgid ""
 "This request needs to be approved by your manager. There is no user linked "
 "to your manager."
 msgstr ""
-"Esta solicitud la debe aprobar su gerente. No hay ningún usuario vinculado a"
-" su gerente."
+"Su gerente debe aprobar esta solicitud. No hay ningún usuario vinculado a su"
+" gerente."
 
 #. module: approvals
 #: code:addons/approvals/models/approval_request.py:0
@@ -1048,7 +1049,7 @@ msgid ""
 "This request needs to be approved by your manager. Your manager is not in "
 "the approvers list."
 msgstr ""
-"Esta solicitud la debe aprobar su gerente. Su gerente no se encuentra en la "
+"Su gerente debe aprobar esta solicitud. Su gerente no se encuentra en la "
 "lista de aprobadores."
 
 #. module: approvals
@@ -1116,9 +1117,7 @@ msgstr "Anular"
 #: code:addons/approvals/models/approval_request.py:0
 #, python-format
 msgid "You have to add at least %s approvers to confirm your request."
-msgstr ""
-"Debe agregar al menos %s responsables de aprobación para confirmar su "
-"solicitud."
+msgstr "Debe agregar al menos %s aprobadores para confirmar su solicitud."
 
 #. module: approvals
 #: code:addons/approvals/models/approval_request.py:0

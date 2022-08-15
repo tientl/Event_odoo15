@@ -5,8 +5,7 @@
 # Translators:
 # Martin Trigaux, 2021
 # Pornvibool Tippayawat <pornvibool.t@gmail.com>, 2021
-# Odoo Thaidev <odoothaidev@gmail.com>, 2021
-# Wichanon Jamwutthipreecha, 2021
+# Wichanon Jamwutthipreecha, 2022
 # 
 msgid ""
 msgstr ""
@@ -14,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:42+0000\n"
-"Last-Translator: Wichanon Jamwutthipreecha, 2021\n"
+"Last-Translator: Wichanon Jamwutthipreecha, 2022\n"
 "Language-Team: Thai (https://www.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,16 +40,31 @@ msgid ""
 "        </div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"            <p>การซิงโครไนซ์คำสั่งซื้อของ Amazon กับข้อมูลอ้างอิง <t t-out=\"ctx.get('amazon_order_ref') or ''\">อ้างอิง</t> พบข้อผิดพลาดและไม่สมบูรณ์</p>\n"
+"            <p>เว้นแต่คำสั่งซื้อจะถูกยกเลิกใน SellerCentral และไม่มีความพยายามในการซิงโครไนซ์อื่น ๆ</p>\n"
+"            <p>หากต้องการกำหนดเวลาสำหรับความพยายามในการซิงโครไนซ์ใหม่ ให้ดำเนินการดังนี้:\n"
+"                <ol>\n"
+"                    <li>เข้าสู่เครื่องมือสำหรับนักพัฒนา</li>\n"
+"                    <li>เปิดแบบฟอร์มบัญชี Amazon ที่จะสั่งซื้อ</li>\n"
+"                    <li>ไปที่แถบนำทางคำสั่ง</li>\n"
+"                    <li>ตั้งค่าวันที่สำหรับ <em>การซิงค์คำสั่งสุดท้าย</em> ซึ่งอยู่ก่อนหน้าการอัปเดตสถานะล่าสุดของคำสั่งซื้อ</li>\n"
+"                    <li>บันทึกการเปลี่ยนแปลงและคลิกที่ปุ่ม <em>ซิงค์คำสั่ง</em> </li>\n"
+"                </ol>\n"
+"            </p>\n"
+"            <p>หากปัญหายังคงอยู่ โปรดติดต่อ <a href=\"https://www.odoo.com/help/\">Odoo ช่วยเหลือ</a></p>\n"
+"        </div>\n"
+"        "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__name
 msgid "A user-defined name for the account"
-msgstr ""
+msgstr "ชื่อที่กำหนดโดยผู้ใช้สำหรับบัญชี"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__api_ref
 msgid "API Identifier"
-msgstr ""
+msgstr "ตัวระบุ API"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__account_id
@@ -76,98 +90,101 @@ msgid ""
 "                                                to which this account has access will be\n"
 "                                                synchronized and automatically made available."
 msgstr ""
+"หลังจากตรวจสอบข้อมูลรับรองแล้ว ตลาดกลาง\n"
+"                                                ที่บัญชีนี้สามารถเข้าถึงได้นั้นจะ\n"
+"                                                ซิงโครไนซ์และทำให้พร้อมใช้งานโดยอัตโนมัติ"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_account
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Amazon Account"
-msgstr ""
+msgstr "บัญชี Amazon"
 
 #. module: sale_amazon
 #: model:ir.actions.act_window,name:sale_amazon.list_amazon_account_action
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_tree
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 msgid "Amazon Accounts"
-msgstr ""
+msgstr "บัญชี Amazon "
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_res_partner__amazon_email
 #: model:ir.model.fields,field_description:sale_amazon.field_res_users__amazon_email
 msgid "Amazon Email"
-msgstr ""
+msgstr "อีเมล Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_stock_location__amazon_location
 msgid "Amazon Location"
-msgstr ""
+msgstr "ตำแหน่ง Amazon"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_marketplace
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_marketplace_view_form
 msgid "Amazon Marketplace"
-msgstr ""
+msgstr "ตลาด Amazon"
 
 #. module: sale_amazon
 #: model:ir.actions.act_window,name:sale_amazon.list_amazon_marketplace_action
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_marketplace_view_tree
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 msgid "Amazon Marketplaces"
-msgstr ""
+msgstr "ตลาด Amazon"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_amazon_offer
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_offer_id
 msgid "Amazon Offer"
-msgstr ""
+msgstr "ข้อเสนอ Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_offer_view_tree
 msgid "Amazon Offers"
-msgstr ""
+msgstr "ข้อเสนอ Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order__amazon_order_ref
 msgid "Amazon Order Ref"
-msgstr ""
+msgstr "อ้างอิงคำสั่ง Amazon"
 
 #. module: sale_amazon
 #: model:product.product,name:sale_amazon.default_product
 #: model:product.template,name:sale_amazon.default_product_product_template
 msgid "Amazon Sale"
-msgstr ""
+msgstr "การขาย Amazon "
 
 #. module: sale_amazon
 #: model:product.product,name:sale_amazon.shipping_product
 #: model:product.template,name:sale_amazon.shipping_product_product_template
 msgid "Amazon Shipping"
-msgstr ""
+msgstr "การจัดส่ง Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_stock_picking__amazon_sync_pending
 msgid "Amazon Sync Pending"
-msgstr ""
+msgstr "การซิงค์ของ Amazon อยู่ระหว่างดำเนินการ"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_crm_team__amazon_team
 msgid "Amazon Team"
-msgstr ""
+msgstr "ทีม Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Amazon accounts correspond to Amazon Seller Central accounts."
-msgstr ""
+msgstr "บัญชี Amazon สอดคล้องกับบัญชี Amazon Seller Central"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_marketplace.py:0
 #, python-format
 msgid "Amazon marketplaces cannot be deleted."
-msgstr ""
+msgstr "ตลาดของ Amazon ไม่สามารถลบได้"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Amazon move : %s"
-msgstr ""
+msgstr "ย้าย Amazon  : %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -177,6 +194,9 @@ msgid ""
 "Since the current carrier doesn't automatically provide a tracking "
 "reference, you need to set one manually."
 msgstr ""
+"Amazon กำหนดให้ต้องมีการอ้างอิงการติดตามในการจัดส่งแต่ละครั้ง "
+"เนื่องจากผู้ให้บริการปัจจุบันไม่ได้ให้การอ้างอิงการติดตามโดยอัตโนมัติ "
+"คุณจึงต้องตั้งค่าด้วยตนเอง"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -185,30 +205,32 @@ msgid ""
 "Amazon requires that a tracking reference is provided with each delivery. "
 "You need to assign a carrier to this delivery."
 msgstr ""
+"Amazon กำหนดให้ต้องมีการอ้างอิงการติดตามในการจัดส่งแต่ละครั้ง "
+"คุณต้องมอบหมายผู้ให้บริการขนส่งให้กับการจัดส่งนี้"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order_line__amazon_item_ref
 msgid "Amazon-defined item reference"
-msgstr ""
+msgstr "การอ้างอิงรายการที่กำหนดโดย Amazon"
 
 #. module: sale_amazon
 #: model:mail.template,name:sale_amazon.order_sync_failure
 msgid "Amazon: Order Synchronization Failure"
-msgstr ""
+msgstr "Amazon: ความล้มเหลวในการซิงโครไนซ์คำสั่ง"
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_orders_ir_actions_server
 #: model:ir.cron,cron_name:sale_amazon.ir_cron_sync_amazon_orders
 #: model:ir.cron,name:sale_amazon.ir_cron_sync_amazon_orders
 msgid "Amazon: sync orders"
-msgstr ""
+msgstr "Amazon: ซิงค์คำสั่งซื้อ"
 
 #. module: sale_amazon
 #: model:ir.actions.server,name:sale_amazon.ir_cron_sync_amazon_pickings_ir_actions_server
 #: model:ir.cron,cron_name:sale_amazon.ir_cron_sync_amazon_pickings
 #: model:ir.cron,name:sale_amazon.ir_cron_sync_amazon_pickings
 msgid "Amazon: sync pickings"
-msgstr ""
+msgstr "Amazon: ซิงค์การรับ"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -216,7 +238,7 @@ msgstr ""
 msgid ""
 "An error was encountered when confirming shipping of the order with amazon "
 "id %s."
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะยืนยันการจัดส่งคำสั่งซื้อด้วยไอดี amazon%s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -225,29 +247,29 @@ msgstr ""
 #: code:addons/sale_amazon/models/stock_picking.py:0
 #, python-format
 msgid "An error was encountered when preparing the connection to Amazon."
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะเตรียมการเชื่อมต่อกับ Amazon"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "An error was encountered when synchronizing Amazon order items."
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะซิงโครไนซ์รายการสั่งซื้อของ Amazon"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "An error was encountered when synchronizing Amazon orders."
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะซิงโครไนซ์คำสั่งซื้อของ Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__auth_token
 msgid "Authorization Token"
-msgstr ""
+msgstr "โทเคนที่อนุญาต"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__available_marketplace_ids
 msgid "Available Marketplaces"
-msgstr ""
+msgstr "ตลาดที่สามารถใช้ได้"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_CA
@@ -257,7 +279,7 @@ msgstr "แคนาดา"
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__code
 msgid "Code"
-msgstr "รหัส"
+msgstr "โค้ด"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__company_id
@@ -268,7 +290,7 @@ msgstr "บริษัท"
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_res_config_settings
 msgid "Config Settings"
-msgstr "การตั้งค่า"
+msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_res_partner
@@ -292,21 +314,21 @@ msgstr "สร้างเมื่อ"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Credentials"
-msgstr ""
+msgstr "ข้อมูลประจำตัว"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/res_config_settings.py:0
 #: model_terms:ir.ui.view,arch_db:sale_amazon.res_config_settings_view_form
 #, python-format
 msgid "Default Products"
-msgstr ""
+msgstr "สินค้าเริ่มต้น"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__display_name
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__display_name
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__display_name
 msgid "Display Name"
-msgstr "ชื่อที่ใช้แสดง"
+msgstr "แสดงชื่อ"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__domain
@@ -318,7 +340,7 @@ msgstr "โดเมน"
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Everything is correctly set up !"
-msgstr ""
+msgstr "การตั้งค่าทุกอย่างถูกต้อง !"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_FR
@@ -328,27 +350,27 @@ msgstr "ฝรั่งเศส"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_order_view_form
 msgid "Fulfilled by Amazon"
-msgstr ""
+msgstr "เติมเต็มโดย Amazon"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_order_view_form
 msgid "Fulfilled by Merchant"
-msgstr ""
+msgstr "เติมเต็มโดยผู้ค้า"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_sale_order__amazon_channel
 msgid "Fulfillment Channel"
-msgstr ""
+msgstr "เติมเต็มช่องทาง"
 
 #. module: sale_amazon
 #: model:ir.model.fields.selection,name:sale_amazon.selection__sale_order__amazon_channel__fba
 msgid "Fulfillment by Amazon"
-msgstr ""
+msgstr "การเติมเต็มโดย Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields.selection,name:sale_amazon.selection__sale_order__amazon_channel__fbm
 msgid "Fulfillment by Merchant"
-msgstr ""
+msgstr "การเติมเต็มโดยผู้ค้า"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_DE
@@ -362,19 +384,21 @@ msgid ""
 "Gift message:\n"
 "%s"
 msgstr ""
+"ข้อความของขวัญ:\n"
+"%s"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__id
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__id
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__id
 msgid "ID"
-msgstr "รหัส"
+msgstr "ไอดี"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__active
 msgid ""
 "If made inactive, this account will no longer be synchronized with Amazon"
-msgstr ""
+msgstr "หากปิดใช้งาน บัญชีนี้จะไม่ซิงโครไนซ์กับ Amazon อีกต่อไป"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -383,6 +407,8 @@ msgid ""
 "If the date is set in the past, orders placed on this Amazon Account before the first synchronization of the module might be synchronized with Odoo.\n"
 "If the date is set in the future, orders placed on this Amazon Account between the previous and the new date will not be synchronized with Odoo."
 msgstr ""
+"หากวันที่ถูกตั้งไว้ในอดีต คำสั่งซื้อที่ดำเนินการในบัญชี Amazon นี้ก่อนการซิงโครไนซ์โมดูลครั้งแรกอาจถูกซิงโครไนซ์กับ Odoo\n"
+"หากกำหนดวันที่ในอนาคต คำสั่งซื้อที่ดำเนินการในบัญชี Amazon นี้ระหว่างวันที่ก่อนหน้าและวันที่ใหม่จะไม่ซิงโครไนซ์กับ Odoo"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
@@ -391,6 +417,8 @@ msgid ""
 "                                         synchronize and add them to the "
 "current sync marketplaces"
 msgstr ""
+"ถ้าบัญชีนี้เข้าถึงตลาดกลางใหม่ "
+"ให้ซิงโครไนซ์และเพิ่มไปยังตลาดกลางการซิงค์ปัจจุบัน"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_search
@@ -400,17 +428,17 @@ msgstr "ปิดใช้งาน"
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_stock_location
 msgid "Inventory Locations"
-msgstr "ตำแหน่งสินค้าคงคลัง"
+msgstr "ตำแหน่งคลังสินค้า"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__is_follow_up_displayed
 msgid "Is Follow Up Displayed"
-msgstr ""
+msgstr "แสดงผลการติดตาม"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_stock_picking__amazon_sync_pending
 msgid "Is True if the picking must be notified to Amazon"
-msgstr ""
+msgstr "เป็นจริง หากกรครรับต้องแจ้งไปยัง Amazon"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_IT
@@ -422,26 +450,26 @@ msgstr "อิตาลี"
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace____last_update
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer____last_update
 msgid "Last Modified on"
-msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__last_orders_sync
 msgid "Last Orders Sync"
-msgstr ""
+msgstr "การซิงค์คำสั่งสุดท้าย"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__write_uid
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__write_uid
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__write_uid
 msgid "Last Updated by"
-msgstr "อัพเดทครั้งสุดท้ายโดย"
+msgstr "อัปเดตครั้งล่าสุดโดย"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__write_date
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__write_date
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__write_date
 msgid "Last Updated on"
-msgstr "อัพเดทครั้งสุดท้ายเมื่อ"
+msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__marketplace_id
@@ -451,7 +479,7 @@ msgstr "ตลาดกลาง"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Marketplaces"
-msgstr ""
+msgstr "ตลาดกลาง"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_MX
@@ -474,7 +502,7 @@ msgstr "เนเธอร์แลนด์"
 #: model:ir.model.fields,field_description:sale_amazon.field_product_product__offer_count
 #: model:ir.model.fields,field_description:sale_amazon.field_product_template__offer_count
 msgid "Offer Count"
-msgstr ""
+msgstr "จำนวนข้อเสนอ"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -485,30 +513,30 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_product_template_view_form
 #, python-format
 msgid "Offers"
-msgstr ""
+msgstr "ข้อเสนอ"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Only available marketplaces can be selected"
-msgstr ""
+msgstr "เลือกได้เฉพาะตลาดกลางเท่านั้น"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__order_count
 msgid "Order Count"
-msgstr ""
+msgstr "จำนวนคำสั่ง"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Order Follow-up"
-msgstr ""
+msgstr "การติดตามคำสั่ง"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 #, python-format
 msgid "Orders"
-msgstr "รายการสั่งซื้อ"
+msgstr "คำสั่ง"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_product_product
@@ -520,7 +548,7 @@ msgstr "สินค้า"
 #: model:ir.model,name:sale_amazon.model_product_template
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__product_template_id
 msgid "Product Template"
-msgstr "รูปแบบสินค้า"
+msgstr "เทมเพลตสินค้า"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/stock_picking.py:0
@@ -530,36 +558,39 @@ msgid ""
 "the same package. Operations related to the product %s were not all "
 "confirmed at once."
 msgstr ""
+"สินค้าที่จัดส่งให้กับลูกค้าของ Amazon "
+"ต้องมีชิ้นส่วนที่เกี่ยวข้องในแพ็คเกจเดียวกัน "
+"การดำเนินงานที่เกี่ยวข้องกับสินค้า%s จะไม่ได้รับการยืนยันทั้งหมดในครั้งเดียว"
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Register your Amazon account"
-msgstr ""
+msgstr "ลงทะเบียนบัญชี Amazon ของคุณ"
 
 #. module: sale_amazon
 #: model_terms:ir.actions.act_window,help:sale_amazon.list_amazon_account_action
 msgid "Register yours to start synchronizing your orders into Odoo."
-msgstr ""
+msgstr "ลงทะเบียนเพื่อเริ่มซิงโครไนซ์คำสั่งซื้อของคุณกับ Odoo"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__sku
 msgid "SKU"
-msgstr ""
+msgstr "SKU"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_amazon_offer_unique_sku
 msgid "SKU must be unique for a given account and marketplace."
-msgstr ""
+msgstr "SKU จะต้องไม่ซ้ำกันสำหรับบัญชีและตลาดกลางที่กำหนด"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_sale_order
 msgid "Sales Order"
-msgstr "ใบสั่งขาย"
+msgstr "คำสั่งขาย"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "รายการคำสั่งขาย"
+msgstr "ไลน์คำสั่งขาย"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_crm_team
@@ -578,16 +609,18 @@ msgid ""
 "Select the marketplace on which your seller account\n"
 "                                                was originally created."
 msgstr ""
+"เลือกตลาดกลางที่บัญชีผู้ขายเดิมของคุณ\n"
+"                                                ถูกสร้างขึ้น"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__seller_key
 msgid "Seller ID"
-msgstr ""
+msgstr "ไอดีผู้ขาย"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__base_marketplace_id
 msgid "Sign-up Marketplace"
-msgstr ""
+msgstr "ลงทะเบียนตลาดกลาง"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_ES
@@ -597,35 +630,36 @@ msgstr "สเปน"
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__location_id
 msgid "Stock Location"
-msgstr "ตำแหน่งสต็อก"
+msgstr "ตำแหน่งสต๊อก"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "Successfully updated the marketplaces available to this account !"
-msgstr ""
+msgstr "อัปเดตตลาดกลางที่มีให้ในบัญชีนี้สำเร็จแล้ว !"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_account__active_marketplace_ids
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_offer__active_marketplace_ids
 msgid "Sync Marketplaces"
-msgstr ""
+msgstr "ซิงค์ตลาดกลาง"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Sync Orders"
-msgstr ""
+msgstr "ซิงค์คำสั่ง"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Sync Pickings"
-msgstr ""
+msgstr "ซิงค์การรับ"
 
 #. module: sale_amazon
 #: model:mail.template,subject:sale_amazon.order_sync_failure
 msgid ""
 "Synchronization of Amazon order {{ ctx.get('amazon_order_ref') }} has failed"
 msgstr ""
+"การซิงโครไนซ์คำสั่งซื้อของ Amazon {{ ctx.get('amazon_order_ref') }} ล้มเหลว"
 
 #. module: sale_amazon
 #: model:ir.model.fields,field_description:sale_amazon.field_amazon_marketplace__tax_included
@@ -635,56 +669,56 @@ msgstr "รวมภาษี"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Test Credentials"
-msgstr ""
+msgstr "ตรวจสอบข้อมูลประจำตัว"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__api_ref
 msgid "The Amazon-defined marketplace reference"
-msgstr ""
+msgstr "ข้อมูลอ้างอิงตลาดกลางที่กำหนดโดย Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_sale_order__amazon_order_ref
 msgid "The Amazon-defined order reference"
-msgstr ""
+msgstr "อ้างอิงคำสั่งซื้อที่กำหนดโดย Amazon"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__auth_token
 msgid ""
 "The MWS Authorization Token of the Amazon Seller Central account for Odoo"
-msgstr ""
+msgstr "โทเคนที่ได้รับอนุญาต MWS  ของบัญชี Amazon Seller Central สำหรับ Odoo"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__seller_key
 msgid "The Merchant ID of the Amazon Seller Central account"
-msgstr ""
+msgstr "ไอดีผู้ค้าของบัญชี Amazon Seller Central"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy encountered an internal server error."
-msgstr ""
+msgstr "พร็อกซี Odoo พบข้อผิดพลาดของเซิร์ฟเวอร์ภายใน"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy encountered an unhandled error."
-msgstr ""
+msgstr "พร็อกซี Odoo พบข้อผิดพลาดที่ไม่สามารถจัดการได้"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "The Odoo proxy received a malformed request."
-msgstr ""
+msgstr "พร็อกซี  Odoo ได้รับการร้องขอที่มีรูปแบบไม่ถูกต้อง"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__team_id
 msgid "The Sales Team assigned to Amazon orders for reporting"
-msgstr ""
+msgstr "ทีมขายที่มอบหมายให้คำสั่งซื้อของ Amazon สำหรับการรายงาน"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__sku
 msgid "The Stock Keeping Unit"
-msgstr ""
+msgstr "หน่วยเก็บสต๊อก"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -694,30 +728,32 @@ msgid ""
 "The authentication to the Amazon Marketplace Web Service failed. Please "
 "verify your credentials."
 msgstr ""
+"การรับรองความถูกต้องของบริการเว็บตลาดกลาง Amazon ล้มเหลว "
+"กรุณาตรวจสอบข้อมูลประจำตัวของคุณ"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "The communication with Amazon is overloaded, please try again later."
-msgstr ""
+msgstr "การสื่อสารกับ Amazon ทำงานหนักเกินไป โปรดลองอีกครั้งในภายหลัง"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__code
 msgid "The country code in ISO 3166-1 format"
-msgstr ""
+msgstr "รหัสประเทศในรูปแบบ ISO 3166-1"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__domain
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__domain
 msgid "The domain name associated with the marketplace"
-msgstr ""
+msgstr "ชื่อโดเมนที่เชื่อมโยงกับตลาดกลาง"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_res_partner__amazon_email
 #: model:ir.model.fields,help:sale_amazon.field_res_users__amazon_email
 msgid "The encrypted email of the customer. Does not forward mails"
-msgstr ""
+msgstr "อีเมลเข้ารหัสของลูกค้า ไม่ส่งต่อเมล"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__last_orders_sync
@@ -726,29 +762,32 @@ msgid ""
 "whose status has not changed since this date will not be created nor updated"
 " in Odoo."
 msgstr ""
+"วันที่ซิงโครไนซ์ล่าสุดสำหรับคำสั่งซื้อในบัญชีนี้ "
+"คำสั่งซื้อที่สถานะไม่เปลี่ยนแปลงนับตั้งแต่วันที่นี้จะไม่ถูกสร้างหรืออัปเดตใน"
+" Odoo"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__location_id
 msgid ""
 "The location of the stock managed by Amazon under the Amazon Fulfillment "
 "program"
-msgstr ""
+msgstr "ตำแหน่งของสต๊อกที่จัดการโดย Amazon ภายใต้โปรแกรมการเติมเต็ม Amazon "
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__marketplace_id
 msgid "The marketplace of this offer"
-msgstr ""
+msgstr "ตลาดกลางของข้อเสนอนี้"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__available_marketplace_ids
 msgid "The marketplaces this account has access to"
-msgstr ""
+msgstr "ตลาดกลางที่บัญชีนี้เข้าถึงได้"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__active_marketplace_ids
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__active_marketplace_ids
 msgid "The marketplaces this account sells on"
-msgstr ""
+msgstr "ตลาดกลางที่บัญชีนี้ขายบน"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/sale.py:0
@@ -758,6 +797,9 @@ msgid ""
 "already been delivered. Please create a return for this order to adjust the "
 "stock."
 msgstr ""
+"คำสั่งซื้อถูกยกเลิกโดยลูกค้าของ Amazon "
+"ในขณะที่สินค้าบางรายการได้รับการจัดส่งแล้ว "
+"โปรดสร้างการส่งคืนสำหรับคำสั่งซื้อนี้เพื่อปรับสต๊อก"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_account__base_marketplace_id
@@ -765,33 +807,38 @@ msgid ""
 "The original sign-up marketplace of this account. Used for authentication "
 "only."
 msgstr ""
+"ตลาดกลางที่ถูกลงชื่อใช้ดั้งเดิมของบัญชีนี้ "
+"ใช้สำหรับการรับรองความสิทธิ์เท่านั้น"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_marketplace__tax_included
 msgid "The price includes the tax amount"
-msgstr ""
+msgstr "ราคานี้รวมยอดภาษีแล้ว"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_amazon_offer__account_id
 msgid "The seller account used to manage this product"
-msgstr ""
+msgstr "บัญชีผู้ขายที่ใช้จัดการสินค้านี้"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_amazon_marketplace_unique_api_ref
 msgid "There can only exist one marketplace for a given API Identifier."
-msgstr ""
+msgstr "มีตลาดกลางได้เพียงแห่งเดียวสำหรับตัวระบุ API ที่กำหนด"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_sale_order_unique_amazon_order_ref
 msgid ""
 "There can only exist one sale order for a given Amazon Order Reference."
 msgstr ""
+"สามารถมีคำสั่งขายได้เพียงหนึ่งรายการสำหรับการอ้างอิงคำสั่งของ Amazon "
+"ที่กำหนด"
 
 #. module: sale_amazon
 #: model:ir.model.constraint,message:sale_amazon.constraint_sale_order_line_unique_amazon_item_ref
 msgid ""
 "There can only exist one sale order line for a given Amazon Item Reference."
 msgstr ""
+"มีรายการใบสั่งขายได้เพียงรายการเดียวสำหรับการอ้างอิงรายการ Amazon ที่กำหนด"
 
 #. module: sale_amazon
 #: model:ir.model,name:sale_amazon.model_stock_picking
@@ -804,21 +851,23 @@ msgid ""
 "True if this location represents the stock of a seller managed by Amazon "
 "under the Amazon Fulfillment program"
 msgstr ""
+"จริง ถ้าสถานที่นี้แสดงถึงสต๊อกของผู้ขายที่จัดการโดย Amazon ภายใต้โปรแกรม "
+"Amazon Fulfillment"
 
 #. module: sale_amazon
 #: model:ir.model.fields,help:sale_amazon.field_crm_team__amazon_team
 msgid "True if this sales team is associated with Amazon orders"
-msgstr ""
+msgstr "จริง หากทีมขายนี้เชื่อมโยงกับคำสั่งของ Amazon"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_UK
 msgid "United Kingdom"
-msgstr "อังกฤษ"
+msgstr "สหราชอาณาจักร"
 
 #. module: sale_amazon
 #: model:amazon.marketplace,name:sale_amazon.marketplace_US
 msgid "United States of America"
-msgstr ""
+msgstr "สหรัฐอเมริกา"
 
 #. module: sale_amazon
 #: model:product.product,uom_name:sale_amazon.default_product
@@ -831,12 +880,12 @@ msgstr "หน่วย"
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "Update Available Marketplaces"
-msgstr ""
+msgstr "อัปเดตตลาดที่มีให้บริการ"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_offer_view_tree
 msgid "View on Seller Central"
-msgstr ""
+msgstr "ดูใน Seller Central"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -848,7 +897,7 @@ msgstr "คำเตือน"
 #: code:addons/sale_amazon/models/mws_connector.py:0
 #, python-format
 msgid "You don't have an active subscription. Please buy one here: %s"
-msgstr ""
+msgstr "คุณไม่มีการสมัครสมาชิกที่ใช้งานอยู่ กรุณาซื้อที่นี้: %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
@@ -857,20 +906,22 @@ msgid ""
 "[%s] %s\n"
 "Condition: %s - %s"
 msgstr ""
+"[%s] %s\n"
+"เงื่อนไข: %s - %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "[%s] Delivery Charges for %s"
-msgstr ""
+msgstr "[%s] ค่าจัดส่งสำหรับ %s"
 
 #. module: sale_amazon
 #: code:addons/sale_amazon/models/amazon_account.py:0
 #, python-format
 msgid "[%s] Gift Wrapping Charges for %s"
-msgstr ""
+msgstr "[%s] ค่าห่อของขวัญสำหรับ %s"
 
 #. module: sale_amazon
 #: model_terms:ir.ui.view,arch_db:sale_amazon.amazon_account_view_form
 msgid "e.g. American Market"
-msgstr ""
+msgstr "เช่น ตลาดอเมริกา"

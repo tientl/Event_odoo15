@@ -3,23 +3,34 @@
 # 	* account_reports
 # 
 # Translators:
-# Martin Trigaux, 2021
-# Cécile Collart <cco@odoo.com>, 2021
-# Lucia Pacheco <lpo@odoo.com>, 2021
+# Martin Trigaux, 2022
+# Lucia Pacheco <lpo@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2021\n"
+"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr " y %s otros"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr "y otro"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -27,7 +38,7 @@ msgstr ""
 #, python-format
 msgid " past period(s), previously stored on the corresponding tax line."
 msgstr ""
-" períodos anteriores, previamente almacenados en la línea de impuestos "
+" periodos anteriores, previamente almacenados en la línea de impuestos "
 "correspondiente."
 
 #. module: account_reports
@@ -43,8 +54,8 @@ msgid ""
 "that are not yet reconciled in Odoo (Waiting the final reconciliation "
 "allowing finding the right account)"
 msgstr ""
-"%s para las Transacciones(+) importadas desde su cuenta bancaria en línea "
-"(con fecha de hoy) que aún no están conciliadas en Odoo (a la espera de la "
+"%s para transacciones(+) importadas desde su cuenta bancaria en línea (con "
+"fecha de hoy) que aún no están conciliadas en Odoo (a la espera de la "
 "conciliación final que permita encontrar la cuenta correcta)"
 
 #. module: account_reports
@@ -369,8 +380,8 @@ msgid ""
 "<span>Please note that the report may include some rounding differences "
 "towards the bookings.</span>"
 msgstr ""
-"<span>Por favor tome en cuenta que los reportes pueden tener errores en el "
-"redondeo de los libros.</span>"
+"<span>Tenga en cuenta que los reportes pueden tener diferencias de redondeo "
+"a comparación de los libros.</span>"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_sales_report_main_template
@@ -386,7 +397,7 @@ msgid ""
 msgstr ""
 "<span>Esta empresa forma parte de una unidad tributaria. Actualmente no está"
 " viendo toda la unidad; para cambiarlo, marque la opción \"agregar\" del "
-"menú \" unidad tributaria\".</span>"
+"menú \"unidad tributaria\".</span>"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.template_multicurrency_report
@@ -450,6 +461,11 @@ msgstr "Código de cuenta"
 #: model:ir.model.fields,field_description:account_reports.field_res_company__account_display_representative_field
 msgid "Account Display Representative Field"
 msgstr "Campo representativo de la visualización de la cuenta"
+
+#. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "Reporte de diario contable"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
@@ -564,7 +580,7 @@ msgstr "Agregar totales debajo de las secciones"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__report_adjustment
 msgid "Adjustment"
-msgstr "Archivos adjuntos"
+msgstr "Ajuste"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
@@ -596,12 +612,12 @@ msgstr "Balances antiguos de los partners"
 #: model:ir.ui.menu,name:account_reports.menu_action_account_report_aged_payable
 #, python-format
 msgid "Aged Payable"
-msgstr "Cuenta por pagar antigua"
+msgstr "Cuenta antigua por pagar"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_journal_dashboard_kanban_view
 msgid "Aged Payables"
-msgstr "Cuentas por pagar antiguas"
+msgstr "Cuentas antiguas por pagar"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:0
@@ -610,20 +626,25 @@ msgstr "Cuentas por pagar antiguas"
 #: model:ir.ui.menu,name:account_reports.menu_action_account_report_aged_receivable
 #, python-format
 msgid "Aged Receivable"
-msgstr "Cuenta por cobrar antigua"
+msgstr "Cuenta antigua por cobrar"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_journal_dashboard_kanban_view
 msgid "Aged Receivables"
-msgstr "Cuentas por cobrar antiguas"
+msgstr "Cuentas antiguas por cobrar"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "Todos"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr "Todos los diarios"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
@@ -897,7 +918,7 @@ msgstr "Cancelar"
 #: code:addons/account_reports/models/account_move.py:0
 #, python-format
 msgid "Carryover for period %s to %s"
-msgstr "Traspaso del período %s al %s"
+msgstr "Traspaso del periodo %s al %s"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_cash0
@@ -1161,7 +1182,7 @@ msgstr "Controles fallidos"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_line_form
 msgid "Cosmetics"
-msgstr "Superficial"
+msgstr "Cosméticos"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_cost_sales0
@@ -1172,6 +1193,7 @@ msgstr "Costo de ingresos"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "País"
 
@@ -1322,9 +1344,9 @@ msgid ""
 "Date where the next action should be taken for a receivable item. Usually, "
 "automatically set when sending reminders through the customer statement."
 msgstr ""
-"Fecha en la que se debe realizar la siguiente acción para un artículo por "
-"cobrar. Normalmente, se establece automáticamente cuando se envían "
-"recordatorios a través del estado de cuenta del cliente."
+"Fecha en la que se debe realizar la siguiente acción para un apunte de "
+"diario por cobrar. Normalmente, se establece automáticamente cuando se "
+"envían recordatorios a través del estado de cuenta del cliente."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
@@ -1444,7 +1466,7 @@ msgstr "Fecha límite"
 #: model:ir.ui.menu,name:account_reports.menu_action_account_report_sales
 #, python-format
 msgid "EC Sales List"
-msgstr "Declaración recapitulativa de operaciones intracomunitarias"
+msgstr "Listado de ventas de la UE"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_equity0
@@ -1466,7 +1488,7 @@ msgstr "Fecha de finalización:"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "End of Last Financial Year"
-msgstr "Fin del último año financiero"
+msgstr "Fin del último año fiscal"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
@@ -1762,6 +1784,11 @@ msgid "Goods"
 msgstr "Bienes"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "Tabla"
+
+#. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
 msgid "Gross Profit"
 msgstr "Ganancia bruta"
@@ -1795,7 +1822,7 @@ msgstr "Agrupar por: impuesto y cuenta"
 #: code:addons/account_reports/models/account_financial_report.py:0
 #, python-format
 msgid "Groupby field %s is invalid on line with name '%s'"
-msgstr "El campo agrupar por %s no es válido en la línea \"%s\""
+msgstr "El campo agrupar por %s no es válido en la línea con nombre '%s'"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
@@ -1841,6 +1868,16 @@ msgstr "Qué tan seguido se deben hacer las declaraciones de impuestos"
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__id
 msgid "ID"
 msgstr "ID"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr "Impacto en la tabla"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr "Tablas de impuestos afectadas"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -1995,7 +2032,7 @@ msgstr "Apuntes de diario en"
 #: code:addons/account_reports/models/account_consolidated_journals.py:0
 #, python-format
 msgid "Journal Name (Code)"
-msgstr "Nombre del diario (Code)"
+msgstr "Nombre del diario (Código)"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_control_domain
@@ -2949,6 +2986,11 @@ msgid "Tax Declaration"
 msgstr "Declaración de impuestos"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr "Tabla de impuesto"
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
 msgid "Tax ID"
 msgstr "RFC"
@@ -3134,7 +3176,7 @@ msgstr "Hay algunos"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "This Financial Year"
-msgstr "Este año financiero"
+msgstr "Este año fiscal"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
@@ -3225,8 +3267,8 @@ msgid ""
 "Transactions(+) that were entered into Odoo, but not yet reconciled "
 "(Payments triggered by invoices/refunds or manually)"
 msgstr ""
-"Transacciones(+) que fueron registradas en Odoo, pero aún no han sido "
-"conciliadas (pagos activados por facturas/reembolsos o de forma manual)"
+"Transacciones(+) que se registraron en Odoo que aún no se han conciliado "
+"(pagos activados por facturas/reembolsos o de forma manual)"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
@@ -3235,9 +3277,8 @@ msgid ""
 "Transactions(-) that were entered into Odoo, but not yet reconciled "
 "(Payments triggered by bills/credit notes or manually)"
 msgstr ""
-"Transacciones(-) que fueron registradas en Odoo, pero aún no han sido "
-"conciliadas (pagos activados por facturas/notas de crédito o de forma "
-"manual)"
+"Transacciones(-)  que se registraron en Odoo que aún no se han conciliado "
+"(pagos activados por facturas/notas de crédito o de forma manual)"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_report_coa.py:0

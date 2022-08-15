@@ -44,7 +44,7 @@ class SocialInstagramController(SocialController):
             'view_type': 'kanban',
             'model': 'social.stream.post',
         })
-        return werkzeug.utils.redirect(url)
+        return request.redirect(url)
 
     # ========================================================
     # COMMENTS / LIKES

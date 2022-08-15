@@ -1,43 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import math
 import time
 
-from datetime import date
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 from odoo import fields
 from odoo.exceptions import UserError, MissingError
-from odoo.tests.common import Form
+from odoo.tests.common import Form, tagged
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
-from unittest.mock import patch
-
-original_context_today = fields.Date.context_today
-
-def today():
-    # 31'st of december is a particular date because entries are configured
-    # to be autoposted on that day. The test values dont take it into account
-    # so we just mock the date and run the 31'st as if it was the 30'th
-    today = fields.Date.today()
-    if today.month == 12 and today.day == 31:
-        today += relativedelta(day=30)
-    return today
-
-def context_today(record, timestamp=None):
-    # Since 31'st december is faked as 30th december, we need to also fake
-    # context_today that is used in some account_move code (eg. auto_post)
-    if timestamp == None:
-        today = date.today()
-        if today.month == 12 and today.day == 31:
-            return today + relativedelta(day=30)
-    return original_context_today(record, timestamp)
 
 
+@freeze_time('2021-05-12')
+@tagged('post_install', '-at_install')
 class TestAccountAsset(TestAccountReportsCommon):
 
     @classmethod
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def setUpClass(cls, today_mock):
+    def setUpClass(cls):
         super(TestAccountAsset, cls).setUpClass()
         today = fields.Date.today()
         cls.truck = cls.env['account.asset'].create({
@@ -82,9 +60,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             with asset_form.depreciation_move_ids.edit(i) as line_edit:
                 line_edit.asset_remaining_value
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_00_account_asset(self, today_mock):
+    def test_00_account_asset(self):
         """Test the lifecycle of an asset"""
         CEO_car = self.env['account.asset'].with_context(asset_type='purchase').create({
             'salvage_value': 2000.0,
@@ -269,9 +245,7 @@ class TestAccountAsset(TestAccountReportsCommon):
         self.assertEqual(recognition.depreciation_move_ids.sorted(lambda r: r.id)[1].date, installment_date,
                          'Installment date is incorrect.')
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_02_account_asset(self, today_mock):
+    def test_02_account_asset(self):
         """Test the lifecycle of an asset"""
         CEO_car = self.env['account.asset'].with_context(asset_type='purchase').create({
             'salvage_value': 2000.0,
@@ -329,9 +303,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'salvage_value': 2000,
         }])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_03_account_asset(self, today_mock):
+    def test_03_account_asset(self):
         """Test the salvage of an asset with gain"""
         CEO_car = self.env['account.asset'].with_context(asset_type='purchase').create({
             'salvage_value': 0,
@@ -389,9 +361,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'salvage_value': 0,
         }])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_04_account_asset(self, today_mock):
+    def test_04_account_asset(self):
         """Test the salvage of an asset with gain"""
         CEO_car = self.env['account.asset'].with_context(asset_type='purchase').create({
             'salvage_value': 0,
@@ -450,9 +420,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'salvage_value': 0,
         }])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_05_account_asset(self, today_mock):
+    def test_05_account_asset(self):
         """Test the salvage of an asset with gain"""
         CEO_car = self.env['account.asset'].with_context(asset_type='purchase').create({
             'salvage_value': 0,
@@ -505,9 +473,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'salvage_value': 0,
         }])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_06_account_asset(self, today_mock):
+    def test_06_account_asset(self):
         """Test the correct computation of asset amounts"""
         revenue_account = self.env['account.account'].create({
             "name": "test_06_account_asset",
@@ -526,7 +492,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'name': "CEO's Car",
             'original_value': 1000.0,
             'asset_type': 'sale',
-            'acquisition_date': today() - relativedelta(years=3),
+            'acquisition_date': fields.Date.today() - relativedelta(years=3),
             'account_asset_id': revenue_account.id,
             'account_depreciation_id': self.company_data['default_account_assets'].copy().id,
             'account_depreciation_expense_id': revenue_account.id,
@@ -544,9 +510,7 @@ class TestAccountAsset(TestAccountReportsCommon):
             'salvage_value': 0,
         }])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_asset_form(self, today_mock):
+    def test_asset_form(self):
         """Test the form view of assets"""
         asset_form = Form(self.env['account.asset'].with_context(asset_type='purchase'))
         asset_form.name = "Test Asset"
@@ -647,12 +611,12 @@ class TestAccountAsset(TestAccountReportsCommon):
 
         # I check the proper depreciation lines created.
         self.assertEqual(10, len(self.truck.depreciation_move_ids.filtered(lambda x: x.state == 'draft')))
+        # Check if the future deprecation moves are set to be auto posted
+        self.assertTrue(all([move.auto_post for move in self.truck.depreciation_move_ids.filtered(lambda x: x.state == 'draft')]))
         # The values are unchanged
         self.assertRecordValues(self.truck, [values])
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_asset_modify_value_00(self, today_mock):
+    def test_asset_modify_value_00(self):
         """Test the values of the asset and value increase 'assets' after a
         modification of residual and/or salvage values.
         Increase the residual value, increase the salvage value"""
@@ -671,8 +635,7 @@ class TestAccountAsset(TestAccountReportsCommon):
         self.assertEqual(self.truck.children_ids.value_residual, 1000)
         self.assertEqual(self.truck.children_ids.salvage_value, 500)
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    def test_asset_modify_value_01(self, today_mock):
+    def test_asset_modify_value_01(self):
         "Decrease the residual value, decrease the salvage value"
         self.env['asset.modify'].create({
             'name': "Accident :'(",
@@ -716,9 +679,7 @@ class TestAccountAsset(TestAccountReportsCommon):
         self.assertEqual(self.truck.children_ids.value_residual, 0)
         self.assertEqual(self.truck.children_ids.salvage_value, 1500)
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_asset_modify_value_04(self, today_mock):
+    def test_asset_modify_value_04(self):
         "Increase the residual value, decrease the salvage value; increase of book value"
         self.env['asset.modify'].create({
             'name': 'GODZILA IS REAL!',
@@ -732,9 +693,7 @@ class TestAccountAsset(TestAccountReportsCommon):
         self.assertEqual(self.truck.children_ids.value_residual, 500)
         self.assertEqual(self.truck.children_ids.salvage_value, 0)
 
-    @patch('odoo.fields.Date.today', return_value=today())
-    @patch('odoo.fields.Date.context_today', context_today)
-    def test_asset_modify_report(self, today_mock):
+    def test_asset_modify_report(self):
         """Test the asset value modification flows"""
         #           PY      +   -  Final    PY     +    - Final Bookvalue
         #   -6       0  10000   0  10000     0   750    0   750      9250
@@ -1126,3 +1085,30 @@ class TestAccountAsset(TestAccountReportsCommon):
         self.assertEqual(len(product_b_lines.asset_ids), 4)
         self.assertEqual(len(product_a_100_lines.asset_ids), 5)
         self.assertEqual(len(product_a_150_lines.asset_ids), 4)
+
+    def test_post_asset_with_passed_recognition_date(self):
+        """
+        Check the state of an asset when the last recognition date
+        is passed at the moment of posting it.
+        """
+        asset = self.env['account.asset'].create({
+            'account_asset_id': self.company_data['default_account_expense'].id,
+            'account_depreciation_id': self.company_data['default_account_assets'].copy().id,
+            'account_depreciation_expense_id': self.company_data['default_account_assets'].id,
+            'journal_id': self.company_data['default_journal_misc'].id,
+            'asset_type': 'expense',
+            'name': 'test',
+            'acquisition_date': fields.Date.today() - relativedelta(years=1, month=6, day=1),
+            'original_value': 10000,
+            'method_number': 5,
+            'method_period': '1',
+            'method': 'linear',
+        })
+        asset.compute_depreciation_board()
+
+        self.assertTrue(all(m.state == 'draft' for m in asset.depreciation_move_ids))
+
+        asset.validate()
+
+        self.assertTrue(all(m.state == 'posted' for m in asset.depreciation_move_ids))
+        self.assertEqual(asset.state, 'close')

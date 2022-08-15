@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_financial_report_pk_profitandloss" model="account.financial.html.report">
+        <field name="name">Profit and Loss</field>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="date_range" eval="True" />
+        <field name='parent_id' ref='l10n_pk.account_reports_pk_statements_menu'/>
+        <field name="show_journal_filter" eval="True"/>
+        <field name="country_id" ref="base.pk"/>
+    </record>
+    <record id="action_account_report_pkpnl" model="ir.actions.client">
+        <field name="name">Profit and Loss</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.financial.html.report', 'id': ref('account_financial_report_pk_profitandloss')}" />
+    </record>
+    <record id="account_financial_report_pk_current_year_earnings" model="account.financial.html.report.line">
+        <field name="action_id" ref='action_account_report_pkpnl' />
+    </record>
+    <record id="account_balance_report_pk_gross_profit" model="account.financial.html.report.line">
+        <field name="name">Gross Profit</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_profitandloss"/>
+        <field name="code">PK_GP</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="1"/>
+        <field name="formulas">PK_REV + PK_CoS</field>
+    </record>
+    <record id="account_financial_report_pk_revenue" model="account.financial.html.report.line">
+        <field name="name">Revenue</field>
+        <field name="code">PK_REV</field>
+        <field name="parent_id" ref='account_balance_report_pk_gross_profit'/>
+        <field name="domain" eval="[('account_id.code', '=like', '3111%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="1"/>
+    </record>
+    <record id="account_financial_report_pk_cost_sales" model="account.financial.html.report.line">
+        <field name="name">Cost of Sales</field>
+        <field name="code">PK_CoS</field>
+        <field name="parent_id" ref='account_balance_report_pk_gross_profit'/>
+        <field name="domain" eval="[('account_id.code', '=like', '41%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="2"/>
+    </record>
+    <record id="account_balance_report_pk_profit_before_income_tax" model="account.financial.html.report.line">
+        <field name="name">Profit Before Income Tax</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_profitandloss"/>
+        <field name="code">PK_PBIT</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="2"/>
+        <field name="formulas">PK_GP + PK_OTINC + PK_GAE + PK_SDE + PK_BFC</field>
+    </record>
+    <record id="account_financial_report_pk_other_income" model="account.financial.html.report.line">
+        <field name="name">Other Income</field>
+        <field name="code">PK_OTINC</field>
+        <field name="parent_id" ref='account_balance_report_pk_profit_before_income_tax'/>
+        <field name="domain" eval="[('account_id.code', '=like', '3112%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="3"/>
+    </record>
+    <record id="account_financial_report_pk_general_administrative_expenses" model="account.financial.html.report.line">
+        <field name="name">General and Administrative Expenses</field>
+        <field name="code">PK_GAE</field>
+        <field name="parent_id" ref='account_balance_report_pk_profit_before_income_tax'/>
+        <field name="domain" eval="[('account_id.code', '=like', '42%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="4"/>
+    </record>
+    <record id="account_financial_report_pk_selling_distribution_expenses" model="account.financial.html.report.line">
+        <field name="name">Selling and Distribution Expenses</field>
+        <field name="code">PK_SDE</field>
+        <field name="parent_id" ref='account_balance_report_pk_profit_before_income_tax'/>
+        <field name="domain" eval="[('account_id.code', '=like', '43%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="5"/>
+    </record>
+    <record id="account_financial_report_pk_banking_finance_costs" model="account.financial.html.report.line">
+        <field name="name">Banking And Finance Costs</field>
+        <field name="code">PK_BFC</field>
+        <field name="parent_id" ref='account_balance_report_pk_profit_before_income_tax'/>
+        <field name="domain" eval="[('account_id.code', '=like', '44%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="6"/>
+    </record>
+    <record id="account_balance_report_pk_profit_for_the_year" model="account.financial.html.report.line">
+        <field name="name">Profit for the Year</field>
+        <field name="financial_report_id" ref="account_financial_report_pk_profitandloss"/>
+        <field name="control_domain" eval="[
+                '|', ('account_id.user_type_id.internal_group', '=', 'income'),
+                     ('account_id.user_type_id.internal_group', '=', 'expense')
+             ]" />
+        <field name="code">PK_PftY</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="3"/>
+        <field name="formulas">PK_PBIT + PK_ITE</field>
+    </record>
+    <record id="account_financial_report_pk_income_tax_expense" model="account.financial.html.report.line">
+        <field name="name">Income Tax expense</field>
+        <field name="code">PK_ITE</field>
+        <field name="parent_id" ref='account_balance_report_pk_profit_for_the_year'/>
+        <field name="domain" eval="[('account_id.code', '=like', '45%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="level" eval="2" />
+        <field name="sequence" eval="7"/>
+    </record>
+</odoo>

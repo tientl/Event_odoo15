@@ -36,6 +36,7 @@ You can choose between:
     'license': 'OEEL-1',
     'assets': {
         'web.report_assets_common': [
+            'l10n_us_check_printing/static/src/scss/report_check_commons.scss',
             'l10n_us_check_printing/static/**/*',
         ],
     }

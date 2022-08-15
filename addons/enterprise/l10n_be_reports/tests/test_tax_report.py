@@ -42,7 +42,7 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
             <ns2:VATDeclaration SequenceNumber="1" DeclarantReference="%s">
                 <ns2:Declarant>
                     <VATNumber xmlns="http://www.minfin.fgov.be/InputCommon">0477472701</VATNumber>
-                    <Name>company 1 data</Name>
+                    <Name>company_1_data</Name>
                     <Street></Street>
                     <PostCode></PostCode>
                     <City></City>
@@ -55,6 +55,7 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
                     <ns2:Year>2019</ns2:Year>
                 </ns2:Period>
                 <ns2:Data>
+                    <ns2:Amount GridNumber="00">0.00</ns2:Amount>
                     <ns2:Amount GridNumber="71">0.00</ns2:Amount>
                 </ns2:Data>
                 <ns2:ClientListingNihil>NO</ns2:ClientListingNihil>
@@ -109,7 +110,7 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
                 <ns2:VATDeclaration SequenceNumber="1" DeclarantReference="%s">
                     <ns2:Declarant>
                         <VATNumber xmlns="http://www.minfin.fgov.be/InputCommon">0477472701</VATNumber>
-                        <Name>company 1 data</Name>
+                        <Name>company_1_data</Name>
                         <Street></Street>
                         <PostCode></PostCode>
                         <City></City>
@@ -121,13 +122,14 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
                         <ns2:Month>11</ns2:Month>
                         <ns2:Year>2019</ns2:Year>
                     </ns2:Period>
-                    <ns2:Data>	
+                    <ns2:Data>
+                        <ns2:Amount GridNumber="00">0.00</ns2:Amount>
                         <ns2:Amount GridNumber="71">0.00</ns2:Amount>
                     </ns2:Data>
                     <ns2:ClientListingNihil>NO</ns2:ClientListingNihil>
                     <ns2:Ask Restitution="NO" Payment="NO"/>
                     <ns2:Comment></ns2:Comment>
-                </ns2:VATDeclaration> 
+                </ns2:VATDeclaration>
             </ns2:VATConsignment>
             """ % ref
 
@@ -139,8 +141,8 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
     @freeze_time('2019-12-31')
     def test_generate_xml(self):
         company = self.env.company
-        first_tax = self.env['account.tax'].search([('name', '=', '21% M.'), ('company_id', '=', self.company_data['company'].id)], limit=1)
-        second_tax = self.env['account.tax'].search([('name', '=', '21% Cocont. M.'), ('company_id', '=', self.company_data['company'].id)], limit=1)
+        first_tax = self.env['account.tax'].search([('name', '=', '21% M'), ('company_id', '=', self.company_data['company'].id)], limit=1)
+        second_tax = self.env['account.tax'].search([('name', '=', '21% M.Cocont'), ('company_id', '=', self.company_data['company'].id)], limit=1)
 
         # Create and post a move with two move lines to get some data in the report
         move = self.env['account.move'].create({
@@ -177,7 +179,7 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
             <ns2:VATDeclaration SequenceNumber="1" DeclarantReference="%s">
                 <ns2:Declarant>
                     <VATNumber xmlns="http://www.minfin.fgov.be/InputCommon">0477472701</VATNumber>
-                    <Name>company 1 data</Name>
+                    <Name>company_1_data</Name>
                     <Street></Street>
                     <PostCode></PostCode>
                     <City></City>
@@ -190,6 +192,7 @@ class BelgiumTaxReportTest(AccountSalesReportCommon):
                     <ns2:Year>2019</ns2:Year>
                 </ns2:Period>
                 <ns2:Data>
+                    <ns2:Amount GridNumber="00">0.00</ns2:Amount>
                     <ns2:Amount GridNumber="56">10.50</ns2:Amount>
                     <ns2:Amount GridNumber="59">31.50</ns2:Amount>
                     <ns2:Amount GridNumber="72">21.00</ns2:Amount>

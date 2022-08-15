@@ -111,16 +111,6 @@ class TestInvoiceExtractPurchase(AccountTestInvoicingCommon, account_invoice_ext
 
         self.assertTrue(invoice.id in self.purchase_order.invoice_ids.ids)
 
-    def test_match_po_by_reference(self):
-        invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
-        extract_response = self.get_default_extract_response()
-        extract_response['results'][0]['invoice_id']['selected_value']['content'] = self.purchase_order.partner_ref
-
-        with self.mock_iap_extract(extract_response, {}):
-            invoice._check_status()
-
-        self.assertTrue(invoice.id in self.purchase_order.invoice_ids.ids)
-
     def test_match_po_by_supplier_and_total(self):
         invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
         extract_response = self.get_default_extract_response()
@@ -146,6 +136,7 @@ class TestInvoiceExtractPurchase(AccountTestInvoicingCommon, account_invoice_ext
         self.assertTrue(invoice.id in self.purchase_order.invoice_ids.ids)
         self.assertEqual(invoice.amount_total, 200)
 
+    def test_no_match_subset_of_order_lines(self):
         # Test the case were two subsets of order lines match the total found by the OCR
         invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})
         extract_response = self.get_default_extract_response()
@@ -157,8 +148,9 @@ class TestInvoiceExtractPurchase(AccountTestInvoicingCommon, account_invoice_ext
         with self.mock_iap_extract(extract_response, {}):
             invoice._check_status()
 
-        self.assertTrue(invoice.id not in self.purchase_order.invoice_ids.ids)
-        self.assertEqual(invoice.amount_total, 150)
+        self.assertTrue(invoice.id in self.purchase_order.invoice_ids.ids)
+        # The PO should be used instead of the OCR result
+        self.assertEqual(invoice.amount_total, 300)
 
     def test_no_match(self):
         invoice = self.env['account.move'].create({'move_type': 'in_invoice', 'extract_state': 'waiting_extraction'})

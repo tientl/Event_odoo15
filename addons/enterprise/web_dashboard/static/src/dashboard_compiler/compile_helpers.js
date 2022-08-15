@@ -77,6 +77,24 @@ export function decodeObjectForTemplate(str) {
 }
 
 /**
+ * Transforms a string into a valid expression to be injected
+ * in a template as a props via setAttribute.
+ * Example: myString = `Some weird language quote (") `;
+ *     should become in the template:
+ *      <Component label="&quot;Some weird language quote (\\&quot;)&quot; " />
+ *     which should be interpreted by owl as a JS expression being a string:
+ *      `Some weird language quote (") `
+ *
+ * @param  {string} str The initial value: a pure string to be interpreted as such
+ * @return {string}     the valid string to be injected into a component's node props.
+ */
+export function tranformStringForExpression(str) {
+    const delimiter = `"`;
+    const newStr = str.replaceAll(delimiter, `\\${delimiter}`);
+    return `${delimiter}${newStr}${delimiter}`;
+}
+
+/**
  * Combines the existing value of a node attribute with new given parts. The glue
  * is the string used to join the parts.
  * @param {Element} node

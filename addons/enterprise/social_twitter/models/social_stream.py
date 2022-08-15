@@ -102,7 +102,7 @@ class SocialStreamTwitter(models.Model):
 
         result_tweets = result.json() if endpoint_name != 'search/tweets' else result.json().get('statuses')
         if isinstance(result_tweets, dict) and result_tweets.get('errors') or result_tweets is None:
-            self.account_id.sudo().write({'is_media_disconnected': True})
+            self.account_id._action_disconnect_accounts(result_tweets)
             return False
 
         tweets_ids = [tweet.get('id_str') for tweet in result_tweets]

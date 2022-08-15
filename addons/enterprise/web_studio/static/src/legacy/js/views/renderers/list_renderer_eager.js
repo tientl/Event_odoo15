@@ -11,6 +11,9 @@ odoo.define('web_studio.ListRenderer', function (require) {
 const ListRenderer = require('web.ListRenderer');
 const { patch } = require('web.utils');
 
+// This is used to force web_studio to load after web_enterprise
+require('web_enterprise.ListRenderer');
+
 patch(ListRenderer.prototype, 'web_studio.ListRenderer', {
     /**
      * This function opens the studio mode with current view

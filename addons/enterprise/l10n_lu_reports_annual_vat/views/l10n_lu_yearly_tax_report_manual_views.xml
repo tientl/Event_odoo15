@@ -1,0 +1,1392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_l10n_lu_yearly_tax_report_manual_extended" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.view</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="inherit_id" ref="l10n_lu_reports.view_l10n_lu_yearly_tax_report_manual"/>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="replace">
+                    <form create="false">
+                        <sheet>$0</sheet>
+                    </form>
+                </xpath>
+                <xpath expr="//sheet" position="before">
+                    <header name="header">
+                        <button name="action_reset_state" type="object" states="exported" string="Reset to Processing" class="oe_highlight"/>
+                        <button name="print_xml" string="Export XML" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="not_exported,exported"/>
+                    </header>
+                </xpath>
+                <xpath expr="//sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </xpath>
+                <xpath expr="//notebook" position="attributes">
+                    <attribute name="class">lu-notebook</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="before">
+                    <group>
+                        <group>
+                            <field name="year"/>
+                        </group>
+                        <group>
+                            <field name="company_ids" groups="base.group_no_one" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='report_section_202']" position="after">
+                    <label for="report_section_203" string="Supply of goods carried out to customers not identified for VAT
+                            purposes and established in the MS where the dispatch ends, when these supplies are taxable in that MS" colspan="4"/>
+                    <label for="report_section_203" string="203" colspan="1" class="oe_right"/>
+                    <field name="report_section_203" nolabel="1" class="oe_inline"/>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Adjustment of Deductions" name="deductions">
+                        <group col="6" string="Adjustment of Deductions">
+                            <label for="report_section_098" string="Adjustment of deductions in accordance with provisions of Art. 53" colspan="4"/>
+                            <label for="report_section_098" string="098" colspan="1" class="oe_right"/>
+                            <field name="report_section_098" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_099" string="Adjustment of deductions in accordance with provisions of the grand-ducal Regulation of 7 March 1980 - option to tax land" colspan="4"/>
+                            <label for="report_section_099" string="099" colspan="1" class="oe_right"/>
+                            <field name="report_section_099" nolabel="1" class="oe_inline"/>
+                            <label for="report_section_229" string="Other: " colspan="2"/>
+                            <label for="report_section_229" string="229" colspan="1" class="oe_right"/>
+                            <field name="report_section_229" colspan="1" nolabel="1"/>
+                            <label for="report_section_229" string="100" colspan="1" class="oe_right"/>
+                            <field name="report_section_100" colspan="1" nolabel="1"/>
+                        </group>
+                    </page>
+                    <page string="Appendix A" name="appendix_a">
+                        <group col="12">
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                    TOTAL if applicable VAT included
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                    %
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                    VAT excluded
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                    of VAT invoiced
+                            </div>
+
+                            <separator colspan="12"/>
+
+                            <div colspan="8"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_192" string="192" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_192" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_193" string="193" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_193" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_239" string="Gross salaries" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_239" string="239" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_239" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_240" string="240" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_240" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_114" string="114" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_114" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_241" string="of which productive salaries" colspan="4" style="margin-left: 5%"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_241" string="241" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_241" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_242" string="242" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_242" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_243" string="243" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_243" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_244" string="Gross wages" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_244" string="244" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_244" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_245" string="245" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_245" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_246" string="246" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_246" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_247" string="Occasional salaries" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_247" string="247" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_247" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_248" string="248" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_248" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_249" string="249" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_249" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_250" string="Compulsory social security contributions" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_250" string="250" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_250" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_251" string="251" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_251" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_252" string="252" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_252" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_253" string="Accident insurance" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_253" string="253" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_253" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_254" string="254" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_254" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_255" string="255" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_255" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_256" string="Commissions" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_256" string="256" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_256" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_257" string="257" colspan="2" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_257" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_258" string="258" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_258" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_259" string="259" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_259" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_260" string="Staff travel and representation expenses" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_260" string="260" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_260" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_261" string="261" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_261" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_262" string="262" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_262" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_263" string="263" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_263" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_264" string="264" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_264" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_265" string="265" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_265" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_266" string="266" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_266" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_267" string="267" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_267" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_268" string="268" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_268" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_269" string="Accounting and bookkeeping fees" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_269" string="269" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_269" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_270" string="270" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_270" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_271" string="271" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_271" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_272" string="272" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_272" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_273" string="273" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_273" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_274" string="274" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_274" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_275" string="275" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_275" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_276" string="276" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_276" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_277" string="277" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_277" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_278" string="278" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_278" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_279" string="279" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_279" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_280" string="280" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_280" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_281" string="281" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_281" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_282" string="282" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_282" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_283" string="Employer's travel and representation expenses" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_283" string="283" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_283" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_284" string="284" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_284" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_183" string="183" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_183" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_184" string="184" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_184" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_285" string="Electricity" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_285" string="285" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_285" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_286" string="286" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_286" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_287" string="287" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_287" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_288" string="288" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_288" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_289" string="Gas" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_289" string="289" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_289" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_290" string="290" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_290" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_291" string="291" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_291" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_292" string="292" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_292" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_293" string="Water" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_293" string="293" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_293" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_294" string="294" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_294" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_295" string="295" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_295" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_296" string="296" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_296" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_297" string="Heating" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_297" string="297" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_297" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_298" string="298" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_298" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_299" string="299" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_299" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_300" string="300" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_300" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_301" string="Telecommunications" style="font-weight: bold;margin-right:10px;"/>
+                                <label for="report_section_301" string="301" class="oe_right" style="font-weight: bold;margin-right:5px"/>
+                                <field name="report_section_301" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_302" string="302" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_302" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_303" string="303" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_303" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_304" string="304" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_304" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_305" string="Renting/leasing of immovable property with VAT" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_305" string="305" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_305" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_306" string="306" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_306" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_185" string="185" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_185" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_186" string="186" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_186" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_307" string="Renting/leasing of immovable property with no VAT" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_307" string="307" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_307" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_308" string="308" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_308" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_309" string="309" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_309" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_310" string="Renting/leasing of installed equipment and machinery" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_310" string="310" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_310" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_311" string="311" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_311" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_312" string="312" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_312" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_313" string="313" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_313" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_314" string="Fire insurance" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_314" string="314" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_314" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_315" string="315" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_315" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <label for="report_section_316" string="Property tax" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_316" string="316" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_316" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_317" string="317" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_317" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_318" string="318" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_318" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_319" string="319" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_319" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_320" string="320" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_320" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_321" string="321" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_321" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_322" string="322" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_322" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_323" string="323" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_323" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_324" string="Business tax" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_324" string="324" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_324" nolabel="1"/>
+                            </div>
+                            <div colspan="2"/>
+
+                            <label for="report_section_325" string="Licensing (cabaretage) tax and other taxes" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_325" string="325" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_325" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_326" string="Interest paid for long-term debts" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_326" string="326" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_326" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_327" string="Interest paid for short-term debts" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_327" string="327" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_327" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_328" string="Other financial costs" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_328" string="328" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_328" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_329" string="329" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_329" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_330" string="Stock and business equipment insurance" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_330" string="330" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_330" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_331" string="Public and professional third party liability insurance" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_331" string="331" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_331" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_332" string="Office expenses" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_332" string="332" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_332" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_333" string="333" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_333" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_334" string="Cleaning and maintenance of business premises" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_334" string="334" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_334" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_335" string="335" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_335" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_336" string="Fees and subscriptions paid" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_336" string="336" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_336" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_337" string="Papers and periodicals for business purposes" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_337" string="337" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_337" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_338" string="338" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_338" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_115" string="Expenses for work carried out by sub-contractors" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_115" string="115" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_115" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_187" string="187" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_187" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_188" string="Expenses for other work carried out by third parties" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_188" string="188" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_188" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_189" string="189" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_189" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_343" string="Shipping and transport expenses" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_343" string="343" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_343" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_344" string="344" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_344" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_345" string="Work clothes" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_345" string="345" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_345" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_346" string="346" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_346" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_347" string="Advertising and publicity" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_347" string="347" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_347" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_348" string="348" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_348" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_349" string="Packaging" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_349" string="349" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_349" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_350" string="350" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_350" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_351" string="Repair and maintenance of equipment and machinery" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_351" string="351" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_351" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_352" string="352" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_352" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_353" string="Other repairs" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_353" string="353" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_353" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_354" string="354" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_354" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_355" string="New acquisitions (tools and equipment)" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_355" string="355" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_355" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_356" string="356" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_356" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_357" string="357" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_357" nolabel="1" placeholder="Custom"/>
+                            </div>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_358" string="358" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_358" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_359" string="359" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_359" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_361" string="Total 'Appendix to Operational Expenditures'" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_361" string="361" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_361" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_362" string="362" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_362" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_190" string="Car expenses" colspan="4"/>
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_190" string="190" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_190" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_191" string="191" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_191" nolabel="1"/>
+                            </div>
+                        </group>
+                    </page>
+                    <page string="Appendix B" name="appendix_b">
+                        <group col="10">
+                            <separator string="Total" colspan="10"/>
+                            <label for="report_section_389" string="Assessment total of the taxable amount for non-business use of assets allocated to business" colspan="6"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_389" string="389" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_389" nolabel="1"/>
+                            </div>
+
+                            <separator colspan="10"/>
+                            <separator string="Motor vehicles" colspan="10"/>
+                            <separator string="Values" colspan="10" style="font-size:14px;font-weight: bold"/>
+
+                            <label for="report_section_363" string="Book (net asset) value at the beginning of the financial year" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_363" string="363" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_363" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_364" string="Acquisitions during the financial year" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_364" string="364" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_364" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_365" string="Sales during the financial year" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_365" string="365" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_365" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_366" string="Depreciation during the financial year" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_366" string="366" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_366" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_367" string="Book (net asset) value at the end of the financial year" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_367" string="367" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_367" nolabel="1"/>
+                            </div>
+
+                            <separator colspan="10"/>
+
+                            <div colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center;font-weight: bold">
+                                    Taxable amount (net of VAT)
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center;font-weight: bold">
+                                    Tax
+                            </div>
+
+                            <label for="report_section_381" string="Total of expenses during the financial year" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_381" string="381" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_381" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_382" string="382" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_382" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_368" string="Fuel (petrol, diesel) and lubricants" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_368" string="368" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_368" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_369" string="369" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_369" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_372" string="LPG" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_372" string="372" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_372" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_373" string="373" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_373" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_374" string="Repairs and servicing" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_374" string="374" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_374" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_375" string="375" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_375" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_376" string="Tyres, etc." colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_376" string="376" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_376" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_377" string="377" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_377" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_378" string="Leasing / renting" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_378" string="378" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_378" nolabel="1"/>
+                            </div>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_379" string="379" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_379" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_380" string="Depreciation" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_380" string="380" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_380" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <separator colspan="10"/>
+                            <separator colspan="10" string="Number of km travelled during the financial year" style="font-size:14px;font-weight: bold"/>
+
+                            <label for="report_section_383" string="Km travelled" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_383" string="383" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_383" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <label for="report_section_384" string="Non-business portion (km)" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_384" string="384" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_384" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <label for="report_section_385" string="Non-business portion (in %)" colspan="4"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_385" string="385" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_385" nolabel="1"/>
+                            </div>
+                            <div colspan="4"/>
+
+                            <separator colspan="10"/>
+                            <separator colspan="10" string="Non-business expenditures for motor vehicules" style="font-size:14px;font-weight: bold"/>
+                            <label for="report_section_386" string="Non-business part of expenditures for motor vehicules (VAT excluded)" colspan="4"/>
+                            <div colspan="2"/>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_386" string="386" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_386" nolabel="1"/>
+                            </div>
+
+                            <separator colspan="10"/>
+                            <separator colspan="12" string="Other assets:" style="font-size:14px;font-weight: bold"/>
+                            <div colspan="4" style="display: flex;align-items: center">
+                                <label for="report_section_387" string="387" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_387" nolabel="1"/>
+                            </div>
+                            <div colspan="2" style="display: flex;align-items: center">
+                                <label for="report_section_388" string="388" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_388" nolabel="1"/>
+                            </div>
+                        </group>
+                    </page>
+                    <page string="Appendix C" name="appendix_c">
+                        <group col="12">
+                            <label for="report_section_166" string="Supplies carried out within the scope of the special arrangement" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_166" string="166" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_166" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_106" string="Services supplied by the declaring person as a registered taxpayer in Luxembourg" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_106" string="106" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_106" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_107" string="Services to be declared and taxed by the registered taxpayer in Luxembourg" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_107" string="107" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_107" nolabel="1"/>
+                            </div>
+                        </group>
+                    </page>
+                    <page string="Appendix D" name="appendix_d">
+                        <group col="12">
+                            <separator string="Total entry of stock for business purposes" colspan="12"/>
+                            <label for="report_section_154" string="Not falling within the scope of Art. 56ter-1 and 56ter-2" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_154" string="154" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_154" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_155" string="Of which goods for resale" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_155" string="155" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_155" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_148" string="Purchases of goods which give rise to a chargeable event for the supplier or for the taxable person acquiring the goods" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_148" string="148" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_148" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_131" string="Purchases within the country" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_131" string="131" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_131" nolabel="1"/>
+                            </div>
+
+                            <label for="other_purchases" string="Purchases other than manufactured tobacco" colspan="6"/>
+                            <field name="other_purchases" colspan="6" nolabel="1"/>
+
+                            <label for="report_section_129" string="Total" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_129" string="129" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_129" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_771" string="rate of 17 %" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_771" string="771" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_771" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_772" string="rate of 14 %" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_772" string="772" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_772" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_774" string="rate of 12 %" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_774" string="774" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_774" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_773" string="rate of 8 %" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_773" string="773" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_773" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_124" string="rate of 3 %" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_124" string="124" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_124" nolabel="1"/>
+                            </div>
+
+                            <div colspan="6" style="display: flex;align-items: center" attrs="{'invisible': [('other_purchases', '=', False)]}">
+                                <label for="report_section_394" string="Custom %" style="font-weight: bold;margin-left: 10%"/>
+                                <label for="report_section_394" string="394" class="oe_right" style="font-weight: bold;margin-left:5%;margin-right:15px"/>
+                                <field name="report_section_394" nolabel="1" class="oe_right" style="max-width: 40%"/>
+                            </div>
+                            <div colspan="6" style="display: flex;align-items: center" attrs="{'invisible': [('other_purchases', '=', False)]}">
+                                <label for="report_section_128" string="128" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_128" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_197" string="Exempt" colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_purchases', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_197" string="197" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_197" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_130" string="Manufactured tobacco" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_130" string="130" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_130" nolabel="1"/>
+                            </div>
+                            <separator colspan="12"/>
+
+                            <label for="report_section_139" string="Intra-Community acquisitions" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_139" string="139" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_139" nolabel="1"/>
+                            </div>
+
+                            <label for="other_acquisitions" string="Acquisitions other than manufactured tobacco" colspan="6"/>
+                            <field name="other_acquisitions" colspan="6" nolabel="1"/>
+
+                            <label for="report_section_137" string="Total" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_137" string="137" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_137" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_776" string="rate of 17 %" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_776" string="776" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_776" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_777" string="rate of 14 %" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_777" string="777" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_777" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_778" string="rate of 8 %" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_778" string="778" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_778" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_134" string="rate of 3 %" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_134" string="134" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_134" nolabel="1"/>
+                            </div>
+
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_153" string="Custom %" style="font-weight: bold;margin-left: 10%"/>
+                                <label for="report_section_153" string="153" class="oe_right" style="font-weight: bold;margin-left:5%;margin-right:15px"/>
+                                <field name="report_section_153" nolabel="1" class="oe_right" style="max-width: 40%"/>
+                            </div>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_136" string="136" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_136" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_198" string="Exempt" colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_acquisitions', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_198" string="198" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_198" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_138" string="Manufactured tobacco" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_138" string="138" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_138" nolabel="1"/>
+                            </div>
+                            <separator colspan="12"/>
+
+                            <label for="report_section_147" string="Imports" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_147" string="147" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_147" nolabel="1"/>
+                            </div>
+
+                            <label for="other_imports" string="Imports other than manufactured tobacco" colspan="6"/>
+                            <field name="other_imports" colspan="6" nolabel="1"/>
+
+                            <label for="report_section_145" string="Total" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_145" string="145" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_145" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_781" string="rate of 17 %" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_781" string="781" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_781" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_782" string="rate of 14 %" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_782" string="782" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_782" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_783" string="rate of 8 %" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_783" string="783" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_783" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_142" string="rate of 3 %" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_142" string="142" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_142" nolabel="1"/>
+                            </div>
+
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_149" string="Custom %" style="font-weight: bold;margin-left: 10%"/>
+                                <label for="report_section_149" string="149" class="oe_right" style="font-weight: bold;margin-left:5%;margin-right:15px"/>
+                                <field name="report_section_149" nolabel="1" class="oe_right" style="max-width: 40%"/>
+                            </div>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_144" string="144" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_144" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_199" string="Exempt" colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="6" attrs="{'invisible': [('other_imports', '=', False)]}" style="display: flex;align-items: center">
+                                <label for="report_section_199" string="199" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_199" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_146" string="Manufactured tobacco" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_146" string="146" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_146" nolabel="1"/>
+                            </div>
+                            <separator colspan="12"/>
+
+                            <label for="report_section_150" string="Purchases of goods which don't give rise to a chargeable event neither for the supplier nor for the taxable person acquiring the goods" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_150" string="150" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_150" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_151" string="Purchases of goods abroad which are not brought to Luxembourg" colspan="6"/>
+                            <div colspan="6" style="display: flex;align-items: center">
+                                <label for="report_section_151" string="151" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_151" nolabel="1"/>
+                            </div>
+                        </group>
+                    </page>
+                    <page string="Appendix E" name="appendix_e">
+                        <group col="10">
+                            <div colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                Start of financial year
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center;font-weight: bold;justify-content:center">
+                                End of financial year
+                            </div>
+
+                            <label for="report_section_168" string="Total stock and tobacco" colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_168" string="168" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_168" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_181" string="181" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_181" nolabel="1"/>
+                            </div>
+
+                            <label for="stock" string="Stock" colspan="4"/>
+                            <field name="stock" colspan="6" nolabel="1"/>
+
+                            <label for="report_section_163" string="Stock not falling within the scope" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_163" string="163" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_163" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_176" string="176" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_176" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_791" string="rate of 17%" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_791" string="791" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_791" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_792" string="792" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_792" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_793" string="rate of 14%" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_793" string="793" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_793" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_794" string="794" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_794" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_797" string="rate of 12%" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_797" string="797" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_797" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_798" string="798" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_798" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_795" string="rate of 8%" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_795" string="795" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_795" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_796" string="796" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_796" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_158" string="rate of 3%" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_158" string="158" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_158" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_171" string="171" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_171" nolabel="1"/>
+                            </div>
+
+                            <div colspan="4" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_396" string="Custom %" style="font-weight: bold;margin-left:10%"/>
+                                <label for="report_section_396" string="396" class="oe_right" style="font-weight: bold;margin-left:5%;margin-right:15px"/>
+                                <field name="report_section_396" nolabel="1" class="oe_right" style="max-width: 40%"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_162" string="162" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_162" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_175" string="175" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_175" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_200" string="Exempt" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 10%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_200" string="200" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_200" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_201" string="201" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_201" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_164" string="Stock for resale" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_164" string="164" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_164" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_177" string="177" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_177" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_165" string="Goods produced inhouse" colspan="4" attrs="{'invisible': [('stock', '=', False)]}" style="margin-left: 5%"/>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_165" string="165" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_165" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center" attrs="{'invisible': [('stock', '=', False)]}">
+                                <label for="report_section_178" string="178" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_178" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_167" string="Manufactured tobacco in stock" colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_167" string="167" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_167" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_180" string="180" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_180" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_116" string="Work in progress (VAT excluded)" colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_116" string="116" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_116" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_117" string="117" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_117" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_118" string="Receivables from clients (VAT excluded)" colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_118" string="118" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_118" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_119" string="119" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_119" nolabel="1"/>
+                            </div>
+
+                            <label for="report_section_120" string="Payments made on account by clients (VAT excluded)" colspan="4"/>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_120" string="120" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_120" nolabel="1"/>
+                            </div>
+                            <div colspan="3" style="display: flex;align-items: center">
+                                <label for="report_section_121" string="121" class="oe_right" style="font-weight: bold;margin-right:15px"/>
+                                <field name="report_section_121" nolabel="1"/>
+                            </div>
+                        </group>
+                    </page>
+                    <page string="Appendix to Operational Expenditures" name="appendix_expenditures">
+                        <div>
+                            <field name="appendix_ids" nolabel="1"/>
+                        </div>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="l10n_lu_yearly_tax_report_appendix_view_tree" model="ir.ui.view">
+            <field name="name">l10n_lu_reports_annual_vat.report.appendix.expenditures.view.tree</field>
+            <field name="model">l10n_lu_reports_annual_vat.report.appendix.expenditures</field>
+            <field name="arch" type="xml">
+                <tree string="Appendix line" editable="bottom" class="o_appendix_content">
+                    <field name="report_section_411"/>
+                    <field name="report_section_412"/>
+                    <field name="report_section_413"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="l10n_lu_yearly_tax_report_manual_view_tree" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.view.tree</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="arch" type="xml">
+                <tree string="Reports" create="true" delete="false" import="false">
+                    <field name="year"/>
+                    <field name="company_ids" widget="many2many_tags"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="l10n_lu_yearly_tax_report_manual_view_kanban" model="ir.ui.view">
+            <field name="name">l10n_lu.yearly.tax.report.manual.view.kanban</field>
+            <field name="model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="year"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row mb4">
+                                    <div class="col-12">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="year"/>
+                                        </strong>
+                                    </div>
+                                    <div class="col-12">
+                                        <field name="state" widget="label_selection" options="{'classes': {'not_exported': 'default', 'exported': 'success'}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="action_l10n_lu_yearly_tax_report_manual" model="ir.actions.act_window">
+            <field name="name">Annual Tax Report</field>
+            <field name="res_model">l10n_lu.yearly.tax.report.manual</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="view_id" ref="l10n_lu_reports.l10n_lu_yearly_tax_report_manual_view_tree"/>
+        </record>
+
+        <record id="l10n_lu_reports.action_l10n_lu_yearly_tax_report_manual" model="ir.actions.act_window">
+            <field name="view_id" ref="l10n_lu_yearly_tax_report_manual_view_tree"/>
+        </record>
+
+        <record model="ir.ui.menu" id="l10n_lu_reports.menu_action_l10n_lu_yearly_tax_report_manual">
+            <field name="name">Annual Tax Report</field>
+        </record>
+
+    </data>
+</odoo>

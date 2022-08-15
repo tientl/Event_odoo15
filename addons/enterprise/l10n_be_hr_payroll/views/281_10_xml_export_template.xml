@@ -2,6 +2,10 @@
 <odoo>
     <data>
         <template id="281_10_xml_report">
+            <!-- Source:
+            Avis aux débiteurs : https://finances.belgium.be/fr/entreprises/personnel_et_remuneration/avis_aux_debiteurs#q2
+            Doc Technique: https://finances.belgium.be/fr/E-services/Belcotaxonweb/documentation-technique
+            -->
             <Verzendingen>
                 <!-- 
                     Un envoi (<Verzending></Verzending>) peut reprendre plusieurs « déclarations
@@ -164,16 +168,17 @@
                             <!-- X 32 AN rue et numéro du débiteur des revenus NL -->
                             <a1013_adresnl t-esc="data['a1013_adresnl']"/>
 
+                            <!--  4 N numéro postal belge du débiteur des
+                            revenus (uniquement si 1.016 = 0
+                            (= Belgique), sinon utiliser 1.026) -->
+                            <a1014_postcodebelgisch t-esc="data['a1014_postcodebelgisch']"/>
+
                             <!-- X 27 AN commune du débiteur des revenus NL -->
                             <a1015_gemeente t-esc="data['a1015_gemeente']"/>
 
-                            <!-- <a1014_postcodebelgisch /> 4 N numéro postal belge du débiteur des
-                            revenus (uniquement si 1.016 = 0
-                            (= Belgique), sinon utiliser 1.026) -->
-
-
-                            <!-- <a1016_landwoonplaats /> 5 N code pays du domicile du débiteur des
+                            <!-- 5 N code pays du domicile du débiteur des
                             revenus ; zéro si Belgique -->
+                            <a1016_landwoonplaats t-esc="data['a1016_landwoonplaats']"/>
 
                             <!-- <a1017_telefoonnummer /> 12 AN numéro de téléphone du débiteur des
                             revenus -->
@@ -321,63 +326,15 @@
                                             <!-- X <f2016_postcodebelgisch /> 4 N code postal belge du
                                             bénéficiaire(uniquement si 2018 = 0
                                             =>Belgique; sinon utiliser 2112) -->
-                                            <f2016_postcodebelgisch t-esc="employee_data['f2016_postcodebelgisch']"/>
+                                            <t t-if="'f2016_postcodebelgisch' in employee_data">
+                                                <f2016_postcodebelgisch t-esc="employee_data['f2016_postcodebelgisch']"/>
+                                            </t>
 
                                             <!-- <f2017_gemeente /> 27 AN commune du bénéficiaire -->
 
                                             <!-- <f2018_landwoonplaats /> 5 N Code pays du domicile du bénéficiaire
                                             des revenus, zéro si Belgique -->
                                             <f2018_landwoonplaats t-esc="employee_data['f2018_landwoonplaats']"/>
-
-                                            <!-- <f2019_burgerlijkstand /> 1 N code état civil
-                                            0 : non connu
-                                            1 : célibataire
-                                            2 : marié(e) ou cohabitant légal
-                                            3 : veuf ou veuve
-                                            4 : divorcé(e) ou séparé(e) de
-                                             corps
-                                            5 : séparé(e) de fait -->
-                                            <f2019_burgerlijkstand t-esc="employee_data['f2019_burgerlijkstand']"/>
-
-                                            <!-- <f2020_echtgenote /> 2 N situation de famille :
-                                            0 : bénéficiaire isolé
-                                            1 : conjoint ou cohabitant ayant des
-                                             revenus professionnels propres
-                                            2 : conjoint ou cohabitant qui n’a pas
-                                             de revenus professionnels
-                                             OU
-                                            Ne perçoit que des pensions,
-                                            rentes ou des revenus 
-                                            138,00 EUR nets par mois
-                                            3 : conjoint ou cohabitant qui a des
-                                            revenus professionnels propres autres
-                                            que des pensions, rentes ou des
-                                            revenus y assimilés 230,00 EUR nets
-                                            par mois
-                                            OU
-                                            ne perçoit que des pensions, rentes
-                                            ou des revenus y assimilés entre
-                                            138,00 EUR et 459,00 EUR nets par
-                                            mois
-                                            (voir « Avis » cadre 5) -->
-                                            <f2020_echtgenote t-esc="employee_data['f2020_echtgenote']"/>
-
-                                            <!-- <f2021_aantalkinderen /> 2 N nombre d'enfants -->
-                                            <f2021_aantalkinderen t-esc="employee_data['f2021_aantalkinderen']"/>
-
-                                            <!-- <f2022_anderentlaste /> 2 N autres -->
-                                            <f2022_anderentlaste t-esc="employee_data['f2022_anderentlaste']"/>
-
-                                            <!-- <f2023_diverse /> 1 AN divers (compléter par X ou blanc) -->
-                                            <f2023_diverse t-esc="employee_data['f2023_diverse']"/>
-
-                                            <!-- <f2024_echtgehandicapt /> 1 AN conjoint handicapé (compléter par H
-                                            ou blanc) -->
-                                            <f2024_echtgehandicapt t-esc="employee_data['f2024_echtgehandicapt']"/>
-
-                                            <!-- <f2026_verkrghandicap /> 1 AN bénéficiaire handicapé (compléter par
-                                            H ou blanc) -->
-                                            <f2026_verkrghandicap t-esc="employee_data['f2026_verkrghandicap']"/>
 
                                             <!-- <f2027_taalcode /> 1 N code langue du bénéficiaire des
                                             revenus
@@ -409,7 +366,9 @@
                                             bénéficiaire (uniquement si 2018 est
                                             différent de zéro ou 150; sinon utiliser
                                             2016) -->
-                                            <f2112_buitenlandspostnummer t-esc="employee_data['f2112_buitenlandspostnummer']"/>
+                                            <t t-if="'f2112_buitenlandspostnummer' in employee_data">
+                                                <f2112_buitenlandspostnummer t-esc="employee_data['f2112_buitenlandspostnummer']"/>
+                                            </t>
 
                                             <!-- <f2114_voornamen /> 15 AN Prénom du bénéficiaire des revenus -->
                                             <f2114_voornamen t-esc="employee_data['f2114_voornamen']"/>
@@ -425,10 +384,9 @@
                                             1: si d'application – Mention « critères sérieux »
                                             2: si d'application – Mention « justificatifs »
                                             3: si d'application – Mention « justificatifs et critères sérieux » -->
-                                            <f10_2031_vermelding t-esc="employee_data['f10_2031_vermelding']"/>
+                                            <f10_2031_compensationwithstandards t-esc="employee_data['f10_2031_compensationwithstandards']"/>
 
-                                            <!-- Si la fiche est établie au nom d’un cadre ou d’un chercheur étranger (cf. annexe 2), portez la mention 'EX' après le nom de la commune de résidence. -->
-                                            <f10_2034_ex t-esc="employee_data['f10_2034_ex']"/>
+                                            <f10_2033_compensationwithdocuments t-esc="employee_data['f10_2033_compensationwithdocuments']"/>
 
                                             <!-- - Documents justificatifs pour l’exonération par convention du précompte  professionnel tenus à la disposition de l’Administration 
                                             0 : pas d’application
@@ -448,6 +406,8 @@
                                              1 = Catégorie A
                                              2 = Catégorie B -->
                                             <f10_2037_vergoedingkosten t-esc="employee_data['f10_2037_vergoedingkosten']"/>
+
+                                            <f10_2038_seasonalworker t-esc="employee_data['f10_2038_seasonalworker']"/>
 
                                             <!-- * Options attribuées par une société étrangère ne possédant pas
                                              d’établissement en Belgique..................................................... 2.039
@@ -477,14 +437,6 @@
                                             (voir art. 248, § 1er, al. 2, 1°, b, CIR 92) -->          
                                             <f10_2042_sailorcode t-esc="employee_data['f10_2042_sailorcode']"/>
 
-                                            <!-- Pourboires :
-                                            *code.................................................................... 2.045
-                                            00 : si pas d’application
-                                            01 : rémunéré totalement au pourboire
-                                            02 : rémunéré principalement au pourboire
-                                            03 : rémunéré accessoirement au pourboire -->
-                                            <f10_2045_code t-esc="employee_data['f10_2045_code']"/>
-
                                             <!-- Mentionnez ici la date d'entrée en service lorsque le travailleur est entré en service au
                                             cours de l'année des revenus. -->
                                             <f10_2055_datumvanindienstt t-esc="employee_data['f10_2055_datumvanindienstt']"/>
@@ -492,15 +444,6 @@
                                             <!-- Mentionnez ici la date de sortie de service lorsque le travailleur n'est plus en service à
                                             la date du 31 décembre de l'année des revenus. -->
                                             <f10_2056_datumvanvertrek t-esc="employee_data['f10_2056_datumvanvertrek']"/>
-
-                                            <!-- 22. Rémunérations qui entrent en ligne de compte pour l’exonération pour les
-                                            heures supplémentaires volontaires prestées en raison de la pandémie du
-                                            COVID-19 du 01.04 au 30.06.2020 inclus auprès d’employeurs appartenant aux
-                                            secteurs critiques et/ou du 01.10 au 31.12.2020 auprès d’employeurs appartenant
-                                            aux secteurs cruciaux :
-                                            b) Nombre d’heures prestées et payées en 2020 (*) 307 2.057
-                                            (*) (Attention : heures supplémentaires en centièmes d’heures – voir 4.2.3.2 : Remarques)  -->
-                                            <f10_2057_volontarysuplmentaryhourscovid t-esc="employee_data['f10_2057_volontarysuplmentaryhourscovid']"/>
 
                                             <!-- a) Déplacements par cycle ou par speed-pedelec  -->
                                             <f10_2058_km t-esc="employee_data['f10_2058_km']"/>
@@ -618,7 +561,7 @@
                                              Caisse: 2.103 -->
                                             <f10_2072_pensioentoezetting t-esc="employee_data['f10_2072_pensioentoezetting']"/>
 
-                                            <!-- <f10_2073_manageroutdatedvooropzeg t-esc="employee_data['f10_2073_manageroutdatedvooropzeg']"/> -->
+                                            <f10_2073_tipamount t-esc="employee_data['f10_2073_tipamount']"/>
 
                                             <!-- Précompte professionnel ? -->
                                             <f10_2074_bedrijfsvoorheffing t-esc="employee_data['f10_2074_bedrijfsvoorheffing']"/>
@@ -642,10 +585,7 @@
                                             <f10_2077_totaal t-esc="employee_data['f10_2077_totaal']"/>
 
                                             <!-- Dépenses propres à l'employeur: Frais de représentation -->
-                                            <f10_2078_eigenkosten t-esc="employee_data['f10_2078_eigenkosten']"/>
-
-                                            <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2079_tussenkomstintr t-esc="employee_data['f10_2079_tussenkomstintr']"/>
+                                            <f10_2078_compensationamountwithoutstandards t-esc="employee_data['f10_2078_compensationamountwithoutstandards']"/>
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
                                             <f10_2080_detacheringsvergoed t-esc="employee_data['f10_2080_detacheringsvergoed']"/>
@@ -729,12 +669,16 @@
                                             <f10_2090_outborderdays t-esc="employee_data['f10_2090_outborderdays']"/>
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2092_othercode1 t-esc="employee_data['f10_2092_othercode1']"/>
+                                            <t t-if="employee_data['f10_2092_othercode1']">
+                                                <f10_2092_othercode1 t-esc="employee_data['f10_2092_othercode1']"/>
+                                            </t>
 
                                             <!-- <f10_2093_datevooropzeg t-esc="employee_data['f10_2093_datevooropzeg']"/> -->
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2094_othercode2 t-esc="employee_data['f10_2094_othercode2']"/>
+                                            <t t-if="employee_data['f10_2094_othercode2']">
+                                                <f10_2094_othercode2 t-esc="employee_data['f10_2094_othercode2']"/>
+                                            </t>
 
                                             <!-- 21. Heures supplémentaires qui donnent droit à un sursalaire :
                                             a) Nombre total d’heures supplémentaires effectivement prestées
@@ -757,7 +701,9 @@
                                             <f10_2095_aantaluren t-esc="employee_data['f10_2095_aantaluren']"/>
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2096_othercode3 t-esc="employee_data['f10_2096_othercode3']"/>
+                                            <t t-if="employee_data['f10_2096_othercode3']">
+                                                <f10_2096_othercode3 t-esc="employee_data['f10_2096_othercode3']"/>
+                                            </t>
 
                                             <!-- 21. Heures supplémentaires qui donnent droit à un sursalaire :
                                             a) Nombre total d’heures supplémentaires effectivement prestées
@@ -780,7 +726,10 @@
                                             <f10_2097_aantaluren t-esc="employee_data['f10_2097_aantaluren']"/>
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2098_othercode4 t-esc="employee_data['f10_2098_othercode4']"/>
+
+                                            <t t-if="employee_data['f10_2098_othercode4']">
+                                                <f10_2098_othercode4 t-esc="employee_data['f10_2098_othercode4']"/>
+                                            </t>
 
                                             <!-- Avantages de toute nature :
                                             * montant......................................................................................... 2.076
@@ -793,22 +742,6 @@
                                             - si plusieurs codes doivent être introduits pour un bénéficiaire,
                                              ils seront placés l'un à côté de l'autre (ex. : ABC) -->
                                             <f10_2099_aard t-esc="employee_data['f10_2099_aard']"/>
-
-                                            <f10_2100_nrparitaircomite t-esc="employee_data['f10_2100_nrparitaircomite']"/>
-
-                                            <!--  Options sur actions
-                                            * Attribuées en 2020....................................................................... 2.082
-                                            * Attribuées avant 2020................................................................................. 2.083
-                                            * pourcentage(s) ............................................................. 2.101
-                                            Mentionner ici sous forme de commentaire le ou les pourcentage(s),
-                                            éventuel(s), qui a (ont) servi à déterminer le montant de l’avantage
-                                            de toute nature imposable découlant de l’attribution d’options sur
-                                            actions.
-                                            * Options attribuées par une société étrangère ne possédant pas
-                                             d’établissement en Belgique..................................................... 2.039
-                                            0 : pas d'application
-                                            1 : société étrangère -->
-                                            <f10_2101_percentages t-esc="employee_data['f10_2101_percentages']"/>
 
                                             <!-- 19. Retenues pour pensions complémentaires
                                              a) Cotisations et primes normales 285 2.081
@@ -825,6 +758,8 @@
                                              c) Cotisations et primes de pension libre complémentaire pour les travailleurs salariés 387 2.128
                                              Caisse: 2.103 -->
                                             <f10_2103_kasvrijaanvullendpensioen t-esc="employee_data['f10_2103_kasvrijaanvullendpensioen']"/>
+
+                                            <f10_2106_percentages t-esc="employee_data['f10_2106_percentages']"/>
 
                                             <f10_2109_fiscaalidentificat t-esc="employee_data['f10_2109_fiscaalidentificat']"/>
 
@@ -892,7 +827,7 @@
                                              Nombre d’heures (*) 2.097
                                             (*) (Attention : heures supplémentaires en centièmes d’heures – voir 4.2.3.2 :
                                              Remarques)  -->
-                                            <f10_2118_aantaloveruren t-esc="employee_data['f10_2118_aantaloveruren']"/>
+                                            <f10_2118_amountovertime180secondsemester t-esc="employee_data['f10_2118_amountovertime180secondsemester']"/>
 
                                             <!-- 14. Rémunérations obtenues par des sportifs dans le cadre de leur activité sportive : -->
                                             <f10_2119_sportremuneration t-esc="employee_data['f10_2119_sportremuneration']"/>
@@ -943,33 +878,13 @@
                                              Caisse: 2.103 -->
                                             <f10_2128_vrijaanvullendpensioenwerknemers t-esc="employee_data['f10_2128_vrijaanvullendpensioenwerknemers']"/>
 
-                                            <!-- 21. Heures supplémentaires qui donnent droit à un sursalaire :
-                                            a) Nombre total d’heures supplémentaires effectivement prestées
-                                             1° qui entrent en ligne de compte
-                                             pour la limite jusqu’ à 180 heures..…….…………………… 2118
-                                             2° qui entrent en ligne de compte
-                                             pour la limite jusqu’ à 180 heures
-                                             (Construction avec système d’enregistrement ……………… 2142
-                                            Total (2118+2142) 305 2129
-                                             3° qui entrent en ligne de compte
-                                             pour la limite jusqu’ à 360 heures (*) 317 2110
-                                             b) Base de calcul du sursalaire relatif aux heures donnant
-                                             droit à une réduction de :
-                                            - 66,81% ……………………………………… 233 2.067
-                                             Nombre d’heures (*)………………………. 2.095
-                                            - 57,75% ……………………………………… 234 2.068
-                                             Nombre d’heures (*) 2.097
-                                            (*) (Attention : heures supplémentaires en centièmes d’heures – voir 4.2.3.2 :
-                                             Remarques)  -->
-                                            <f10_2129_totaaloverwerktoeslag t-esc="employee_data['f10_2129_totaaloverwerktoeslag']"/>
-
                                             <!-- PC Privé : Montant de l’intervention de l’employeur -->
                                             <f10_2130_privatepc t-esc="employee_data['f10_2130_privatepc']"/>
 
                                             <!-- Précompte -->
                                             <f10_2131_bedrijfsvoorheffingvanwerkgever t-esc="employee_data['f10_2131_bedrijfsvoorheffingvanwerkgever']"/>
 
-                                            <!-- <f10_2132_studenthours t-esc="employee_data['f10_2132_studenthours']"/> -->
+                                            <f10_2132_amountovertime180firstsemester t-esc="employee_data['f10_2132_amountovertime180firstsemester']"/>
 
                                             <!-- Precompte à l'étranger -->
                                             <f10_2133_bedrijfsvoorheffingbuitenlvenverbondenwerkgever t-esc="employee_data['f10_2133_bedrijfsvoorheffingbuitenlvenverbondenwerkgever']"/>
@@ -999,7 +914,7 @@
                                             contrat d'occupation d'étudiant 2.136
                                             • rémunérations spécifiques pour les prestations pendant les deuxième et
                                             quatrième trimestres 2020 2.137 -->
-                                            <f10_2137_otheramountstudent t-esc="employee_data['f10_2137_otheramountstudent']"/>
+                                            <f10_2137_amountstudent2020oruntilthirdquarter2021 t-esc="employee_data['f10_2137_amountstudent2020oruntilthirdquarter2021']"/>
 
                                             <!-- l) Chèques consommation 2.138 -->
                                             <f10_2138_chequesofconsumptions t-esc="employee_data['f10_2138_chequesofconsumptions']"/>
@@ -1069,14 +984,8 @@
                                             Nombre d’heures supplémentaires 398 2170 -->
                                             <f10_2170_achterstallaantaloveruren360horeca t-esc="employee_data['f10_2170_achterstallaantaloveruren360horeca']"/>
 
-                                            <!--  d) Allocation de mobilité « Cash for Car » … -->
-                                            <f10_2176_cashforcar t-esc="employee_data['f10_2176_cashforcar']"/>
-
                                             <!--  f) Prime bénéficiaire : ……….………………………………………….. 2.177 -->
                                             <f10_2177_winstpremies t-esc="employee_data['f10_2177_winstpremies']"/>
-
-                                            <!--  g) Allocation de mobilité « Cash for Car »………………………………………2.178 -->
-                                            <f10_2178_cashforcartotaal t-esc="employee_data['f10_2178_cashforcartotaal']"/>
 
                                             <!--  i) Convention de premier emploi : supplément compensatoire 2.179 -->
                                             <f10_2179_startersjob t-esc="employee_data['f10_2179_startersjob']"/>
@@ -1107,7 +1016,22 @@
                                             <f10_2187_amountother3 t-esc="employee_data['f10_2187_amountother3']"/>
 
                                             <!-- 28. Rémunérations et autres avantages reçus d’une société étrangère liée  -->
-                                            <f10_2188_amountother4 t-esc="employee_data['f10_2188_amountother4']"/>
+                                            <f10_2190_covidovertimeremunerationfirstsemester t-esc="employee_data['f10_2190_covidovertimeremunerationfirstsemester']"/>
+
+                                            <f10_2191_covidovertimeremunerationsecondsemester t-esc="employee_data['f10_2191_covidovertimeremunerationsecondsemester']"/>
+
+                                            <f10_2192_covidovertimehoursfirstsemester t-esc="employee_data['f10_2192_covidovertimehoursfirstsemester']"/>
+
+                                            <f10_2193_covidovertimehourssecondsemester t-esc="employee_data['f10_2193_covidovertimehourssecondsemester']"/>
+
+                                            <f10_2194_covidovertimehourstotal t-esc="employee_data['f10_2194_covidovertimehourstotal']"/>
+
+                                            <f10_2195_covidovertimehours2020 t-esc="employee_data['f10_2195_covidovertimehours2020']"/>
+
+                                            <f10_2196_covidovertimeremuneration2020 t-esc="employee_data['f10_2196_covidovertimeremuneration2020']"/>
+
+                                            <f10_2198_coronabonus t-esc="employee_data['f10_2198_coronabonus']"/>
+
                                         </Fiche28110>
                                     </t>
                                 </Opgave32510>
@@ -1122,10 +1046,11 @@
                             <!-- <r8004_ontvangkantoor /> 2 N numéro du bureau de recette du
                             débiteur des revenus (obsolète) -->
 
-                            <!-- <r8005_registratienummer /> 10 N numéro d’entreprise (BCE) = numéro
+                            <!--10 N numéro d’entreprise (BCE) = numéro
                             d'enregistrement sous lequel le
                             débiteur des revenus est connu par le
                             SPF Finances. -->
+                            <r8005_registratienummer t-esc="total_data['r8005_registratienummer']"/>
 
                             <!-- <r8007_division /> 4 N numéro de division -->
 

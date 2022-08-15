@@ -17,6 +17,7 @@ class ResConfigSettings(models.TransientModel):
     account_tax_periodicity = fields.Selection(related='company_id.account_tax_periodicity', string='Periodicity', readonly=False, required=True)
     account_tax_periodicity_reminder_day = fields.Integer(related='company_id.account_tax_periodicity_reminder_day', string='Reminder', readonly=False, required=True)
     account_tax_periodicity_journal_id = fields.Many2one(related='company_id.account_tax_periodicity_journal_id', string='Journal', readonly=False)
+    # TODO delete in master
     account_fiscal_country_id = fields.Many2one(string="Fiscal Country", related="company_id.account_fiscal_country_id", readonly=False)
 
     def open_tax_group_list(self):

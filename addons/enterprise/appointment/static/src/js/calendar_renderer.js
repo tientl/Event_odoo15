@@ -104,7 +104,8 @@ AttendeeCalendarRenderer.include({
         // Manage the creation of a slot when using the year scale view
         options.yearDateClick = (info) => {
             if (this.state.calendarMode === 'slots-creation') {
-                const hasSlot = !!info.events.filter(ev => ev.extendedProps.slot).length
+                const alldaySlotEvents = this.calendar.getEvents().filter(ev => ev.extendedProps.slot && ev.allDay && ev.start.toString() === info.date.toString());
+                const hasSlot = !!alldaySlotEvents.length;
                 if (!hasSlot && info.selectable) {
                     if (moment(info.date).startOf('day') > moment()) {
                         this.calendar.addEvent({
@@ -121,15 +122,11 @@ AttendeeCalendarRenderer.include({
                             type: 'warning',
                         });
                     }
-                } else if (info.events.length) {
-                    const slotEvents = this.calendar.getEvents().filter(ev => ev.extendedProps.slot);
-                    info.events.forEach(event => {
-                        if (event.extendedProps.slot) {
-                            slotEvents.find(ev => ev._def.defId === event.defId).remove();
-                        }
-                    });
+                } else if (hasSlot && info.selectable) {
+                    alldaySlotEvents.forEach(event => event.remove());
                 }
                 this.calendar.unselect();
+                this.$sidebar.find('.o_appointment_create_custom_appointment').removeClass('disabled');
             } else {
                 if (oldYearDateClick) {
                     oldYearDateClick.call(this.calendar, info);

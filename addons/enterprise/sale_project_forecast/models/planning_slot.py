@@ -13,18 +13,13 @@ class PlanningSlot(models.Model):
         slot_without_sol_project = self.env['planning.slot']
         for slot in self:
             if not slot.project_id and slot.sale_line_id and (slot.sale_line_id.project_id or slot.sale_line_id.task_id.project_id):
-                slot.project_id = slot.sale_line_id.project_id or slot.sale_line_id.task_id.project_id
+                slot.project_id = slot.sale_line_id.task_id.project_id or slot.sale_line_id.project_id
             else:
                 slot_without_sol_project |= slot
         super(PlanningSlot, slot_without_sol_project)._compute_project_id()
 
     @api.depends('project_id', 'task_id')
     def _compute_sale_line_id(self):
-        project_field = self._fields['project_id']
-        task_field = self._fields['task_id']
-        fields_to_recompute = self.env.fields_to_compute()
-        if task_field in fields_to_recompute or project_field in fields_to_recompute:
-            return
         for slot in self:
             if not slot.sale_line_id and slot.project_id:
                 slot.sale_line_id = slot.task_id.sale_line_id or slot.project_id.sale_line_id
@@ -41,8 +36,7 @@ class PlanningSlot(models.Model):
 
     @api.depends('task_id')
     def _compute_resource_id(self):
-        slot_not_sold = self.filtered_domain([('sale_line_id', '=', False)])
-        super(PlanningSlot, slot_not_sold)._compute_resource_id()
+        super(PlanningSlot, self.filtered('start_datetime'))._compute_resource_id()
 
     # -----------------------------------------------------------------
     # ORM Override

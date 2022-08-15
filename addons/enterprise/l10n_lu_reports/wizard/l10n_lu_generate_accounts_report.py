@@ -63,11 +63,15 @@ class L10nLuGenerateAccountsReport(models.TransientModel):
 
         # Chart of Accounts Report
         report_options = self.env.context['account_report_generation_options']
-        options = {'journals': report_options['journals'], 'all_entries': report_options['all_entries'], 'unposted_in_period': report_options['unposted_in_period']}
+        options = {
+            'journals': report_options['journals'],
+            'all_entries': report_options['all_entries'],
+            'unposted_in_period': report_options['unposted_in_period'],
+            'date': report_options['date'],
+        }
         if report_options.get('multi_company'):
             options['multi_company'] = report_options['multi_company']
-        options['date'] = {'date_from': datetime.strptime(report_options['date']['date_from'], '%Y-%m-%d'),
-                           'date_to': datetime.strptime(report_options['date']['date_to'], '%Y-%m-%d')}
+        options = self.env['account.coa.report']._get_options(options)
         coa_declaration = self.env['account.coa.report']._get_lu_xml_2_0_report_values(
             options, self.avg_nb_employees, self.size, self.pl, self.bs, self.coa_only, self.optional_remarks)
 

@@ -9,6 +9,7 @@ from PIL import Image
 
 from datetime import datetime, timedelta
 from ebaysdk.exception import ConnectionError
+from markupsafe import Markup
 from odoo.addons.sale_ebay.tools.ebaysdk import Trading
 from xml.sax.saxutils import escape
 
@@ -144,7 +145,7 @@ class ProductTemplate(models.Model):
         }
         if self.ebay_description and self.ebay_template_id:
             description = self.ebay_template_id._render_field('body_html', self.ids)[self.id]
-            item['Item']['Description'] = '<![CDATA['+description+']]>'
+            item['Item']['Description'] = Markup('<![CDATA[{0}]]>').format(description)
         if self.ebay_subtitle:
             item['Item']['SubTitle'] = self._ebay_encode(self.ebay_subtitle)
         picture_urls = self._create_picture_url()

@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from babel.dates import format_datetime, format_date
-from datetime import datetime
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 import json
 import pytz
@@ -18,6 +18,17 @@ from odoo.tools.misc import get_lang
 
 from odoo.addons.base.models.ir_ui_view import keep_query
 from odoo.addons.http_routing.models.ir_http import slug
+
+def _formated_weekdays(locale):
+    """ Return the weekdays' name for the current locale
+        from Mon to Sun.
+        :param locale: locale
+    """
+    formated_days = [
+        format_date(date(2021, 3, day), 'EEE', locale=locale)
+        for day in range(1, 8)
+    ]
+    return formated_days
 
 
 class Appointment(http.Controller):
@@ -77,13 +88,13 @@ class Appointment(http.Controller):
 
         default_employee = suggested_employees[0] if suggested_employees else request.env['hr.employee']
         slots = appointment_type._get_appointment_slots(request.session['timezone'], default_employee)
-        formated_days = [format_date(fields.Date.from_string('2021-03-0%s' % str(day + 1)), "EEE", get_lang(request.env).code) for day in range(7)]
+        formated_days = _formated_weekdays(get_lang(request.env).code)
 
         return request.render("appointment.appointment_info", {
             'appointment_type': appointment_type,
             'suggested_employees': suggested_employees,
             'main_object': appointment_type,
-            'timezone': request.session['timezone'],
+            'timezone': request.session['timezone'],  # bw compatibility
             'slots': slots,
             'state': state,
             'filter_appointment_type_ids': kwargs.get('filter_appointment_type_ids'),
@@ -96,7 +107,7 @@ class Appointment(http.Controller):
     def calendar_appointment(self, appointment_type, filter_employee_ids=None, timezone=None, failed=False, **kwargs):
         return request.redirect('/calendar/%s?%s' % (slug(appointment_type), keep_query('*')))
 
-    @http.route(['/calendar/<model("calendar.appointment.type"):appointment_type>/info'], type='http', auth="public", website=True, sitemap=True)
+    @http.route(['/calendar/<model("calendar.appointment.type"):appointment_type>/info'], type='http', auth="public", website=True, sitemap=False)
     def calendar_appointment_form(self, appointment_type, employee_id, date_time, duration, **kwargs):
         """
         Render the form to get information about the user for the appointment
@@ -119,6 +130,7 @@ class Appointment(http.Controller):
             'datetime_str': date_time,
             'duration_str': duration,
             'employee_id': employee_id,
+            'timezone': request.session['timezone'] or appointment_type.timezone,  # bw compatibility
         })
 
     @http.route(['/calendar/<model("calendar.appointment.type"):appointment_type>/submit'], type='http', auth="public", website=True, methods=["POST"])
@@ -135,7 +147,7 @@ class Appointment(http.Controller):
         """
         timezone = request.session['timezone'] or appointment_type.appointment_tz
         tz_session = pytz.timezone(timezone)
-        date_start = tz_session.localize(fields.Datetime.from_string(datetime_str)).astimezone(pytz.utc)
+        date_start = tz_session.localize(fields.Datetime.from_string(datetime_str)).astimezone(pytz.utc).replace(tzinfo=None)
         duration = float(duration_str)
         date_end = date_start + relativedelta(hours=duration)
 
@@ -336,9 +348,11 @@ class Appointment(http.Controller):
         request.session['timezone'] = timezone or appointment_type.appointment_tz
         employee = request.env['hr.employee'].sudo().browse(int(employee_id)) if employee_id else None
         slots = appointment_type.sudo()._get_appointment_slots(request.session['timezone'], employee)
+        formated_days = _formated_weekdays(get_lang(request.env).code)
 
         return request.env.ref('appointment.appointment_calendar')._render({
             'appointment_type': appointment_type,
+            'formated_days': formated_days,
             'slots': slots,
         })
 

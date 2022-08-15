@@ -6,7 +6,7 @@
                 <IdDoc>
                     <TipoDTE t-esc="picking.l10n_latam_document_type_id.code"/>
                     <Folio t-esc="int(picking.l10n_latam_document_number)"/>
-                    <FchEmis t-esc="picking.scheduled_date.date()"/>
+                    <FchEmis t-esc="picking.date_done.date()"/>
                     <IndTraslado t-esc="picking.l10n_cl_delivery_guide_reason"/>
                 </IdDoc>
                 <Emisor>
@@ -24,10 +24,10 @@
                 <Receptor>
                     <RUTRecep t-esc="format_vat(picking.partner_id.vat)"/>
                     <RznSocRecep t-esc="format_length(picking.partner_id.name, 100)"/>
-                    <GiroRecep t-esc="format_length(picking.partner_id.l10n_cl_activity_description, 40)"/>
-                    <Contacto t-esc="format_length(picking.partner_id.phone or picking.partner_id.phone or picking.partner_id.email or '', 80)"/>
-                    <CorreoRecep t-esc="picking.partner_id.l10n_cl_dte_email or picking.partner_id.l10n_cl_dte_email or picking.partner_id.email or picking.partner_id.email"/>
-                    <DirRecep t-esc="format_length(picking.partner_id.street or picking.partner_id.street or '' + ' ' + picking.partner_id.street2 or picking.partner_id.street2 or '', 70)"/>
+                    <GiroRecep t-esc="format_length(picking.partner_id.l10n_cl_activity_description or picking.partner_id.commercial_partner_id.l10n_cl_activity_description, 40)"/>
+                    <Contacto t-esc="format_length(picking.partner_id.phone or picking.partner_id.email or '', 80)"/>
+                    <CorreoRecep t-esc="picking.partner_id.l10n_cl_dte_email or picking.partner_id.commercial_partner_id.l10n_cl_dte_email or picking.partner_id.email or picking.partner_id.commercial_partner_id.email"/>
+                    <DirRecep t-esc="format_length(picking.partner_id.street or '' + ' ' + picking.partner_id.street2 or '', 70)"/>
                     <CmnaRecep t-esc="picking._l10n_cl_get_comuna_recep()"/>
                 </Receptor>
                 <Transporte>
@@ -51,7 +51,7 @@
                 </Totales>
             </Encabezado>
         <t t-set="line_number" t-value="1"/>
-        <t t-foreach="picking.move_lines" t-as="line">
+        <t t-foreach="picking.move_lines.filtered(lambda x: x.quantity_done > 0)" t-as="line">
             <t t-set="line_amounts" t-value="total_line_amounts.get(line, {})"/>
             <Detalle>
                 <NroLinDet t-esc="line_number"/>

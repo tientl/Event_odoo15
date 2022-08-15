@@ -106,7 +106,7 @@ class HrPayslipEmployeeDepartureHoliday(models.TransientModel):
 
                 time_off_allocation_n_ids = self.env['hr.leave.allocation'].search([
                     ('employee_id', '=', record.employee_id.id),
-                    ('create_date', '>=', current_year),
+                    ('date_from', '>=', current_year),
                     ('state', '=', 'validate'),
                     ('holiday_status_id.work_entry_type_id', '=', work_entry_type_legal_leave.id)])
 
@@ -238,7 +238,7 @@ class HrPayslipEmployeeDepartureHoliday(models.TransientModel):
             ('state', 'in', ['done', 'paid', 'verify']),
             ('struct_id', '=', double_structure.id)])
         # Part already deducted on the double holiday for year N
-        double_amount_n = double_holiday_n._get_line_values(['EU.LEAVE.DEDUC'], compute_sum=True)['EU.LEAVE.DEDUC']['sum']['total']
+        double_amount_n = -double_holiday_n._get_line_values(['EU.LEAVE.DEDUC'], compute_sum=True)['EU.LEAVE.DEDUC']['sum']['total']
         # Original Amount to deduct
         payslip_n1 = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),

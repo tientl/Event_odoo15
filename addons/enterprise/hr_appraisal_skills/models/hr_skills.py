@@ -71,7 +71,7 @@ class HrAppraisalSkill(models.Model):
     _name = 'hr.appraisal.skill'
     _description = "Employee Skills"
 
-    appraisal_id = fields.Many2one('hr.appraisal', 'skill_ids', required=True, ondelete='cascade')
+    appraisal_id = fields.Many2one('hr.appraisal', required=True, ondelete='cascade')
     employee_id = fields.Many2one('hr.employee', related='appraisal_id.employee_id', store=True)
     manager_ids = fields.Many2many('hr.employee', compute='_compute_manager_ids', store=True)
 

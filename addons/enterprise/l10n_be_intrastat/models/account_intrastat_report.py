@@ -52,6 +52,7 @@ class IntrastatReport(models.AbstractModel):
                 date_from, date_to, journal_ids=journal_ids, invoice_types=('in_invoice', 'out_refund'), with_vat=with_vat)
             self._cr.execute(query, params)
             query_res = self._cr.dictfetchall()
+            query_res = self._fill_supplementary_units(query_res)
             in_vals = self._fill_missing_values(query_res)
 
         # create out_vals corresponding to invoices with cash-out
@@ -61,6 +62,7 @@ class IntrastatReport(models.AbstractModel):
                 date_from, date_to, journal_ids=journal_ids, invoice_types=('out_invoice', 'in_refund'), with_vat=with_vat)
             self._cr.execute(query, params)
             query_res = self._cr.dictfetchall()
+            query_res = self._fill_supplementary_units(query_res)
             out_vals = self._fill_missing_values(query_res)
 
         return self.env.ref('l10n_be_intrastat.intrastat_report_export_xml')._render({

@@ -12,7 +12,7 @@
 
     <template id="informations" inherit_id="l10n_cl.informations">
         <span t-esc="o.partner_id.industry_id.name or ''" position="replace">
-            <span t-esc="o.partner_id.l10n_cl_activity_description"/>
+            <span t-esc="o.partner_id.l10n_cl_activity_description or o.commercial_partner_id.l10n_cl_activity_description"/>
         </span>
         <xpath expr="//div[@id='references']" position="replace">
         <t t-if="o.l10n_cl_reference_ids">

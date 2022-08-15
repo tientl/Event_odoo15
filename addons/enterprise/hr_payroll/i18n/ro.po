@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
 "Last-Translator: Hongu Cosmin <cosmin513@gmail.com>, 2021\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
@@ -36,6 +36,18 @@ msgstr "# Bilanț de plată"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Fluturaș de salariu"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -2743,7 +2755,7 @@ msgstr "Fluturaș de Confirmat"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
 
 #. module: hr_payroll
@@ -2882,13 +2894,13 @@ msgstr "Metoda de calcul pentru regula sumei."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "Contractul pentru care se aplică această intrare"
+msgid "The contract this input should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "Contractul pentru care se aplică aceste zile lucrătoare"
+msgid "The contract this worked days should be applied to"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3006,6 +3018,12 @@ msgstr ""
 " de baza, dar puteți de asemenea sa folositi campurile categorii de coduri "
 "cu litere mici ca nume al variabilei (hra, ma, lta, etc.) si valiabila de "
 "baza."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3381,44 +3399,32 @@ msgstr "Program de lucru"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong percentage base or quantity defined for:"
 msgstr ""
-"Baza procentuală greșită sau cantitatea definită pentru regula salariului %s (%s).\n"
-"Eroare: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python code defined for:"
 msgstr ""
-"Cod python greșit definit pentru regula salariului %s (%s).\n"
-"Eroare: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Conditie python gresita definita pentru regula salariala %s (%s)."
-
-#. module: hr_payroll
-#: code:addons/hr_payroll/models/hr_salary_rule.py:0
-#, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
+msgid "Wrong python condition defined for:"
 msgstr ""
-"Cantitate greșită definită pentru regula salariului %s (%s).\n"
-"Eroare: %s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Conditie gresita a limitei definita pentru regula salariala %s (%s)."
+msgid "Wrong quantity defined for:"
+msgstr ""
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid "Wrong range condition defined for:"
+msgstr ""
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

@@ -25,7 +25,7 @@
         <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
         <field name="arch" type="xml">
             <filter name="filter_planned" position="attributes">
-                <attribute name="domain">[('state','=','planned'), ('date_planned_start', '!=', False), ('date_planned_finished', '!=', False)]</attribute>
+                <attribute name="domain">[('is_planned', '=', True), ('date_planned_start', '!=', False), ('date_planned_finished', '!=', False)]</attribute>
             </filter>
         </field>
     </record>

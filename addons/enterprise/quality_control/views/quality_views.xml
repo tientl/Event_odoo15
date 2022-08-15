@@ -859,7 +859,7 @@
                     <label for="measure_frequency_value" string="% of Operations" attrs="{'invisible': ['|', ('measure_on', '=', 'product'), ('measure_frequency_type', '!=', 'random')]}"/>
                     <label for="measure_frequency_value" string="% of Transfers" attrs="{'invisible': ['|', ('measure_on', '!=', 'product'), ('measure_frequency_type', '!=', 'random')]}"/>
                     <field name="measure_frequency_unit_value" string="Frequency" nolabel="1" attrs="{'invisible': [('measure_frequency_type', '!=', 'periodical')]}"/>
-                    <field name="measure_frequency_unit" attrs="{'invisible': [('measure_frequency_type', '!=', 'periodical')]}"/>
+                    <field name="measure_frequency_unit" attrs="{'invisible': [('measure_frequency_type', '!=', 'periodical')], 'required': [('measure_frequency_type', '=', 'periodical')]}"/>
                 </div>
                 <field name="is_lot_tested_fractionally" attrs="{'invisible': [('measure_on', '!=', 'product')]}" string="Partial Transfer Test"/>
                 <label for="testing_percentage_within_lot" attrs="{'invisible': ['|', ('measure_on', '!=', 'product'), ('is_lot_tested_fractionally', '!=', True)]}" string="Percentage"/>

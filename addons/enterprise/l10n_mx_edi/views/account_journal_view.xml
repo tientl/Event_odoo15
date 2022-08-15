@@ -10,7 +10,7 @@
                 <data>
                     <xpath expr="//field[@name='loss_account_id']" position="after">
                         <field name="l10n_mx_edi_payment_method_id"
-                               attrs="{'invisible':  ['|', ('type', '!=', 'bank'), ('country_code', '!=', 'MX')]}"/>
+                               attrs="{'invisible':  ['|', ('type', 'not in', ['bank', 'sale']), ('country_code', '!=', 'MX')]}"/>
                     </xpath>
                 </data>
             </field>

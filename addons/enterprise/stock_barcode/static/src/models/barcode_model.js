@@ -313,7 +313,7 @@ export default class BarcodeModel extends owl.core.EventBus {
         // If we show entire package, we don't return lines with package (they
         // will be treated as "package lines").
         if (this.record.picking_type_entire_packs) {
-            lines = lines.filter(line => !line.package_id);
+            lines = lines.filter(line => !(line.package_id && line.result_package_id));
         }
         return this._sortLine(lines);
     }
@@ -323,7 +323,7 @@ export default class BarcodeModel extends owl.core.EventBus {
             return [];
         }
         const lines = this.page.lines;
-        const linesWithPackage = lines.filter(line => line.package_id);
+        const linesWithPackage = lines.filter(line => line.package_id && line.result_package_id);
         // Groups lines by package.
         const groupedLines = {};
         for (const line of linesWithPackage) {
@@ -338,7 +338,10 @@ export default class BarcodeModel extends owl.core.EventBus {
             // Check if the package is reserved.
             const reservedPackage = groupedLines[key].every(line => line.product_uom_qty);
             groupedLines[key][0].reservedPackage = reservedPackage;
-            packageLines.push(groupedLines[key][0]);
+            const packageLine = Object.assign({}, groupedLines[key][0], {
+                lines: groupedLines[key],
+            });
+            packageLines.push(packageLine);
         }
         return this._sortLine(packageLines);
     }
@@ -632,13 +635,7 @@ export default class BarcodeModel extends owl.core.EventBus {
             [this.recordIds]
         );
         const options = {
-            on_close: ev => {
-                if (ev === undefined) {
-                    // If all is OK, displays a notification and goes back to the previous page.
-                    this.notification.add(this.validateMessage, { type: 'success' });
-                    this.trigger('history-back');
-                }
-            },
+            on_close: ev => this._closeValidate(ev)
         };
         if (action && action.res_model) {
             return this.trigger('do-action', { action, options });
@@ -670,6 +667,14 @@ export default class BarcodeModel extends owl.core.EventBus {
         await this.save();
     }
 
+    async _closeValidate(ev) {
+        if (ev === undefined) {
+            // If all is OK, displays a notification and goes back to the previous page.
+            this.notification.add(this.validateMessage, { type: 'success' });
+            this.trigger('history-back');
+        }
+    }
+
     _convertDataToFieldsParams(args) {
         throw new Error('Not Implemented');
     }
@@ -684,6 +689,19 @@ export default class BarcodeModel extends owl.core.EventBus {
      * @returns {Object} the newly created line
      */
     async _createNewLine(params) {
+        if (params.fieldsParams && params.fieldsParams.uom && params.fieldsParams.product_id) {
+            let productUOM = this.cache.getRecord('uom.uom', params.fieldsParams.product_id.uom_id);
+            let paramsUOM = params.fieldsParams.uom;
+            if (paramsUOM.category_id !== productUOM.category_id) {
+                // Not the same UoM's category -> Can't be converted.
+                const message = sprintf(
+                    _t("Scanned quantity uses %s as Unit of Measure, but this UoM is not compatible with the product's one (%s)."),
+                    paramsUOM.name, productUOM.name
+                );
+                this.notification.add(message, { title: _t("Wrong Unit of Measure"), type: 'danger'});
+                return false;
+            }
+        }
         const newLine = Object.assign(
             {},
             params.copyOf,
@@ -691,7 +709,7 @@ export default class BarcodeModel extends owl.core.EventBus {
         );
         await this.updateLine(newLine, params.fieldsParams);
         this.currentState.lines.push(newLine);
-        this._groupLinesByPage(this.currentState);
+        this.page.lines.push(newLine);
         return newLine;
     }
 
@@ -810,22 +828,21 @@ export default class BarcodeModel extends owl.core.EventBus {
     _groupLinesByPage(state) {
         const groups = {};
         for (const line of state.lines) { // Groups the barcode lines by src/dest locations.
-            const key = `${line.location_id}_${line.location_dest_id}`;
+            const sourceLocationName = this.cache.getRecord('stock.location', line.location_id).display_name;
+            const destLocationName = line.location_dest_id ? this.cache.getRecord('stock.location', line.location_dest_id).display_name : "";
+            const key = `${sourceLocationName.toLowerCase()}\x00${destLocationName.toLowerCase()}`;
             if (!groups[key]) {
                 groups[key] = [];
             }
             groups[key].push(line);
         }
-        const pages = [];
-        for (const [key, lines] of Object.entries(groups)) {
-            const page = {
-                index: pages.length,
-                lines,
-                sourceLocationId: lines[0].location_id,
-                destinationLocationId: lines[0].location_dest_id,
-            };
-            pages.push(page);
-        }
+        const sortedGroups = Object.entries(groups).sort((l1, l2) => l1[0] < l2[0] ? -1 : 0);
+        const pages = sortedGroups.map(([, lines], index) => new Object({
+            index,
+            lines,
+            sourceLocationId: lines[0].location_id,
+            destinationLocationId: lines[0].location_dest_id,
+        }));
         if (pages.length === 0) { // If no pages, creates a default one.
             const page = {
                 index: pages.length,
@@ -1027,6 +1044,11 @@ export default class BarcodeModel extends owl.core.EventBus {
             result.product = product;
             result.match = true;
         }
+        const packaging = recordByData.get('product.packaging');
+        if (packaging) {
+            result.match = true;
+            result.packaging = packaging;
+        }
         if (this.useExistingLots) {
             const lot = recordByData.get('stock.production.lot');
             if (lot) {
@@ -1073,6 +1095,15 @@ export default class BarcodeModel extends owl.core.EventBus {
         }
         try {
             barcodeData = await this._parseBarcode(barcode, filters);
+            if (!barcodeData.match && filters['stock.production.lot'] &&
+                !this.canCreateNewLot && this.useExistingLots) {
+                // Retry to parse the barcode without filters in case it matches an existing
+                // record that can't be found because of the filters
+                const lot = await this.cache.getRecordByBarcode(barcode, 'stock.production.lot');
+                if (lot) {
+                    Object.assign(barcodeData, { lot, match: true });
+                }
+            }
         } catch (parseErrorMessage) {
             barcodeData.error = parseErrorMessage;
         }
@@ -1082,7 +1113,13 @@ export default class BarcodeModel extends owl.core.EventBus {
             return await barcodeData.action();
         }
 
-        if (barcodeData.lot && !barcode.product) {
+        if (barcodeData.packaging) {
+            barcodeData.product = this.cache.getRecord('product.product', barcodeData.packaging.product_id);
+            barcodeData.quantity = barcodeData.packaging.qty;
+            barcodeData.uom = this.cache.getRecord('uom.uom', barcodeData.product.uom_id);
+        }
+
+        if (barcodeData.lot && !barcodeData.product) {
             barcodeData.product = this.cache.getRecord('product.product', barcodeData.lot.product_id);
         }
 
@@ -1112,11 +1149,11 @@ export default class BarcodeModel extends owl.core.EventBus {
                 // If the current product is tracked and the barcode doesn't fit
                 // anything else, we assume it's a new lot/serial number.
                 if (previousProduct.tracking !== 'none' &&
-                    !barcodeData.match && this.canCreateNewLine) {
+                    !barcodeData.match && this.canCreateNewLot) {
                     barcodeData.lotName = barcode;
+                    barcodeData.product = previousProduct;
                 }
-                if (currentLine.lot_id || currentLine.lot_name ||
-                    barcodeData.lot || barcodeData.lotName ||
+                if (barcodeData.lot || barcodeData.lotName ||
                     barcodeData.quantity) {
                     barcodeData.product = previousProduct;
                 }
@@ -1132,6 +1169,9 @@ export default class BarcodeModel extends owl.core.EventBus {
                 }
             }
             return this.notification.add(barcodeData.error, { type: 'danger' });
+        }
+        if (barcodeData.weight) { // the encoded weight is based on the product's UoM
+            barcodeData.uom = this.cache.getRecord('uom.uom', product.uom_id);
         }
 
         // Default quantity set to 1 by default if the product is untracked or
@@ -1190,6 +1230,11 @@ export default class BarcodeModel extends owl.core.EventBus {
         // Updates or creates a line based on barcode data.
         if (currentLine) { // If line found, can it be incremented ?
             let exceedingQuantity = 0;
+            if (product.tracking !== 'serial' && barcodeData.uom && barcodeData.uom.category_id == currentLine.product_uom_id.category_id) {
+                // convert to current line's uom
+                barcodeData.quantity = (barcodeData.quantity / barcodeData.uom.factor) * currentLine.product_uom_id.factor;
+                barcodeData.uom = currentLine.product_uom_id;
+            }
             if (this.canCreateNewLine) {
                 // Checks the quantity doesn't exceed the line's remaining quantity.
                 if (currentLine.product_uom_qty && product.tracking === 'none') {
@@ -1423,5 +1468,9 @@ export default class BarcodeModel extends owl.core.EventBus {
             lines: this._createLinesState(), // object lines to show {product_id: {<product_record>}}
         };
         this.currentState = JSON.parse(JSON.stringify(this.initialState)); // Deep copy
+    }
+
+    _getPrintOptions() {
+        return {};
     }
 }

@@ -8,9 +8,8 @@
         <field name='parent_id' ref='l10n_fi.account_reports_fi_statements_menu'/>
         <field name="country_id" ref="base.fi"/>
     </record>
-
     <record id="account_financial_report_l10n_fi_bs_line_1" model="account.financial.html.report.line">
-        <field name="name">Vastaavaa</field>
+        <field name="name">Tase Vastaavaa</field>
         <field name="level" eval="0"/>
         <field name="sequence" eval="1"/>
         <field name="formulas">FIBS_ASS_A + FIBS_ASS_B</field>
@@ -29,7 +28,7 @@
         <field name="code">FIBS_ASS_AI</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="formulas">FIBS_ASS_AI_1 + FIBS_ASS_AI_2 + FIBS_ASS_AI_3 + FIBS_ASS_AI_4 + FIBS_ASS_AI_5</field>
+        <field name="formulas">FIBS_ASS_AI_1 + FIBS_ASS_AI_2 + FIBS_ASS_AI_3 + FIBS_ASS_AI_4 + FIBS_ASS_AI_5 + FIBS_ASS_AI_6</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_1_1" model="account.financial.html.report.line">
@@ -37,53 +36,68 @@
         <field name="code">FIBS_ASS_AI_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_development_costs')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '102%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_1_2" model="account.financial.html.report.line">
         <field name="name">2. Aineettomat oikeudet</field>
         <field name="code">FIBS_ASS_AI_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_immaterial_rights')])]"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '103%'), ('account_id.code', '=like', '104%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_1_3" model="account.financial.html.report.line">
         <field name="name">3. Liikearvo</field>
         <field name="code">FIBS_ASS_AI_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_goodwill')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '105%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_1_4" model="account.financial.html.report.line">
-        <field name="name">4. Muut pitkävaikutteiset menot</field>
+        <field name="name">4. Konserniliikearvo</field>
         <field name="code">FIBS_ASS_AI_4</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_long_term_expenses')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '106%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_1_5" model="account.financial.html.report.line">
-        <field name="name">5. Ennakkomaksut</field>
+        <field name="name">5. Muut aineettomat hyödykkeet</field>
         <field name="code">FIBS_ASS_AI_5</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_advance_payments_intangible')])]"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '107%'), ('account_id.code', '=like', '108%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
-
-	<record id="account_financial_report_l10n_fi_bs_line_1_1_2" model="account.financial.html.report.line">
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_1_6" model="account.financial.html.report.line">
+        <field name="name">6. Ennakkomaksut</field>
+        <field name="code">FIBS_ASS_AI_6</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '109%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_2" model="account.financial.html.report.line">
         <field name="name">II. Aineelliset hyödykkeet</field>
         <field name="code">FIBS_ASS_AII</field>
         <field name="level" eval="2"/>
@@ -96,52 +110,106 @@
         <field name="code">FIBS_ASS_AII_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_land_and_water_areas_owned'), ref('l10n_fi.account_tag_land_and_water_rights_lease')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">sum</field>
+        <field name="formulas">FIBS_ASS_AII_1_a + FIBS_ASS_AII_1_b</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
     </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_2_1_a" model="account.financial.html.report.line">
+        <field name="name">a) Omistetut</field>
+        <field name="code">FIBS_ASS_AII_1_a</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '110%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_2_1_b" model="account.financial.html.report.line">
+        <field name="name">b) Vuokraoikeudet</field>
+        <field name="code">FIBS_ASS_AII_1_b</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '111%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
     <record id="account_financial_report_l10n_fi_bs_line_1_1_2_2" model="account.financial.html.report.line">
         <field name="name">2. Rakennukset ja rakennelmat</field>
         <field name="code">FIBS_ASS_AII_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_buildings_owned'), ref('l10n_fi.account_tag_building_leases')])]"/>
+        <field name="formulas">FIBS_ASS_AII_2_a + FIBS_ASS_AII_2_b</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_2_2_a" model="account.financial.html.report.line">
+        <field name="name">a) Omistetut</field>
+        <field name="code">FIBS_ASS_AII_2_a</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '112%'), 
+				   '|', ('account_id.code', '=like', '113%'), ('account_id.code', '=like', '114%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
+    <record id="account_financial_report_l10n_fi_bs_line_1_1_2_2_b" model="account.financial.html.report.line">
+        <field name="name">b) Vuokraoikeudet</field>
+        <field name="code">FIBS_ASS_AII_2_b</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '115%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_2_3" model="account.financial.html.report.line">
         <field name="name">3. Koneet ja kalusto</field>
         <field name="code">FIBS_ASS_AII_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_machines_and_hardware')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '116%'),
+				   '|', ('account_id.code', '=like', '117%'),
+				   '|', ('account_id.code', '=like', '120%'),
+				   '|', ('account_id.code', '=like', '121%'), ('account_id.code', '=like', '124%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_2_4" model="account.financial.html.report.line">
         <field name="name">4. Muut aineelliset hyödykkeet</field>
         <field name="code">FIBS_ASS_AII_4</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_tangible_assets')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '130%'),
+				   '|', ('account_id.code', '=like', '131%'),
+				   '|', ('account_id.code', '=like', '132%'), ('account_id.code', '=like', '133%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_2_5" model="account.financial.html.report.line">
         <field name="name">5. Ennakkomaksut ja keskeneräiset hankinnat</field>
         <field name="code">FIBS_ASS_AII_5</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_payments_on_account_tangible')])]"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '138%'), ('account_id.code', '=like', '139%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
-
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3" model="account.financial.html.report.line">
         <field name="name">III. Sijoitukset</field>
         <field name="code">FIBS_ASS_AIII</field>
@@ -155,60 +223,69 @@
         <field name="code">FIBS_ASS_AIII_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_shares_in_group_companies')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '140%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3_2" model="account.financial.html.report.line">
         <field name="name">2. Saamiset saman konsernin yrityksiltä</field>
         <field name="code">FIBS_ASS_AIII_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_receivables_from_associated_companies_investments')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '141%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3_3" model="account.financial.html.report.line">
         <field name="name">3. Osuudet omistusyhteysyrityksissä</field>
         <field name="code">FIBS_ASS_AIII_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_shares_in_associated_companies')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '142%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3_4" model="account.financial.html.report.line">
         <field name="name">4. Saamiset omistusyhteysyrityksiltä</field>
         <field name="code">FIBS_ASS_AIII_4</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_receivables_from_associated_companies_investments')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '143%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3_5" model="account.financial.html.report.line">
         <field name="name">5. Muut osakkeet ja osuudet</field>
         <field name="code">FIBS_ASS_AIII_5</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_shares_and_participations')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '144%'),
+				   '|', ('account_id.code', '=like', '145%'), ('account_id.code', '=like', '146%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_1_3_6" model="account.financial.html.report.line">
         <field name="name">6. Muut saamiset</field>
         <field name="code">FIBS_ASS_AIII_6</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="6"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_receivables_investments')])]"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '147%'), ('account_id.code', '=like', '148%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_1_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
 
     <record id="account_financial_report_l10n_fi_bs_line_1_2" model="account.financial.html.report.line">
@@ -224,7 +301,7 @@
         <field name="code">FIBS_ASS_BI</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="formulas">FIBS_ASS_BI_1 + FIBS_ASS_BI_2 + FIBS_ASS_BI_3 + FIBS_ASS_BI_4 + FIBS_ASS_BI_5</field>
+        <field name="formulas">FIBS_ASS_BI_1 + FIBS_ASS_BI_2 + FIBS_ASS_BI_3 + FIBS_ASS_BI_4 + FIBS_ASS_BI_5 + FIBS_ASS_BI_6</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_1_1" model="account.financial.html.report.line">
@@ -232,131 +309,301 @@
         <field name="code">FIBS_ASS_BI_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_materials_and_supplies_inventories')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '150%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_1_2" model="account.financial.html.report.line">
         <field name="name">2. Keskeneräiset tuotteet</field>
         <field name="code">FIBS_ASS_BI_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_work_in_progress')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '151%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_1_3" model="account.financial.html.report.line">
-        <field name="name">3. Valmiit tuotteet/tavarat</field>
+        <field name="name">3. Valmiit tuotteet</field>
         <field name="code">FIBS_ASS_BI_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_finished_goods_inventories'), ref('l10n_fi.account_tag_goods_in_transit')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '152%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_1_4" model="account.financial.html.report.line">
-        <field name="name">4. Muu vaihto-omaisuus</field>
+        <field name="name">4. Tavarat</field>
         <field name="code">FIBS_ASS_BI_4</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_current_assets')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '153%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_1_5" model="account.financial.html.report.line">
-        <field name="name">5. Ennakkomaksut</field>
+        <field name="name">5. Muu vaihto-omaisuus</field>
         <field name="code">FIBS_ASS_BI_5</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_advance_payments_for_property')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '154%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_1_6" model="account.financial.html.report.line">
+        <field name="name">6. Ennakkomaksut</field>
+        <field name="code">FIBS_ASS_BI_6</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '155%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2" model="account.financial.html.report.line">
         <field name="name">II. Saamiset</field>
         <field name="code">FIBS_ASS_BII</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="formulas">FIBS_ASS_BII_1 + FIBS_ASS_BII_2 + FIBS_ASS_BII_3 + FIBS_ASS_BII_4 + FIBS_ASS_BII_5 + FIBS_ASS_BII_6 + FIBS_ASS_BII_7</field>
+        <field name="formulas">FIBS_ASS_BII_1 + FIBS_ASS_BII_2</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1" model="account.financial.html.report.line">
-        <field name="name">1. Myyntisaamiset</field>
+        <field name="name">1. Pitkäaikaiset</field>
         <field name="code">FIBS_ASS_BII_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_trade_receivables_long-term'), ref('l10n_fi.account_tag_accounts_receivable')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">sum</field>
+        <field name="formulas">FIBS_ASS_BII_1_1 + FIBS_ASS_BII_1_2 + FIBS_ASS_BII_1_3 + FIBS_ASS_BII_1_4 + FIBS_ASS_BII_1_5 + FIBS_ASS_BII_1_6 + FIBS_ASS_BII_1_7 + FIBS_ASS_BII_1_8 </field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
     </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_1" model="account.financial.html.report.line">
+        <field name="name">a) Myyntisaamiset</field>
+        <field name="code">FIBS_ASS_BII_1_1</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '160%'), ('account_id.code', '=like', '162%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_2" model="account.financial.html.report.line">
+        <field name="name">b) Saamiset saman konsernin yrityksiltä</field>
+        <field name="code">FIBS_ASS_BII_1_2</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '163%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_3" model="account.financial.html.report.line">
+        <field name="name">c) Saamiset omistusyhteysyrityksiltä</field>
+        <field name="code">FIBS_ASS_BII_1_3</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '164%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_4" model="account.financial.html.report.line">
+        <field name="name">d) Lainasaamiset</field>
+        <field name="code">FIBS_ASS_BII_1_4</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="4"/>
+        <field name="domain" eval="[('account_id.code', '=like', '165%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_5" model="account.financial.html.report.line">
+        <field name="name">e) Laskennalliset verosaamiset</field>
+        <field name="code">FIBS_ASS_BII_1_5</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '169%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_6" model="account.financial.html.report.line">
+        <field name="name">f) Muut saamiset</field>
+        <field name="code">FIBS_ASS_BII_1_6</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '166%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_7" model="account.financial.html.report.line">
+        <field name="name">g) Maksamattomat osakkeet/osuudet</field>
+        <field name="code">FIBS_ASS_BII_1_7</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="7"/>
+        <field name="domain" eval="[('account_id.code', '=like', '167%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_1_8" model="account.financial.html.report.line">
+        <field name="name">h) Siirtosaamiset</field>
+        <field name="code">FIBS_ASS_BII_1_8</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="8"/>
+        <field name="domain" eval="[('account_id.code', '=like', '168%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2" model="account.financial.html.report.line">
-        <field name="name">2. Saamiset saman konsernin yrityksiltä</field>
+        <field name="name">2. Lyhytaikaiset</field>
         <field name="code">FIBS_ASS_BII_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_receivables_from_group_long-term'), ref('l10n_fi.account_tag_receivables_from_group')])]"/>
+        <field name="formulas">FIBS_ASS_BII_2_1 + FIBS_ASS_BII_2_2 + FIBS_ASS_BII_2_3 + FIBS_ASS_BII_2_4 + FIBS_ASS_BII_2_5 + FIBS_ASS_BII_2_6 + FIBS_ASS_BII_2_7 + FIBS_ASS_BII_2_8</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_1" model="account.financial.html.report.line">
+        <field name="name">a) Myyntisaamiset</field>
+        <field name="code">FIBS_ASS_BII_2_1</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '170%'),
+				   '|', ('account_id.code', '=like', '171%'), ('account_id.code', '=like', '172%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_2" model="account.financial.html.report.line">
+        <field name="name">b) Saamiset saman konsernin yrityksiltä</field>
+        <field name="code">FIBS_ASS_BII_2_2</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '173%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_3" model="account.financial.html.report.line">
-        <field name="name">3. Saamiset omistusyhteysyrityksiltä</field>
-        <field name="code">FIBS_ASS_BII_3</field>
-        <field name="level" eval="3"/>
+        <field name="name">c) Saamiset omistusyhteysyrityksiltä</field>
+        <field name="code">FIBS_ASS_BII_2_3</field>
+        <field name="level" eval="4"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_receivables_from_associated_companies_non-current'), ref('l10n_fi.account_tag_accounts_receivable_from_associated_companies'), ref('l10n_fi.account_tag_receivables_from_associated_companies')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '174%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_4" model="account.financial.html.report.line">
-        <field name="name">4. Lainasaamiset</field>
-        <field name="code">FIBS_ASS_BII_4</field>
-        <field name="level" eval="3"/>
+        <field name="name">d) Lainasaamiset</field>
+        <field name="code">FIBS_ASS_BII_2_4</field>
+        <field name="level" eval="4"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_loan_receivables_long-term'), ref('l10n_fi.account_tag_deferred_tax_assets_are_long-term'), ref('l10n_fi.account_tag_other_long-term_receivables'), ref('l10n_fi.account_tag_deferred_tax_assets'), ref('l10n_fi.account_tag_deferred_tax_liabilities_are_long-term'), ref('l10n_fi.account_tag_other_long-term_liabilities')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '175%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_5" model="account.financial.html.report.line">
+        <field name="name">e) Laskennalliset verosaamiset</field>
+        <field name="code">FIBS_ASS_BII_2_5</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '185%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_5" model="account.financial.html.report.line">
-        <field name="name">5. Muut saamiset</field>
-        <field name="code">FIBS_ASS_BII_5</field>
-        <field name="level" eval="3"/>
-        <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_receivables')])]"/>
+        <field name="name">f) Muut saamiset</field>
+        <field name="code">FIBS_ASS_BII_2_6</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '176%'), ('account_id.code', '=like', '177%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_6" model="account.financial.html.report.line">
-        <field name="name">6. Maksamattomat osakkeet/osuudet</field>
-        <field name="code">FIBS_ASS_BII_6</field>
-        <field name="level" eval="3"/>
-        <field name="sequence" eval="6"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_unpaid_contributions'), ref('l10n_fi.account_tag_unpaid_shares_of_long-term')])]"/>
+        <field name="name">g) Maksamattomat osakkeet/osuudet</field>
+        <field name="code">FIBS_ASS_BII_2_7</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="7"/>
+        <field name="domain" eval="[('account_id.code', '=like', '178%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_2_7" model="account.financial.html.report.line">
-        <field name="name">7. Siirtosaamiset</field>
-        <field name="code">FIBS_ASS_BII_7</field>
-        <field name="level" eval="3"/>
-        <field name="sequence" eval="7"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_prepayments_and_accrued_income'), ref('l10n_fi.account_tag_prepaid_expenses_and_long-term')])]"/>
+        <field name="name">h) Siirtosaamiset</field>
+        <field name="code">FIBS_ASS_BII_2_8</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="8"/>
+        <field name="formulas">FIBS_ASS_BII_2_8_a + FIBS_ASS_BII_2_8_b + FIBS_ASS_BII_2_8_c</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_2"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_8_1" model="account.financial.html.report.line">
+        <field name="name">a. Menoennakot</field>
+        <field name="code">FIBS_ASS_BII_2_8_a</field>
+        <field name="level" eval="5"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '180%'), ('account_id.code', '=like', '181%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_7"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
-
-     <record id="account_financial_report_l10n_fi_bs_line_1_2_3" model="account.financial.html.report.line">
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_8_2" model="account.financial.html.report.line">
+        <field name="name">b. Tulojäämät</field>
+        <field name="code">FIBS_ASS_BII_2_8_b</field>
+        <field name="level" eval="5"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '183%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_7"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_2_2_8_3" model="account.financial.html.report.line">
+        <field name="name">c. Muut siirtosaamiset</field>
+        <field name="code">FIBS_ASS_BII_2_8_c</field>
+        <field name="level" eval="5"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '184%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_2_7"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_3" model="account.financial.html.report.line">
         <field name="name">III. Rahoitusarvopaperit</field>
         <field name="code">FIBS_ASS_BIII</field>
         <field name="level" eval="2"/>
@@ -369,46 +616,81 @@
         <field name="code">FIBS_ASS_BIII_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_shares_in_group_companies'), ref('l10n_fi.account_tag_shares_in_the_consolidated_financial_securities'), ref('l10n_fi.account_tag_other_shares_and_marketable_securities'), ref('l10n_fi.account_tag_other_financial_assets')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '186%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_3_2" model="account.financial.html.report.line">
         <field name="name">2. Muut osakkeet ja osuudet</field>
         <field name="code">FIBS_ASS_BIII_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_receivables_from_associated_companies_investments')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '188%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_3_3" model="account.financial.html.report.line">
         <field name="name">3. Muut arvopaperit</field>
         <field name="code">FIBS_ASS_BIII_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_shares_in_associated_companies')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '189%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_3"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_1_2_4" model="account.financial.html.report.line">
         <field name="name">IV. Rahat ja pankkisaamiset</field>
         <field name="code">FIBS_ASS_BIV</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_liquidity')])]"/>
-        <field name="formulas">sum</field>
+        <field name="formulas">FIBS_ASS_BIV_a + FIBS_ASS_BIV_b + FIBS_ASS_BIV_c</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2"/>
     </record>
-
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_4_a" model="account.financial.html.report.line">
+        <field name="name">1. Rahat</field>
+        <field name="code">FIBS_ASS_BIV_a</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '190%')]"/>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_4"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_4_b" model="account.financial.html.report.line">
+        <field name="name">2. Pankkisaamiset</field>
+        <field name="code">FIBS_ASS_BIV_b</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[
+				   ('account_id.code', '=like', '19%'),
+				   '!',
+				   '|', ('account_id.code', '=like', '190%'), ('account_id.code', '=like', '199%')
+				   ]"/>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_4"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_1_2_4_c" model="account.financial.html.report.line">
+        <field name="name">3. Maksuliikenne ja täsmäytykset</field>
+        <field name="code">FIBS_ASS_BIV_c</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '199%')]"/>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_1_2_4"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
     <record id="account_financial_report_l10n_fi_bs_line_2" model="account.financial.html.report.line">
-        <field name="name">Vastattavaa</field>
+        <field name="name">Tase Vastattavaa</field>
         <field name="level" eval="0"/>
         <field name="sequence" eval="2"/>
-        <field name="formulas">FIBS_LIA_A + FIBS_LIA_B + FIBS_LIA_C + FIBS_LIA_D</field>
+        <field name="domain" eval="[('account_id.user_type_id.internal_group', 'in', ['liability', 'equity'])]"/>
         <field name="financial_report_id" ref="account_financial_report_l10n_fi_bs"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1" model="account.financial.html.report.line">
@@ -416,164 +698,452 @@
         <field name="code">FIBS_LIA_A</field>
         <field name="level" eval="1"/>
         <field name="sequence" eval="1"/>
-        <field name="formulas">FIBS_LIA_AI + FIBS_LIA_AII + FIBS_LIA_AIII + FIBS_LIA_AIV + FIBS_LIA_AV + FIBS_LIA_AVI + FIBS_LIA_AVII</field>
+        <field name="formulas">FIBS_LIA_AI + FIBS_LIA_AII + FIBS_LIA_AIII + FIBS_LIA_AIV + FIBS_LIA_AV + FIBS_LIA_AVI + FIBS_LIA_AVII + FIBS_LIA_AVIII + FIBS_LIA_AIX + FIBS_LIA_AX + FIBS_LIA_AXI + FIBS_LIA_AXII + FIBS_LIA_AXII + FIBS_LIA_AXIV + FIBS_LIA_AXV + FIBS_LIA_AXVI + FIBS_LIA_AXVII + FIBS_LIA_AXVIII + FIBS_LIA_AXIX + FIBS_LIA_AXX + FIBS_LIA_AXXI + FIBS_LIA_AXXII + FIBS_LIA_AXXIII</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_1" model="account.financial.html.report.line">
-        <field name="name">I. Osake-, osuus- tai muu vastaava pääoma</field>
+        <field name="name">I. Osakepääoma</field>
         <field name="code">FIBS_LIA_AI</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_stock_capital')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
+        <field name="formulas">FIBS_LIA_AI_a + FIBS_LIA_AI_b</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_1_a" model="account.financial.html.report.line">
+        <field name="name">1. Osakepääoma</field>
+        <field name="code">FIBS_LIA_AI_a</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '200%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+	<record id="account_financial_report_l10n_fi_bs_line_2_1_1_b" model="account.financial.html.report.line">
+        <field name="name">2. Osakepääoman korotus</field>
+        <field name="code">FIBS_LIA_AI_b</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '201%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_2" model="account.financial.html.report.line">
-        <field name="name">II. Ylikurssirahasto</field>
+        <field name="name">II. Ylikurssirahasto (oy)</field>
         <field name="code">FIBS_LIA_AII</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_share_premium_account')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '202%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_3" model="account.financial.html.report.line">
-        <field name="name">III. Arvonkorotusrahasto</field>
+        <field name="name">III. Arvonkorotusrahasto (oy)</field>
         <field name="code">FIBS_LIA_AIII</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_revaluation_reserve')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '203%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_4" model="account.financial.html.report.line">
-        <field name="name">IV. Käyvän arvon rahasto</field>
+        <field name="name">IV. Käyvän arvon rahasto (oy)</field>
         <field name="code">FIBS_LIA_AIV</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_the_fair_value_reserve')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '204%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_5" model="account.financial.html.report.line">
-        <field name="name">V. Muut rahastot</field>
+        <field name="name">V. Vararahasto (oy)</field>
         <field name="code">FIBS_LIA_AV</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '205%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_6" model="account.financial.html.report.line">
+        <field name="name">VI. Muut rahastot</field>
+        <field name="code">FIBS_LIA_AVI</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="6"/>
         <field name="formulas">FIBS_LIA_AV_1 + FIBS_LIA_AV_2 + FIBS_LIA_AV_3</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_5_1" model="account.financial.html.report.line">
-        <field name="name">1. Vararahasto</field>
+        <field name="name">1. Sijoitetun vapaan oman pääoman rahasto</field>
         <field name="code">FIBS_LIA_AV_1</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_reserve')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '206%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_5"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_6"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_5_2" model="account.financial.html.report.line">
-        <field name="name">2. Yhtiöjärjestyksen tai sääntöjen mukaiset rahastot</field>
+        <field name="name">2. Yhtiöjärjestyksen mukaiset rahastot</field>
         <field name="code">FIBS_LIA_AV_2</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_the_articles_of_association_or_fund_under_the_rules'), ref('l10n_fi.account_tag_the_invested_unrestricted_equity_fund')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '207%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_5"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_6"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_5_3" model="account.financial.html.report.line">
-        <field name="name">3. Muut rahastot</field>
+        <field name="name">3. Muut rahastot (oy)</field>
         <field name="code">FIBS_LIA_AV_3</field>
         <field name="level" eval="3"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_reserves')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '208%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_5"/>
-    </record>
-    <record id="account_financial_report_l10n_fi_bs_line_2_1_6" model="account.financial.html.report.line">
-        <field name="name">VI. Edellisten tilikausien voitto (tappio)</field>
-        <field name="code">FIBS_LIA_AVI</field>
-        <field name="level" eval="2"/>
-        <field name="sequence" eval="6"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_retained_earnings')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_6"/>
+        <field name="hide_if_empty" eval="1"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_1_7" model="account.financial.html.report.line">
-        <field name="name">VII. Tilikauden voitto (tappio)</field>
+        <field name="name">VII. Osuuspääoma</field>
         <field name="code">FIBS_LIA_AVII</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="7"/>
-        <field name="domain" eval="[('account_id.user_type_id', 'in', [
-            ref('account.data_account_type_depreciation'),
-            ref('account.data_account_type_direct_costs'),
-            ref('account.data_account_type_expenses'),
-            ref('account.data_account_type_other_income'),
-            ref('account.data_account_type_revenue')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '210%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
     </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_8" model="account.financial.html.report.line">
+        <field name="name">VIII. Ylikurssirahasto (osk)</field>
+        <field name="code">FIBS_LIA_AVIII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="8"/>
+        <field name="domain" eval="[('account_id.code', '=like', '211%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_9" model="account.financial.html.report.line">
+        <field name="name">IX. Arvonkorotusrahasto (osk)</field>
+        <field name="code">FIBS_LIA_AIX</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="9"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2121%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_10" model="account.financial.html.report.line">
+        <field name="name">X. Käyvän arvon rahasto (osk)</field>
+        <field name="code">FIBS_LIA_AX</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="10"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2125%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_11" model="account.financial.html.report.line">
+        <field name="name">XI. Vararahasto (osk)</field>
+        <field name="code">FIBS_LIA_AXI</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="11"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2131%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_12" model="account.financial.html.report.line">
+        <field name="name">XII. Sääntöjen mukaiset rahastot</field>
+        <field name="code">FIBS_LIA_AXII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="12"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2141%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_13" model="account.financial.html.report.line">
+        <field name="name">XIII. Muut rahastot (osk)</field>
+        <field name="code">FIBS_LIA_AXIII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="13"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2145%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_14" model="account.financial.html.report.line">
+        <field name="name">XIV. Pääomapanokset</field>
+        <field name="code">FIBS_LIA_AXIV</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="14"/>
+        <field name="domain" eval="[('account_id.code', '=like', '215%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_15" model="account.financial.html.report.line">
+        <field name="name">XV. Arvonkorotusrahasto (ay)</field>
+        <field name="code">FIBS_LIA_AXV</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="15"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2161%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_16" model="account.financial.html.report.line">
+        <field name="name">XVI. Käyvän arvon rahasto (ay)</field>
+        <field name="code">FIBS_LIA_AXVI</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="16"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2165%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_17" model="account.financial.html.report.line">
+        <field name="name">XVII. Pääomapanokset</field>
+        <field name="code">FIBS_LIA_AXVII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="17"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '217%'), ('account_id.code', '=like', '218%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_18" model="account.financial.html.report.line">
+        <field name="name">XVIII. Arvonkorotusrahasto (ky)</field>
+        <field name="code">FIBS_LIA_AXVIII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="18"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2191%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_19" model="account.financial.html.report.line">
+        <field name="name">XIX. Käyvän arvon rahasto (ky)</field>
+        <field name="code">FIBS_LIA_AXIX</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="19"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2195%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_20" model="account.financial.html.report.line">
+        <field name="name">XX. Peruspääoma</field>
+        <field name="code">FIBS_LIA_AXX</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="20"/>
+        <field name="domain" eval="[('account_id.code', '=like', '220%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_21" model="account.financial.html.report.line">
+        <field name="name">XXI. Arvonkorotusrahasto (tmi)</field>
+        <field name="code">FIBS_LIA_AXXI</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="21"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2211%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_22" model="account.financial.html.report.line">
+        <field name="name">XXII. Käyvän arvon rahasto (tmi)</field>
+        <field name="code">FIBS_LIA_AXXII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="22"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2215%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23" model="account.financial.html.report.line">
+        <field name="name">XXIII. Yhteiset oman pääoman tilit</field>
+        <field name="code">FIBS_LIA_AXXIII</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="23"/>
+        <field name="formulas">FIBS_LIA_AXXIII_1 + FIBS_LIA_AXXIII_2 + FIBS_LIA_AXXIII_3 + FIBS_LIA_AXXIII_4 + FIBS_LIA_AXXIII_5 + FIBS_LIA_AXXIII_6 + FIBS_LIA_AXXIII_7 + FIBS_LIA_AXXIII_8 + FIBS_LIA_AXXIII_9</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_1" model="account.financial.html.report.line">
+        <field name="name">1. Edellisten tilikausien voitto (tappio)</field>
+        <field name="code">FIBS_LIA_AXXIII_1</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '225%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_2" model="account.financial.html.report.line">
+        <field name="name">2. Osakeyhtiön tilit</field>
+        <field name="code">FIBS_LIA_AXXIII_2</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '226%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_3" model="account.financial.html.report.line">
+        <field name="name">3. Osuuskunnan tilit</field>
+        <field name="code">FIBS_LIA_AXXIII_3</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '227%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_4" model="account.financial.html.report.line">
+        <field name="name">4. Avoimen yhtiön tilit</field>
+        <field name="code">FIBS_LIA_AXXIII_4</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="4"/>
+        <field name="domain" eval="[('account_id.code', '=like', '229%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_5" model="account.financial.html.report.line">
+        <field name="name">5. Kommandiittiyhtiön tilit</field>
+        <field name="code">FIBS_LIA_AXXIII_5</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '231%'), ('account_id.code', '=like', '232%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_6" model="account.financial.html.report.line">
+        <field name="name">6. Pääomavajaus edellisiltä tilikausilta</field>
+        <field name="code">FIBS_LIA_AXXIII_6</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '233%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_7" model="account.financial.html.report.line">
+        <field name="name">7. Yksityistilit tilikaudella</field>
+        <field name="code">FIBS_LIA_AXXIII_7</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="7"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '234%'),
+				    '|', ('account_id.code', '=like', '235%'), ('account_id.code', '=like', '236%')
+				    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_8" model="account.financial.html.report.line">
+        <field name="name">8. Tilikauden voitto (tappio)</field>
+        <field name="code">FIBS_LIA_AXXIII_8</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="8"/>
+        <field name="domain" eval="[('account_id.user_type_id', 'in', [
+                    ref('account.data_account_type_depreciation'),
+                    ref('account.data_account_type_direct_costs'),
+                    ref('account.data_account_type_expenses'),
+                    ref('account.data_account_type_other_income'),
+                    ref('account.data_account_type_revenue')])]"/>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_1_23_9" model="account.financial.html.report.line">
+        <field name="name">9. Pääomalainat</field>
+        <field name="code">FIBS_LIA_AXXIII_9</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="9"/>
+        <field name="domain" eval="[('account_id.code', '=like', '238%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_1_23"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_2" model="account.financial.html.report.line">
-        <field name="name">B) TILINPÄÄTÖSSIIRTOJEN KERTYMÄ</field>
+        <field name="name">B) VÄHEMMISTÖOSUUDET</field>
         <field name="code">FIBS_LIA_B</field>
         <field name="level" eval="1"/>
         <field name="sequence" eval="2"/>
-        <field name="formulas">FIBS_LIA_B_1 + FIBS_LIA_B_2</field>
+        <field name="domain" eval="[('account_id.code', '=like', '239%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
     </record>
-    <record id="account_financial_report_l10n_fi_bs_line_2_2_1" model="account.financial.html.report.line">
+        <record id="account_financial_report_l10n_fi_bs_line_2_2_1" model="account.financial.html.report.line">
         <field name="name">1. Poistoero</field>
         <field name="code">FIBS_LIA_B_1</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_depreciation_difference')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_2"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_2_2" model="account.financial.html.report.line">
         <field name="name">2. Vapaaehtoiset varaukset</field>
         <field name="code">FIBS_LIA_B_2</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_tax_based_reservations')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_2"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_3" model="account.financial.html.report.line">
-        <field name="name">C) PAKOLLISET VARAUKSET</field>
+        <field name="name">C) TILINPÄÄTÖSSIIRTOJEN KERTYMÄ</field>
         <field name="code">FIBS_LIA_C</field>
         <field name="level" eval="1"/>
         <field name="sequence" eval="3"/>
-        <field name="formulas">FIBS_LIA_C_1 + FIBS_LIA_C_2 + FIBS_LIA_C_3</field>
+        <field name="formulas">FIBS_LIA_C_1 + FIBS_LIA_C_2</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_3_1" model="account.financial.html.report.line">
-        <field name="name">1. Eläkevaraukset</field>
+        <field name="name">I. Poistoero</field>
         <field name="code">FIBS_LIA_C_1</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_provisions_for_pensions')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '240%'),
+				   '|', ('account_id.code', '=like', '241%'),
+				   '|', ('account_id.code', '=like', '242%'),
+				   '|', ('account_id.code', '=like', '243%'), ('account_id.code', '=like', '244%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_3"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_3_2" model="account.financial.html.report.line">
-        <field name="name">2. Verovaraukset</field>
+        <field name="name">II. Vapaaehtoiset varaukset</field>
         <field name="code">FIBS_LIA_C_2</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_tax_provisions')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '245%'),
+				   '|', ('account_id.code', '=like', '246%'),
+				   '|', ('account_id.code', '=like', '247%'),
+				   '|', ('account_id.code', '=like', '248%'), ('account_id.code', '=like', '249%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_3"/>
@@ -583,45 +1153,46 @@
         <field name="code">FIBS_LIA_C_3</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_provisions')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_3"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4" model="account.financial.html.report.line">
-        <field name="name">D) VIERAS PÄÄOMA</field>
+        <field name="name">D) PAKOLLISET VARAUKSET</field>
         <field name="code">FIBS_LIA_D</field>
         <field name="level" eval="1"/>
-        <field name="sequence" eval="4"/>
-        <field name="formulas">FIBS_LIA_D_1 + FIBS_LIA_D_2 + FIBS_LIA_D_3 + FIBS_LIA_D_4 + FIBS_LIA_D_5 + FIBS_LIA_D_6 + FIBS_LIA_D_7 + FIBS_LIA_D_8 + FIBS_LIA_D_9 + FIBS_LIA_D_10 + FIBS_LIA_D_11</field>
+        <field name="sequence" eval="3"/>
+        <field name="formulas">FIBS_LIA_D_1 + FIBS_LIA_D_2 + FIBS_LIA_D_3</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_1" model="account.financial.html.report.line">
-        <field name="name">1. Joukkovelkakirjalainat</field>
+        <field name="name">I. Eläkevaraukset</field>
         <field name="code">FIBS_LIA_D_1</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="1"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_bonds_are_long-term'), ref('l10n_fi.account_tag_bonds_short-term')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '250%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_2" model="account.financial.html.report.line">
-        <field name="name">2. Vaihtovelkakirjalainat</field>
+        <field name="name">II. Verovaraukset</field>
         <field name="code">FIBS_LIA_D_2</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="2"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_convertible_bonds_long-term'), ref('l10n_fi.account_tag_convertible_bonds_short-term')])]"/>
+        <field name="domain" eval="[('account_id.code', '=like', '253%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_3" model="account.financial.html.report.line">
-        <field name="name">3. Lainat rahoituslaitoksilta</field>
+        <field name="name">III. Muut pakolliset varaukset</field>
         <field name="code">FIBS_LIA_D_3</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="3"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_loans_from_financial_institutions_long-term'), ref('l10n_fi.account_tag_loans'), ref('l10n_fi.account_tag_subordinated_loans_long-term'), ref('l10n_fi.account_tag_capital_loans_are_short-term'), ref('l10n_fi.account_tag_loans_from_financial_institutions_short-term')])]"/>
+        <field name="domain" eval="[
+				   '|', ('account_id.code', '=like', '255%'),
+				   '|', ('account_id.code', '=like', '256%'),
+				   '|', ('account_id.code', '=like', '257%'), ('account_id.code', '=like', '258%')
+				   ]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">-sum</field>
         <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
@@ -631,80 +1202,425 @@
         <field name="code">FIBS_LIA_D_4</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="4"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_pension_loans_long-term'), ref('l10n_fi.account_tag_pension_loans_short-term')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_5" model="account.financial.html.report.line">
         <field name="name">5. Saadut ennakot</field>
         <field name="code">FIBS_LIA_D_5</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="5"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_advances_received_long-term'), ref('l10n_fi.account_tag_advances_received_short-term')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_6" model="account.financial.html.report.line">
         <field name="name">6. Ostovelat</field>
         <field name="code">FIBS_LIA_D_6</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="6"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_accounts_payable'), ref('l10n_fi.account_tag_accounts_payable-current'), ref('l10n_fi.account_tag_trade_payables_to_group'), ref('l10n_fi.account_tag_trade_payables_to_associated_companies')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_7" model="account.financial.html.report.line">
         <field name="name">7. Rahoitusvekselit</field>
         <field name="code">FIBS_LIA_D_7</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="7"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_bills_of_short-term'), ref('l10n_fi.account_tag_bills_of_long-term')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_8" model="account.financial.html.report.line">
         <field name="name">8. Velat saman konsernin yrityksille</field>
         <field name="code">FIBS_LIA_D_8</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="8"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_group_short-term_liabilities'), ref('l10n_fi.account_tag_consolidated_long-term_liabilities'), ref('l10n_fi.account_tag_payables_to_associated_companies_non-current'), ref('l10n_fi.account_tag_deferred_tax_liabilities_are_long-term'), ref('l10n_fi.account_tag_deferred_tax_liabilities_are_short-term')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_9" model="account.financial.html.report.line">
         <field name="name">9. Velat omistusyhteysyrityksille</field>
         <field name="code">FIBS_LIA_D_9</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="9"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_payables_to_associated_companies')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_10" model="account.financial.html.report.line">
         <field name="name">10. Muut velat</field>
         <field name="code">FIBS_LIA_D_10</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="10"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_other_short-term_liabilities')])]"/>
-        <field name="groupby">account_id</field>
-        <field name="formulas">-sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
+        <field name="parent_id" eval="None"/>
     </record>
     <record id="account_financial_report_l10n_fi_bs_line_2_4_11" model="account.financial.html.report.line">
         <field name="name">11. -Siirtovelat</field>
         <field name="code">FIBS_LIA_D_11</field>
         <field name="level" eval="2"/>
         <field name="sequence" eval="11"/>
-        <field name="domain" eval="[('account_id.tag_ids', 'in', [ref('l10n_fi.account_tag_accrued_liabilities_short-term'), ref('l10n_fi.account_tag_accrued_long-term')])]"/>
+        <field name="parent_id" eval="None"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_5" model="account.financial.html.report.line">
+        <field name="name">E) KONSERNIRESERVI</field>
+        <field name="code">FIBS_LIA_E</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '259%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6" model="account.financial.html.report.line">
+        <field name="name">F) VIERAS PÄÄOMA</field>
+        <field name="code">FIBS_LIA_F</field>
+        <field name="level" eval="1"/>
+        <field name="sequence" eval="6"/>
+        <field name="formulas">FIBS_LIA_F_1 + FIBS_LIA_F_2</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1" model="account.financial.html.report.line">
+        <field name="name">I. Pitkäaikainen</field>
+        <field name="code">FIBS_LIA_F_1</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="1"/>
+        <field name="formulas">FIBS_LIA_F_1_1 + FIBS_LIA_F_1_2 + FIBS_LIA_F_1_3 + FIBS_LIA_F_1_4 + FIBS_LIA_F_1_5 + FIBS_LIA_F_1_6 + FIBS_LIA_F_1_7 + FIBS_LIA_F_1_8 + FIBS_LIA_F_1_9 + FIBS_LIA_F_1_10 + FIBS_LIA_F_1_11 + FIBS_LIA_F_1_12 + FIBS_LIA_F_1_13</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_1" model="account.financial.html.report.line">
+        <field name="name">1. Pääomalainat</field>
+        <field name="code">FIBS_LIA_F_1_1</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '260%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_2" model="account.financial.html.report.line">
+        <field name="name">2. Joukkovelkakirjalainat</field>
+        <field name="code">FIBS_LIA_F_1_2</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '2611%'),
+                    '|', ('account_id.code', '=like', '2613%'),
+                    '|', ('account_id.code', '=like', '2614%'), ('account_id.code', '=like', '2615%')
+                    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_3" model="account.financial.html.report.line">
+        <field name="name">3. Vaihtovelkakirjalainat</field>
+        <field name="code">FIBS_LIA_F_1_3</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2617%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_4" model="account.financial.html.report.line">
+        <field name="name">4. Lainat rahoituslaitoksilta</field>
+        <field name="code">FIBS_LIA_F_1_4</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="4"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '262%'),
+				    '|', ('account_id.code', '=like', '263%'), ('account_id.code', '=like', '264%')
+				    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_5" model="account.financial.html.report.line">
+        <field name="name">5. Eläkelainat</field>
+        <field name="code">FIBS_LIA_F_1_5</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '265%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_6" model="account.financial.html.report.line">
+        <field name="name">6. Saadut ennakot</field>
+        <field name="code">FIBS_LIA_F_1_6</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '266%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_7" model="account.financial.html.report.line">
+        <field name="name">7. Ostovelat</field>
+        <field name="code">FIBS_LIA_F_1_7</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="7"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '267%'), ('account_id.code', '=like', '268%'),]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_8" model="account.financial.html.report.line">
+        <field name="name">8. Rahoitusvekselit</field>
+        <field name="code">FIBS_LIA_F_1_8</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="8"/>
+        <field name="domain" eval="[('account_id.code', '=like', '269%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_9" model="account.financial.html.report.line">
+        <field name="name">9. Velat saman konsernin yrityksille</field>
+        <field name="code">FIBS_LIA_F_1_9</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="9"/>
+        <field name="domain" eval="[('account_id.code', '=like', '270%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_10" model="account.financial.html.report.line">
+        <field name="name">10. Velat omistusyhteysyrityksille</field>
+        <field name="code">FIBS_LIA_F_1_10</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="10"/>
+        <field name="domain" eval="[('account_id.code', '=like', '271%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_11" model="account.financial.html.report.line">
+        <field name="name">11. Laskennalliset verovelat</field>
+        <field name="code">FIBS_LIA_F_1_11</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="11"/>
+        <field name="domain" eval="[('account_id.code', '=like', '277%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_12" model="account.financial.html.report.line">
+        <field name="name">12. Muut velat</field>
+        <field name="code">FIBS_LIA_F_1_12</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="12"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '272%'),
+                    '|', ('account_id.code', '=like', '273%'),('account_id.code', '=like', '274%')
+                    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_1_13" model="account.financial.html.report.line">
+        <field name="name">13. Siirtovelat</field>
+        <field name="code">FIBS_LIA_F_1_13</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="13"/>
+        <field name="domain" eval="[('account_id.code', '=like', '275%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_1"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2" model="account.financial.html.report.line">
+        <field name="name">II. Lyhytaikainen</field>
+        <field name="code">FIBS_LIA_F_2</field>
+        <field name="level" eval="2"/>
+        <field name="sequence" eval="2"/>
+        <field name="formulas">FIBS_LIA_F_2_1 + FIBS_LIA_F_2_2 + FIBS_LIA_F_2_3 + FIBS_LIA_F_2_4 + FIBS_LIA_F_2_5 + FIBS_LIA_F_2_6 + FIBS_LIA_F_2_7 + FIBS_LIA_F_2_8 + FIBS_LIA_F_2_9 + FIBS_LIA_F_2_10 + FIBS_LIA_F_2_11 + FIBS_LIA_F_2_12 + FIBS_LIA_F_2_13</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_1" model="account.financial.html.report.line">
+        <field name="name">1. Pääomalainat</field>
+        <field name="code">FIBS_LIA_F_2_1</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '280%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_2" model="account.financial.html.report.line">
+        <field name="name">2. Joukkovelkakirjalainat</field>
+        <field name="code">FIBS_LIA_F_2_2</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '2811%'),
+                    '|', ('account_id.code', '=like', '2813%'),
+                    '|', ('account_id.code', '=like', '2814%'), ('account_id.code', '=like', '2815%')
+                    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_3" model="account.financial.html.report.line">
+        <field name="name">3. Vaihtovelkakirjalainat</field>
+        <field name="code">FIBS_LIA_F_2_3</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '2817%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_4" model="account.financial.html.report.line">
+        <field name="name">4. Lainat rahoituslaitoksilta</field>
+        <field name="code">FIBS_LIA_F_2_4</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="4"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '282%'),
+                    '|', ('account_id.code', '=like', '283%'), ('account_id.code', '=like', '284%')
+                    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_5" model="account.financial.html.report.line">
+        <field name="name">5. Eläkelainat</field>
+        <field name="code">FIBS_LIA_F_2_5</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="5"/>
+        <field name="domain" eval="[('account_id.code', '=like', '285%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_6" model="account.financial.html.report.line">
+        <field name="name">6. Saadut ennakot</field>
+        <field name="code">FIBS_LIA_F_2_6</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="6"/>
+        <field name="domain" eval="[('account_id.code', '=like', '286%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_7" model="account.financial.html.report.line">
+        <field name="name">7. Ostovelat</field>
+        <field name="code">FIBS_LIA_F_2_7</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="7"/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '287%'), ('account_id.code', '=like', '288%'),]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_8" model="account.financial.html.report.line">
+        <field name="name">8. Rahoitusvekselit</field>
+        <field name="code">FIBS_LIA_F_2_8</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="8"/>
+        <field name="domain" eval="[('account_id.code', '=like', '289%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_9" model="account.financial.html.report.line">
+        <field name="name">9. Velat saman konsernin yrityksille</field>
+        <field name="code">FIBS_LIA_F_2_9</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="9"/>
+        <field name="domain" eval="[('account_id.code', '=like', '290%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_10" model="account.financial.html.report.line">
+        <field name="name">10. Velat omistusyhteysyrityksille</field>
+        <field name="code">FIBS_LIA_F_2_10</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="10"/>
+        <field name="domain" eval="[('account_id.code', '=like', '291%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_11" model="account.financial.html.report.line">
+        <field name="name">11. Laskennalliset verovelat</field>
+        <field name="code">FIBS_LIA_F_2_11</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="11"/>
+        <field name="domain" eval="[('account_id.code', '=like', '298%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_12" model="account.financial.html.report.line">
+        <field name="name">12. Muut velat</field>
+        <field name="code">FIBS_LIA_F_2_12</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="12"/>
+        <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '292%'),
+                    '|', ('account_id.code', '=like', '293%'), ('account_id.code', '=like', '294%')
+                    ]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_13" model="account.financial.html.report.line">
+        <field name="name">13. Siirtovelat</field>
+        <field name="code">FIBS_LIA_F_2_13</field>
+        <field name="level" eval="3"/>
+        <field name="sequence" eval="13"/>
+        <field name="formulas">FIBS_LIA_F_2_13_1 + FIBS_LIA_F_2_13_2 + FIBS_LIA_F_2_13_3</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2"/>
+    </record>	
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_13_1" model="account.financial.html.report.line">
+        <field name="name">a) Tuloennakot</field>
+        <field name="code">FIBS_LIA_F_2_13_1</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="1"/>
+        <field name="domain" eval="[('account_id.code', '=like', '295%')]"/>
         <field name="groupby">account_id</field>
         <field name="formulas">sum</field>
-        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_4"/>
-    </record>
-
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2_13"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_13_2" model="account.financial.html.report.line">
+        <field name="name">b) Menojäämät</field>
+        <field name="code">FIBS_LIA_F_2_13_2</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="2"/>
+        <field name="domain" eval="[('account_id.code', '=like', '296%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2_13"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
+    <record id="account_financial_report_l10n_fi_bs_line_2_6_2_13_3" model="account.financial.html.report.line">
+        <field name="name">c) Muut siirtovelat</field>
+        <field name="code">FIBS_LIA_F_2_13_3</field>
+        <field name="level" eval="4"/>
+        <field name="sequence" eval="3"/>
+        <field name="domain" eval="[('account_id.code', '=like', '297%')]"/>
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="parent_id" ref="account_financial_report_l10n_fi_bs_line_2_6_2_13"/>
+        <field name="hide_if_empty" eval="1"/>
+    </record>	
 </odoo>

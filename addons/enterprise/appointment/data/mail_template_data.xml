@@ -11,8 +11,9 @@
 <div>
     <t t-set="colors" t-value="{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}" />
     <t t-set="recurrent" t-value="object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')" />
+    <t t-set="mail_tz" t-value="object._get_mail_tz() or ctx.get('mail_tz')" />
     <p>
-    Appointment booked for <t t-out="object.appointment_type_id.name or ''">Schedule a Demo</t> with <t t-out="object.partner_id.name or ''">Brandon Freeman</t>.
+    Appointment booked for <t t-out="object.appointment_type_id.name or ''">Schedule a Demo</t> <t t-if="object.appointment_type_id.category != 'custom'"> with <t t-out="object.partner_id.name or ''">Brandon Freeman</t></t>.
     </p>
     <div style="text-align: center; padding: 16px 0px 16px 0px;">
         <a t-attf-href="/calendar/meeting/join?token={{ object.access_token }}"
@@ -25,19 +26,24 @@
     <table border="0" cellpadding="0" cellspacing="0"><tr>
             <td width="130px;">
                 <div style="border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;">
-                    <t t-out="format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''">Wednesday</t>
+                    <t t-out="format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''">Wednesday</t>
                 </div>
                 <div style="font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;">
                     <t t-out="str(object.start.day) or ''">1</t>
                 </div>
                 <div style='font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;'>
-                    <t t-out="format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''">January 2020</t>
+                    <t t-out="format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''">January 2020</t>
                 </div>
                 <div style="border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;">
                     <t t-if="not object.allday">
                         <div>
-                            <t t-out="format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''">8:00</t>
+                            <t t-out="format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''">8:00</t>
                         </div>
+                        <t t-if="mail_tz">
+                            <div style="font-size: 10px; font-weight: normal;">
+                                (<t t-out="mail_tz"/>)
+                            </div>
+                        </t>
                     </t>
                 </div>
             </td>
@@ -85,23 +91,29 @@
 <div>
     <t t-set="colors" t-value="{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}"/>
     <t t-set="recurrent" t-value="object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')"/>
+    <t t-set="mail_tz" t-value="object._get_mail_tz() or ctx.get('mail_tz')" />
     <p>
-    The appointment for <t t-out="object.appointment_type_id.name or ''">Schedule a Demo</t> with <t t-out="object.partner_id.name or ''">Brandon Freeman</t> has been canceled.
+    The appointment for <t t-out="object.appointment_type_id.name or ''">Schedule a Demo</t> <t t-if="object.appointment_type_id.category != 'custom'"> with <t t-out="object.partner_id.name or ''">Brandon Freeman</t></t> has been canceled.
     </p>
 <table border="0" cellpadding="0" cellspacing="0"><tr>
             <td width="130px;">
                 <div style="border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;">
-                    <t t-out="format_datetime(dt=object.start, tz=None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''">Wednesday</t>
+                    <t t-out="format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''">Wednesday</t>
                 </div>
                 <div style="font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;">
                     <t t-out="str(object.start.day) or ''">1</t>
                 </div>
                 <div style='font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;'>
-                    <t t-out="format_datetime(dt=object.start, tz=None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''">January 2020</t>
+                    <t t-out="format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''">January 2020</t>
                 </div>
                 <div style="border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;">
                     <t t-if="not object.allday">
-                        <div><t t-out="format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''">8:00</t></div>
+                        <div><t t-out="format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''">8:00</t></div>
+                        <t t-if="mail_tz">
+                            <div style="font-size: 10px; font-weight: normal;">
+                                (<t t-out="mail_tz"/>)
+                            </div>
+                        </t>
                     </t>
                 </div>
             </td>

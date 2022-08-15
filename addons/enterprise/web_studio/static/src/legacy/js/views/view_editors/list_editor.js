@@ -147,6 +147,13 @@ return ListRenderer.extend(EditorMixin, {
             var node = _.find(this.columns, function (column) {
                 return column.attrs.name === fieldName;
             });
+            if (fieldName.startsWith('button_group')) {
+                if (position === 'after') {
+                    node = node.children[node.children.length - 1];
+                } else if (position === 'before') {
+                    node = node.children[0];
+                }
+            }
             // When there is no column in the list view, the only possible hook is inside <tree>
             if (!this.columns.length) {
                 node = {
@@ -409,6 +416,22 @@ return ListRenderer.extend(EditorMixin, {
      */
     _onSelectedHook: function () {
         this.selected_node_id = false;
+    },
+
+    /**
+     * Undo the ListRenderer._groupAdjacentButtons() operation
+     */
+    preprocessArch: function (arch) {
+        if (!arch.children) return arch;
+        const children = [];
+        for (let child of arch.children) {
+            if (child.tag !== 'button_group') {
+                children.push(child);
+            } else {
+                children.push(...child.children);
+            }
+        }
+        return {...arch, children};
     },
 });
 

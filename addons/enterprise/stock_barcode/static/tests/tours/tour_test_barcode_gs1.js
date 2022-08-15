@@ -393,15 +393,9 @@ tour.register('test_gs1_inventory_package', {test: true}, [
 
 tour.register('test_gs1_package_receipt', {test: true}, [
     { trigger: '.o_stock_barcode_main_menu:contains("Barcode Scanning")' },
-    {
-        trigger: '.o_stock_barcode_main_menu',
-        run: 'scan WH-RECEIPTS',
-    },
+    { trigger: '.o_stock_barcode_main_menu', run: 'scan WH-RECEIPTS' },
     // Scans PRO_GTIN_8 x4
-    {
-        trigger: '.o_barcode_client_action',
-        run: 'scan 0100000082655853300004',
-    },
+    { trigger: '.o_barcode_client_action', run: 'scan 0100000082655853300004' },
     {
         trigger: '.o_barcode_line',
         run: function () {
@@ -413,10 +407,7 @@ tour.register('test_gs1_package_receipt', {test: true}, [
     },
     // Scans a package => As it doesn't exist in the DB, should put in pack the
     // previously scanned quantities.
-    {
-        trigger: '.o_barcode_client_action',
-        run: 'scan 00546879213579461324',
-    },
+    { trigger: '.o_barcode_client_action', run: 'scan 00546879213579461324' },
     {
         trigger: '.o_barcode_line:contains(546879213579461324)',
         run: function () {
@@ -428,11 +419,8 @@ tour.register('test_gs1_package_receipt', {test: true}, [
             helper.assert(product1_package, '546879213579461324');
         }
     },
-    // Scans and PRO_GTIN_12 x8.
-    {
-        trigger: '.o_barcode_line:contains(546879213579461324)',
-        run: 'scan 300008\x1D0100584687955629',
-    },
+    // Scans PRO_GTIN_12 x8.
+    { trigger: '.o_barcode_client_action', run: 'scan 300008\x1D0100584687955629' },
     {
         trigger: '.o_barcode_line:nth-child(2)',
         run: function () {
@@ -448,10 +436,7 @@ tour.register('test_gs1_package_receipt', {test: true}, [
         }
     },
     // Scans again the same package. Now it already exists but should be assigned anyway.
-    {
-        trigger: '.o_barcode_line[data-barcode="584687955629"]:contains()',
-        run: 'scan 00546879213579461324',
-    },
+    { trigger: '.o_barcode_client_action', run: 'scan 00546879213579461324' },
     {
         trigger: '.o_barcode_line[data-barcode="584687955629"]:contains(546879213579461324)',
         run: function () {
@@ -468,10 +453,83 @@ tour.register('test_gs1_package_receipt', {test: true}, [
             helper.assert(product2_package, '546879213579461324');
         }
     },
+    // Selects a line and scans a package type, it should be assing the package
+    // type to selected line's result package.
+    { trigger: '.o_barcode_line[data-barcode=584687955629]' },
+    { trigger: '.o_selected[data-barcode=584687955629]', run: 'scan 91WOODC' },
     {
-        trigger: '.o_barcode_client_action',
-        run: 'scan O-BTN.validate',
+        trigger: '.o_barcode_line[data-barcode="584687955629"]:contains("(Wooden Chest)")',
+        run: function () {
+            helper.assertLinesCount(2);
+            const $line1 = helper.getLine({barcode: '82655853'});
+            helper.assertLineIsHighlighted($line1, false);
+            helper.assertLineQty($line1, '4');
+            const product1_package = $line1.find('[name="package"]').text().trim();
+            helper.assert(product1_package, '546879213579461324 (Wooden Chest)');
+            const $line2 = helper.getLine({barcode: '584687955629'});
+            helper.assertLineIsHighlighted($line2, true);
+            helper.assertLineQty($line2, '8');
+            const product2_package = $line2.find('[name="package"]').text().trim();
+            helper.assert(product2_package, '546879213579461324 (Wooden Chest)');
+        }
     },
+
+    // Scans PRO_GTIN_8 x6
+    { trigger: '.o_barcode_client_action', run: 'scan 0100000082655853300006' },
+    {
+        trigger: '.o_barcode_line.o_selected:contains("PRO_GTIN_8")',
+        run: function () {
+            helper.assertLinesCount(3);
+            const line = document.querySelector('.o_barcode_line.o_selected');
+            helper.assertLineQty($(line), '6');
+        }
+    },
+    // Scans a package with a type => put in pack the selected line in this package with the type.
+    { trigger: '.o_barcode_client_action', run: 'scan 00130406658041178543\x1D91IRONC' },
+    {
+        trigger: '.o_barcode_line.o_selected:contains("130406658041178543")',
+        run: function () {
+            helper.assertLinesCount(3);
+            const line = document.querySelector('.o_barcode_line.o_selected');
+            helper.assertLineQty($(line), '6');
+            const linePackage = line.querySelector('[name="package"]').innerText;
+            helper.assert(linePackage, '130406658041178543 (Iron Chest)');
+        }
+    },
+    // Scans PRO_GTIN_12 x12, then scans a package type to put in pack in a new package.
+    { trigger: '.o_barcode_client_action', run: 'scan 30000000120100584687955629' },
+    {
+        trigger: '.o_barcode_line.o_selected[data-barcode="584687955629"]',
+        run: function () {
+            helper.assertLinesCount(4);
+            const line = document.querySelector('.o_barcode_line.o_selected');
+            helper.assertLineQty($(line), '12');
+        }
+    },
+    { trigger: '.o_barcode_client_action', run: 'scan 91WOODC' },
+    {
+        trigger: '.o_barcode_line.o_selected[data-barcode="584687955629"] [name="package"]',
+        run: function () {
+            helper.assertLinesCount(4);
+            const line = document.querySelector('.o_barcode_line.o_selected');
+            helper.assertLineQty($(line), '12');
+            const linePackage = line.querySelector('[name="package"]').innerText;
+            helper.assert(linePackage, 'PACK0000123 (Wooden Chest)');
+        }
+    },
+    // Scan another package type => Should change the package's type.
+    { trigger: '.o_barcode_client_action', run: 'scan 91IRONC' },
+    {
+        trigger: '.o_selected[data-barcode="584687955629"] [name="package"]:contains("Iron Chest")',
+        run: function () {
+            helper.assertLinesCount(4);
+            const line = document.querySelector('.o_barcode_line.o_selected');
+            helper.assertLineQty($(line), '12');
+            const linePackage = line.querySelector('[name="package"]').innerText;
+            helper.assert(linePackage, 'PACK0000123 (Iron Chest)');
+        }
+    },
+    { trigger: '.o_barcode_client_action', run: 'scan O-BTN.validate' },
     { trigger: '.o_notification.bg-success' },
 ]);
 
@@ -761,8 +819,8 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
             helper.assertLinesCount(1);
             helper.assertSublinesCount(2);
             const $parentLine = helper.getLine({barcode: '76543210'});
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
             helper.assertLineQty($parentLine, '12');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '4');
@@ -778,8 +836,8 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         trigger: '.o_sublines .o_barcode_line.o_selected .qty-done:contains("8")',
         run: function () {
             helper.assertSublinesCount(2);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineIsHighlighted($line1, false);
@@ -795,9 +853,9 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         trigger: '.o_barcode_line:contains("b1-b003")',
         run: function () {
             helper.assertSublinesCount(3);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '1');
@@ -820,9 +878,9 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         run: function () {
             helper.assertLinesCount(1);
             helper.assertSublinesCount(3);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '3');
@@ -841,9 +899,9 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         trigger: '.o_sublines .o_barcode_line.o_selected:contains("8")',
         run: function () {
             helper.assertSublinesCount(3);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -869,10 +927,10 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         run: function () {
             helper.assertLinesCount(1);
             helper.assertSublinesCount(4);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
-            const $line4 = $('.o_sublines .o_barcode_line.o_selected');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
+            const $line4 = helper.getSubline('.o_selected');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -892,13 +950,13 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         run: 'scan 3000000004\x1D10b1-b004\x1D0100000076543210',
     },
     {
-        trigger: '.o_barcode_line.o_selected .qty-done:contains("4")',
+        trigger: '.o_sublines .o_barcode_line:contains("b1-b004") .qty-done:contains("4")',
         run: function () {
             helper.assertSublinesCount(4);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
-            const $line4 = $('.o_sublines .o_barcode_line:contains("b1-b004")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
+            const $line4 = helper.getSubline(':contains("b1-b004")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -915,15 +973,15 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         run: 'scan 10b1-b005',
     },
     {
-        trigger: '.o_barcode_line:nth-child(5)',
+        trigger: '.o_sublines .o_barcode_line:contains("b1-b005") .qty-done:contains("1")',
         run: function () {
             helper.assertLinesCount(1);
             helper.assertSublinesCount(5);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
-            const $line4 = $('.o_sublines .o_barcode_line:contains("b1-b004")');
-            const $line5 = $('.o_sublines .o_barcode_line:contains("b1-b005")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
+            const $line4 = helper.getSubline(':contains("b1-b004")');
+            const $line5 = helper.getSubline(':contains("b1-b005")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -942,14 +1000,14 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         run: 'scan 3000007',
     },
     {
-        trigger: '.o_sublines .o_barcode_line.o_selected .qty-done:contains("8")',
+        trigger: '.o_sublines .o_barcode_line:contains("b1-b005") .qty-done:contains("8")',
         run: function () {
             helper.assertSublinesCount(5);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
-            const $line4 = $('.o_sublines .o_barcode_line:contains("b1-b004")');
-            const $line5 = $('.o_sublines .o_barcode_line:contains("b1-b005")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
+            const $line4 = helper.getSubline(':contains("b1-b004")');
+            const $line5 = helper.getSubline(':contains("b1-b005")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -972,11 +1030,11 @@ tour.register('test_gs1_receipt_lot_serial', {test: true}, [
         trigger: '.o_sublines .o_barcode_line.o_selected:contains("b1-b004")',
         run: function () {
             helper.assertSublinesCount(5);
-            const $line1 = $('.o_sublines .o_barcode_line:contains("b1-b001")');
-            const $line2 = $('.o_sublines .o_barcode_line:contains("b1-b002")');
-            const $line3 = $('.o_sublines .o_barcode_line:contains("b1-b003")');
-            const $line4 = $('.o_sublines .o_barcode_line:contains("b1-b004")');
-            const $line5 = $('.o_sublines .o_barcode_line:contains("b1-b005")');
+            const $line1 = helper.getSubline(':contains("b1-b001")');
+            const $line2 = helper.getSubline(':contains("b1-b002")');
+            const $line3 = helper.getSubline(':contains("b1-b003")');
+            const $line4 = helper.getSubline(':contains("b1-b004")');
+            const $line5 = helper.getSubline(':contains("b1-b005")');
             helper.assertLineQty($line1, '8');
             helper.assertLineQty($line2, '8');
             helper.assertLineQty($line3, '8');
@@ -1003,6 +1061,20 @@ tour.register('test_gs1_receipt_quantity_with_uom', {test: true}, [
             helper.assertLinesCount(0);
         }
     },
+    // Scans 5 kg for the "Product by Units" => Wrong UoM category, should display an error (instead of creating a new line)
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan 01000000152643293100000005',
+    },
+    {
+        trigger: '.o_notification.bg-danger',
+        run: function () {
+            helper.assertLinesCount(0);
+            const errorMessageTitle = document.querySelector('.o_notification_title');
+            helper.assert(errorMessageTitle.innerText, 'Wrong Unit of Measure');
+        }
+    },
+    { trigger: '.o_notification_close' },
     // Scans 4 units for the "Product by Units".
     {
         trigger: '.o_barcode_client_action',
@@ -1018,7 +1090,7 @@ tour.register('test_gs1_receipt_quantity_with_uom', {test: true}, [
             helper.assert($lineQty.text().trim(), '4Units');
         }
     },
-    // Scans 5 kg for the "Product by Units" => Wrong UoM category, shoud display an error.
+    // Scans 5 kg for the "Product by Units" => Wrong UoM category, should display an error (instead of updating the existing line)
     {
         trigger: '.o_barcode_client_action',
         run: 'scan 01000000152643293100000005',

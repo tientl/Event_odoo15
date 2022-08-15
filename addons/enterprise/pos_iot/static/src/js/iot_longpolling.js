@@ -15,12 +15,11 @@ IoTLongpolling.include({
             url: url,
         });
         posmodel.proxy.proxy_connection_status(url, false);
-
-        if (posmodel.get_order().selected_paymentline &&
-            posmodel.get_order().selected_paymentline.payment_method.use_payment_terminal === 'worldline' &&
-            ['waiting', 'waitingCard', 'waitingCancel'].includes(posmodel.get_order().selected_paymentline.payment_status)) {
-
-            posmodel.get_order().selected_paymentline.set_payment_status('force_done');
+        const order = posmodel.get_order();
+        if (order && order.selected_paymentline &&
+            order.selected_paymentline.payment_method.use_payment_terminal === 'worldline' &&
+            ['waiting', 'waitingCard', 'waitingCancel'].includes(order.selected_paymentline.payment_status)) {
+            order.selected_paymentline.set_payment_status('force_done');
         }
     },
 

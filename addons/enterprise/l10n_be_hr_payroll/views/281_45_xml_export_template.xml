@@ -164,16 +164,17 @@
                             <!-- X 32 AN rue et numéro du débiteur des revenus NL -->
                             <a1013_adresnl t-esc="data['a1013_adresnl']"/>
 
+                            <!--  4 N numéro postal belge du débiteur des
+                            revenus (uniquement si 1.016 = 0
+                            (= Belgique), sinon utiliser 1.026) -->
+                            <a1014_postcodebelgisch t-esc="data['a1014_postcodebelgisch']"/>
+
                             <!-- X 27 AN commune du débiteur des revenus NL -->
                             <a1015_gemeente t-esc="data['a1015_gemeente']"/>
 
-                            <!-- <a1014_postcodebelgisch /> 4 N numéro postal belge du débiteur des
-                            revenus (uniquement si 1.016 = 0
-                            (= Belgique), sinon utiliser 1.026) -->
-
-
-                            <!-- <a1016_landwoonplaats /> 5 N code pays du domicile du débiteur des
+                            <!-- 5 N code pays du domicile du débiteur des
                             revenus ; zéro si Belgique -->
+                            <a1016_landwoonplaats t-esc="data['a1016_landwoonplaats']"/>
 
                             <!-- <a1017_telefoonnummer /> 12 AN numéro de téléphone du débiteur des
                             revenus -->
@@ -321,63 +322,15 @@
                                             <!-- X <f2016_postcodebelgisch /> 4 N code postal belge du
                                             bénéficiaire(uniquement si 2018 = 0
                                             =>Belgique; sinon utiliser 2112) -->
-                                            <f2016_postcodebelgisch t-esc="employee_data['f2016_postcodebelgisch']"/>
+                                            <t t-if="'f2016_postcodebelgisch' in employee_data">
+                                                <f2016_postcodebelgisch t-esc="employee_data['f2016_postcodebelgisch']"/>
+                                            </t>
 
                                             <!-- <f2017_gemeente /> 27 AN commune du bénéficiaire -->
 
                                             <!-- <f2018_landwoonplaats /> 5 N Code pays du domicile du bénéficiaire
                                             des revenus, zéro si Belgique -->
                                             <f2018_landwoonplaats t-esc="employee_data['f2018_landwoonplaats']"/>
-
-                                            <!-- <f2019_burgerlijkstand /> 1 N code état civil
-                                            0 : non connu
-                                            1 : célibataire
-                                            2 : marié(e) ou cohabitant légal
-                                            3 : veuf ou veuve
-                                            4 : divorcé(e) ou séparé(e) de
-                                             corps
-                                            5 : séparé(e) de fait -->
-                                            <f2019_burgerlijkstand t-esc="employee_data['f2019_burgerlijkstand']"/>
-
-                                            <!-- <f2020_echtgenote /> 2 N situation de famille :
-                                            0 : bénéficiaire isolé
-                                            1 : conjoint ou cohabitant ayant des
-                                             revenus professionnels propres
-                                            2 : conjoint ou cohabitant qui n’a pas
-                                             de revenus professionnels
-                                             OU
-                                            Ne perçoit que des pensions,
-                                            rentes ou des revenus 
-                                            138,00 EUR nets par mois
-                                            3 : conjoint ou cohabitant qui a des
-                                            revenus professionnels propres autres
-                                            que des pensions, rentes ou des
-                                            revenus y assimilés 230,00 EUR nets
-                                            par mois
-                                            OU
-                                            ne perçoit que des pensions, rentes
-                                            ou des revenus y assimilés entre
-                                            138,00 EUR et 459,00 EUR nets par
-                                            mois
-                                            (voir « Avis » cadre 5) -->
-                                            <f2020_echtgenote t-esc="employee_data['f2020_echtgenote']"/>
-
-                                            <!-- <f2021_aantalkinderen /> 2 N nombre d'enfants -->
-                                            <f2021_aantalkinderen t-esc="employee_data['f2021_aantalkinderen']"/>
-
-                                            <!-- <f2022_anderentlaste /> 2 N autres -->
-                                            <f2022_anderentlaste t-esc="employee_data['f2022_anderentlaste']"/>
-
-                                            <!-- <f2023_diverse /> 1 AN divers (compléter par X ou blanc) -->
-                                            <f2023_diverse t-esc="employee_data['f2023_diverse']"/>
-
-                                            <!-- <f2024_echtgehandicapt /> 1 AN conjoint handicapé (compléter par H
-                                            ou blanc) -->
-                                            <f2024_echtgehandicapt t-esc="employee_data['f2024_echtgehandicapt']"/>
-
-                                            <!-- <f2026_verkrghandicap /> 1 AN bénéficiaire handicapé (compléter par
-                                            H ou blanc) -->
-                                            <f2026_verkrghandicap t-esc="employee_data['f2026_verkrghandicap']"/>
 
                                             <!-- <f2027_taalcode /> 1 N code langue du bénéficiaire des
                                             revenus
@@ -409,7 +362,9 @@
                                             bénéficiaire (uniquement si 2018 est
                                             différent de zéro ou 150; sinon utiliser
                                             2016) -->
-                                            <f2112_buitenlandspostnummer t-esc="employee_data['f2112_buitenlandspostnummer']"/>
+                                            <t t-if="'f2112_buitenlandspostnummer' in employee_data">
+                                                <f2112_buitenlandspostnummer t-esc="employee_data['f2112_buitenlandspostnummer']"/>
+                                            </t>
 
                                             <!-- <f2114_voornamen /> 15 AN Prénom du bénéficiaire des revenus -->
                                             <f2114_voornamen t-esc="employee_data['f2114_voornamen']"/>
@@ -429,7 +384,7 @@
                                             1 : d’application -->
                                             <f45_2031_verantwoordingsstukken t-esc="employee_data['f45_2031_verantwoordingsstukken']"/>
 
-                                            <!-- <f45_2059_totaalcontrole t-esc="employee_data['f45_2059_totaalcontrole']"/> -->
+                                            <f45_2059_totaalcontrole t-esc="employee_data['f45_2059_totaalcontrole']"/>
 
                                             <!-- Montant brut des revenus -->
                                             <f45_2060_brutoinkomsten t-esc="employee_data['f45_2060_brutoinkomsten']"/>
@@ -448,7 +403,7 @@
 
                                             <f45_2109_fiscaalidentificat t-esc="employee_data['f45_2109_fiscaalidentificat']"/>
 
-                                            <f45_2110_kbonbr t-esc="employee_data['f45_2110_kbonbr']"/>
+                                            <f45_2110_kbonbr t-if="employee_data['f45_2110_kbonbr']" t-esc="employee_data['f45_2110_kbonbr']"/>
                                         </Fiche28145>
                                     </t>
                                 </Opgave32545>
@@ -463,10 +418,11 @@
                             <!-- <r8004_ontvangkantoor /> 2 N numéro du bureau de recette du
                             débiteur des revenus (obsolète) -->
 
-                            <!-- <r8005_registratienummer /> 10 N numéro d’entreprise (BCE) = numéro
+                            <!-- 10 N numéro d’entreprise (BCE) = numéro
                             d'enregistrement sous lequel le
                             débiteur des revenus est connu par le
                             SPF Finances. -->
+                            <r8005_registratienummer t-esc="total_data['r8005_registratienummer']"/>
 
                             <!-- <r8007_division /> 4 N numéro de division -->
 

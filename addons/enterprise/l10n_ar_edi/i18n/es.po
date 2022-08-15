@@ -130,7 +130,7 @@ msgstr "Modo Autorización AFIP"
 #. module: l10n_ar_edi
 #: model:ir.actions.act_window,name:l10n_ar_edi.act_afipws_auth
 msgid "AFIP Connections"
-msgstr "Conecciones AFIP"
+msgstr "Conexiones AFIP"
 
 #. module: l10n_ar_edi
 #: model_terms:ir.ui.view,arch_db:l10n_ar_edi.view_afipws_auth_form
@@ -438,7 +438,7 @@ msgstr "Conexión disponible"
 #: model:ir.model.fields,field_description:l10n_ar_edi.field_res_company__l10n_ar_connection_ids
 #: model:ir.ui.menu,name:l10n_ar_edi.menu_action_afipws_auth
 msgid "Connections"
-msgstr "Conecciones"
+msgstr "Conexiones"
 
 #. module: l10n_ar_edi
 #: model_terms:ir.ui.view,arch_db:l10n_ar_edi.l10n_ar_afip_ws_consult_form
@@ -763,11 +763,13 @@ msgstr ""
 #: code:addons/l10n_ar_edi/models/afip_errors.py:0
 #, python-format
 msgid ""
-"Is possible that you are making a CN/DN but you need to set it as \"FCE: Is "
-"cancellation\""
+"It is possible that you are making a CN/DN but you are setting a wrong value in the \"FCE: Is cancellation\" field. If the AFIP message indicates:\n"
+"\t * \"OK - Comprobante electrónico autorizado, NO rechazado por el Comprador\" it means that the \"FCE: Is cancellation\" should NOT be set.\n"
+"\t * \"OK - Comprobante electrónico autorizado pero fue rechazado por el comprador\" it means that the \"FCE: Is cancellation\" should be set."
 msgstr ""
-"Es posible que este haciendo una NC/ND pero no debe marcar \"FCE: Es "
-"anulación\""
+"Es posible que estés intentado hacer una NC/ND configurando mal el campo \"FCE: Es cancelación\". Si el mensaje de AFIP indica:\n"
+"\t * \"OK - Comprobante electrónico autorizado, NO rechazado por el Comprador\" significa que el campo  \"FCE: Is cancelación\" NO debe estar activo.\n"
+"\t * \"OK - Comprobante electrónico autorizado pero fue rechazado por el comprador\" significa que el campo  \"FCE: Is cancelación\" debe estar activo."
 
 #. module: l10n_ar_edi
 #: model:ir.model.fields,help:l10n_ar_edi.field_res_company__l10n_ar_afip_verification_type
@@ -871,13 +873,13 @@ msgstr "Código NCM"
 #: code:addons/l10n_ar_edi/models/res_company.py:0
 #, python-format
 msgid "No AFIP WS selected"
-msgstr "No se ha selecionado WS AFIP"
+msgstr "No se ha seleccionado WS AFIP"
 
 #. module: l10n_ar_edi
 #: code:addons/l10n_ar_edi/wizards/l10n_ar_afip_ws_consult.py:0
 #, python-format
 msgid "No AFIP WS selected on point of sale %s"
-msgstr "No hay WS AFIP selecionado en el Punto de Venta %s"
+msgstr "No hay WS AFIP seleccionado en el Punto de Venta %s"
 
 #. module: l10n_ar_edi
 #: code:addons/l10n_ar_edi/models/res_currency.py:0
@@ -1254,8 +1256,8 @@ msgid ""
 "This QR code is mandatory by the AFIP in the electronic invoices when this "
 "ones are printed."
 msgstr ""
-"Este código QR es obligatorio por la AFIP en las facturas "
-"electrónicas cuando se imprimen"
+"Este código QR es obligatorio por la AFIP en las facturas electrónicas "
+"cuando se imprimen"
 
 #. module: l10n_ar_edi
 #: model_terms:ir.ui.view,arch_db:l10n_ar_edi.view_currency_form
@@ -1437,16 +1439,14 @@ msgstr ""
 #. module: l10n_ar_edi
 #: code:addons/l10n_ar_edi/models/account_move.py:0
 #, python-format
-msgid ""
-"We couldn't validate the invoice \"%s\" (Draft Invoice *%s) in AFIP. This is what we get:\n"
-"%s\n"
-"\n"
-"Please make the required corrections and try again"
-msgstr ""
-"No pudimos validar la factura \"%s\" (Draft Invoice *%s) en AFIP. Esto es lo que recibimos:\n"
-"%s\n"
-"\n"
-"Por favor haga las correciones necesarias e intente de nuevo"
+msgid "We couldn't validate the invoice \"%s\" (Draft Invoice *%s) in AFIP"
+msgstr "No pudimos validar la factura \"%s\" (Factura Borrador *%s) en AFIP"
+
+#. module: l10n_ar_edi
+#: code:addons/l10n_ar_edi/models/account_move.py:0
+#, python-format
+msgid "We couldn't validate the invoice in AFIP."
+msgstr "No pudimos validar la factura en AFIP"
 
 #. module: l10n_ar_edi
 #: code:addons/l10n_ar_edi/models/account_journal.py:0

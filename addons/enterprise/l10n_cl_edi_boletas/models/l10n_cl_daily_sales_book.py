@@ -5,8 +5,10 @@ import base64
 import logging
 from datetime import timedelta
 from lxml import etree
+from psycopg2 import OperationalError
 
 from odoo import _, api, fields, models, _lt
+from odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util import UnexpectedXMLResponse
 from odoo.exceptions import UserError
 from odoo.tools import float_repr, html_escape
 
@@ -14,7 +16,7 @@ _logger = logging.getLogger(__name__)
 
 SII_STATUS_SALES_BOOK_RESULT = {
     **dict.fromkeys(['-11', 'REC', 'SOK', 'FOK', 'PRD', 'CRT'], 'ask_for_status'),
-    **dict.fromkeys(['-3', 'RPT', 'RFR', 'VOF', 'RCT'], 'rejected'),
+    **dict.fromkeys(['-3', 'RPT', 'RFR', 'VOF', 'RCT', 'RCH', 'RSC'], 'rejected'),
     'EPR': 'accepted',
     'RPR': 'objected',
 }
@@ -38,13 +40,15 @@ class L10nClDailySalesBook(models.Model):
         ('accepted', 'Accepted'),
         ('objected', 'Accepted With Objections'),
         ('rejected', 'Rejected'),
+        ('to_resend', 'To Resend'),
     ], string='SII Daily Sales Book Status', default='not_sent', copy=False, tracking=True,
         help="""Status of sending the DTE to the SII:
        - Not sent: the daily sales book has not been sent to SII but it has created.
        - Ask For Status: The daily sales book is asking for its status to the SII.
        - Accepted: The daily sales book has been accepted by SII.
        - Accepted With Objections: The daily sales book has been accepted with objections by SII.
-       - Rejected: The daily sales book has been rejected by SII.""")
+       - Rejected: The daily sales book has been rejected by SII.
+       - To resend: Boletas were added after the last send so it needs to be resent.""")
     l10n_cl_sii_send_file = fields.Many2one('ir.attachment', string='SII Send file', copy=False)
 
     def name_get(self):
@@ -55,7 +59,7 @@ class L10nClDailySalesBook(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_already_accepted(self):
-        if self.filtered(lambda x: x.l10n_cl_dte_status in ('accepted', 'objected', 'ask_for_status')):
+        if self.filtered(lambda x: x.l10n_cl_dte_status in ('accepted', 'objected', 'ask_for_status', 'to_resend')):
             raise UserError(_('You cannot delete a validated book.'))
 
     def _get_ranges(self, data):
@@ -179,13 +183,14 @@ class L10nClDailySalesBook(models.Model):
             'format_vat': self.env['l10n_cl.edi.util']._l10n_cl_format_vat,
             'timestamp': self.env['l10n_cl.edi.util']._get_cl_current_strftime(),
             'items': items,
+            '__keep_empty_lines': True,
         })
-        dte = self.env['l10n_cl.edi.util']._sign_full_xml(xml_book.decode(), digital_signature, doc_id, 'consu')
+        dte = self.env['l10n_cl.edi.util']._sign_full_xml(xml_book, digital_signature, doc_id, 'consu')
         attachment = self.env['ir.attachment'].create({
             'name': '%s.xml' % doc_id,
             'res_id': self.id,
             'res_model': self._name,
-            'raw': dte.encode('ISO-8859-1'),
+            'raw': dte.encode('ISO-8859-1', 'replace'),
             'type': 'binary',
         })
         self.write({'l10n_cl_dte_status': 'not_sent', 'l10n_cl_sii_send_file': attachment.id})
@@ -210,6 +215,18 @@ class L10nClDailySalesBook(models.Model):
         if not self.company_id.l10n_cl_dte_service_provider:
             self.message_post(body=_('Cannot send Sales Book Report to SII due to the service provider is not set in '
                                      'your company. Please go to your company and select one'))
+            return None
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(f'SELECT 1 FROM {self._table} WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
+        except OperationalError as e:
+            if e.pgcode == '55P03':
+                if not self.env.context.get('cron_skip_connection_errs'):
+                    raise UserError(_('This electronic document is being processed already.'))
+                return
+            raise e
+        # To avoid double send on double-click
+        if self.l10n_cl_dte_status != "not_sent":
             return None
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         response = self._send_xml_to_sii(
@@ -261,24 +278,37 @@ class L10nClDailySalesBook(models.Model):
         # The response from SII has the encoding declaration then it's re-encoding with encode()
         # to ensure the string could be parsed
         response_parsed = etree.fromstring(response.encode())
-        self.l10n_cl_dte_status = self._analyze_sii_sales_book_result(response_parsed)
+
         if response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO') in ['001', '002', '003']:
             digital_signature.last_token = False
             _logger.error('Token is invalid.')
-        else:
-            self.message_post(
-                body=_('Asking for DTE status with response:') +
-                     '<br/><li><b>ESTADO</b>: %s</li><li><b>GLOSA</b>: %s</li><li><b>NUM_ATENCION</b>: %s</li>' % (
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO')),
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/GLOSA')),
-                         html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/NUM_ATENCION'))))
+            return
+
+        try:
+            self.l10n_cl_dte_status = self._analyze_sii_sales_book_result(response_parsed)
+        except UnexpectedXMLResponse:
+            # The assumption here is that the unexpected input is intermittent,
+            # so we'll retry later. If the same input appears regularly, it should
+            # be handled properly in _analyze_sii_sales_book_result.
+            _logger.error("Unexpected XML response:\n{}".format(response))
+            return
+
+        self.message_post(
+            body=_('Asking for DTE status with response:') +
+                 '<br/><li><b>ESTADO</b>: %s</li><li><b>GLOSA</b>: %s</li><li><b>NUM_ATENCION</b>: %s</li>' % (
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO')),
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/GLOSA')),
+                     html_escape(response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/NUM_ATENCION'))))
 
     def _analyze_sii_sales_book_result(self, xml_message):
         """Returns the status of the DTE from the xml_message. The status could be:
         ask_for_status, rejected, accepted, objected
         """
         status = xml_message.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/ESTADO')
-        return SII_STATUS_SALES_BOOK_RESULT.get(status, 'rejected')
+        if status in SII_STATUS_SALES_BOOK_RESULT:
+            return SII_STATUS_SALES_BOOK_RESULT[status]
+        else:
+            raise UnexpectedXMLResponse()
 
     def _l10n_cl_ask_dte_status(self):
         for record in self.search([('l10n_cl_dte_status', '=', 'ask_for_status')]):
@@ -291,12 +321,10 @@ class L10nClDailySalesBook(models.Model):
                 book.l10n_cl_verify_dte_status()
 
     def _send_pending_sales_book_report_to_sii(self):
-        for report in self.search([('l10n_cl_dte_status', '=', 'not_sent')]):
+        for report in self.search([('l10n_cl_dte_status', 'in', ['not_sent', 'to_resend'])]):
             report.l10n_cl_send_dte_to_sii()
 
     def l10n_cl_retry_daily_sales_book_report(self):
-        if self.l10n_cl_dte_status != 'rejected':
-            raise UserError(_('You cannot retry a daily sales book with status other than Rejected'))
         self._update_report()
         self.l10n_cl_send_dte_to_sii()
         self.l10n_cl_verify_dte_status()
@@ -311,8 +339,11 @@ class L10nClDailySalesBook(models.Model):
             self.env.cr.commit()
             books._l10n_cl_send_books_to_sii()
             self_skip._send_pending_sales_book_report_to_sii()
+        if fields.Date.today() > fields.Date.from_string('2022-08-02'):
+            self.env.ref('l10n_cl_edi_boletas.ir_cron_send_daily_sales_book').active = False
 
     def _cron_ask_daily_sales_book_status(self):
         for company in self.env['res.company'].search([('partner_id.country_id.code', '=', 'CL')]):
-            self.with_company(company=company.id).with_context(
-                cron_skip_connection_errs=True)._l10n_cl_ask_dte_status()
+            self.with_company(company=company.id).with_context(cron_skip_connection_errs=True)._l10n_cl_ask_dte_status()
+        if fields.Date.today() > fields.Date.from_string('2022-08-02'):
+            self.env.ref('l10n_cl_edi_boletas.ir_cron_ask_daily_sales_book_status').active = False

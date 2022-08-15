@@ -5,6 +5,8 @@
 # Translators:
 # Mustafa Rawi <mustafa@cubexco.com>, 2021
 # Martin Trigaux, 2021
+# Paul Andrawes, 2021
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,39 +25,41 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__open_ticket_count
 msgid "# Open Tickets"
-msgstr ""
+msgstr "عدد التذاكر المفتوحة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_count
 msgid "# Ratings"
-msgstr ""
+msgstr "عدد التقييمات "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_policy_count
 msgid "# SLA Policy"
-msgstr ""
+msgstr "عدد سياسات اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_1
 msgid "2 days to start"
-msgstr ""
+msgstr "يومان 2 للبدء "
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_2
 msgid "7 days to finish"
-msgstr ""
+msgstr "7 أيام للانتهاء "
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "<b class=\"tip_title\">Tip: Create tickets from incoming emails</b>"
 msgstr ""
+"<b class=\"tip_title\">نصيحة: قم بإنشاء تذاكر من رسائل البريد الإلكتروني "
+"الواردة</b> "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "<b>Drag &amp; drop</b> the card to change the stage of your ticket."
-msgstr ""
+msgstr "<b>قم بسحب وإفلات</b> البطاقة لتغيير مرحلة تذكرتك. "
 
 #. module: helpdesk
 #. openerp-web
@@ -66,6 +70,9 @@ msgid ""
 "    Use <b>@ mentions</b> to ping a colleague \n"
 "    or <b># mentions</b> to contact a group of people."
 msgstr ""
+"<b>الملاحظات الطويلة</b> للتواصلات الداخلية (سوف تقوم بإخطار الشخص الذي قمت بربطه بالتحديد فقط). \n"
+"    استخدم <b>@ mentions</b> لتنبيه زميل \n"
+"    أو <b># mentions</b> للتواصل مع مجموعة من الناس. "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.rating_ticket_request_email_template
@@ -128,6 +135,63 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object.rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object.rating_get_partner_id()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; margin:0;\">\n"
+"    <tbody>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\">\n"
+"                مرحباً <t t-out=\"partner.name or ''\">براندن فريمان</t>،<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                أهلاً،<br/>\n"
+"            </t>\n"
+"            نرجو أن تأخذ لحظة من وقتك لتقيّم خدماتنا المتعلقةبالتذكرة \"<strong t-out=\"object.name or ''\">أرجل الطاولة غير متوازنة</strong>\"\n"
+"            <t t-if=\"object.rating_get_rated_partner_id().name\">\n"
+"                المسندة إلى <strong t-out=\"object.rating_get_rated_partner_id().name or ''\">ميتشل آدمن</strong>.<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                .<br/>\n"
+"            </t>\n"
+"        </td></tr>\n"
+"        <tr><td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"o_mail_notification\" style=\"width:100%; margin: 32px 0px 32px 0px;\">\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <strong>أخبرنا عما تشعر به تجاه خدماتنا</strong><br/>\n"
+"                    <span style=\"text-color: #888888\">(اضغط على إحدى تلك الوجوه الباسمة)</span>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"                        <tr>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/5\">\n"
+"                                    <img alt=\"Satisfied\" src=\"/rating/static/src/img/rating_5.png\" title=\"Satisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/3\">\n"
+"                                    <img alt=\"Okay\" src=\"/rating/static/src/img/rating_3.png\" title=\"Okay\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/1\">\n"
+"                                    <img alt=\"Dissatisfied\" src=\"/rating/static/src/img/rating_1.png\" title=\"Dissatisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td></tr>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            نحن نقدّر ملاحظاتك، إذ أنها تعييننا على التحسن باستمرار.\n"
+"            <br/><span style=\"margin: 0px 0px 0px 0px; font-size: 12px; opacity: 0.5; color: #454748;\">تم إرسال استبيان العميل هذا لأنه قد تم نقل تذكرتك إلى مرحلة <b t-out=\"object.stage_id.name or ''\">قيد العمل</b></span>\n"
+"        </td></tr>\n"
+"    </tbody>\n"
+"    </table>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.solved_ticket_request_email_template
@@ -143,6 +207,16 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    عزيزي <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">السيد/السيدة</t>،<br/><br/>\n"
+"    هذه الرسالة التلقائية لإعلامكم بأننا قد قمنا بإغلاق تذكرتك (المرجع <t t-out=\"object.id or ''\">15</t>).\n"
+"    نأمل بأن تكون الخدمة التي قد قدمناها لحضرتكم قد نالت رضاكم.\n"
+"    إذا كانت لديك أي أسئلة أو تعليقات أخرى، فلا تتردد في الرد على رسالة البريد الإلكتروني هذه لإعادة فتح تذكرتك.<br/><br/>\n"
+"    نشكرك على تعاونك.<br/>\n"
+"    مع أطيب التحيات،<br/><br/>\n"
+"    فريق <t t-out=\"object.team_id.name or 'Helpdesk'\">مكتب المساعدة</t>.\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -167,11 +241,30 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    عزيزي <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">السيد/السيدة</t>،<br/><br/>\n"
+"    طلبك\n"
+"    <t t-if=\"object.get_portal_url()\">\n"
+"        <a t-attf-href=\"/my/ticket/{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or ''\"/>\n"
+"    </t>\n"
+"    قد تم استلامه وتتم مراجعته من قِبَل فريق <t t-out=\"object.team_id.name or ''\">أرجل الطاولة غير متوازنة</t>.\n"
+"    مرجع تذكرتك هو <t t-out=\"object.id or ''\">15</t>.<br/>\n"
+"\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\">عرض التذكرة</a><br/>\n"
+"    </div>\n"
+"\n"
+"    لإضافة المزيد من التعليقات، يُرجى الرد على رسالة البريد الإلكتروني هذه.<br/><br/>\n"
+"\n"
+"    وشكراً،<br/><br/>\n"
+"    فريق <t t-out=\"object.team_id.name or 'Helpdesk'\">مكتب المساعدة</t>.\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<em class=\"font-weight-normal text-muted\">Tickets in stage:</em>"
-msgstr ""
+msgstr "<em class=\"font-weight-normal text-muted\">التذاكر في المرحلة:</em> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -181,7 +274,7 @@ msgstr "<em class=\"text-muted\"><small>لا يوجد وصف</small></em>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
-msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"إدارة\" title=\"إدارة\"/>"
+msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"إدارة \"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -189,7 +282,7 @@ msgid ""
 "<i class=\"fa fa-envelope-o\" title=\"Domain alias\" role=\"img\" aria-"
 "label=\"Domain alias\"/>&amp;nbsp;"
 msgstr ""
-"<i class=\"fa fa-envelope-o\" title=\"Domain alias\" role=\"img\" aria-"
+"<i class=\"fa fa-envelope-o\" title=\"لقب النطاق \" role=\"img\" aria-"
 "label=\"Domain alias\"/>&amp;nbsp;"
 
 #. module: helpdesk
@@ -199,6 +292,9 @@ msgid ""
 "                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_percentage_satisfaction', '&lt;', 33), ('rating_percentage_satisfaction', '&gt;=', 65)]}\" title=\"Okay\"/>\n"
 "                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" attrs=\"{'invisible': [('rating_percentage_satisfaction', '&gt;', 32)]}\" title=\"Dissatisfied\"/>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" attrs=\"{'invisible': [('rating_percentage_satisfaction', '&lt;', 66)]}\" title=\"راضٍ \"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_percentage_satisfaction', '&lt;', 33), ('rating_percentage_satisfaction', '&gt;=', 65)]}\" title=\"جيد \"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" attrs=\"{'invisible': [('rating_percentage_satisfaction', '&gt;', 32)]}\" title=\"غير راضٍ \"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -207,6 +303,9 @@ msgid ""
 "Servers</i> feature in the <i>General Settings</i> and indicate an <i>alias "
 "domain</i>"
 msgstr ""
+"<i class=\"fa fa-lightbulb-o\" role=\"img\"/> قم بتمكين <i>خصائص خوادم "
+"البريد الإلكتروني المخصصة</i> في <i>الإعدادات العامة</i> وقم بتحديد <i>نطاق "
+"اللقب</i> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -220,21 +319,24 @@ msgid ""
 "                    If the issue has been solved, you can close the request.\n"
 "                </small>"
 msgstr ""
+"<small>\n"
+"                    بإمكانك إغلاق الطلب إذا تم حل المشكلة.\n"
+"                </small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<small>#</small>"
-msgstr ""
+msgstr "<small>#</small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "<small><b>Close this ticket</b></small>"
-msgstr ""
+msgstr "<small><b>قم بإغلاق التذكرة</b></small> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "<span class=\"o_field_widget o_readonly_modifier\">Working Hours</span>"
-msgstr ""
+msgstr "<span class=\"o_field_widget o_readonly_modifier\">ساعات العمل</span> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -243,6 +345,9 @@ msgid ""
 "                                    Satisfaction\n"
 "                                </span>"
 msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                                    الرضى\n"
+"                                </span> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_partner_form_inherit_helpdesk
@@ -252,7 +357,7 @@ msgstr "<span class=\"o_stat_text\"> التذاكر</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<span>days of inactivity</span>"
-msgstr ""
+msgstr "<span>أيام الخمول</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -282,12 +387,12 @@ msgstr "<strong class=\"col-lg-2\">قُدم التقرير عن</strong>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>After</strong>"
-msgstr ""
+msgstr "<strong>بعد</strong> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>Alias </strong>"
-msgstr ""
+msgstr "<strong>اللقب </strong>"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_defaults
@@ -295,13 +400,13 @@ msgid ""
 "A Python dictionary that will be evaluated to provide default values when "
 "creating new records for this alias."
 msgstr ""
-"قاموس بايثون سيتم تقديره لتوفير قيم افتراضية عند إنشاء سجلات جديدة لهذا "
-"اللقب."
+"قاموس بايثون الذي سيتم تقييمه لتوفير قيم افتراضية عند إنشاء سجلات جديدة لهذا"
+" اللقب. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__description
 msgid "About Team"
-msgstr "تعريف بالفريق"
+msgstr "عن الفريق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_warning
@@ -312,7 +417,7 @@ msgstr "تحذير من خطأ بالوصول"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_needaction
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_needaction
 msgid "Action Needed"
-msgstr "إجراء مطلوب"
+msgstr "يتطلب اتخاذ إجراء "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__active
@@ -347,7 +452,7 @@ msgstr "أيقونة نوع النشاط"
 #: model:ir.actions.act_window,name:helpdesk.mail_activity_type_action_config_helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_menu_config_activity_type
 msgid "Activity Types"
-msgstr "أنواع النشاطات"
+msgstr "أنواع الأنشطة "
 
 #. module: helpdesk
 #. openerp-web
@@ -357,12 +462,14 @@ msgid ""
 "Adapt your <b>pipeline</b> to your workflow by adding <b>stages</b> <i>(e.g."
 " Awaiting Customer Feedback, etc.).</i>"
 msgstr ""
+"قم بملاءمة <b>مخطط سير العمل</b> الخاص بك ليناسب سير عملك عن طريق إضافة "
+"<b>مراحل</b> <i>(مثال: بانتظار ملاحظات العميل، وما إلى ذلك).</i> "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
 msgid ""
 "Adapt your pipeline to your workflow and track the progress of your tickets."
-msgstr ""
+msgstr "قم بملاءمة مخطط سير عملك ليناسب سير عملك، وتتبع تقدم تذاكرك. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -370,6 +477,7 @@ msgid ""
 "Add a description to help your coworkers understand the meaning and purpose "
 "of the stage."
 msgstr ""
+"أضف وصفاً لمساعدة زملائك في العمل على فهم المعنى والمغزى من تلك المرحلة. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -379,17 +487,17 @@ msgstr "إضافة وصف..."
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Add team members..."
-msgstr ""
+msgstr "أضف أعضاء الفريق... "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Add users..."
-msgstr ""
+msgstr "أضف المستخدمين... "
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_manager
 msgid "Administrator"
-msgstr "مدير"
+msgstr "المدير "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -399,7 +507,7 @@ msgstr "بعد البيع"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_id
 msgid "Alias"
-msgstr "لقب"
+msgstr "اللقب "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_contact
@@ -419,12 +527,12 @@ msgstr "نطاق اللقب"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__display_alias_name
 msgid "Alias email"
-msgstr ""
+msgstr "لقب البريد الإلكتروني "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_model_id
 msgid "Aliased Model"
-msgstr "الكائن الملقب"
+msgstr "النموذج الملقب "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -444,17 +552,17 @@ msgstr "كافة التذاكر"
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__privacy__user
 msgid "All Users"
-msgstr ""
+msgstr "كافة المستخدمين "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Allow customers to close their tickets"
-msgstr ""
+msgstr "أتح للعملاء إغلاق تذاكرهم "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Allow your customers to close their own tickets"
-msgstr ""
+msgstr "أتح لعملائك إغلاق تذاكرهم بأنفسهم "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -474,7 +582,7 @@ msgstr "مؤرشف"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Are you sure you wish to proceed?"
-msgstr ""
+msgstr "هل أنت متأكد من أنك ترغب بالاستمرار؟ "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -484,14 +592,14 @@ msgstr "إسنادها لي"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Assign new tickets to the right persons"
-msgstr ""
+msgstr "قم بإسناد تذاكر جديدة للشخص المناسب "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Assign the ticket to a <b>member of your team</b>."
-msgstr ""
+msgstr "قم بإسناد التذكرة <b>لعضو في فريقك</b>. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
@@ -531,12 +639,12 @@ msgstr "المُسند إليه"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Assignment &amp; Visibility"
-msgstr ""
+msgstr "التعيين وقابلية الظهور "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__assign_method
 msgid "Assignment Method"
-msgstr ""
+msgstr "طريقة التعيين "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -544,6 +652,8 @@ msgid ""
 "At each stage, employees can block tickets or mark them as ready for the next step.\n"
 "                                You can customize the meaning of each state."
 msgstr ""
+"في كل مرحلة، بإمكان الموظفين حجب التذاكر أو تحديدها كجاهزة للخطوة التالية.\n"
+"                                باستطاعتك تخصيص معنى كل من المراحل. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_attachment_count
@@ -562,7 +672,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_ticket
 msgid "Automatic Closing"
-msgstr ""
+msgstr "الإغلاق التلقائي "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__assign_method
@@ -572,6 +682,10 @@ msgid ""
 "\tRandomly: randomly but everyone gets the same amount\n"
 "\tBalanced: to the person with the least amount of open tickets"
 msgstr ""
+"طريقة التعيين التلقائي للتذاكر الجديدة:\n"
+"\tيدوياً: يدوي\n"
+"\tعشوائياً: بشكل عشوائي، ولكن يحصل الجميع على نفس العدد من التذاكر\n"
+"\tمتوازن: إلى الشخص الذي لديه أقل عدد من التذاكر المفتوحة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
@@ -583,7 +697,7 @@ msgstr "متوسط"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Avg 7 Days Happy Rating"
-msgstr ""
+msgstr "متوسط 7 أيام، تقييم سعيد "
 
 #. module: helpdesk
 #. openerp-web
@@ -612,7 +726,7 @@ msgstr "متوازن"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Bill the time spent on your tickets to your customers"
-msgstr ""
+msgstr "قم بفوترة الوقت المقضي في تذاكرك لعملائك "
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -647,7 +761,7 @@ msgstr "محجوب"
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_crm
 msgid "CRM"
-msgstr "العلاقات العامة"
+msgstr "إدارة علاقات العملاء "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__campaign_id
@@ -662,7 +776,7 @@ msgstr "ملغي"
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_team_not_portal_show_rating_if_not_use_rating
 msgid "Cannot show ratings in portal if not using them"
-msgstr ""
+msgstr "لا يمكن عرض التقييمات في البوابة إذا لم تكن تستخدمها "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -681,29 +795,29 @@ msgstr "انقر لضبط"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close"
-msgstr "اغلاق"
+msgstr "إغلاق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__close_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__close_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__close_date
 msgid "Close date"
-msgstr "تاريخ الإقفال"
+msgstr "تاريخ الإغلاق "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Close inactive tickets automatically"
-msgstr ""
+msgstr "إغلاق التذاكر غير النشطة تلقائياً "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close the ticket"
-msgstr ""
+msgstr "إغلاق التذكرة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close ticket"
-msgstr ""
+msgstr "إغلاق التذكرة "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -720,34 +834,34 @@ msgstr "مغلق"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #, python-format
 msgid "Closed Tickets"
-msgstr "التذاكر المقفلة"
+msgstr "التذاكر المغلقة "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_7days_analysis
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_close_analysis
 msgid "Closed Tickets Analysis"
-msgstr "تحليل التذاكر المقفلة"
+msgstr "تحليل التذاكر المغلقة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__closed_by_partner
 msgid "Closed by Partner"
-msgstr ""
+msgstr "مغلقة من قِبَل الشريك "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "Closing Date"
-msgstr "تاريخ الإقفال"
+msgstr "تاريخ الإغلاق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__is_close
 msgid "Closing Stage"
-msgstr ""
+msgstr "مرحلة الإغلاق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Closure by Customers"
-msgstr ""
+msgstr "الإغلاق من قِبَل العملاء "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag__color
@@ -764,7 +878,7 @@ msgstr "معرف اللون"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__kanban_state_label
 msgid "Column Status"
-msgstr ""
+msgstr "حالة العمود "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.rating_rating_view_search_inherit_helpdesk
@@ -779,7 +893,7 @@ msgstr "الكيان التجاري"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_forum
 msgid "Community Forum"
-msgstr ""
+msgstr "المنتدى المجتمعي "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__company_id
@@ -798,12 +912,12 @@ msgstr "شركة"
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_menu_config
 msgid "Configuration"
-msgstr "إعدادات التكوين"
+msgstr "التهيئة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Configure a custom domain"
-msgstr ""
+msgstr "تهيئة نطاق مخصص "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.action_upcoming_sla_fail_all_tickets
@@ -815,12 +929,12 @@ msgstr "تهانينا!"
 #: model:ir.model,name:helpdesk.model_res_partner
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Contact"
-msgstr "جهة الاتصال"
+msgstr "جهة اتصال "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_fsm
 msgid "Convert tickets into Field Service tasks"
-msgstr ""
+msgstr "قم بتحويل التذاكر إلى مهام الخدمة الميدانية "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_coupons
@@ -840,12 +954,12 @@ msgstr "إنشاء قالب جديد"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Create tickets by sending an email to an alias"
-msgstr ""
+msgstr "قم بإنشاء تذاكر عن طريق إرسال بريد إلكتروني إلى لقب "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_analysis_action
 msgid "Create tickets to get statistics on the performance of your teams."
-msgstr ""
+msgstr "قم بإنشاء تذاكر للحصول على إحصائيات حول أداء فرقك. "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -857,7 +971,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team_performance
 #: model_terms:ir.actions.act_window,help:helpdesk.rating_rating_action_helpdesk
 msgid "Create tickets to get statistics."
-msgstr ""
+msgstr "قم بإنشاء التذاكر للحصول على الإحصائيات. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__create_date
@@ -931,7 +1045,7 @@ msgstr "خدمة العملاء"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_email
 #, python-format
 msgid "Customer Email"
-msgstr "بريد العميل"
+msgstr "بريد العميل الإلكتروني "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_name
@@ -941,7 +1055,7 @@ msgstr "اسم العميل"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_phone
 msgid "Customer Phone"
-msgstr ""
+msgstr "رقم هاتف العميل "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__access_url
@@ -972,12 +1086,14 @@ msgstr "الهدف اليومي"
 #: code:addons/helpdesk/static/src/js/helpdesk_dashboard.js:0
 #, python-format
 msgid "Dashboard"
-msgstr "لوحة المعلومات"
+msgstr "لوحة البيانات "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_status__reached_datetime
 msgid "Datetime at which the SLA stage was reached for the first time"
 msgstr ""
+"التاريخ والوقت الذان تم الوصول إلى مرحلة اتفاقية مستوى الخدمة فيهما للمرة "
+"الأولى "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_report_analysis__sla_exceeded_days
@@ -985,11 +1101,13 @@ msgid ""
 "Day to reach the stage of the SLA, without taking the working calendar into "
 "account"
 msgstr ""
+"اليوم للوصول إلى مرحلة اتفاقية مستوى الخدمة، دون أخذ تقويم العمل بعين "
+"الاعتبار "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_exceeded_days
 msgid "Days to Reach SLA"
-msgstr ""
+msgstr "الأيام للوصول إلى اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__deadline
@@ -1031,7 +1149,7 @@ msgstr "وصف التذكرة..."
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_digest_digest
 msgid "Digest"
-msgstr "الملخص"
+msgstr "الموجز "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -1049,13 +1167,13 @@ msgstr "تجاهل"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__display_name
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_type__display_name
 msgid "Display Name"
-msgstr "الاسم المعروض"
+msgstr "اسم العرض "
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/digest.py:0
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
-msgstr "لا تملك صلاحيات الوصول. تخطِ هذه البيانات لبريد الملخص للمستخدم."
+msgstr "لا تملك صلاحيات الوصول. تخطّ هذه البيانات للبريد الموجز للمستخدم. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -1065,12 +1183,12 @@ msgstr "التوثيق"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__domain_user_ids
 msgid "Domain User"
-msgstr ""
+msgstr "مستخدم النطاق "
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_done
 msgid "Done"
-msgstr "المنتهية"
+msgstr "منتهي "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1105,23 +1223,25 @@ msgstr "البريد الإلكتروني cc"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__email
 msgid "Email on Customer"
-msgstr "بريد العميل"
+msgstr "بريد العميل الإلكتروني "
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "Emails sent to"
-msgstr ""
+msgstr "رسائل البريد الإلكترونية مرسلة إلى "
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid ""
 "Emails sent to a Helpdesk Team alias generate tickets in your pipeline."
 msgstr ""
+"تُنشئ رسائل البريد الإلكتروني المرسلة إلى لقب فريق مكتب المساعدة تذاكراً في "
+"مخطط سير عملك. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_slides
 msgid "Enable eLearning"
-msgstr "تفعيل eLearning"
+msgstr "تفعيل التعلم الإلكتروني "
 
 #. module: helpdesk
 #. openerp-web
@@ -1131,16 +1251,18 @@ msgid ""
 "Enter the <b>subject</b> of your ticket <br/><i>(e.g. Problem with my "
 "installation, Wrong order, etc.).</i>"
 msgstr ""
+"أدخل <b>عنوان</b> تذكرتك <br/><i>(مثال: مشكلة في التثبيت، الطلب الخطأ، وما "
+"إلى ذلك).</i> "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__exceeded_days
 msgid "Excedeed Working Days"
-msgstr ""
+msgstr "تجاوزت أيام العمل "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__exclude_stage_ids
 msgid "Excluding Stages"
-msgstr ""
+msgstr "استثناء المراحل "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__failed
@@ -1152,12 +1274,12 @@ msgstr "فشل"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_fail
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__sla_fail
 msgid "Failed SLA Policy"
-msgstr "حدث فشل باتفاق مستوى الخدمة"
+msgstr "فشلت اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.filters,name:helpdesk.helpdesk_sla_report_analysis_filter_stage_failed
 msgid "Failed SLA Stage per Month"
-msgstr ""
+msgstr "مراحل اتفاقيات مستوى الخدمة غير الناجحة لكل شهر "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_fsm
@@ -1167,13 +1289,13 @@ msgstr "الخدمة الميدانية"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "First Assignment Date"
-msgstr ""
+msgstr "تاريخ أول تعيين "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__assign_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__assign_date
 msgid "First assignment date"
-msgstr ""
+msgstr "تاريخ أول تعيين "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__fold
@@ -1198,24 +1320,24 @@ msgstr "متابع"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "Followed Teams"
-msgstr ""
+msgstr "الفِرَق المتبعة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_follower_ids
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_follower_ids
 msgid "Followers"
-msgstr "المتابعون"
+msgstr "المتابعين "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_partner_ids
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "المتابعون (الشركاء)"
+msgstr "المتابعين (الشركاء) "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Font awesome icon e.g. fa-tasks"
+msgstr "أيقونة Font awesome مثال: fa-tasks "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -1230,12 +1352,12 @@ msgstr "تواصل مع زوار موقعك"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Get tickets through an online form"
-msgstr ""
+msgstr "احصل على التذاكر عن طريق استمارة عبر الإنترنت "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Grant discounts or free products"
-msgstr ""
+msgstr "امنح خصومات ومنتجات مجانية "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__done
@@ -1268,7 +1390,7 @@ msgstr "بطاقة عنوان كانبان رمادية"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis_closed
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Group By"
-msgstr "تجميع حسب"
+msgstr "التجميع حسب "
 
 #. module: helpdesk
 #: model:mail.activity.type,name:helpdesk.mail_act_helpdesk_handle
@@ -1285,7 +1407,7 @@ msgstr "سعيد"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Happy Rating"
-msgstr ""
+msgstr "تقييم سعيد "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1295,18 +1417,18 @@ msgstr "وجه سعيد"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_external_mail_server
 msgid "Has External Mail Server"
-msgstr ""
+msgstr "يحتوي على خادم بريد إلكتروني خارجي "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_message
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "يحتوي على رسالة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_reached_late
 msgid "Has SLA reached late"
-msgstr ""
+msgstr "يحتوي على رسالة الوصول إلى مرحلة اتفاقية مستوى الخدمة متأخراً "
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.menu_helpdesk_root
@@ -1322,7 +1444,7 @@ msgstr "نظرة عامة على مكتب المساعدة"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla
 msgid "Helpdesk SLA Policies"
-msgstr "سياسات اتفاق مستوى الخدمة لمكتب المساعدة"
+msgstr "سياسات اتفاقية مستوى الخدمة لمكتب المساعدة "
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_stage
@@ -1332,7 +1454,7 @@ msgstr "مرحلة مكتب المساعدة"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag
 msgid "Helpdesk Tags"
-msgstr "وسوم مكتب المساعدة"
+msgstr "علامات تصنيف مكتب المساعدة "
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_team
@@ -1369,7 +1491,7 @@ msgstr "نوع تذكرة مكتب المساعدة"
 #: model:ir.cron,cron_name:helpdesk.ir_cron_auto_close_ticket
 #: model:ir.cron,name:helpdesk.ir_cron_auto_close_ticket
 msgid "Helpdesk Ticket: Automatically close the tickets"
-msgstr ""
+msgstr "تذكرة مكتب المساعدة: إغلاق التذاكر تلقائياً "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
@@ -1383,7 +1505,7 @@ msgstr "تذاكر مكتب المساعدة"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "High Priority"
-msgstr ""
+msgstr "أولوية عالية "
 
 #. module: helpdesk
 #. openerp-web
@@ -1403,17 +1525,17 @@ msgstr "أولوية عالية"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_open_hours
 msgid "Hours Open"
-msgstr ""
+msgstr "الساعات المفتوحة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_assignation_hours
 msgid "Hours to Assign"
-msgstr ""
+msgstr "الساعات لتعيينها "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_close_hours
 msgid "Hours to Close"
-msgstr ""
+msgstr "الساعات للإغلاق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__id
@@ -1439,12 +1561,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_exception_icon
 msgid "Icon"
-msgstr "الأيقونة"
+msgstr "أيقونة "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "الأيقونة للإشارة إلى استثناء النشاط"
+msgstr "أيقونة للإشارة إلى استثناء النشاط "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_needaction
@@ -1468,6 +1590,8 @@ msgid ""
 "If checked, this means the ticket was closed through the customer portal by "
 "the customer."
 msgstr ""
+"إذا كان محدداً هذا يعني أن التذكرة قد تم إغلاقها عن طريق بوابة العميل من "
+"قِبَل العميل. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_bounced_content
@@ -1475,6 +1599,8 @@ msgid ""
 "If set, this content will automatically be sent out to unauthorized users "
 "instead of the default message."
 msgstr ""
+"إذا كان معيناً، سوف يتم إرسال المحتوى تلقائياً إلى مستخدمين غير مصرح لهم "
+"عوضاً عن الرسالة الافتراضية. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__time
@@ -1495,8 +1621,8 @@ msgid ""
 "You can search ticket by typing /helpdesk_search [Keyword1],[Keyword2],."
 msgstr ""
 "في القناة: يمكنك إنشاء تذكرة جديدة بكتابة /helpdesk [عنوان التذكرة]. كما "
-"يمكنك البحث عن تذكرة عبر كتابة /helpdesk_search [الكلمة الدلالية1]،[الكلمة "
-"الدلالية2]."
+"يمكنك البحث عن تذكرة عن طريق كتابة /helpdesk_search [الكلمة "
+"المفتاحية1]،[الكلمة المفتاحية2]. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -1532,12 +1658,12 @@ msgstr "قيد التنفيذ"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__from_stage_ids
 msgid "In Stages"
-msgstr ""
+msgstr "في المراحل "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Inactive Period(days)"
-msgstr ""
+msgstr "الفترة غير النشطة (الأيام) "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__from_stage_ids
@@ -1545,11 +1671,13 @@ msgid ""
 "Inactive tickets in these stages will be automatically closed. Leave empty "
 "to take into account all the stages from the team."
 msgstr ""
+"سوف يتم إقفال التذاكر غير النشطة في هذه المراحل تلقائياً. اتركه فارغاً للأخذ"
+" بعين الاعتبار كافة المراحل من الفريق. "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__privacy__invite
 msgid "Invited Users"
-msgstr ""
+msgstr "المستخدمين المدعوين "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_is_follower
@@ -1565,12 +1693,12 @@ msgstr "المشكلة"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Issue credits notes"
-msgstr ""
+msgstr "إصدار الإشعارات الدائنة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_blocked
 msgid "Kanban Blocked Explanation"
-msgstr "تفسير حالة متوقف في واجهة كانبان"
+msgstr "تفسير حالة محجوب في واجهة كانبان "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_normal
@@ -1591,7 +1719,7 @@ msgstr "تفسير حالة صالح في واجهة كانبان"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed_value
 msgid "Kpi Helpdesk Tickets Closed Value"
-msgstr "قيمة مؤشر أداء تذاكر الدعم المقفلة"
+msgstr "قيمة المؤشرات الرئيسية للأداء لتذاكر الدعم المغلقة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
@@ -1654,13 +1782,13 @@ msgstr "آخر تحديث في"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Last message is from customer"
-msgstr ""
+msgstr "آخر رسالة هي من العميل "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Last message is from support"
-msgstr ""
+msgstr "آخر رسالة هي من الدعم "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -1675,12 +1803,12 @@ msgstr "أحدث الملاحظات"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Latest Rating: Dissatisfied"
-msgstr ""
+msgstr "آخر تقييم: غير راضٍ "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Latest Rating: Okay"
-msgstr ""
+msgstr "آخر تقييم: جيد "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1690,14 +1818,14 @@ msgstr "التقييم الأخير: راضٍ"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Let your customers answer each other's questions on a forum"
-msgstr ""
+msgstr "أتح للعملاء إجابة أسئلة بعضهم البعض في المنتدى "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's create your first <b>ticket</b>."
-msgstr ""
+msgstr "فلنقم بإنشاء <b>تذكرتك</b> الأولى. "
 
 #. module: helpdesk
 #. openerp-web
@@ -1707,13 +1835,14 @@ msgid ""
 "Let's go back to the <b>kanban view</b> to have an overview of your next "
 "tickets."
 msgstr ""
+"فلنعد إلى <b>طريقة عرض كانبان</b> للحصول على نظرة عامة لتذاكرك التالية. "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's view your <b>team's tickets</b>."
-msgstr ""
+msgstr "فلنقم بعرض <b>تذاكر فريقك</b>. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__email_cc
@@ -1723,7 +1852,7 @@ msgstr "قائمة cc من رسائل البريد الإلكتروني الوا
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
 msgid "Live Chat"
-msgstr "الدردشة الحية"
+msgstr "الدردشة المباشرة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1731,7 +1860,7 @@ msgstr "الدردشة الحية"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Low Priority"
-msgstr ""
+msgstr "أولوية منخفضة "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__1
@@ -1752,16 +1881,20 @@ msgstr "المرفق الرئيسي"
 msgid ""
 "Make sure tickets are handled in a timely manner by using SLA Policies.<br>"
 msgstr ""
+"تأكد من أن التذاكر يتم التعامل معها في الوقت المناسب عن طريق استخدام سياسات "
+"اتفاقية مستوى الخدمة.<br> "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Make sure tickets are handled on time"
-msgstr ""
+msgstr "تأكد من أن التذاكر يتم التعامل معها في الوقت المناسب "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "Make sure tickets are handled on time by using SLA Policies.<br>"
 msgstr ""
+"تأكد من أن التذاكر يتم التعامل معها في الوقت المناسب عن طريق استخدام سياسات "
+"اتفاقية مستوى الخدمة.<br> "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__manual
@@ -1779,7 +1912,7 @@ msgstr "وسط"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Medium Priority"
-msgstr ""
+msgstr "أولوية متوسطة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error
@@ -1790,7 +1923,7 @@ msgstr "خطأ في تسليم الرسائل"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Message and communication history"
-msgstr "رسالة وتاريخ الاتصالات"
+msgstr "سِجل المراسلات والاتصالات "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_ids
@@ -1814,59 +1947,59 @@ msgstr "أدنى مرحلة يجب أن تصل لها التذكرة لتحقي�
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_ir_module_module
 msgid "Module"
-msgstr "الموديول"
+msgstr "التطبيق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__to_stage_id
 msgid "Move to Stage"
-msgstr ""
+msgstr "النقل للمرحلة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "نهاية الوقت المعين للنشاط"
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Failed Tickets"
-msgstr ""
+msgstr "تذاكري غير الناجحة "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Failed Tickets"
-msgstr ""
+msgstr "تذاكري غير الناجحة ذات الأولوية العالية "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Tickets"
-msgstr ""
+msgstr "تذاكري ذات الأولوية العالية "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My High Priority Tickets Analysis"
-msgstr ""
+msgstr "تحليل تذاكري ذات الأولوية العالية "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Open Tickets"
-msgstr ""
+msgstr "تذاكري المفتوحة "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Open Tickets Analysis"
-msgstr ""
+msgstr "تحليل تذاكري المفتوحة "
 
 #. module: helpdesk
 #. openerp-web
@@ -1879,12 +2012,12 @@ msgstr "أدائي"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "My Teams"
-msgstr ""
+msgstr "فِرقي "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "My Ticket"
-msgstr ""
+msgstr "تذكرتي "
 
 #. module: helpdesk
 #. openerp-web
@@ -1903,21 +2036,21 @@ msgstr "تذاكري"
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Failed Tickets"
-msgstr ""
+msgstr "تذاكري العاجلة غير الناجحة "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Tickets"
-msgstr ""
+msgstr "تذاكري العاجلة "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "My Urgent Tickets Analysis"
-msgstr ""
+msgstr "تحليل تذاكري العاجلة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__name
@@ -1952,7 +2085,7 @@ msgstr "الأحدث"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "الفعالية التالية في تقويم الأنشطة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_date_deadline
@@ -1973,7 +2106,7 @@ msgstr "نوع النشاط التالي"
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "No SLA policies found. Let's create one!"
-msgstr ""
+msgstr "لم يتم العثور على أي سياسات لاتفاقية مستوى الخدمة. فلنقم بإنشائها! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -1983,13 +2116,13 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team_performance
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_analysis_action
 msgid "No data yet !"
-msgstr ""
+msgstr "لا توجد بيانات بعد! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_7dayssuccess
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_dashboard
 msgid "No data yet!"
-msgstr ""
+msgstr "لا توجد أي بيانات بعد! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.rating_rating_action_helpdesk
@@ -1999,23 +2132,23 @@ msgstr "لا يوجد تقييم بعد"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
 msgid "No stages found. Let's create one!"
-msgstr ""
+msgstr "لم يتم العثور على أي مراحل. فلنقم بإنشائها! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "No tags found. Let's create one!"
-msgstr "لا توجد وسوم لننشئ واحده!"
+msgstr "لم يتم العثور على أي علامات تصنيف. فلنقم بإنشائها! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_action
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_dashboard_action_main
 msgid "No teams found"
-msgstr ""
+msgstr "لم يتم العثور على أي فِرق "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
 msgid "No tickets found"
-msgstr ""
+msgstr "لم يتم العثور على أي تذاكر "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -2023,12 +2156,12 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_unassigned
 msgid "No tickets found. Let's create one!"
-msgstr ""
+msgstr "لم يتم العثور على أي تذاكر. فلنقم بإنشائها! "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "No types found. Let's create one!"
-msgstr ""
+msgstr "لم يتم العثور على أي أنواع. فلنقم بإنشائها! "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2046,13 +2179,13 @@ msgstr "عدد الإجراءات"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error_counter
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_has_error_counter
 msgid "Number of errors"
-msgstr "عدد الاخطاء"
+msgstr "عدد الأخطاء "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_needaction_counter
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr "عدد الرسائل التي تتطلب إجراء"
+msgstr "عدد الرسائل التي تتطلب اتخاذ إجراء "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_has_error_counter
@@ -2063,13 +2196,13 @@ msgstr "عدد الرسائل الحادث بها خطأ في التسليم"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_count
 msgid "Number of other tickets from the same partner"
-msgstr ""
+msgstr "عدد التذاكر الأخرى من نفس الشريك "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_unread_counter
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__message_unread_counter
 msgid "Number of unread messages"
-msgstr "عدد الرسائل الجديدة"
+msgstr "عدد الرسائل غير المقروءة "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__ongoing
@@ -2083,8 +2216,8 @@ msgid ""
 "Only apply the SLA to a specific ticket type. If left empty it will apply to"
 " all types."
 msgstr ""
-"تطبيق اتفاق مستوى الخدمة على نوع تذاكر معين فقط. إذا تُركت هذه الخانة فارغة "
-"سيتم تطبيقه على كافة الأنواع."
+"تطبيق اتفاقية مستوى الخدمة على نوع تذاكر معين فقط. إذا تُركت هذه الخانة "
+"فارغة سيتم تطبيقه على كافة الأنواع. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__tag_ids
@@ -2092,6 +2225,8 @@ msgid ""
 "Only apply the SLA to tickets with specific tags. If left empty it will "
 "apply to all tags."
 msgstr ""
+"تطبيق اتفاقية مستوى الخدمة على التذاكر ذات علامات التصنيف المحددة فقط. إذا "
+"تركته فارغاً، سوف يتم تطبيقها على كافة علامات التصنيف. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2126,12 +2261,12 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
 msgid "Our Customer Satisfaction"
-msgstr ""
+msgstr "رضا عملائنا "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 msgid "Our Ratings"
-msgstr ""
+msgstr "تقييماتنا "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__legend_blocked
@@ -2140,7 +2275,7 @@ msgid ""
 "Override the default value displayed for the blocked state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
-"تجاوز القيمة الافتراضية المعروضة لحالة \"محظورة\" باختيارات كانبان، عندما "
+"تجاوز القيمة الافتراضية المعروضة لحالة \"محجوبة\" باختيارات كانبان، عندما "
 "تكون المهمة أو المشكلة في تلك المرحلة."
 
 #. module: helpdesk
@@ -2176,12 +2311,12 @@ msgstr "المالك"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_parent_model_id
 msgid "Parent Model"
-msgstr "الكائن الأصل"
+msgstr "النموذج الرئيسي "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_parent_thread_id
 msgid "Parent Record Thread ID"
-msgstr "معرف مناقشة السجل الأصلي"
+msgstr "معرف مناقشة السجل الرئيسي "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_parent_model_id
@@ -2190,19 +2325,19 @@ msgid ""
 " necessarily the model given by alias_model_id (example: project "
 "(parent_model) and task (model))"
 msgstr ""
-"الكائن الأب الذي يحتفظ بلقب البريد الإلكتروني. الكائن الذي يحتفظ بالإشارة "
-"إلى لقب البريد الإلكتروني لا يشترط بالضرورة أن يكون هو الكائن المحدد في "
-"الحقل alias_model_id (مثال: المشروع (الكائن الأب) والمهمة (الكائن))"
+"النموذج الرئيسي الذي يحتفظ بلقب البريد الإلكتروني. ليس بالضرورة أن يكون "
+"النموذج الذي يحتفظ بمرجع لقب البريد الإلكتروني هو النموذج المحدد في الحقل "
+"alias_model_id (مثال: المشروع (parent_model) والمهمة (model))"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_ids
 msgid "Partner Tickets"
-msgstr ""
+msgstr "تذاكر الشركاء "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
 msgid "Percentage of happy ratings"
-msgstr ""
+msgstr "نسبة التقييمات السعيدة "
 
 #. module: helpdesk
 #. openerp-web
@@ -2211,6 +2346,7 @@ msgstr ""
 #, python-format
 msgid "Percentage of tickets that were closed without failing any SLAs."
 msgstr ""
+"نسبة التذاكر التي تم إغلاقها دون خرق أي بند من بنود اتفاقية مستوى الخدمة. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2227,7 +2363,7 @@ msgstr "تحليل الأداء"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Period of inactivity after which tickets will be automatically closed."
-msgstr ""
+msgstr "فترة الخمول التي سوف يتم إغلاق التذاكر تلقائياً بعدها. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -2237,14 +2373,14 @@ msgstr "رقم الهاتف"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Plan onsite interventions"
-msgstr ""
+msgstr "قم بالتخطيط لمداخلات في الموقع "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/js/helpdesk_dashboard.js:0
 #, python-format
 msgid "Please enter an integer value"
-msgstr ""
+msgstr "الرجاء إدخال قيمة صحيحة "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_contact
@@ -2276,7 +2412,7 @@ msgstr "الأولوية"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__portal_show_rating
 msgid "Public Rating"
-msgstr ""
+msgstr "التقييم العام "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2298,7 +2434,7 @@ msgstr "عشوائي"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Rated Tickets"
-msgstr ""
+msgstr "التذاكر المقيّمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_ids
@@ -2308,7 +2444,7 @@ msgstr "التقييم"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__rating_last_value
 msgid "Rating (/5)"
-msgstr ""
+msgstr "التقييم (/5) "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_avg
@@ -2343,7 +2479,7 @@ msgstr "عدد التقييمات"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_ids
 msgid "Ratings"
-msgstr "تقييمات"
+msgstr "التقييمات "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -2356,12 +2492,12 @@ msgstr "الوصول للمرحلة"
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__reached
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_status__status__reached
 msgid "Reached"
-msgstr "وصل"
+msgstr "تم الوصول "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__reached_datetime
 msgid "Reached Date"
-msgstr ""
+msgstr "تاريخ الوصول "
 
 #. module: helpdesk
 #: code:addons/helpdesk/models/helpdesk.py:0
@@ -2417,13 +2553,13 @@ msgstr "بطاقة عنوان كانبان حمراء"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "Ref"
-msgstr "رقم الإشارة"
+msgstr "المرجع "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Reference"
-msgstr "رقم الإشارة"
+msgstr "المرجع "
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_refund_posted
@@ -2431,22 +2567,22 @@ msgstr "رقم الإشارة"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_refund_posted
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_refund_posted
 msgid "Refund Posted"
-msgstr ""
+msgstr "تم ترحيل استرداد الأموال "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_credit_notes
 msgid "Refunds"
-msgstr "المرتجعات"
+msgstr "عمليات استرداد الأموال "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Reinvoice the time spent on ticket through tasks."
-msgstr ""
+msgstr "قم بإعادة فوترة الوقت المقضي في التذكرة من خلال المهام. "
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_repair
 msgid "Repair"
-msgstr "الاصلاح"
+msgstr "إصلاح "
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_repair_done
@@ -2454,17 +2590,17 @@ msgstr "الاصلاح"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_repair_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_repair_done
 msgid "Repair Done"
-msgstr ""
+msgstr "تم الإصلاح "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_repairs
 msgid "Repairs"
-msgstr "تعديلات"
+msgstr "الإصلاحات "
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu_main
 msgid "Reporting"
-msgstr "التقارير"
+msgstr "إعداد التقارير "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_user_id
@@ -2482,23 +2618,23 @@ msgstr "استعادة"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_return_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_return_done
 msgid "Return Done"
-msgstr ""
+msgstr "تم الإرجاع "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Return faulty products"
-msgstr ""
+msgstr "إرجاع المنتجات المعيبة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_returns
 msgid "Returns"
-msgstr ""
+msgstr "العائدات "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_id
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA"
-msgstr ""
+msgstr "اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_deadline
@@ -2506,7 +2642,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "SLA Deadline"
-msgstr ""
+msgstr "التاريخ النهائي لاتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #. openerp-web
@@ -2518,12 +2654,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 #, python-format
 msgid "SLA Failed"
-msgstr "حدث فشل باتفاق مستوى الخدمة"
+msgstr "فشل في اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "SLA Issues"
-msgstr ""
+msgstr "مشاكل اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_sla_action
@@ -2536,33 +2672,33 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_tree
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "SLA Policies"
-msgstr "سياسات اتفاق مستوى الخدمة"
+msgstr "سياسات اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "SLA Policy"
-msgstr "سياسة اتفاق مستوى الخدمة"
+msgstr "سياسة اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__description
 msgid "SLA Policy Description"
-msgstr "وصف سياسة اتفاق مستوى الخدمة"
+msgstr "وصف سياسة اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_reached_datetime
 msgid "SLA Reached Date"
-msgstr ""
+msgstr "تاريخ الوصول إلى اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_stage_id
 msgid "SLA Stage"
-msgstr ""
+msgstr "مرحلة اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_status_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA Status"
-msgstr ""
+msgstr "حالة اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_sla_report_analysis_action
@@ -2572,12 +2708,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_pivot
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA Status Analysis"
-msgstr ""
+msgstr "تحليل حالة اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_failed
 msgid "SLA Status Failed"
-msgstr ""
+msgstr "حالة الفشل لاتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -2585,7 +2721,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "SLA Success"
-msgstr ""
+msgstr "نجاح اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -2593,13 +2729,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "SLA in Progress"
-msgstr ""
+msgstr "اتفاقية مستوى الخدمة قيد العمل "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_tree
 msgid "SLAs"
-msgstr ""
+msgstr "اتفاقيات مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_sms_error
@@ -2616,7 +2752,7 @@ msgstr "وجه حزين"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Salesperson"
-msgstr "مسئول المبيعات"
+msgstr "مندوب المبيعات "
 
 #. module: helpdesk
 #. openerp-web
@@ -2651,7 +2787,7 @@ msgstr "البحث <span class=\"nolabel\"> (في المحتوى)</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 msgid "Search SLA Policies"
-msgstr "البحث في سياسات اتفاق مستوى الخدمة"
+msgstr "البحث في سياسات اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -2675,13 +2811,13 @@ msgstr "البحث في الرسائل"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Reference"
-msgstr ""
+msgstr "البحث في المراجع "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Stage"
-msgstr ""
+msgstr "البحث في المراحل "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_token
@@ -2698,7 +2834,7 @@ msgstr "رؤية نسبة رضا العميل"
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Select the <b>customer</b> of your ticket."
-msgstr ""
+msgstr "اختر <b>عميل</b> تذكرتك. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2708,14 +2844,14 @@ msgstr "خدمة ذاتية"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Send broken products for repair"
-msgstr ""
+msgstr "أرسل المنتجات المعطوبة ليتم إصلاحها "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__sequence
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sequence
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_type__sequence
 msgid "Sequence"
-msgstr "المسلسل"
+msgstr "التسلسل "
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_service
@@ -2725,7 +2861,7 @@ msgstr "الخدمة"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Set an Email Template on Stages"
-msgstr ""
+msgstr "تعيين بريد إلكتروني للمراحل "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -2740,12 +2876,12 @@ msgstr "مشاركة"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Share presentation and videos, and organize into courses"
-msgstr "مشاركة العروض والفيديوهات، وتنظيمهم في دورات"
+msgstr "مشاركة العروض التقديمية ومقاطع الفيديو، وتنظيمها في دورات "
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_use_sla
 msgid "Show SLA Policies"
-msgstr "عرض سياسات اتفاق مستوى الخدمة"
+msgstr "عرض سياسات اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -2755,7 +2891,7 @@ msgstr "عرض كافة السجلات المُعين لها تاريخ إجرا
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__sla_id
 msgid "Sla"
-msgstr ""
+msgstr "اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_solved
@@ -2798,7 +2934,7 @@ msgstr "تم تغيير المرحلة"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Stage Description and States Meaning"
-msgstr ""
+msgstr "وصف المرحلة ومعاني المراحل "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -2811,6 +2947,8 @@ msgid ""
 "Stage to which inactive tickets will be automatically moved once the period "
 "of inactivity is reached."
 msgstr ""
+"المرحلة التي يتم إرسال التذاكر غير النشطة إليها تلقائياً بمجرد مرور فترة من "
+"الخمول. "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_stage_action
@@ -2839,7 +2977,7 @@ msgstr "الحالة"
 #. module: helpdesk
 #: model:ir.filters,name:helpdesk.helpdesk_sla_report_analysis_filter_status_per_deadline
 msgid "Status Per Deadline"
-msgstr ""
+msgstr "الحالة لكل وقت نهائي "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_state
@@ -2882,18 +3020,18 @@ msgstr "تحليل نسبة النجاح"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_success
 msgid "Success SLA Policy"
-msgstr ""
+msgstr "سياسة نجاح اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tag_view_tree
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_type_view_tree
 msgid "Tag"
-msgstr "الوسم"
+msgstr "علامات التصنيف "
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_tag_name_uniq
 msgid "Tag name already exists !"
-msgstr "اسم الوسم موجود بالفعل!"
+msgstr "اسم علامة التصنيف موجود بالفعل! "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_tag_action
@@ -2902,12 +3040,12 @@ msgstr "اسم الوسم موجود بالفعل!"
 #: model:ir.ui.menu,name:helpdesk.helpdesk_tag_menu
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tag_view_form
 msgid "Tags"
-msgstr "الوسوم"
+msgstr "علامات التصنيف "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "Tags are perfect for organizing your tickets."
-msgstr ""
+msgstr "علامات التصنيف مثالية لتنظيم تذاكرك. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -2933,12 +3071,12 @@ msgstr "معدل تحقيق الهدف"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_closed
 msgid "Target Tickets to Close"
-msgstr "التذاكر المطلوب إقفالها"
+msgstr "التذاكر المطلوب إغلاقها "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Task in progress. Click to block or set as done."
-msgstr "المهمة قيد التنفيذ. اضغط لحظرها أو تعيينها كمكتملة."
+msgstr "المهمة قيد التنفيذ. اضغط لحظرها أو تعيينها كمنتهية. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -2955,7 +3093,7 @@ msgstr "المهمة محظورة. اضغط لإلغاء حظرها أو تعي�
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis_closed
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Team"
-msgstr "فريق"
+msgstr "الفريق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__member_ids
@@ -2968,17 +3106,19 @@ msgid ""
 "Team Members to whom this team will be visible. Keep empty for everyone to "
 "see this team."
 msgstr ""
+"أعضاء الفريق الذين سيكون هذا الفريق مرئياً بالنسبة إليهم. اتركه فارغاً "
+"ليتمكن الجميع من رؤية هذا الفريق. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "Team Search"
-msgstr "فريق البحث"
+msgstr "بحث الفريق "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__visibility_member_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Team Visibility"
-msgstr ""
+msgstr "إمكانية رؤية الفريق "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_action
@@ -2987,11 +3127,13 @@ msgid ""
 "Teams regroup tickets for people sharing the same expertise or from the same"
 " area."
 msgstr ""
+"يعيد الفريق تجميع التذاكر للأشخاص الذين يمكلون ذات الخبرة أو من نفس المنطقة."
+" "
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.email_template_action_helpdesk
 msgid "Templates"
-msgstr "قوالب"
+msgstr "القوالب "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__exclude_stage_ids
@@ -2999,11 +3141,13 @@ msgid ""
 "The amount of time the ticket spends in this stage will not be taken into "
 "account when evaluating the status of the SLA Policy."
 msgstr ""
+"لن يتم اعتبار الوقت الذي تستغرقه التذكرة في هذه المرحلة، عند تقييم حالة "
+"سياسة اتفاقية الخدمة. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__sla_deadline
 msgid "The closest deadline of all SLA applied on this ticket"
-msgstr ""
+msgstr "أقرب موعد نهائي لكافة اتفاقيات مستوى الخدمة المطبقة على هذه التذكرة "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_model_id
@@ -3012,8 +3156,8 @@ msgid ""
 " email that does not reply to an existing record will cause the creation of "
 "a new record of this model (e.g. a Project Task)"
 msgstr ""
-"الكائن (مستندات أودو) الذي يقترن معه هذا اللقب. أي رسالة واردة لا ترد على "
-"سجل موجود ستقوم بإنشاء سجل جديد من نفس نوع هذا الكائن (مثلًا: مهمة مشروع)"
+"النموذج (مستندات أودو) الذي يقترن به هذا اللقب. أي رسالة واردة لا ترد على "
+"سجل موجود ستقوم بإنشاء سجل جديد من نفس نوع هذا النموذج (مثلًا: مهمة مشروع) "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_name
@@ -3041,17 +3185,17 @@ msgstr ""
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "The team does not allow ticket closing through portal"
-msgstr ""
+msgstr "لا يسمح الفريق بإغلاق التذاكر عبر البوابة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "There are currently no Ticket for your account."
-msgstr "لا توجد حاليًا تذاكر لحسابك."
+msgstr "لا توجد حاليًا أي تذاكر في حسابك. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
 msgid "There are no ratings yet."
-msgstr ""
+msgstr "لا توجد أي تقييمات بعد. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
@@ -3064,17 +3208,19 @@ msgid ""
 "This SLA Policy will apply to any tickets from the selected customers. Leave"
 " empty to apply this SLA Policy to any ticket without distinction."
 msgstr ""
+"سوف تطبق سياسة اتفاقية مستوى الخدمة على أي تذكرة للعملاء المحددين. اتركه "
+"فارغاً لتطبيق سياسة اتفاقية مستوى الخدمة هذه على أي تذكرة دون تمييز. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__assign_hours
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__close_hours
 msgid "This duration is based on the working calendar of the team"
-msgstr ""
+msgstr "هذه المدة مبنية على تقويم العمل الخاص بالفريق "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__open_hours
 msgid "This duration is not based on the working calendar of the team"
-msgstr ""
+msgstr "لا تعتمد المدة على تقويم العمل الخاص بالفريق "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__campaign_id
@@ -3104,7 +3250,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__use_helpdesk_timesheet
 msgid "This requires to have project module installed."
-msgstr ""
+msgstr "يتطلب ذلك أن يكون تطبيق المشاريع مثبتاً. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__fold
@@ -3118,7 +3264,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "This step is done. Click to block or set in progress."
-msgstr "هذه الخطوة مكتملة. اضغط لحظرها أو تعيينها قيد التنفيذ."
+msgstr "هذه الخطوة مكتملة. اضغط لحجبها أو تعيينها كقيد التنفيذ. "
 
 #. module: helpdesk
 #. openerp-web
@@ -3152,18 +3298,18 @@ msgstr "تحليل التذكرة"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
 msgid "Ticket Closed"
-msgstr ""
+msgstr "تم إغلاق التذكرة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__ticket_count
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "عدد التذاكر "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__create_date
 msgid "Ticket Create Date"
-msgstr ""
+msgstr "تاريخ إنشاء التذكرة "
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_new
@@ -3176,12 +3322,12 @@ msgstr "تم إنشاء التذكرة"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_deadline
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "Ticket Deadline"
-msgstr ""
+msgstr "الوقت النهائي للتذكرة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_failed
 msgid "Ticket Failed"
-msgstr ""
+msgstr "فشلت التذكرة "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -3197,13 +3343,13 @@ msgstr "تم تقييم التذكرة"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla_status
 msgid "Ticket SLA Status"
-msgstr ""
+msgstr "حالة اتفاقية مستوى الخدمة للتذكرة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_stage_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_stage_id
 msgid "Ticket Stage"
-msgstr ""
+msgstr "مرحلة التذكرة "
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_stage
@@ -3221,7 +3367,7 @@ msgstr "نوع التذكرة"
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Ticket closed by the customer"
-msgstr ""
+msgstr "تم إغلاق التذكرة من قِبَل العميل "
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_ticket_new
@@ -3231,17 +3377,17 @@ msgstr "تم إنشاء التذكرة"
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.rating_ticket_request_email_template
 msgid "Ticket: Rating Request (requires rating enabled on team)"
-msgstr ""
+msgstr "التذكرة: طلب تقييم (يتطلب أن يكون التقييم مفعلاً في الفريق) "
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.new_ticket_request_email_template
 msgid "Ticket: Reception Acknowledgment"
-msgstr ""
+msgstr "تذكرة: الاعتراف بالاستلام "
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.solved_ticket_request_email_template
 msgid "Ticket: Solved"
-msgstr ""
+msgstr "تذكرة: تم حلها "
 
 #. module: helpdesk
 #. openerp-web
@@ -3269,7 +3415,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 #, python-format
 msgid "Tickets"
-msgstr "تذاكر"
+msgstr "التذاكر "
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu
@@ -3277,26 +3423,26 @@ msgstr "تذاكر"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_cohort
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_analysis
 msgid "Tickets Analysis"
-msgstr ""
+msgstr "تحليل التذاكر "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed
 msgid "Tickets Closed"
-msgstr "تم قفل التذكرة"
+msgstr "التذاكر المغلقة "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Tickets Closed Avg 7 Days"
-msgstr ""
+msgstr "تُغلَق التذاكر بمتوسط 7 أيام "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Tickets Closed Today"
-msgstr ""
+msgstr "التذاكر التي تم إغلاقها اليوم "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
@@ -3312,7 +3458,7 @@ msgid ""
 "computing SLAs and KPIs on tickets."
 msgstr ""
 "تُعتبر التذاكر في هذه المرحلة منتهية. يُستخدم هذا بصورة ملحوظة عند احتساب "
-"سياسات اتفاق مستوى الخدمة وقيم المؤشر الرئيسي للتذاكر."
+"سياسات اتفاقية مستوى الخدمة وقيم المؤشر الرئيسي لأداء التذاكر. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__priority
@@ -3322,34 +3468,34 @@ msgstr "لن توضع التذاكر ذات هذه الأولوية في الح�
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Time Billing"
-msgstr ""
+msgstr "فوترة الوقت "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_close_hours
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__close_hours
 msgid "Time to close (hours)"
-msgstr ""
+msgstr "وقت الإغلاق (ساعات) "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_assignation_hours
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__assign_hours
 msgid "Time to first assignment (hours)"
-msgstr ""
+msgstr "وقت التعيين الأول (ساعات) "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__time
 msgid "Time to reach given stage based on ticket creation date"
-msgstr ""
+msgstr "الوقت المستغرق للوصول إلى مرحلة محددة بناءً على تاريخ إنشاء التذكرة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_timesheet
 msgid "Timesheets"
-msgstr "سجلات الأنشطة"
+msgstr "الجداول الزمنية "
 
 #. module: helpdesk
 #: model:digest.tip,name:helpdesk.digest_tip_helpdesk_0
 msgid "Tip: Create tickets from incoming emails"
-msgstr ""
+msgstr "نصيحة: قم بإنشاء التذاكر من رسائل البريد الإلكتروني الواردة "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -3360,6 +3506,8 @@ msgid ""
 "To get things done, use activities and statuses on tickets. <br>\n"
 "                Chat in real-time or by email to collaborate efficiently."
 msgstr ""
+"لإنهاء عملك، استخدم الأنشطة والحالات في التذاكر. <br>\n"
+"                تمكن من الدردشة في الوقت الفعلي أو عن طريق البريد الإلكتروني للتعاون بكفاءة. "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
@@ -3367,6 +3515,8 @@ msgid ""
 "To get things done, use activities and statuses on tickets.<br>\n"
 "                Chat in real-time or by email to collaborate efficiently."
 msgstr ""
+"لإنهاء عملك، استخدم الأنشطة والحالات في التذاكر.<br>\n"
+"                تمكن من الدردشة في الوقت الفعلي أو عن طريق البريد الإلكتروني للتعاون بكفاءة. "
 
 #. module: helpdesk
 #. openerp-web
@@ -3378,34 +3528,34 @@ msgstr "اليوم"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Today Activities"
-msgstr "نشاطات اليوم"
+msgstr "أنشطة اليوم "
 
 #. module: helpdesk
 #. openerp-web
 #: code:addons/helpdesk/static/src/xml/helpdesk_team_templates.xml:0
 #, python-format
 msgid "Today Happy Rating"
-msgstr ""
+msgstr "تقييم اليوم السعيد "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track &amp; Bill Time"
-msgstr ""
+msgstr "قم بتتبع وفوترة الوقت "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track customer satisfaction on tickets"
-msgstr ""
+msgstr "تتَبَّع مدى رضا العملاء عن التذاكر "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track the time spent on tickets"
-msgstr ""
+msgstr "تتبع الوقت المقضي على التذاكر "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_twitter
 msgid "Twitter"
-msgstr "تويتر"
+msgstr "Twitter"
 
 #. module: helpdesk
 #. openerp-web
@@ -3438,12 +3588,12 @@ msgstr "نوع النشاط الاستثنائي المسجل."
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_type_action
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_type_menu
 msgid "Types"
-msgstr ""
+msgstr "الأنواع "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "Types are perfect for categorizing your tickets."
-msgstr ""
+msgstr "الأنواع ممتازة لفرز تذاكرك في فئات. "
 
 #. module: helpdesk
 #: code:addons/helpdesk/controllers/portal.py:0
@@ -3452,7 +3602,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 #, python-format
 msgid "Unassigned"
-msgstr "غير مكلف"
+msgstr "غير مسند "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__unassigned_tickets
@@ -3467,18 +3617,18 @@ msgstr "التذاكر غير المسندة"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_unread
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Unread Messages"
-msgstr "الرسائل الجديدة"
+msgstr "الرسائل غير المقروءة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_unread_counter
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr "عدد الرسائل الجديدة"
+msgstr "عدد الرسائل غير المقروءة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__upcoming_sla_fail_tickets
 msgid "Upcoming SLA Fail Tickets"
-msgstr "تذاكر الفشل المترقب باتفاق مستوى الخدمة"
+msgstr "التذاكر القادمة التي فشلت في اتفاقية مستوى الخدمة "
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__3
@@ -3504,32 +3654,32 @@ msgstr "عاجل ("
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Use <b>activities</b> to organize your daily work."
-msgstr ""
+msgstr "استخدم <b>الأنشطة</b> لتنظيم عملك اليومي. "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_coupons
 msgid "Use Coupons"
-msgstr ""
+msgstr "استخدام الكوبونات "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_credit_notes
 msgid "Use Credit Notes"
-msgstr ""
+msgstr "استخدام الإشعارات الدائنة "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_rating
 msgid "Use Customer Ratings"
-msgstr ""
+msgstr "استخدام تقييمات العملاء "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_repairs
 msgid "Use Repairs"
-msgstr ""
+msgstr "استخدام الإصلاحات "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_returns
 msgid "Use Returns"
-msgstr ""
+msgstr "استخدام العائدات "
 
 #. module: helpdesk
 #. openerp-web
@@ -3539,6 +3689,8 @@ msgid ""
 "Use the chatter to <b>send emails</b> and communicate efficiently with your customers. \n"
 "    Add new people to the followers' list to make them aware of the progress of this ticket."
 msgstr ""
+"استخدم الدردشة <b>لإرسال رسائل البريد الإلكتروني</b> والتواصل بكفاءة مع عملائك.\n"
+"    أضف المزيد من الأشخاص إلى قائمة المتابعين لإبقائهم على علم بتقدم هذه التذكرة. "
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_user
@@ -3548,22 +3700,22 @@ msgstr "المستخدم"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_res_users
 msgid "Users"
-msgstr "المستخدمون"
+msgstr "المستخدمين "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__privacy
 msgid "Users Assign"
-msgstr ""
+msgstr "تعيين المستخدمين "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Users to whom this team will be visible"
-msgstr ""
+msgstr "المستخدمون الذين سيكون هذا الفريق مرئياً لهم "
 
 #. module: helpdesk
 #: model:helpdesk.team,name:helpdesk.helpdesk_team3
 msgid "VIP Support"
-msgstr ""
+msgstr "الدعم لكبار الشخصيات "
 
 #. module: helpdesk
 #. openerp-web
@@ -3583,19 +3735,19 @@ msgstr "الموقع الإلكتروني"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_form
 msgid "Website Form"
-msgstr "نموذج الموقع"
+msgstr "استمارة الموقع الإلكتروني "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__website_message_ids
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__website_message_ids
 msgid "Website Messages"
-msgstr "رسائل الموقع"
+msgstr "رسائل الموقع الإلكتروني "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__website_message_ids
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__website_message_ids
 msgid "Website communication history"
-msgstr "سجل تواصل الموقع"
+msgstr "سجل تواصل الموقع الإلكتروني "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3618,24 +3770,27 @@ msgid ""
 "Working days exceeded for reached SLAs compared with deadline. Positive "
 "number means the SLA was eached after the deadline."
 msgstr ""
+"لقد تم تجاوز عدد أيام العمل لاتفاقيات مستوى الخدمة التي تم الوصول إليها، "
+"مقارنة بالموعد النهائي. العدد الإيجابي يعني أنه قد تم الوصول إلى اتفاقية "
+"مستوى الخدمة بعد الموعد النهائي. "
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__resource_calendar_id
 msgid "Working hours used to determine the deadline of SLA Policies."
-msgstr ""
+msgstr "كانت ساعات العمل تحدد الموعد النهائي لسياسات اتفاقيات مستوى الخدمة. "
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_closed_not_zero
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_rating_not_zero
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_success_not_zero
 msgid "You cannot have negative targets"
-msgstr ""
+msgstr "لا يمكن أن تكون لديك أهداف سلبية "
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.action_upcoming_sla_fail_all_tickets
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_sla
 msgid "You completed all your tickets on time."
-msgstr ""
+msgstr "لقد أكملت كافة تذاكرك في الوقت المناسب. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -3645,27 +3800,27 @@ msgstr "مثلًا: إغلاق التذاكر العاجلة خلال 36 ساع�
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "e.g. Customer Care"
-msgstr ""
+msgstr "مثال: خدمة العملاء "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "eLearning"
-msgstr "eLearning"
+msgstr "التعلم الإلكتروني "
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "generate tickets in your pipeline."
-msgstr ""
+msgstr "قم بإنشاء تذاكر في مخطط سير عملك. "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
 msgid "has been created from ticket:"
-msgstr ""
+msgstr "تم إنشاؤه من التذكرة: "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "team search"
-msgstr "فريق البحث"
+msgstr "بحث الفريق "
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.rating_ticket_request_email_template
@@ -3673,9 +3828,11 @@ msgid ""
 "{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
 "}}: Service Rating Request"
 msgstr ""
+"{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
+"}}: طلب تقييم الخدمة "
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.new_ticket_request_email_template
 #: model:mail.template,subject:helpdesk.solved_ticket_request_email_template
 msgid "{{ object.display_name }}"
-msgstr ""
+msgstr "{{ object.display_name }}"

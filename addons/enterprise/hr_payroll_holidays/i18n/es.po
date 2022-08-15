@@ -6,6 +6,7 @@
 # Martin Trigaux, 2021
 # Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2021
 # Jon Perez <jop@odoo.com>, 2021
+# marcescu, 2022
 # 
 msgid ""
 msgstr ""
@@ -13,13 +14,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 10:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
-"Last-Translator: Jon Perez <jop@odoo.com>, 2021\n"
+"Last-Translator: marcescu, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.actions.act_window,help:hr_payroll_holidays.hr_leave_work_entry_action
@@ -43,7 +44,7 @@ msgstr "Empresas"
 #. module: hr_payroll_holidays
 #: model:ir.model.fields.selection,name:hr_payroll_holidays.selection__hr_leave__payslip_state__done
 msgid "Computed in current payslip"
-msgstr ""
+msgstr "Calculado en el recibo de nómina actual"
 
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_res_config_settings
@@ -51,25 +52,53 @@ msgid "Config Settings"
 msgstr "Opciones de configuración"
 
 #. module: hr_payroll_holidays
+#: model:ir.actions.server,name:hr_payroll_holidays.ir_actions_server_report_to_next_month
+msgid "Defer to Next Month"
+msgstr "Aplazar al próximo mes"
+
+#. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
 msgid "Deferred Time Off"
-msgstr ""
+msgstr "Tiempo libre diferido"
 
 #. module: hr_payroll_holidays
 #: model:ir.model.fields,field_description:hr_payroll_holidays.field_res_company__deferred_time_off_manager
 #: model:ir.model.fields,field_description:hr_payroll_holidays.field_res_config_settings__deferred_time_off_manager
 msgid "Deferred Time Off Manager"
-msgstr ""
+msgstr "Gerente de tiempo personal diferido"
 
 #. module: hr_payroll_holidays
 #: model:mail.activity.type,name:hr_payroll_holidays.mail_activity_data_hr_leave_to_defer
 msgid "Leave to Defer"
-msgstr ""
+msgstr "Permiso por diferir"
+
+#. module: hr_payroll_holidays
+#: model:ir.actions.server,name:hr_payroll_holidays.ir_actions_server_mark_as_reported
+msgid "Mark as defered"
+msgstr "Marcar como aplazado"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.actions.act_window,help:hr_payroll_holidays.hr_leave_work_entry_action
 msgid "Meet the time off dashboard."
 msgstr "Conoce el tablero de ausencias"
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"Not enough attendance work entries to report the time off %s. Plase make the"
+" operation manually"
+msgstr ""
+"No hay suficientes entradas de trabajo de asistencia para reportar el tiempo"
+" libre %s. Por favor, haga la operación manualmente"
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid "Only an employee time off to defer can be reported to next month"
+msgstr ""
+"Sólo el tiempo libre de un empleado para aplazar puede ser comunicado al mes"
+" siguiente"
 
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_hr_payslip
@@ -79,7 +108,7 @@ msgstr "Recibo de nómina"
 #. module: hr_payroll_holidays
 #: model:ir.model.fields,field_description:hr_payroll_holidays.field_hr_leave__payslip_state
 msgid "Payslip State"
-msgstr ""
+msgstr "Estado de la nómina"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_leave.py:0
@@ -88,16 +117,60 @@ msgid ""
 "Please create manually the work entry for <a href=\"#\" data-oe-model=\"%s\""
 " data-oe-id=\"%s\">%s</a>"
 msgstr ""
+"Por favor, cree manualmente la entrada de trabajo para <a href=\"#\" data-"
+"oe-model=\"%s\" data-oe-id=\"%s\">%s</a>"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
 msgid "Postpone time off after payslip validation"
 msgstr ""
+"Posponer el tiempo personal a después de la validación del recibo de nómina"
+
+#. module: hr_payroll_holidays
+#: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.hr_leave_view_form_inherit
+msgid "Report to Next Month"
+msgstr "Informe para el próximo mes"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
 msgid "Responsible"
 msgstr "Responsable"
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"The next month work entries are not generated yet or are validated already "
+"for time off %s"
+msgstr ""
+"Las entradas de trabajo del mes siguiente aún no se han generado o ya están "
+"validadas para el tiempo libre %s"
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"The selected period is covered by a validated payslip. You can't create a "
+"time off for that period."
+msgstr ""
+"El periodo seleccionado está cubierto por un recibo de nómina validado. No "
+"puede crear un tiempo personal en ese periodo."
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"The time off %s can not be reported because it is defined over more than 2 "
+"months"
+msgstr ""
+"El tiempo libre %s no se puede informar porque se define en más de 2 meses "
+
+#. module: hr_payroll_holidays
+#: code:addons/hr_payroll_holidays/models/hr_leave.py:0
+#, python-format
+msgid "There is no work entries linked to this time off to report"
+msgstr ""
+"No hay entradas de trabajo vinculadas a este tiempo libre para informar"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_payslip.py:0
@@ -107,6 +180,9 @@ msgid ""
 "\n"
 " %s"
 msgstr ""
+"Hay tiempo personal restante por diferir para estos empleados: \n"
+"\n"
+" %s"
 
 #. module: hr_payroll_holidays
 #: model:ir.actions.act_window,name:hr_payroll_holidays.hr_leave_work_entry_action
@@ -118,7 +194,7 @@ msgstr "Tiempo personal"
 #. module: hr_payroll_holidays
 #: model:ir.actions.act_window,name:hr_payroll_holidays.hr_leave_action_open_to_defer
 msgid "Time Off to Defer"
-msgstr ""
+msgstr "Tiempo personal por diferir"
 
 #. module: hr_payroll_holidays
 #: model:ir.ui.menu,name:hr_payroll_holidays.menu_work_entry_leave_to_approve
@@ -128,7 +204,7 @@ msgstr "Ausencia para informar"
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.hr_leave_view_search
 msgid "To Defer"
-msgstr ""
+msgstr "Por diferir"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.hr_leave_view_search
@@ -138,36 +214,36 @@ msgstr "Para incluir en nómina"
 #. module: hr_payroll_holidays
 #: model:ir.model.fields.selection,name:hr_payroll_holidays.selection__hr_leave__payslip_state__normal
 msgid "To compute in next payslip"
-msgstr ""
+msgstr "Para calcular en el siguiente recibo de nómina"
 
 #. module: hr_payroll_holidays
 #: model:ir.model.fields.selection,name:hr_payroll_holidays.selection__hr_leave__payslip_state__blocked
 msgid "To defer to next payslip"
-msgstr ""
+msgstr "Para diferir en el siguiente recibo de nómina"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_leave.py:0
 #, python-format
 msgid "Validated Time Off to Defer"
-msgstr ""
+msgstr "Tiempo personal validado por diferir"
 
 #. module: hr_payroll_holidays
 #. openerp-web
 #: code:addons/hr_payroll_holidays/static/src/xml/templates.xml:0
 #, python-format
 msgid "You have some"
-msgstr ""
+msgstr "Usted tiene algunos"
 
 #. module: hr_payroll_holidays
 #. openerp-web
 #: code:addons/hr_payroll_holidays/static/src/xml/templates.xml:0
 #, python-format
 msgid "time off"
-msgstr ""
+msgstr "Tiempo personal"
 
 #. module: hr_payroll_holidays
 #. openerp-web
 #: code:addons/hr_payroll_holidays/static/src/xml/templates.xml:0
 #, python-format
 msgid "to defer to the next month."
-msgstr ""
+msgstr "para diferir al próximo mes."

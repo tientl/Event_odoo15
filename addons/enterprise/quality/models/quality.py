@@ -113,6 +113,7 @@ class QualityPoint(models.Model):
                     continue
                 point_values.append({
                     'point_id': point.id,
+                    'measure_on': point.measure_on,
                     'team_id': point.team_id.id,
                     'product_id': product.id,
                 })
@@ -188,6 +189,7 @@ class QualityAlertTeam(models.Model):
         if self.id:
             values['alias_defaults'] = defaults = ast.literal_eval(self.alias_defaults or "{}")
             defaults['team_id'] = self.id
+            defaults['company_id'] = self.company_id.id
         return values
 
 

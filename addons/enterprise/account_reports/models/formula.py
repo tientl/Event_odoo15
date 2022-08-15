@@ -34,9 +34,9 @@ class FormulaLocals(dict):
         elif item == 'from_context':
             return self.solver._get_balance_from_context(self.financial_line)
         elif item == 'count_rows':
-            return self.solver._get_amls_results(self.financial_line)[item].get(self.key[0], 0)
+            return self.solver._get_amls_results(self.financial_line, item)[item].get(self.key[0], 0)
         elif item in ('sum', 'sum_if_pos', 'sum_if_neg', 'sum_if_pos_groupby', 'sum_if_neg_groupby'):
-            return self.solver._get_amls_results(self.financial_line)[item].get(self.key, 0.0)
+            return self.solver._get_amls_results(self.financial_line, item)[item].get(self.key, 0.0)
         else:
             financial_line = self.solver._get_line_by_code(item)
             if not financial_line:
@@ -143,7 +143,7 @@ class FormulaSolver:
 
         return self.cache_results_by_id[financial_line.id]['formula']
 
-    def _get_amls_results(self, financial_line):
+    def _get_amls_results(self, financial_line, operator):
         ''' Get or compute the 'amls' results of a financial report line (see 'cache_results_by_id').
         :param financial_line:  A record of the account.financial.html.report.line model.
         :return: see 'cache_results_by_id', 'amls' key.
@@ -167,6 +167,9 @@ class FormulaSolver:
                 results['sign'] = -1
             else:
                 results['sign'] = 1
+
+            # Keep track of the operator triggering the computation.
+            results['operator'] = operator
 
             self.cache_results_by_id[financial_line.id]['amls'] = results
 
@@ -206,7 +209,7 @@ class FormulaSolver:
             def visit_Name(self, node):
                 if node.id in ('sum', 'sum_if_pos', 'sum_if_neg', 'sum_if_pos_groupby', 'sum_if_neg_groupby'):
                     # The current line contains a 'sum' and then, must be evaluate directly.
-                    self.solver._get_amls_results(self.financial_line)
+                    self.solver._get_amls_results(self.financial_line, node.id)
                 else:
 
                     # Iterate sub-formula recursively. If the line is not already computed, it will trigger a new

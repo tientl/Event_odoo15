@@ -3,6 +3,8 @@
 
 import time
 
+from markupsafe import Markup
+
 from odoo import api, fields, models, _
 from odoo.tools.misc import clean_context
 
@@ -58,7 +60,7 @@ class VoipPhonecall(models.Model):
                 note = self.activity_id.note
                 minutes = int(duration_minutes)
                 seconds = int(duration_seconds - minutes * 60)
-                duration_log = '<br/><p>Call duration: %smin %ssec</p>' % (minutes, seconds)
+                duration_log = Markup('<br/><p>%s</p>') % _('Call duration: %(min)smin %(sec)ssec', min=minutes, sec=seconds)
                 if self.activity_id.note:
                     self.activity_id.note += duration_log
                 else:

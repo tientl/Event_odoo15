@@ -9,9 +9,10 @@ import textwrap
 import urllib3
 
 from functools import wraps
-from html import unescape
 
+import zeep
 from lxml import etree
+from markupsafe import Markup
 from OpenSSL import crypto
 from urllib3.exceptions import NewConnectionError
 from requests.exceptions import ConnectionError, HTTPError
@@ -64,11 +65,17 @@ def l10n_cl_edi_retry(max_retries=MAX_RETRIES, logger=None, custom_msg=None):
                     if logger is not None:
                         logger.error(error)
                     retries -= 1
+                # DTE acceptation or claim returns a Fault error without status code but 'Error de Autentication:
+                # Token invalido' as message instead of return 200 with the invalid TOKEN status code in the response
+                except zeep.exceptions.Fault as error:
+                    if error.message == 'Error de Autenticacion: TOKEN invalido':
+                        raise InvalidToken
+                    self._report_connection_err(error)
+                    break
                 except Exception as error:
                     self._report_connection_err(error)
-                    logger.error(error)
                     break
-            msg = _('- It was not possible to get a seed after %s retries.') % max_retries
+            msg = _('- It was not possible to get a response after %s retries.') % max_retries
             if custom_msg is not None:
                 msg = custom_msg + msg
             self._report_connection_err(msg)
@@ -76,6 +83,10 @@ def l10n_cl_edi_retry(max_retries=MAX_RETRIES, logger=None, custom_msg=None):
         return wrapper_retry
 
     return deco_retry
+
+
+class InvalidToken(Exception):
+    pass
 
 
 class UnexpectedXMLResponse(Exception):
@@ -123,7 +134,8 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             'token': '</getToken>'
         }
         tag = tag_to_replace.get(xml_type, '</EnvioBOLETA>')
-        return message.replace(tag, sign + tag)
+        # With %s we make sure we return a string and not a Markup
+        return message.replace(tag, '%s%s' % (sign, tag))
 
     def _l10n_cl_format_vat(self, value, with_zero=False):
         if not value or value in ['', 0]:
@@ -210,7 +222,7 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             return True
         xsd_fname = validation_types[validation_type]
         try:
-            return xml_utils._check_with_xsd(xml_to_validate, xsd_fname, self.env)
+            return xml_utils._check_with_xsd(xml_to_validate, xsd_fname, self.sudo().env)
         except FileNotFoundError:
             _logger.warning(
                 _('The XSD validation files from SII has not been found, please run manually the cron: "Download XSD"'))
@@ -232,8 +244,8 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             'digest_value': base64.b64encode(
                 self._get_sha1_digest(etree.tostring(etree.fromstring(digest_value_tree), method='c14n'))).decode(),
         })
-        signed_info_c14n = etree.tostring(etree.fromstring(signed_info), method='c14n', exclusive=False,
-                                          with_comments=False, inclusive_ns_prefixes=None).decode()
+        signed_info_c14n = Markup(etree.tostring(etree.fromstring(signed_info), method='c14n', exclusive=False,
+                                          with_comments=False, inclusive_ns_prefixes=None).decode())
         signature = self.env.ref('l10n_cl_edi.signature_template')._render({
             'signed_info': signed_info_c14n,
             'signature_value': self._sign_message(
@@ -242,8 +254,6 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             'exponent': digital_signature._get_private_key_exponent(),
             'certificate': '\n' + textwrap.fill(digital_signature.certificate, 64),
         })
-        # We use etree tostring and fromstring to replace the line break by \n in the certificate
-        signature = etree.tostring(etree.fromstring(unescape(signature)), encoding='unicode')
         # The validation of the signature document
         self._xml_validator(signature, 'sig')
         full_doc = self._l10n_cl_append_sig(xml_type, signature, digest_value)
@@ -317,9 +327,9 @@ class L10nClEdiUtilMixin(models.AbstractModel):
             'Cookie': 'TOKEN={}'.format(token),
         }
         params = collections.OrderedDict({
-            'rutSender': digital_signature.subject_serial_number[:8],
+            'rutSender': digital_signature.subject_serial_number[:-2],
             'dvSender': digital_signature.subject_serial_number[-1],
-            'rutCompany': self._l10n_cl_format_vat(company_vat)[:8],
+            'rutCompany': self._l10n_cl_format_vat(company_vat)[:-2],
             'dvCompany': self._l10n_cl_format_vat(company_vat)[-1],
             'archivo': (file_name, xml_message, 'text/xml'),
         })
@@ -375,7 +385,7 @@ class L10nClEdiUtilMixin(models.AbstractModel):
     @l10n_cl_edi_retry(logger=_logger)
     def _get_send_status_ws(self, mode, company_vat, track_id, token):
         transport = Transport(operation_timeout=TIMEOUT)
-        return Client(SERVER_URL[mode] + 'QueryEstUp.jws?WSDL', transport=transport).service.getEstUp(company_vat[:8], company_vat[-1], track_id, token)
+        return Client(SERVER_URL[mode] + 'QueryEstUp.jws?WSDL', transport=transport).service.getEstUp(company_vat[:-2], company_vat[-1], track_id, token)
 
     def _get_send_status(self, mode, track_id, company_vat, digital_signature):
         """
@@ -391,7 +401,7 @@ class L10nClEdiUtilMixin(models.AbstractModel):
     def _get_dte_claim_ws(self, mode, settings, company_vat, document_type_code, document_number):
         transport = Transport(operation_timeout=TIMEOUT)
         return Client(CLAIM_URL[mode] + '?wsdl', settings=settings, transport=transport).service.listarEventosHistDoc(
-            self._l10n_cl_format_vat(company_vat)[:8],
+            self._l10n_cl_format_vat(company_vat)[:-2],
             self._l10n_cl_format_vat(company_vat)[-1],
             str(document_type_code),
             str(document_number),
@@ -409,7 +419,7 @@ class L10nClEdiUtilMixin(models.AbstractModel):
     def _send_sii_claim_response_ws(self, mode, settings, company_vat, document_type_code, document_number, claim_type):
         transport = Transport(operation_timeout=TIMEOUT)
         return Client(CLAIM_URL[mode] + '?wsdl', settings=settings, transport=transport).service.ingresarAceptacionReclamoDoc(
-            self._l10n_cl_format_vat(company_vat)[:8],
+            self._l10n_cl_format_vat(company_vat)[:-2],
             self._l10n_cl_format_vat(company_vat)[-1],
             str(document_type_code),
             str(document_number),

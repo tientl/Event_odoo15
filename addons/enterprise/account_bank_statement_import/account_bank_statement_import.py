@@ -170,6 +170,9 @@ class AccountBankStatementImport(models.TransientModel):
     def _check_journal_bank_account(self, journal, account_number):
         # Needed for CH to accommodate for non-unique account numbers
         sanitized_acc_number = journal.bank_account_id.sanitized_acc_number.split(" ")[0]
+        # Needed for BNP France
+        if len(sanitized_acc_number) == 27 and len(account_number) == 11 and sanitized_acc_number[:2].upper() == "FR":
+            return sanitized_acc_number[14:-2] == account_number
         return sanitized_acc_number == account_number
 
     def _find_additional_data(self, currency_code, account_number):
@@ -196,6 +199,11 @@ class AccountBankStatementImport(models.TransientModel):
             # No journal passed to the wizard : try to find one using the account number of the statement
             elif not journal:
                 journal = journal_obj.search([('bank_account_id.sanitized_acc_number', '=', sanitized_account_number)])
+                if not journal:
+                    # Sometimes the bank returns only part of the full account number (e.g. local account number instead of full IBAN)
+                    partial_match = journal_obj.search([('bank_account_id.sanitized_acc_number', 'ilike', sanitized_account_number)])
+                    if len(partial_match) == 1:
+                        journal = partial_match
             # Already a bank account on the journal : check it's the same as on the statement
             else:
                 if not self._check_journal_bank_account(journal, sanitized_account_number):

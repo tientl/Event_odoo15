@@ -111,10 +111,12 @@ var mrpViewerCommon = {
             }
         });
 
-        // Appended to the container and adjust CSS rules
-        $el.closest('.workorder_pdf').appendTo($container);
-        $container.css('display', 'flex');
-        $container.css('flex-direction', 'column');
+        // Appended to the container and adjust CSS rules (if if contains an IFrame)
+        if ($iFrame.length) {
+            $el.closest('.workorder_pdf').appendTo($container);
+            $container.css('display', 'flex');
+            $container.css('flex-direction', 'column');
+        }
 
         // Add unique ID to get it back after the next destroy/start cycle
         $el.attr('id', this.iFrameId);

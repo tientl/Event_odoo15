@@ -23,8 +23,9 @@ class IrUiMenu(models.Model):
                 menu.action.name = vals['name']
         return super().write(vals)
 
-    def load_web_menus(self, debug):
-        menus = super(IrUiMenu, self).load_web_menus(debug)
+    @api.model
+    def load_menus(self, debug):
+        menus = super(IrUiMenu, self).load_menus(debug)
         cids = request and request.httprequest.cookies.get('cids')
         if cids:
             cids = [int(cid) for cid in cids.split(',')]

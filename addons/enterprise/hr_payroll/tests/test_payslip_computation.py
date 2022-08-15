@@ -66,8 +66,8 @@ class TestPayslipComputation(TestPayslipContractBase):
         work_entries = self.richard_emp.contract_ids._generate_work_entries(date(2016, 1, 1), date(2016, 2, 1))
         self.richard_payslip._compute_worked_days_line_ids()
         # TBE: In master the Monetary field were not rounded because the currency_id wasn't computed yet.
-        # The test was incorrect using the value 238.09, with 238.10 it is ok
-        self.assertAlmostEqual(self.richard_payslip._get_unpaid_amount(), 238.10, delta=0.01, msg="It should be paid 238.10 less")
+        # The test was incorrect using the value 238.09, with 238.11 it is ok
+        self.assertAlmostEqual(self.richard_payslip._get_unpaid_amount(), 238.11, delta=0.01, msg="It should be paid 238.11 less")
 
     def test_worked_days_amount_with_unpaid(self):
         self.env['resource.calendar.leaves'].create({
@@ -100,13 +100,13 @@ class TestPayslipComputation(TestPayslipContractBase):
         self.assertAlmostEqual(sum(work_days.mapped('amount')), self.contract_cdi.wage - self.richard_payslip._get_unpaid_amount())
 
         leave_line = work_days.filtered(lambda l: l.code == self.work_entry_type_leave.code)
-        self.assertAlmostEqual(leave_line.amount, 238.09, delta=0.01, msg="His paid time off must be paid 238.09")
+        self.assertAlmostEqual(leave_line.amount, 238.11, delta=0.01, msg="His paid time off must be paid 238.11")
 
         extra_attendance_line = work_days.filtered(lambda l: l.code == self.work_entry_type_unpaid.code)
         self.assertAlmostEqual(extra_attendance_line.amount, 0.0, places=2, msg="His unpaid time off must be paid 0.")
 
         attendance_line = work_days.filtered(lambda l: l.code == self.env.ref('hr_work_entry.work_entry_type_attendance').code)
-        self.assertAlmostEqual(attendance_line.amount, 4523.81, delta=0.01, msg="His attendance must be paid 4523.81")
+        self.assertAlmostEqual(attendance_line.amount, 4524.11, delta=0.01, msg="His attendance must be paid 4524.11")
 
     def test_worked_days_with_unpaid(self):
         self.contract_cdi.resource_calendar_id = self.env.ref('resource.resource_calendar_std_38h')
@@ -214,7 +214,7 @@ class TestPayslipComputation(TestPayslipContractBase):
             'date_to': date(2016, 1, 31)
         })
         self.richard_payslip2.compute_sheet()
-        self.assertEqual(3010.0, self.richard_payslip2.line_ids.filtered(lambda x: x.code == 'SUMALW').total)
+        self.assertEqual(3010.13, self.richard_payslip2.line_ids.filtered(lambda x: x.code == 'SUMALW').total)
 
     def test_payslip_generation_with_extra_work(self):
         # /!\ this is in the weekend (Sunday) => no calendar attendance at this time

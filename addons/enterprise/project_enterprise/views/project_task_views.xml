@@ -9,10 +9,10 @@
             <xpath expr="//sheet" position="before">
                 <div role="alert" class="alert alert-warning p-3 text-center alert-overflow"
                     attrs="{'invisible': [('planning_overlap', '=', 0)]}">
-                    <button name="action_fsm_view_overlapping_tasks" type="object" class="btn-link pr-1">
+                    <button name="action_fsm_view_overlapping_tasks" type="object" class="btn-link pr-1" attrs="{'invisible': [('planning_overlap', '=', 0)]}">
                         <field name="planning_overlap"/> other task<span attrs="{'invisible': [('planning_overlap', '=', 1)]}">s</span>
                     </button>
-                    <span class="align-middle">for this employee at the same time.</span>
+                    <span class="align-middle" attrs="{'invisible': [('planning_overlap', '=', 0)]}">for this employee at the same time.</span>
                 </div>
             </xpath>
             <xpath expr="//field[@name='date_deadline']" position="before">

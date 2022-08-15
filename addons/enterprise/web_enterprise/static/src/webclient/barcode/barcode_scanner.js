@@ -76,7 +76,7 @@ function buildZXingBarcodeDetector(ZXing) {
          * @returns {Promise<Array>} array of detected codes
          */
         async detect(video) {
-            if (!video instanceof HTMLVideoElement) {
+            if (!(video instanceof HTMLVideoElement)) {
                 throw new DOMException("imageDataFrom() requires an HTMLVideoElement", "InvalidArgumentError");
             }
             if (!isVideoElementReady(video)) {

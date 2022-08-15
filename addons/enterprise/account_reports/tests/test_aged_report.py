@@ -217,6 +217,32 @@ class TestAgedReport(TestAccountReportsCommon):
             ],
         )
 
+    def test_aged_receivable_unknown_partner(self):
+        ''' Test that journal items without a partner in the receivable account appear as unknown partner.'''
+
+        misc_move = self.env['account.move'].create({
+            'date': '2017-03-31',
+            'line_ids': [
+                (0, 0, {'debit': 1000.0, 'credit': 0.0, 'account_id': self.company_data['default_account_revenue'].id}),
+                (0, 0, {'debit': 0.0, 'credit': 1000.0, 'account_id': self.company_data['default_account_receivable'].id}),
+            ],
+        })
+        misc_move.action_post()
+
+        options = self._init_options(self.report, fields.Date.from_string('2017-03-01'), fields.Date.from_string('2017-04-01'))
+
+        self.assertLinesValues(
+            self.report._get_lines(options),
+            #   Name              Due Date     Not Due On      1 - 30     31 - 60     61 - 90    91 - 120       Older        Total
+            [   0,                       1,             4,          5,          6,          7,          8,          9,          10],
+            [
+                ('partner_a',           '',           0.0,        0.0,      100.0,      100.0,      100.0,     1000.0,      1300.0),
+                ('partner_b',           '',           0.0,        0.0,       50.0,       50.0,       50.0,      500.0,       650.0),
+                ('Unknown Partner',     '',           0.0,    -1000.0,        0.0,        0.0,        0.0,        0.0,     -1000.0),
+                ('Total',               '',           0.0,    -1000.0,      150.0,      150.0,      150.0,     1500.0,       950.0),
+            ],
+        )
+
     def test_aged_receivable_filter_partners(self):
         ''' Test the filter on top allowing to filter on res.partner.'''
         options = self._init_options(self.report, fields.Date.from_string('2017-02-01'), fields.Date.from_string('2017-02-01'))

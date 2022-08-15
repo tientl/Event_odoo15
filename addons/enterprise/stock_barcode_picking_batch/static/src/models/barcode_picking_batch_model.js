@@ -123,6 +123,10 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
         }
     }
 
+    get canCreateNewLot() {
+        return this.picking.use_create_lots;
+    }
+
     groupKey(line) {
         return `${line.picking_id.id}_${line.product_id.id}`;
     }
@@ -166,6 +170,11 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
     // Private
     // -------------------------------------------------------------------------
 
+    async _assignEmptyPackage(line, resultPackage) {
+        await super._assignEmptyPackage(...arguments);
+        this._suggestPackages();
+    }
+
     _cancelNotification() {
         this.trigger('notification', {
             message: _t("The batch picking has been cancelled"),
@@ -179,28 +188,18 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
     _createLinesState() {
         const lines = super._createLinesState();
         const pickings = this.record.picking_ids;
-        const suggestedPackagesByPicking = {};
         this.colorByPickingId = new Map(pickings.map((p, i) => [p, i * (360 / pickings.length)]));
 
         for (const line of lines) {
             line.colorLine = this.colorByPickingId.get(line.picking_id);
             line.picking_id = line.picking_id && this.cache.getRecord('stock.picking', line.picking_id);
-            // Checks if a line has a result package, and if so, links it to the according picking.
-            if (line.result_package_id && !suggestedPackagesByPicking[line.picking_id.id]) {
-                suggestedPackagesByPicking[line.picking_id.id] = line.result_package_id.name;
-            }
-        }
-        // Suggests a package to scan for each picking's line if its picking is linked to a package.
-        for (const line of lines) {
-            if (!line.result_package_id && suggestedPackagesByPicking[line.picking_id.id]) {
-                line.suggested_package = suggestedPackagesByPicking[line.picking_id.id];
-            }
         }
         return lines;
     }
 
     _createState() {
         super._createState(...arguments);
+        this._suggestPackages();
         if (this.record.picking_ids.length < 1) {
             return new Error("No picking related");
         }
@@ -249,5 +248,21 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
 
     _moveEntirePackage() {
         return this.picking.picking_type_entire_packs;
+    }
+
+    _suggestPackages() {
+        const suggestedPackagesByPicking = {};
+        // Checks if a line has a result package, and if so, links it to the according picking.
+        for (const line of this.currentState.lines) {
+            if (line.result_package_id && !suggestedPackagesByPicking[line.picking_id.id]) {
+                suggestedPackagesByPicking[line.picking_id.id] = line.result_package_id.name;
+            }
+        }
+        // Suggests a package to scan for each picking's line if its picking is linked to a package.
+        for (const line of this.currentState.lines) {
+            if (!line.result_package_id && suggestedPackagesByPicking[line.picking_id.id]) {
+                line.suggested_package = suggestedPackagesByPicking[line.picking_id.id];
+            }
+        }
     }
 }

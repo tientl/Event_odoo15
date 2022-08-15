@@ -61,9 +61,10 @@ const MapView = AbstractView.extend({
         this.arch.children.forEach(node => {
             if (node.tag === 'field') {
                 fieldNames.push(node.attrs.name);
-                fieldNamesMarkerPopup.push({ fieldName: node.attrs.name, string: node.attrs.string });
+                fieldNamesMarkerPopup.push({ fieldName: node.attrs.name, string: node.attrs.string, type: this.fields[node.attrs.name].type});
             }
         });
+
         this.loadParams.fieldsInfo = this.fields;
         this.loadParams.fieldNames = _.uniq(fieldNames);
         this.rendererParams.fieldNamesMarkerPopup = fieldNamesMarkerPopup;

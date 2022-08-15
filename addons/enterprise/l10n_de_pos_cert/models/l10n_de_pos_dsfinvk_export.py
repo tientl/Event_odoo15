@@ -44,7 +44,7 @@ class PosDsfinvkExport(models.Model):
         }
         if self.config_id:
             json['client_id'] = self.config_id.l10n_de_fiskaly_client_id
-        trigger_resp = self.company_id._l10n_de_fiskaly_dsfinvk_rpc('PUT', '/exports/%s' % self.l10n_de_fiskaly_export_uuid, json, timeout=30)
+        trigger_resp = self.company_id._l10n_de_fiskaly_dsfinvk_rpc('PUT', '/exports/%s' % self.l10n_de_fiskaly_export_uuid, json)
 
         if trigger_resp.status_code == 404:
             raise ValidationError(_('There is no cash point closing with these data.'))

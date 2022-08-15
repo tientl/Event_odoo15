@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_financial_report_ke_profitandloss0" model="account.financial.html.report">
+        <field name="name">Profit and Loss</field>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name='parent_id' ref='l10n_ke.account_reports_ke_statements_menu'/>
+        <field name="show_journal_filter" eval="True"/>
+        <field name="country_id" ref="base.ke"/>
+    </record>
+    <record id="action_account_report_ke_pnl" model="ir.actions.client">
+        <field name="name">Profit and Loss</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.financial.html.report', 'id': ref('account_financial_report_ke_profitandloss0')}" />
+    </record>
+    <record id="account_financial_report_ke_bs_B_1_earnings" model="account.financial.html.report.line">
+        <field name="action_id" ref='action_account_report_ke_pnl' />
+    </record>
+    <record id="account_financial_report_ke_operating_revenue" model="account.financial.html.report.line">
+        <field name="name">Operating Revenues</field>
+        <field name="code">KE_O_R</field>
+        <field name="formulas">KE_S_R + KE_O_O_I</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="sequence" eval="10"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_sales_revenue" model="account.financial.html.report.line">
+        <field name="name">Sales Revenue</field>
+        <field name="code">KE_S_R</field>
+        <field name="parent_id" ref='account_financial_report_ke_operating_revenue'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '4001%'),
+                                    '|', ('account_id.code', '=like', '4002%'),
+                                    '|', ('account_id.code', '=like', '4003%'),
+                                         ('account_id.code', '=like', '4004%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="20"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_other_operating_income" model="account.financial.html.report.line">
+        <field name="name">Other Operating Income</field>
+        <field name="code">KE_O_O_I</field>
+        <field name="parent_id" ref='account_financial_report_ke_operating_revenue'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '4007%'),
+                                    '|', ('account_id.code', '=like', '4008%'),
+                                         ('account_id.code', '=like', '4010%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="30"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_operating_costs" model="account.financial.html.report.line">
+        <field name="name">Operating Costs</field>
+        <field name="code">KE_O_C</field>
+        <field name="formulas">KE_C_O_S + KE_D + KE_O_O_E</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="sequence" eval="40"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_cost_of_sales" model="account.financial.html.report.line">
+        <field name="name">Cost of Sales</field>
+        <field name="code">KE_C_O_S</field>
+        <field name="parent_id" ref='account_financial_report_ke_operating_costs'/>
+        <field name="domain" eval="[('account_id.code', '=like', '500%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="50"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_depreciations" model="account.financial.html.report.line">
+        <field name="name">Depreciations</field>
+        <field name="code">KE_D</field>
+        <field name="parent_id" ref='account_financial_report_ke_operating_costs'/>
+        <field name="domain" eval="[('account_id.code', '=like', '52%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="60"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_other_operating_expenses" model="account.financial.html.report.line">
+        <field name="name">Other Operating Expenses</field>
+        <field name="code">KE_O_O_E</field>
+        <field name="parent_id" ref='account_financial_report_ke_operating_costs'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '510%'),
+                                    '|', ('account_id.code', '=like', '511%'),
+                                    '|', ('account_id.code', '=like', '512%'),
+                                    '|', ('account_id.code', '=like', '513%'),
+                                    '|', ('account_id.code', '=like', '5140%'),
+                                    '|', ('account_id.code', '=like', '5141%'),
+                                         ('account_id.code', '=like', '5142%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="70"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_operating_profit" model="account.financial.html.report.line">
+        <field name="name">Operating Profit</field>
+        <field name="code">KE_O_P</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="formulas">KE_O_R + KE_O_C</field>
+        <field name="sequence" eval="80"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_other_revenues_expenses" model="account.financial.html.report.line">
+        <field name="name">Other Revenues and Expenses</field>
+        <field name="code">KE_O_R_E</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="formulas">KE_F_I + KE_F_E</field>
+        <field name="sequence" eval="90"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_financial_income" model="account.financial.html.report.line">
+        <field name="name">Financial Income</field>
+        <field name="code">KE_F_I</field>
+        <field name="parent_id" ref='account_financial_report_ke_other_revenues_expenses'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '4005%'),
+                                         ('account_id.code', '=like', '4006%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="100"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_financial_expenses" model="account.financial.html.report.line">
+        <field name="name">Financial Expenses</field>
+        <field name="code">KE_F_E</field>
+        <field name="parent_id" ref='account_financial_report_ke_other_revenues_expenses'/>
+        <field name="domain" eval="['|', ('account_id.code', '=like', '5144%'),
+                                    '|', ('account_id.code', '=like', '5145%'),
+                                         ('account_id.code', '=like', '5146%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="110"/>
+        <field name="level" eval="2" />
+    </record>
+    <record id="account_financial_report_ke_profit_loss_before_taxes" model="account.financial.html.report.line">
+        <field name="name">Profit/Loss Before Taxes</field>
+        <field name="code">KE_P_L_B_T</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="formulas">KE_O_P + KE_O_R_E</field>
+        <field name="sequence" eval="120"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_income_tax_expense" model="account.financial.html.report.line">
+        <field name="name">Corporation Tax Expense</field>
+        <field name="code">KE_C_T_E</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="domain" eval="[('account_id.code', '=like', '5143%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">-sum</field>
+        <field name="sequence" eval="130"/>
+        <field name="level" eval="0" />
+    </record>
+    <record id="account_financial_report_ke_profit_loss" model="account.financial.html.report.line">
+        <field name="name">Net profit/Loss for the Year</field>
+        <field name="code">KE_P_L</field>
+        <field name="financial_report_id" ref="account_financial_report_ke_profitandloss0"/>
+        <field name="control_domain" eval="[
+                '|', ('account_id.user_type_id.internal_group', '=', 'income'),
+                     ('account_id.user_type_id.internal_group', '=', 'expense')
+             ]" />
+        <field name="formulas">KE_P_L_B_T + KE_C_T_E</field>
+        <field name="sequence" eval="140"/>
+        <field name="level" eval="0" />
+    </record>
+</odoo>

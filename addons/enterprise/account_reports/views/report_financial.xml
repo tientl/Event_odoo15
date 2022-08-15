@@ -161,7 +161,7 @@
         </t>
         <t t-if="line.get('caret_options')">
             <t t-if="line.get('level')">
-                <t t-set="domainClass" t-value="'o_account_reports_domain_line_'+str(line['level'])"/>
+                <t t-set="domainClass" t-value="'o_account_reports_domain_line_' + str(line['level']) + ' account_report_line_name'"/>
             </t>
         </t>
 
@@ -189,7 +189,8 @@
                             <span t-if="not context.get('print_mode')" class="ellipsis_width">
                                 <t t-esc="line.get('name')"/>
                             </span>
-                            <span class="account_report_line_name" t-att-title="line.get('title_hover')">
+                            <span class="account_report_line_name" t-att-title="line.get('title_hover')"
+                                t-att-data-account-code="line.get('code')">
                                 <a t-if="line.get('action_id')" t-att-data-id="line['id']" t-att-data-action-id="line['action_id']" t-att-action="line.get('action', 'execute_action')">
                                     <t t-esc="line.get('name')"/>
                                 </a>
@@ -203,7 +204,8 @@
                         <t t-if="not context.get('print_mode')">
                             <div class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href='#'>
-                                    <span t-att-data-id="line['id']" t-att-class="domainClass" t-att-title="line.get('title_hover')">
+                                    <span t-att-data-id="line['id']" t-att-class="domainClass" t-att-title="line.get('title_hover')"
+                                        t-att-data-account-code="line.get('code')">
                                         <t t-esc="line.get('name')"/> <i class="fa fa-caret-down no_print"/>
                                     </span>
                                 </a>
@@ -218,7 +220,8 @@
                             </span>
                         </t>
                         <t t-else="">
-                            <span t-att-data-id="line['id']" t-att-class="domainClass" t-att-title="line.get('title_hover')">
+                            <span t-att-data-id="line['id']" t-att-class="domainClass" t-att-title="line.get('title_hover')"
+                                t-att-data-account-code="line.get('code')">
                                 <t t-esc="line.get('name')"/>
                             </span>
                             <span class="js_account_report_line_footnote" t-att-data-id="line['id']"><sup t-if="line.get('footnote')"><b class="o_account_reports_footnote_sup"><a t-att-href="'#footnote'+line['footnote']"></a><t t-esc="line['footnote']"/></b></sup></span>

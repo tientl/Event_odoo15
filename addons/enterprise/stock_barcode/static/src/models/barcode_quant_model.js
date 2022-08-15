@@ -28,16 +28,23 @@ export default class BarcodeQuantModel extends BarcodeModel {
         const action = await this.orm.call('stock.quant', 'action_validate',
             [linesToApply.map(quant => quant.id)]
         );
+        const notifyAndGoAhead = res => {
+            if (res && res.special) { // Do nothing if come from a discarded wizard.
+                return this.trigger('refresh');
+            }
+            if (this.pages.length > 1) { // Stay in inventory if there is multiple pages.
+                this.notification.add(_t("Inventory adjustment was saved"), { type: 'success' });
+                this.trigger('refresh');
+            } else { // Go back to the menu if it's only one page.
+                this.notification.add(_t("The inventory adjustment has been validated"), { type: 'success' });
+                this.trigger('history-back');
+            }
+        };
         if (action && action.res_model) {
-            return this.trigger('do-action', { action });
+            const options = { on_close: notifyAndGoAhead };
+            return this.trigger('do-action', { action, options });
         }
-        if (this.pages.length > 1) { // Stay in inventory if there is multiple pages.
-            this.notification.add(_t("Inventory adjustment was saved"), { type: 'success' });
-            this.trigger('refresh');
-        } else { // Go back to the menu if it's only one page.
-            this.notification.add(_t("The inventory adjustment has been validated"), { type: 'success' });
-            this.trigger('history-back');
-        }
+        notifyAndGoAhead();
     }
 
     get applyOn() {
@@ -94,7 +101,7 @@ export default class BarcodeQuantModel extends BarcodeModel {
     }
 
     get highlightValidateButton() {
-        return this.applyOn === this.pageLines.length;
+        return this.applyOn > 0 && this.applyOn === this.pageLines.length;
     }
 
     get incrementButtonsDisplayStyle() {
@@ -129,11 +136,12 @@ export default class BarcodeQuantModel extends BarcodeModel {
      */
     setOnHandQuantity(line) {
         if (line.product_id.tracking === 'serial') { // Special case for product tracked by SN.
+            const quantity = !(line.lot_name || line.lot_id) && line.quantity || 1;
             if (line.inventory_quantity_set) {
-                line.inventory_quantity = line.inventory_quantity ? 0 : 1;
-                line.inventory_quantity_set = line.inventory_quantity != line.quantity;
+                line.inventory_quantity = line.inventory_quantity ? 0 : quantity;
+                line.inventory_quantity_set = line.inventory_quantity != quantity;
             } else {
-                line.inventory_quantity = line.quantity;
+                line.inventory_quantity = quantity;
                 line.inventory_quantity_set = true;
             }
             this._markLineAsDirty(line);
@@ -203,12 +211,23 @@ export default class BarcodeQuantModel extends BarcodeModel {
         // When creating a new line, we need to know if a quant already exists
         // for this line, and in this case, update the new line fields.
         const product = params.fieldsParams.product_id;
+        if (product.detailed_type != 'product') {
+            const productName = (product.default_code ? `[${product.default_code}] ` : '') + product.display_name;
+            const message = sprintf(
+                _t("%s can't be inventoried. Only storable products can be inventoried."), productName);
+            this.notification.add(message, { type: 'warning' });
+            return false;
+        }
         const domain = [
             ['location_id', '=', this.location.id],
             ['product_id', '=', product.id],
         ];
         if (product.tracking !== 'none') {
-            domain.push(['lot_id.name', '=', params.fieldsParams.lot_name]);
+            if (params.fieldsParams.lot_name) { // Search for a quant with the exact same lot.
+                domain.push(['lot_id.name', '=', params.fieldsParams.lot_name]);
+            } else { // Search for a quant with no lot.
+                domain.push(['lot_id', '=', false]);
+            }
         }
         if (params.fieldsParams.package_id) {
             domain.push(['package_id', '=', params.fieldsParams.package_id]);
@@ -483,11 +502,10 @@ export default class BarcodeQuantModel extends BarcodeModel {
     _createLinesState() {
         const today = new Date().toISOString().slice(0, 10);
         const lines = [];
-        // Should use info in the params and not in cache instead (ids in params ?)
-        for (const id of Object.keys(this.cache.dbIdCache['stock.quant'])) {
+        for (const id of Object.keys(this.cache.dbIdCache['stock.quant']).map(id => Number(id))) {
             const quant = this.cache.getRecord('stock.quant', id);
             if (quant.user_id !== this.userId || quant.inventory_date > today) {
-                // Don't take quants who must to be count by another user or in the future.
+                // Doesn't take quants who must be counted by another user or in the future.
                 continue;
             }
             // Checks if this line is already in the quant state to get back
@@ -514,5 +532,15 @@ export default class BarcodeQuantModel extends BarcodeModel {
 
     _defaultDestLocationId() {
         return undefined;
+    }
+
+    _getPrintOptions() {
+        const options = super._getPrintOptions();
+        const quantsToPrint = this.pageLines.filter(quant => quant.inventory_quantity_set);
+        if (quantsToPrint.length === 0) {
+            return { warning: _t("There is nothing to print in this page.") };
+        }
+        options.additional_context = { active_ids: quantsToPrint.map(quant => quant.id) };
+        return options;
     }
 }

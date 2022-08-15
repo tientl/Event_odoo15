@@ -23,7 +23,7 @@ class AccountReport(models.AbstractModel):
         if representative:
             vat_no, country_from_vat = self.env['account.generic.tax.report']._split_vat_number_and_country_code(representative.vat or "")
             country = self.env['res.country'].search([('code', '=', country_from_vat)], limit=1)
-            phone = representative.phone or representative.mobile
+            phone = representative.phone or representative.mobile or ''
             node_values = {
                 'vat': stdnum.get_cc_module('be', 'vat').compact(vat_no),   # Sanitize VAT number
                 'name': representative.name,
@@ -32,7 +32,7 @@ class AccountReport(models.AbstractModel):
                 'city': representative.city,
                 'country_code': (country or representative.country_id).code,
                 'email': representative.email,
-                'phone': phone and re.sub(r'[./()\s]', '', phone),  # Exclude what's not a number
+                'phone': self._raw_phonenumber(phone)
             }
 
             missing_fields = [k for k, v in node_values.items() if not v or v == ' ']
@@ -52,8 +52,7 @@ class AccountReport(models.AbstractModel):
                 additional_context = {'required_fields': missing_fields}
                 raise RedirectWarning(message, action, button_text, additional_context)
 
-            return str(markupsafe.Markup("""
-    <ns2:Representative>
+            return markupsafe.Markup("""<ns2:Representative>
         <RepresentativeID identificationType="NVAT" issuedBy="%(country_code)s">%(vat)s</RepresentativeID>
         <Name>%(name)s</Name>
         <Street>%(street)s</Street>
@@ -62,7 +61,9 @@ class AccountReport(models.AbstractModel):
         <CountryCode>%(country_code)s</CountryCode>
         <EmailAddress>%(email)s</EmailAddress>
         <Phone>%(phone)s</Phone>
-    </ns2:Representative>
-            """) % node_values)
+    </ns2:Representative>""") % node_values
 
-        return ""
+        return markupsafe.Markup()
+
+    def _raw_phonenumber(self, phonenumber):
+        return re.sub("[^+0-9]", "", phonenumber)[:20]

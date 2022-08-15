@@ -6,10 +6,11 @@
 # Sébastien BÜHL <buhlsebastien@gmail.com>, 2021
 # Priscilla (prs) Odoo <prs@odoo.com>, 2021
 # Julien Goergen <jgo@odoo.com>, 2021
-# Anthony Chaussin <chaussin.anthony@gmail.com>, 2021
 # bb76cd9ac0cb7e20167a14728edb858b, 2021
 # Martin Trigaux, 2021
-# Cécile Collart <cco@odoo.com>, 2021
+# Camille Dantinne <cmd@odoo.com>, 2022
+# Thomas Charpentier, 2022
+# Cécile Collart <cco@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -17,13 +18,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:38+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2021\n"
+"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_type.py:0
@@ -42,6 +43,12 @@ msgid "#{day['today_cls'] and 'Today' or ''}"
 msgstr "#{day['today_cls'] and 'Today' or ''}"
 
 #. module: appointment
+#: code:addons/appointment/models/calendar_appointment_type.py:0
+#, python-format
+msgid "%s - Let's meet"
+msgstr "%s - Rencontrons-nous"
+
+#. module: appointment
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "%s with %s"
@@ -50,7 +57,7 @@ msgstr "%s avec %s"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "(timezone:"
-msgstr "(fuseau horaire :"
+msgstr "(fuseau horaire :"
 
 #. module: appointment
 #: code:addons/appointment/controllers/main.py:0
@@ -64,8 +71,9 @@ msgid ""
 "<div>\n"
 "    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    Appointment booked for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"    Appointment booked for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>.\n"
 "    </p>\n"
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
@@ -76,19 +84,24 @@ msgid ""
 "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
 "            <td width=\"130px;\">\n"
 "                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
 "                        <div>\n"
-"                            <t t-out=\"format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
+"                            <t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
 "                        </div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
 "                    </t>\n"
 "                </div>\n"
 "            </td>\n"
@@ -124,6 +137,74 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    Rendez-vous pris pour <t t-out=\"object.appointment_type_id.name or ''\">Planifier une démo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>.\n"
+"    </p>\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            Rejoindre</a>\n"
+"        <a t-attf-href=\"/web?#id={{ object.id }}&amp;view_type=form&amp;model=calendar.event\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            Visualiser</a>\n"
+"    </div>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\">\n"
+"                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Mercredi</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Janvier 2020</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div>\n"
+"                            <t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
+"                        </div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <p><strong>Détails de l'événement</strong></p>\n"
+"                <ul>\n"
+"                    <li t-if=\"object.location\">Lieu : <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                        (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">Voir la carte</a>)\n"
+"                    </li>\n"
+"                    <li t-if=\"recurrent\">Quand : <t t-out=\"object.recurrence_id.name or ''\">Chaque semaine, pour 3 événements</t></li>\n"
+"                    <li t-if=\"not object.allday and object.duration\">Durée : <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                    <li>Participants\n"
+"                    <ul>\n"
+"                        <li t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                            <t t-if=\"attendee.common_name\">\n"
+"                                <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\">Mitchell Admin</span>\n"
+"                            </t>\n"
+"                            <t t-else=\"\">\n"
+"                                <span style=\"margin-left:5px\">Vous</span>\n"
+"                            </t>\n"
+"                        </li>\n"
+"                    </ul></li>\n"
+"                    <li t-if=\"object.videocall_location\">Rejoindre l'appel vidéo : <a t-attf-href=\"{{ object.videocall_location }}\" target=\"_blank\" t-out=\"object.videocall_location or ''\">https://meet.jit.si/odoo-xyz</a></li>\n"
+"                </ul>\n"
+"                <t t-if=\"not is_html_empty(object.description)\">\n"
+"                    <li>Description de l'événement :\n"
+"                    <t t-out=\"object.description\"/></li>\n"
+"                </t>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_canceled_mail_template
@@ -131,23 +212,29 @@ msgid ""
 "<div>\n"
 "    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    The appointment for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t> has been canceled.\n"
+"    The appointment for <t t-out=\"object.appointment_type_id.name or ''\">Schedule a Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> with <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t> has been canceled.\n"
 "    </p>\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
 "            <td width=\"130px;\">\n"
 "                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Wednesday</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">January 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
-"                        <div><t t-out=\"format_time(time=object.start, tz=None, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <div><t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
 "                    </t>\n"
 "                </div>\n"
 "            </td>\n"
@@ -185,11 +272,73 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    Le rendez-vous intitulé <t t-out=\"object.appointment_type_id.name or ''\">planifier une démo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t> a été annulé.\n"
+"    </p>\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\">\n"
+"                <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Mercredi</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Janvier 2020</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-right-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-left-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div><t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <del>\n"
+"                    <p><strong>Détails de l'événement</strong></p>\n"
+"                    <ul>\n"
+"                            <li t-if=\"object.location\">Lieu : <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                                (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">Voir la carte</a>)\n"
+"                            </li>\n"
+"                            <li t-if=\"recurrent\">Quand : <t t-out=\"object.recurrence_id.name or ''\">Chaque semaine, pour 3 événements</t></li>\n"
+"                            <li t-if=\"not object.allday and object.duration\">Durée : <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                        <li>Participants\n"
+"                        <ul t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <li>\n"
+"                                <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                                <t t-if=\"attendee.common_name\">\n"
+"                                    <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\"/>\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    <span style=\"margin-left:5px\">Vous</span>\n"
+"                                </t>\n"
+"                            </li>\n"
+"                        </ul></li>\n"
+"                        <li t-if=\"object.videocall_location\">Rejoindre l'appel vidéo : <a t-att-href=\"object.videocall_location\" target=\"_blank\" t-out=\"object.videocall_location or ''\">https://meet.jit.si/odoo-xyz</a></li>\n"
+"                    </ul>\n"
+"                    <t t-if=\"not is_html_empty(object.description)\">\n"
+"                        <li>Description de l'événement :\n"
+"                        <t t-out=\"object.description\"/></li>\n"
+"                    </t>\n"
+"                </del>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Add to Google Calendar"
-msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Ajouter à Google Agenda"
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Ajouter à Google Agenda"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -301,6 +450,8 @@ msgstr "<strong>Votre rendez-vous a été pris avec succès !</strong><br/>"
 msgid ""
 "A list of slots information is needed to create a custom appointment type"
 msgstr ""
+"Une liste d'informations sur les créneaux horaires est nécessaire pour créer"
+" un type de rendez-vous personnalisé"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -364,12 +515,23 @@ msgstr "Autoriser l'annulation"
 msgid ""
 "An employee should be set on the actual user to create the appointment type"
 msgstr ""
+"Un employé doit être défini sur l'utilisateur pour créer le type de rendez-"
+"vous."
+
+#. module: appointment
+#: code:addons/appointment/models/calendar_appointment_type.py:0
+#, python-format
+msgid ""
+"An employee should be set on the current user to create the appointment type"
+msgstr ""
+"Un employé doit être défini sur l'utilisateur actuel pour créer le type de "
+"rendez-vous."
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
-msgstr ""
+msgstr "Un créneau de type unique doit avoir une date de début et de fin"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__name
@@ -388,7 +550,7 @@ msgstr "Rendez-vous pris"
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_booked_mail_template
 msgid "Appointment Booked: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "Rendez-vous pris : {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model:mail.message.subtype,description:appointment.mt_calendar_event_canceled
@@ -401,7 +563,7 @@ msgstr "Rendez-vous annulé"
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_canceled_mail_template
 msgid "Appointment Canceled: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "Rendez-vous annulé : {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
@@ -449,7 +611,7 @@ msgstr "Type de rendez-vous"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Appointment:"
-msgstr "Rendez-vous :"
+msgstr "Rendez-vous :"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__appointment_type_ids
@@ -465,7 +627,7 @@ msgstr "Rendez-vous"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "Appointments by"
-msgstr ""
+msgstr "Rendez-vous par"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
@@ -485,6 +647,8 @@ msgid ""
 "Atleast one slot duration from start to end is invalid: a slot should end "
 "after start"
 msgstr ""
+"La durée d'au moins un slot du début à la fin n'est pas valide : un slot "
+"doit se terminer après le début"
 
 #. module: appointment
 #: code:addons/appointment/models/calendar_appointment_slot.py:0
@@ -493,6 +657,8 @@ msgid ""
 "Atleast one slot duration is not enough to create a slot with the duration "
 "set in the appointment type"
 msgstr ""
+"La durée d'au moins un créneau n'est pas suffisante pour créer un créneau "
+"avec la durée définie dans le type de rendez-vous"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_attachment_count
@@ -502,7 +668,7 @@ msgstr "Nombre de pièces jointes"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Attendees:"
-msgstr "Participants :"
+msgstr "Participants :"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__slot_ids
@@ -532,7 +698,7 @@ msgstr "Calendrier"
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_appointment_share
 msgid "Calendar Appointment Share Wizard"
-msgstr ""
+msgstr "Assistant de partage de calendrier et de rendez-vous"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_calendar_attendee
@@ -623,12 +789,12 @@ msgstr "Contact"
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Copied !"
-msgstr "Copié!"
+msgstr "Copié !"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_appointment_type_action
 msgid "Create an Appointment Type"
-msgstr ""
+msgstr "Créer un type de rendez-vous"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_answer__create_uid
@@ -678,11 +844,15 @@ msgid ""
 "        The one shot type is only used when an user create a custom appointment type for a client by\n"
 "        defining non-recurring time slot (e.g. 10th of April 2021 from 10 to 11 am) from its calendar."
 msgstr ""
+"Définit le type de créneau. Le slot récurrent est le type par défaut qui est utilisé pour\n"
+"        les types de rendez-vous qui sont utilisés de manière récurrente, comme les rendez-vous médicaux.\n"
+"        Le type one shot est uniquement utilisé lorsqu'un utilisateur crée un type de rendez-vous personnalisé pour un client en\n"
+"        définissant un créneau horaire non récurrent (par exemple, le 10 avril 2021 de 10 à 11 heures) à partir de son calendrier."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Description:"
-msgstr "Description:"
+msgstr "Description :"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__allday
@@ -729,13 +899,13 @@ msgstr "Durée"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Duration:"
-msgstr "Durée :"
+msgstr "Durée :"
 
 #. module: appointment
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "Email: %s"
-msgstr "Courriel: %s"
+msgstr "Courriel : %s"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__employee_ids
@@ -747,7 +917,7 @@ msgstr "Employés"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__end_datetime
 msgid "End datetime for unique slot type management"
-msgstr ""
+msgstr "Date de fin pour la gestion du type de slot unique"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__end_hour
@@ -788,7 +958,7 @@ msgstr "De"
 #: code:addons/appointment/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Get Share Link"
-msgstr ""
+msgstr "Obtenir le lien de partage"
 
 #. module: appointment
 #: model_terms:calendar.appointment.type,message_intro:appointment.calendar_appointment_0
@@ -805,6 +975,8 @@ msgid ""
 "Get the employees link to the appointment type selected to apply a domain on"
 " the employees that can be selected"
 msgstr ""
+"Obtenez le lien entre les employés et le type de rendez-vous sélectionné "
+"pour appliquer un domaine aux employés qui peuvent être sélectionnés"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__has_message
@@ -930,7 +1102,7 @@ msgstr "Lieu des rendez-vous"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Location:"
-msgstr "Lieu :"
+msgstr "Lieu :"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_type__message_main_attachment_id
@@ -958,7 +1130,7 @@ msgstr "Messages"
 #: code:addons/appointment/controllers/main.py:0
 #, python-format
 msgid "Mobile: %s"
-msgstr "Mobile: %s"
+msgstr "Mobile : %s"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__1
@@ -1031,7 +1203,7 @@ msgstr "Nombre de messages non lus"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__slot_type__unique
 msgid "One Shot"
-msgstr ""
+msgstr "One Shot"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_event__appointment_type_id
@@ -1069,6 +1241,8 @@ msgstr "Rendez-vous en ligne"
 msgid ""
 "Only one work hours appointment type is allowed for a specific employee."
 msgstr ""
+"Un seul type de rendez-vous d'heures de travail est autorisé pour un employé"
+" spécifique"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
@@ -1229,18 +1403,18 @@ msgstr "Chercher dans Description"
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
-msgstr ""
+msgstr "Recherche dans le nom"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
-msgstr ""
+msgstr "Recherche dans Responsable"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_share__appointment_type_count
 msgid "Selected Appointments Count"
-msgstr ""
+msgstr "Nombre de rendez-vous sélectionnés"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_question__sequence
@@ -1277,12 +1451,12 @@ msgstr "Ligne de texte unique"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__slot_type
 msgid "Slot type"
-msgstr ""
+msgstr "Type de créneau"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_slot__start_datetime
 msgid "Start datetime for unique slot type management"
-msgstr ""
+msgstr "Date de début pour la gestion du type de créneau unique"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_appointment_slot__start_hour
@@ -1305,12 +1479,14 @@ msgid ""
 "The employees that will be display/filter for the user to make its "
 "appointment"
 msgstr ""
+"Les employés qui seront affichés/filtrés pour que l'utilisateur puisse "
+"prendre rendez-vous"
 
 #. module: appointment
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
-msgstr ""
+msgstr "Le champ '%s' n'existe pas dans le modèle ciblé"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
@@ -1368,7 +1544,7 @@ msgstr "Vers"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "Total:"
-msgstr "Total:"
+msgstr "Total :"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_slot__weekday__2
@@ -1400,6 +1576,8 @@ msgstr "A venir"
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "Use the top button '<b>+ New</b>' to create an appointment type."
 msgstr ""
+"Utilisez le bouton du haut '<b>+ Nouveau</b>' pour créer un type de rendez-"
+"vous."
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_appointment_type__category
@@ -1412,6 +1590,13 @@ msgid ""
 "                employee as availabilities. This one uses recurring slot that englobe the entire week to display all possible slots\n"
 "                based on its working hours and availabilities"
 msgstr ""
+"Utilisé pour définir la catégorie de ce type de rendez-vous.\n"
+"Il peut s'agir de l'une des catégories suivantes :\n"
+"- Site web : la catégorie par défaut, les personnes peuvent accéder et fixer le rendez-vous avec les employés à partir du site web.\n"
+"- Personnalisé : l'employé créera et partagera avec un utilisateur un type de rendez-vous personnalisé avec des créneaux horaires triés sur le volet.\n"
+"- Heures de travail : un type spécial de rendez-vous qui est utilisé par un employé et qui prend les heures de travail de cet \n"
+"employé comme disponibilités. Celui-ci utilise des créneaux récurrents qui englobent la semaine entière pour afficher tous les créneaux possibles \n"
+"en fonction de ses heures de travail et de ses disponibilités"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
@@ -1424,8 +1609,8 @@ msgid ""
 "We thank you for your interest in our products!<br>\n"
 "               Please make sure to arrive <strong>10 minutes</strong> before your appointment."
 msgstr ""
-"Merci de l'intérêt que vous portez à nos produits.<br>\n"
-"               Faites en sorte d'arriver <strong>10 minutes</strong> avant votre rendez-vous."
+"Merci de l'intérêt que vous portez à nos produits !<br>\n"
+"               Faites en sorte d'arriver <strong>10 minutes</strong> avant votre rendez-vous."
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__calendar_appointment_type__category__website
@@ -1455,7 +1640,7 @@ msgstr "En semaine"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "When:"
-msgstr "Quand :"
+msgstr "Quand :"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.employee_select
@@ -1501,7 +1686,7 @@ msgstr "Votre rendez-vous est dans moins de"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_appointment_type_view_form
 msgid "e.g. Schedule a demo"
-msgstr "p. ex. programmer une démonstration"
+msgstr "e.g. Programmer une démonstration"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info

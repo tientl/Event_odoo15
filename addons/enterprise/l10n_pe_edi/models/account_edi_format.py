@@ -7,7 +7,6 @@ import io
 from requests.exceptions import ConnectionError as ReqConnectionError, HTTPError, InvalidSchema, InvalidURL, ReadTimeout
 from zeep.wsse.username import UsernameToken
 from zeep import Client, Settings
-from zeep.exceptions import Fault
 from zeep.transports import Transport
 from lxml import etree
 from lxml import objectify
@@ -42,12 +41,43 @@ class AccountEdiFormat(models.Model):
 
     @api.model
     def _l10n_pe_edi_unzip_edi_document(self, zip_str):
+        """Unzip the first XML file of a zip file,
+        or, if the zip file does not contain an XML file, unzip the first file.
+        :param zip_str: zipfile in base64 bytes
+        :returns: the contents of the first xml file (or first file)
+        """
         buffer = io.BytesIO(zip_str)
         zipfile_obj = zipfile.ZipFile(buffer)
-        filename = zipfile_obj.namelist()[0]
-        content = zipfile_obj.read(filename)
+        # We need to select the first xml file of the zip file because SUNAT sometimes sends a CDR zip file
+        # which has an empty folder named 'dummy' as the first file in the zip file.
+        filenames = zipfile_obj.namelist()
+        xml_filenames = [x for x in filenames if x.endswith(('.xml', '.XML'))]
+        filename_to_decode = xml_filenames[0] if xml_filenames else filenames[0]
+        content = zipfile_obj.read(filename_to_decode)
         buffer.close()
         return content
+
+    @api.model
+    def _l10n_pe_edi_unzip_all_edi_documents(self, zip_bytes):
+        """Unzips all the files of a base64 zip_bytes and if contains a CDR XML, it will unzip
+        that one first
+        :param zip_bytes: Zipfile in base64 that contains the response and signed XML
+        :returns: xml files in base64
+        """
+        with io.BytesIO(base64.b64decode(zip_bytes)) as buffer:
+            zip_bytes = zipfile.ZipFile(buffer)
+            result = []
+            for content_name in zip_bytes.namelist():
+                xml_bytes = zip_bytes.read(content_name)
+                application_response = etree.fromstring(xml_bytes).xpath('//applicationResponse')
+                # If application response is in the xml file, we are actually interested in the contents of it
+                # (which is a zip in base64, which contains the file we are interested in)
+                if not application_response:
+                    result.append([content_name, base64.b64encode(xml_bytes)])
+                else:
+                    unzipped_cdr = self._l10n_pe_edi_unzip_edi_document(base64.b64decode(application_response[0].text))
+                    result.append([content_name[2:], base64.b64encode(unzipped_cdr)])
+        return result
 
     @api.model
     def _l10n_pe_edi_get_general_error_messages(self):
@@ -90,7 +120,7 @@ class AccountEdiFormat(models.Model):
                         "RUC and the type of document is RUC."),
             '3206': _lt("The type of operation is not valid for the type of document you are trying to create. The "
                         "document must return to Draft state and change the type of operation."),
-            '2022': _lt("The name of the Partner must be changed to at least 2 characters to meet the proper standard."),
+            '2022': _lt("The name of the Partner must contain at least 2 characters and must not contain special characters."),
             '151': _lt("The name of the file depends on the sequence in the journal, please go to the journal and "
                        "configure the shortcode as LLL- (three (3) letters plus a dash and the 3 letters must be UPPERCASE.)"),
             '156': _lt("The zip file is corrupted, check again if the file trying to access is not damaged."),
@@ -131,6 +161,7 @@ class AccountEdiFormat(models.Model):
                        "2. Authorize Digiflow as PSE.\n"
                        "Reference: \n"
                        "https://www.odoo.com/documentation/user/14.0/accounting/fiscal_localizations/localizations/peru.html#what-do-you-need-to-do"),
+            '98': _lt("The cancellation request has not yet finished processing by SUNAT. Please retry in a few minutes.")
         }
 
     @api.model
@@ -176,17 +207,25 @@ class AccountEdiFormat(models.Model):
                 code = code_parsed[1]
         return message_element, code
 
-    @api.model
-    def _l10n_pe_edi_decode_cdr(self, cdr_str):
-        self.ensure_one()
+    def _l10n_pe_edi_decode_soap_response(self, soap_response):
+        """
+        Parse the SOAP response returned by any of the endpoints (IAP, Digiflow or SUNAT)
+        for any of the SOAP operations (sendBill, getStatus, sendSummary, getStatusCdr),
+        and extract, if they exist, the error, the response code, the CDR, etc.
 
-        cdr_tree = etree.fromstring(cdr_str)
-        if cdr_tree.find('.//{*}message') is not None:  # It comes from Digiflow
-            message_element, code = self._l10n_pe_edi_response_code_digiflow(cdr_tree)
-        else: # It comes from SUNAT
-            message_element, code = self._l10n_pe_edi_response_code_sunat(cdr_tree)
-
-        if code:
+        Returns a dict which can contain the following fields:
+        'error': Description of the error (string with HTML format), if the response was a SOAP fault.
+        'code': Response code (a string), if one was provided.
+        'message': Description of the response status (a string), if one was provided.
+        'number': Ticket number (a string) returned by the getSummary endpoint.
+        'cdr': the CDR (bytes with XML format), if it was provided.
+        """
+        response_tree = etree.fromstring(soap_response)
+        if response_tree.find('.//{*}Fault') is not None:
+            if response_tree.find('.//{*}message') is not None:  # It comes from Digiflow
+                message_element, code = self._l10n_pe_edi_response_code_digiflow(response_tree)
+            else:  # It comes from SUNAT
+                message_element, code = self._l10n_pe_edi_response_code_sunat(response_tree)
             message = message_element.text
             error_messages_map = self._l10n_pe_edi_get_cdr_error_messages()
             error_message = '%s<br/><br/><b>%s</b><br/>%s|%s' % (
@@ -195,13 +234,58 @@ class AccountEdiFormat(models.Model):
                 html_escape(code),
                 html_escape(message),
             )
-            return {'error': error_message}
-
-        cdr_number_elements = cdr_tree.xpath('//ticket')
-        if cdr_number_elements:
-            return {'number': cdr_number_elements[0].text}
-
+            return {'error': error_message, 'code': code, 'message': message}
+        if response_tree.find('.//{*}sendBillResponse') is not None:
+            cdr_b64 = response_tree.find('.//{*}applicationResponse').text
+            cdr = self._l10n_pe_edi_unzip_edi_document(base64.b64decode(cdr_b64))
+            return {'cdr': cdr}
+        if response_tree.find('.//{*}getStatusResponse') is not None:
+            code = response_tree.find('.//{*}statusCode').text
+            if response_tree.find('.//{*}content') is not None:
+                cdr_b64 = response_tree.find('.//{*}content').text
+                cdr = self._l10n_pe_edi_unzip_edi_document(base64.b64decode(cdr_b64))
+            else:
+                cdr = None
+            return {'code': code, 'cdr': cdr}
+        if response_tree.find('.//{*}sendSummaryResponse') is not None:
+            ticket = response_tree.find('.//{*}ticket').text
+            return {'number': ticket}
+        if response_tree.find('.//{*}getStatusCdrResponse') is not None:
+            cdr_b64 = response_tree.find('.//{*}content').text
+            cdr = self._l10n_pe_edi_unzip_edi_document(base64.b64decode(cdr_b64))
+            code = response_tree.find('.//{*}statusCode').text
+            message = response_tree.find('.//{*}statusMessage').text
+            return {'code': code, 'message': message, 'cdr': cdr}
         return {}
+
+    _l10n_pe_edi_decode_cdr = _l10n_pe_edi_decode_soap_response
+
+    def _l10n_pe_edi_extract_cdr_status(self, cdr):
+        """
+        Parse a CDR in XML format.
+
+        Returns a dict that contains the following fields:
+        'code': the ResponseCode of the CDR. 0 = success. Any other value = error.
+        'description': a description of the CDR's response in HTML format, combining the
+                       'Description' tag and the 'Note' tags.
+        """
+        cdr_tree = etree.fromstring(cdr)
+        code = cdr_tree.find('.//{*}ResponseCode').text
+        description = html_escape(cdr_tree.find('.//{*}Description').text)
+        notes = cdr_tree.findall('.//{*}Note')
+        for note in notes:
+            description += '<br/>' + html_escape(note.text)
+
+        if code != '0':
+            error_messages_map = self._l10n_pe_edi_get_cdr_error_messages()
+            description = '%s<br/><br/><b>%s</b><br/>%s|%s' % (
+                error_messages_map.get(code, _("We got an error response from the OSE. ")),
+                _('Original message:'),
+                html_escape(code),
+                html_escape(description),
+            )
+
+        return {'code': code, 'description': description}
 
     def _l10n_pe_edi_get_edi_values(self, invoice):
         self.ensure_one()
@@ -212,13 +296,31 @@ class AccountEdiFormat(models.Model):
                 return None
             return '%.*f' % (precision, amount)
 
+        spot = invoice._l10n_pe_edi_get_spot()
+        invoice_date_due_vals_list = []
+        first_time = True
+        for rec_line in invoice.line_ids.filtered(lambda l: l.account_internal_type=='receivable'):
+            amount = rec_line.amount_currency
+            if spot and first_time:
+                amount -= spot['spot_amount']
+            first_time = False
+            invoice_date_due_vals_list.append({'amount': rec_line.move_id.currency_id.round(amount),
+                                               'currency_name': rec_line.move_id.currency_id.name,
+                                               'date_maturity': rec_line.date_maturity})
+        spot = invoice._l10n_pe_edi_get_spot()
+        if not spot:
+            total_after_spot = abs(invoice.amount_total)
+        else:
+            total_after_spot = abs(invoice.amount_total) - spot['spot_amount']
         values = {
             **invoice._prepare_edi_vals_to_export(),
-            'spot': invoice._l10n_pe_edi_get_spot(),
+            'spot': spot,
+            'total_after_spot': total_after_spot,
             'PaymentMeansID': invoice._l10n_pe_edi_get_payment_means(),
             'is_refund': invoice.move_type in ('out_refund', 'in_refund'),
             'certificate_date': invoice.invoice_date,
             'format_float': format_float,
+            'invoice_date_due_vals_list': invoice_date_due_vals_list,
         }
 
         # Invoice lines.
@@ -265,6 +367,15 @@ class AccountEdiFormat(models.Model):
 
     def _l10n_pe_edi_sign_invoices_iap(self, invoice, edi_filename, edi_str):
         self.ensure_one()
+
+        service_iap = self._l10n_pe_edi_sign_service_iap(
+            invoice.company_id, edi_filename, edi_str, invoice.l10n_latam_document_type_id.code,
+            invoice._l10n_pe_edi_get_serie_folio())
+        if service_iap.get('extra_msg'):
+            invoice.message_post(body=service_iap['extra_msg'])
+        return service_iap
+
+    def _l10n_pe_edi_sign_service_iap(self, company, edi_filename, edi_str, latam_document_type, serie_folio):
         edi_tree = objectify.fromstring(edi_str)
 
         # Dummy Signature to allow check the XSD, this will be replaced on IAP.
@@ -274,15 +385,15 @@ class AccountEdiFormat(models.Model):
         signature_str = self.env.ref('l10n_pe_edi.pe_ubl_2_1_signature')._render({'digest_value': ''})
         signature_element.getparent().replace(signature_element, objectify.fromstring(signature_str))
 
-        error = self.env['ir.attachment']._l10n_pe_edi_check_with_xsd(edi_tree_copy, invoice.l10n_latam_document_type_id.code)
+        error = self.env['ir.attachment']._l10n_pe_edi_check_with_xsd(edi_tree_copy, latam_document_type)
         if error:
             return {'error': "<b>%s</b><br/>%s" % (_('XSD validation failed:'), html_escape(error)), 'blocking_level': 'error'}
 
-        dbuuid, iap_server_url, iap_token = self._l10n_pe_edi_get_iap_params(invoice.company_id)
+        dbuuid, iap_server_url, iap_token = self._l10n_pe_edi_get_iap_params(company)
 
         rpc_params = {
-            'vat': invoice.company_id.vat,
-            'doc_type': invoice.l10n_latam_document_type_id.code,
+            'vat': company.vat,
+            'doc_type': latam_document_type,
             'dbuuid': dbuuid,
             'fname': edi_filename,
             'xml': base64.b64encode(edi_str).decode(),
@@ -300,19 +411,93 @@ class AccountEdiFormat(models.Model):
 
         if result.get('message'):
             if result['message'] == 'no-credit':
-                error_message = self._l10n_pe_edi_get_iap_buy_credits_message(invoice.company_id)
+                error_message = self._l10n_pe_edi_get_iap_buy_credits_message(company)
             else:
                 error_message = result['message']
             return {'error': error_message, 'blocking_level': 'error'}
 
-        cdr_str = result.get('cdr') and base64.b64decode(result['cdr'])
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str) if cdr_str else {}
+        soap_response = result.get('cdr') and base64.b64decode(result['cdr'])
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        cdr = None
+        extra_msg = ''
+        if soap_response_decoded.get('error'):
+            # Error code 1033 means that the invoice was already registered with the OSE.
+            if soap_response_decoded.get('code') == '1033':
+                status_cdr_response = self._l10n_pe_edi_get_status_cdr_iap_service(company, serie_folio, latam_document_type)
+                if status_cdr_response.get('error'):
+                    error_msg = '%s<br/>%s<br/>%s' % (soap_response_decoded['error'], _('Error requesting CDR status:'),
+                                                      status_cdr_response['error'])
+                    return {'error': error_msg, 'blocking_level': 'error'}
+                # Status code 0004 means the CDR already exists.
+                elif status_cdr_response.get('code') == '0004':
+                    extra_msg = _('The invoice already exists on SUNAT. CDR successfully retrieved.')
+                    cdr = status_cdr_response['cdr']
+                else:
+                    error_msg = '%s<br/>%s<br/>%s' % (soap_response_decoded['error'], _('CDR status:'), status_cdr_response['status'])
+                    return {'error': error_msg, 'blocking_level': 'error'}
+            else:
+                return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
+
+        if not cdr:  # The 'cdr' variable might be set if we retrieved the cdr after getting error code 1033 - see above
+            cdr = soap_response_decoded['cdr']
+
+        cdr_status = self._l10n_pe_edi_extract_cdr_status(cdr)
+
+        if cdr_status['code'] != '0':
+            error_message = '%s<br/><br/><b>%s</b>' % (
+                cdr_status['description'],
+                _('This invoice number is now registered by SUNAT as invalid. Duplicate this invoice or create a new invoice to retry.')
+            )
+            return {'error': error_message, 'blocking_level': 'error'}
 
         xml_document = result.get('signed') and self._l10n_pe_edi_unzip_edi_document(base64.b64decode(result['signed']))
-        return {'success': True, 'xml_document': xml_document, 'cdr': cdr_str}
+        return {'success': True, 'xml_document': xml_document, 'cdr': cdr, 'extra_msg': extra_msg}
+
+    def _l10n_pe_edi_get_status_cdr_iap(self, invoice):
+        self.ensure_one()
+        return self._l10n_pe_edi_get_status_cdr_iap_service(
+            invoice.company_id, invoice._l10n_pe_edi_get_serie_folio(), invoice.l10n_latam_document_type_id.code)
+
+    def _l10n_pe_edi_get_status_cdr_iap_service(self, company, serie_folio, latam_document_type):
+        dbuuid, iap_server_url, iap_token = self._l10n_pe_edi_get_iap_params(company)
+
+        rpc_params = {
+            'vat': company.vat,
+            'doc_type': latam_document_type,
+            'dbuuid': dbuuid,
+            'serie': serie_folio['serie'],
+            'folio': serie_folio['folio'],
+            'token': iap_token,
+        }
+
+        try:
+            result = iap_jsonrpc(iap_server_url + '/iap/l10n_pe_edi/1/get_status_cdr', params=rpc_params, timeout=1500)
+        except InvalidSchema:
+            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE16'], 'blocking_level': 'error'}
+        except AccessError:
+            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE17'], 'blocking_level': 'warning'}
+        except InvalidURL:
+            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE18'], 'blocking_level': 'error'}
+
+        if result.get('message'):
+            if result['message'] == 'no-credit':
+                error_message = self._l10n_pe_edi_get_iap_buy_credits_message(company)
+            else:
+                error_message = result['message']
+            return {'error': error_message, 'blocking_level': 'error'}
+
+        soap_response = result.get('cdr') and base64.b64decode(result['cdr'])
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
+
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
+
+        code = soap_response_decoded.get('code')
+        status = '%s|%s' % (html_escape(code), html_escape(soap_response_decoded.get('message')))
+        cdr = soap_response_decoded.get('cdr')
+
+        return {'cdr': cdr, 'status': status, 'code': code}
 
     def _l10n_pe_edi_cancel_invoices_step_1_iap(self, company, invoices, void_filename, void_str):
         self.ensure_one()
@@ -328,8 +513,6 @@ class AccountEdiFormat(models.Model):
 
         try:
             result = iap_jsonrpc(iap_server_url + '/iap/l10n_pe_edi/1/send_summary', params=rpc_params, timeout=15)
-        except Fault:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE07'], 'blocking_level': 'warning'}
         except AccessError:
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE17'], 'blocking_level': 'warning'}
         except KeyError:
@@ -342,15 +525,15 @@ class AccountEdiFormat(models.Model):
                 error_message = result['message']
             return {'error': error_message, 'blocking_level': 'error'}
 
-        cdr_str = result.get('cdr') and base64.b64decode(result['cdr'])
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str) if cdr_str else {}
-        cdr_number = cdr_decoded.get('number')
+        soap_response = result.get('cdr') and base64.b64decode(result['cdr'])
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
 
+        cdr_number = soap_response_decoded['number']
         xml_document = result.get('signed') and self._l10n_pe_edi_unzip_edi_document(base64.b64decode(result['signed']))
-        return {'xml_document': xml_document, 'cdr': cdr_str, 'cdr_number': cdr_number}
+        return {'xml_document': xml_document, 'cdr': soap_response, 'cdr_number': cdr_number}
 
     def _l10n_pe_edi_cancel_invoices_step_2_iap(self, company, edi_values, cdr_number):
         self.ensure_one()
@@ -365,8 +548,6 @@ class AccountEdiFormat(models.Model):
 
         try:
             result = iap_jsonrpc(iap_server_url + '/iap/l10n_pe_edi/1/get_status', params=rpc_params, timeout=15)
-        except Fault:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE07'], 'blocking_level': 'warning'}
         except KeyError:
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE18'], 'blocking_level': 'error'}
         except AccessError:
@@ -379,13 +560,32 @@ class AccountEdiFormat(models.Model):
                 error_message = result['message']
             return {'error': error_message, 'blocking_level': 'error'}
 
-        cdr_str = result.get('cdr') and base64.b64decode(result['cdr'])
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str) if cdr_str else {}
+        soap_response = result.get('cdr') and base64.b64decode(result['cdr'])
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
 
-        return {'success': True, 'cdr': cdr_str}
+        if not soap_response_decoded.get('cdr'):
+            # The server can respond with an error code 98 which means that the cancellation has
+            # not yet finished processing. In this case, the response will not contain a CDR.
+            # - see https://fe-primer.greenter.dev/docs/baja#envio-a-sunat
+            code = soap_response_decoded.get('code')
+            error_messages_map = self._l10n_pe_edi_get_cdr_error_messages()
+            error_message = '%s<br/><br/><b>%s</b>%s' % (
+                error_messages_map.get(code, _("We got an error response from the OSE. ")),
+                _('Status code: '),
+                html_escape(code),
+            )
+            return {'error': error_message, 'blocking_level': 'info'}
+
+        cdr = soap_response_decoded['cdr']
+        cdr_status = self._l10n_pe_edi_extract_cdr_status(cdr)
+
+        if cdr_status['code'] != '0':
+            return {'error': cdr_status['description'], 'blocking_level': 'error'}
+
+        return {'success': True, 'cdr': cdr}
 
     # -------------------------------------------------------------------------
     # EDI: SUNAT / DIGIFLOW services
@@ -453,15 +653,17 @@ class AccountEdiFormat(models.Model):
         return res
 
     def _l10n_pe_edi_sign_invoices_sunat_digiflow_common(self, invoice, edi_filename, edi_str, credentials):
-        self.ensure_one()
+        return self._l10n_pe_edi_sign_service_sunat_digiflow_common(
+            invoice.company_id, edi_filename, edi_str, credentials, invoice.l10n_latam_document_type_id.code)
 
-        if not invoice.company_id.l10n_pe_edi_certificate_id:
-            return {'error': _("No valid certificate found for %s company.", invoice.company_id.display_name)}
+    def _l10n_pe_edi_sign_service_sunat_digiflow_common(self, company, edi_filename, edi_str, credentials, latam_document_type):
+        if not company.l10n_pe_edi_certificate_id:
+            return {'error': _("No valid certificate found for %s company.", company.display_name)}
 
         # Sign the document.
         edi_tree = objectify.fromstring(edi_str)
-        edi_tree = invoice.company_id.l10n_pe_edi_certificate_id.sudo()._sign(edi_tree)
-        error = self.env['ir.attachment']._l10n_pe_edi_check_with_xsd(edi_tree, invoice.l10n_latam_document_type_id.code)
+        edi_tree = company.l10n_pe_edi_certificate_id.sudo()._sign(edi_tree)
+        error = self.env['ir.attachment']._l10n_pe_edi_check_with_xsd(edi_tree, latam_document_type)
         if error:
             return {'error': _('XSD validation failed: %s', error), 'blocking_level': 'error'}
         edi_str = etree.tostring(edi_tree, xml_declaration=True, encoding='ISO-8859-1')
@@ -478,8 +680,6 @@ class AccountEdiFormat(models.Model):
             )
             result = client.service.sendBill('%s.zip' % edi_filename, zip_edi_str)
             result.raise_for_status()
-        except Fault:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE07'], 'blocking_level': 'warning'}
         except ReqConnectionError:
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08'], 'blocking_level': 'warning'}
         except HTTPError:
@@ -488,21 +688,41 @@ class AccountEdiFormat(models.Model):
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE11'], 'blocking_level': 'error'}
         except ReadTimeout:
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE12'], 'blocking_level': 'warning'}
-        cdr_str = result.content
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str)
+        soap_response = result.content
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
 
-        return {'xml_document': edi_str, 'cdr': cdr_str}
+        cdr = soap_response_decoded['cdr']
+        cdr_status = self._l10n_pe_edi_extract_cdr_status(cdr)
+
+        if cdr_status['code'] != '0':
+            error_message = '%s<br/><br/><b>%s</b>' % (
+                cdr_status['description'],
+                _('This invoice number is now registered by SUNAT as invalid. Duplicate this invoice or create a new invoice to retry.')
+            )
+            return {'error': error_message, 'blocking_level': 'error'}
+
+        return {'success': True, 'xml_document': edi_str, 'cdr': cdr}
 
     def _l10n_pe_edi_sign_invoices_sunat(self, invoice, edi_filename, edi_str):
-        credentials = self._l10n_pe_edi_get_sunat_credentials(invoice.company_id)
-        return self._l10n_pe_edi_sign_invoices_sunat_digiflow_common(invoice, edi_filename, edi_str, credentials)
+        """This method calls _l10n_pe_edi_sign_service_sunat() to allow inherit this second from other models"""
+        return self._l10n_pe_edi_sign_service_sunat(invoice.company_id, edi_filename, edi_str, invoice.l10n_latam_document_type_id.code)
+
+    def _l10n_pe_edi_sign_service_sunat(self, company, edi_filename, edi_str, latam_document_type, serie=False):
+        credentials = self._l10n_pe_edi_get_sunat_credentials(company)
+        return self._l10n_pe_edi_sign_service_sunat_digiflow_common(
+            company, edi_filename, edi_str, credentials, latam_document_type)
 
     def _l10n_pe_edi_sign_invoices_digiflow(self, invoice, edi_filename, edi_str):
-        credentials = self._l10n_pe_edi_get_digiflow_credentials(invoice.company_id)
-        return self._l10n_pe_edi_sign_invoices_sunat_digiflow_common(invoice, edi_filename, edi_str, credentials)
+        # TODO: To be refactored in master
+        return self._l10n_pe_edi_sign_service_digiflow(invoice.company_id, edi_filename, edi_str, invoice.l10n_latam_document_type_id.code)
+
+    def _l10n_pe_edi_sign_service_digiflow(self, company, edi_filename, edi_str, latam_document_type, serie=False):
+        credentials = self._l10n_pe_edi_get_digiflow_credentials(company)
+        return self._l10n_pe_edi_sign_service_sunat_digiflow_common(
+            company, edi_filename, edi_str, credentials, latam_document_type)
 
     def _l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common(self, company, invoices, void_filename, void_str, credentials):
         self.ensure_one()
@@ -523,19 +743,17 @@ class AccountEdiFormat(models.Model):
             )
             result = client.service.sendSummary('%s.zip' % void_filename,  zip_void_str)
             result.raise_for_status()
-        except Fault:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE07'], 'blocking_level': 'warning'}
         except (InvalidSchema, KeyError):
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08'], 'blocking_level': 'error'}
 
-        cdr_str = result.content
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str)
-        cdr_number = cdr_decoded.get('number')
+        soap_response = result.content
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response)
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
 
-        return {'xml_document': void_str, 'cdr': cdr_str, 'cdr_number': cdr_number}
+        cdr_number = soap_response_decoded['number']
+        return {'xml_document': void_str, 'cdr': soap_response, 'cdr_number': cdr_number}
 
     def _l10n_pe_edi_cancel_invoices_step_1_sunat(self, company, invoices, void_filename, void_str):
         credentials = self._l10n_pe_edi_get_sunat_credentials(company)
@@ -560,18 +778,35 @@ class AccountEdiFormat(models.Model):
             )
             result = client.service.getStatus(cdr_number)
             result.raise_for_status()
-        except Fault:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE07'], 'blocking_level': 'warning'}
         except (InvalidSchema, KeyError):
             return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08'], 'blocking_level': 'error'}
 
-        cdr_str = result.content
-        cdr_decoded = self._l10n_pe_edi_decode_cdr(cdr_str)
+        soap_response = result.content
+        soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response)
 
-        if cdr_decoded.get('error'):
-            return {'error': cdr_decoded['error'], 'blocking_level': 'error'}
+        if soap_response_decoded.get('error'):
+            return {'error': soap_response_decoded['error'], 'blocking_level': 'error'}
 
-        return {'success': True, 'cdr': cdr_str}
+        if not soap_response_decoded.get('cdr'):
+            # The server can respond with an error code 98 which means that the cancellation has
+            # not yet finished processing. In this case, the response will not contain a CDR.
+            # - see https://fe-primer.greenter.dev/docs/baja#envio-a-sunat
+            code = soap_response_decoded.get('code')
+            error_messages_map = self._l10n_pe_edi_get_cdr_error_messages()
+            error_message = '%s<br/><br/><b>%s</b>%s' % (
+                error_messages_map.get(code, _("We got an error response from the OSE. ")),
+                _('Status code: '),
+                html_escape(code),
+            )
+            return {'error': error_message, 'blocking_level': 'info'}
+
+        cdr = soap_response_decoded['cdr']
+        cdr_status = self._l10n_pe_edi_extract_cdr_status(cdr)
+
+        if cdr_status['code'] != '0':
+            return {'error': cdr_status['description'], 'blocking_level': 'error'}
+
+        return {'success': True, 'cdr': cdr}
 
     def _l10n_pe_edi_cancel_invoices_step_2_sunat(self, company, edi_values, cdr_number):
         credentials = self._l10n_pe_edi_get_sunat_credentials(company)
@@ -592,6 +827,12 @@ class AccountEdiFormat(models.Model):
             return super()._is_required_for_invoice(invoice)
 
         return invoice.l10n_pe_edi_is_required
+
+    def _get_invoice_edi_content(self, move):
+        #OVERRIDE
+        if self.code != 'pe_ubl_2_1':
+            return super()._get_invoice_edi_content(move)
+        return self._generate_edi_invoice_bstr(move)
 
     def _needs_web_services(self):
         # OVERRIDE
@@ -637,17 +878,26 @@ class AccountEdiFormat(models.Model):
             return super()._is_compatible_with_journal(journal)
         return journal.type == 'sale' and journal.country_code == 'PE' and journal.l10n_latam_use_documents
 
-    def _post_invoice_edi(self, invoices):
-        # OVERRIDE
-        if self.code != 'pe_ubl_2_1':
-            return super()._post_invoice_edi(invoices)
+    def _generate_edi_invoice_bstr(self, invoice):
+        latam_invoice_type = self._get_latam_invoice_type(invoice.l10n_latam_document_type_id.code)
+        if not latam_invoice_type:
+            return _("Missing LATAM document code.").encode()
+        edi_values = self._l10n_pe_edi_get_edi_values(invoice)
+        return self.env.ref('l10n_pe_edi.%s' % latam_invoice_type)._render(edi_values)
 
+    def _get_latam_invoice_type(self, code):
         template_by_latam_type_mapping = {
             '07': 'pe_ubl_2_1_credit_note',
             '08': 'pe_ubl_2_1_debit_note',
             '01': 'pe_ubl_2_1_invoice',
             '03': 'pe_ubl_2_1_invoice',
         }
+        return template_by_latam_type_mapping.get(code, False)
+
+    def _post_invoice_edi(self, invoices):
+        # OVERRIDE
+        if self.code != 'pe_ubl_2_1':
+            return super()._post_invoice_edi(invoices)
 
         invoice = invoices # Batching is disabled for this EDI.
 
@@ -656,7 +906,7 @@ class AccountEdiFormat(models.Model):
             invoice.l10n_latam_document_type_id.code,
             invoice.name.replace(' ', ''),
         )
-        latam_invoice_type = template_by_latam_type_mapping.get(invoice.l10n_latam_document_type_id.code)
+        latam_invoice_type = self._get_latam_invoice_type(invoice.l10n_latam_document_type_id.code)
 
         if not latam_invoice_type:
             return {invoice: {'error': _("Missing LATAM document code.")}}
@@ -671,6 +921,7 @@ class AccountEdiFormat(models.Model):
     def _l10n_pe_edi_cancel_invoice_edi_step_1(self, invoices):
         self.ensure_one()
         certificate_date = self.env['l10n_pe_edi.certificate']._get_pe_current_datetime().date()
+        reference_date = invoices[0].invoice_date
         company = invoices[0].company_id # documents are always batched by company in account_edi.
         provider = company.l10n_pe_edi_provider
 
@@ -678,6 +929,7 @@ class AccountEdiFormat(models.Model):
         void_number = self.env['ir.sequence'].next_by_code('l10n_pe_edi.summary.sequence')
         void_values = {
             'certificate_date': certificate_date,
+            'reference_date': reference_date,
             'void_number': void_number,
             'company': company,
             'records': invoices,
@@ -699,9 +951,9 @@ class AccountEdiFormat(models.Model):
         if res.get('xml_document'):
             void_attachment = self.env['ir.attachment'].create({
                 'type': 'binary',
-                'name': '%s.zip' % void_filename,
+                'name': 'VOID-%s.xml' % void_filename,
                 'datas': base64.encodebytes(res['xml_document']),
-                'mimetype': 'application/zip',
+                'mimetype': 'application/xml',
             })
             for invoice in invoices:
                 invoice.with_context(no_new_invoice=True).message_post(

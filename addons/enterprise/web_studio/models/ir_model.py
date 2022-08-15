@@ -589,6 +589,7 @@ class IrModelField(models.Model):
 
     @api.constrains('name')
     def _check_name(self):
+        super()._check_name()
         for field in self:
             if '__' in field.name:
                 raise ValidationError(_("Custom field names cannot contain double underscores."))

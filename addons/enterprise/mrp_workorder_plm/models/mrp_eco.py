@@ -53,6 +53,6 @@ class MrpEco(models.Model):
 class MrpEcoRoutingChange(models.Model):
     _inherit = 'mrp.eco.routing.change'
 
-    quality_point_id = fields.Many2one('quality.point', 'operation_id')
+    quality_point_id = fields.Many2one('quality.point')
     step = fields.Char(related='quality_point_id.name', string='Step')
     test_type = fields.Many2one('quality.point.test_type', related='quality_point_id.test_type_id', string='Step Type')

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import math
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_round
@@ -45,6 +44,10 @@ class AccountMove(models.Model):
         posted._auto_create_asset()
         # check if we are reversing a move and delete assets of original move if it's the case
         posted._delete_reversed_entry_assets()
+
+        # close deferred expense/revenue if all their depreciation moves are posted
+        posted._close_assets()
+
         return posted
 
     def _reverse_moves(self, default_values_list=None, cancel=False):
@@ -89,6 +92,8 @@ class AccountMove(models.Model):
         for move in self:
             if any(asset_id.state != 'draft' for asset_id in move.asset_ids):
                 raise UserError(_('You cannot reset to draft an entry having a posted deferred revenue/expense'))
+            # Remove any draft asset that could be linked to the account move being reset to draft
+            move.asset_ids.filtered(lambda x: x.state == 'draft').unlink()
         return super(AccountMove, self).button_draft()
 
     def _log_depreciation_asset(self):
@@ -113,6 +118,7 @@ class AccountMove(models.Model):
                     and not move.reversed_entry_id
                     and not (move_line.currency_id or move.currency_id).is_zero(move_line.price_total)
                     and not move_line.asset_ids
+                    and not move_line.tax_line_id
                     and move_line.price_total > 0
                 ):
                     if not move_line.name:
@@ -138,7 +144,10 @@ class AccountMove(models.Model):
                         })
                     auto_validate.extend([move_line.account_id.create_asset == 'validate'] * units_quantity)
                     invoice_list.extend([move] * units_quantity)
-                    create_list.extend([vals] * units_quantity)
+                    for i in range(1, units_quantity + 1):
+                        if units_quantity > 1:
+                            vals['name'] = move_line.name + _(" (%s of %s)", i, units_quantity)
+                        create_list.extend([vals.copy()])
 
         assets = self.env['account.asset'].create(create_list)
         for asset, vals, invoice, validate in zip(assets, create_list, invoice_list, auto_validate):
@@ -264,37 +273,10 @@ class AccountMove(models.Model):
         return self.env['account.move'].create(move_vals)
 
     def open_asset_view(self):
-        ret = {
-            'name': _('Asset'),
-            'view_mode': 'form',
-            'res_model': 'account.asset',
-            'view_id': [v[0] for v in self.env['account.asset']._get_views(self.asset_asset_type) if v[1] == 'form'][0],
-            'type': 'ir.actions.act_window',
-            'res_id': self.asset_id.id,
-            'context': dict(self._context, create=False),
-        }
-        if self.asset_asset_type == 'sale':
-            ret['name'] = _('Deferred Revenue')
-        elif self.asset_asset_type == 'expense':
-            ret['name'] = _('Deferred Expense')
-        return ret
+        return self.asset_id.open_asset(['form'])
 
     def action_open_asset_ids(self):
-        ret = {
-            'name': _('Assets'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'account.asset',
-            'view_id': False,
-            'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', self.asset_ids.ids)],
-            'views': self.env['account.asset']._get_views(self.asset_ids[0].asset_type),
-        }
-        if self.asset_ids[0].asset_type == 'sale':
-            ret['name'] = _('Deferred Revenues')
-        elif self.asset_ids[0].asset_type == 'expense':
-            ret['name'] = _('Deferred Expenses')
-        return ret
+        return self.asset_ids.open_asset(['tree', 'form'])
 
     def _delete_reversed_entry_assets(self):
         ReverseKey = namedtuple('ReverseKey', ['product_id', 'price_unit', 'quantity'])
@@ -343,6 +325,11 @@ class AccountMove(models.Model):
                         asset.unlink()
                         rp_count[(line.product_id.id, line.price_unit)] -= 1
 
+    def _close_assets(self):
+        for asset in self.asset_id:
+            if asset.asset_type in ('expense', 'sale') and all(m.state == 'posted' for m in asset.depreciation_move_ids):
+                asset.write({'state': 'close'})
+
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
@@ -355,6 +342,7 @@ class AccountMoveLine(models.Model):
             'default_original_move_line_ids': [(6, False, self.env.context['active_ids'])],
             'default_company_id': self.company_id.id,
             'asset_type': asset_type,
+            'default_asset_type': asset_type,
         })
         if any(line.move_id.state == 'draft' for line in self):
             raise UserError(_("All the lines should be posted"))

@@ -83,6 +83,15 @@ class Test13thMonth(TestPayslipBase):
         self.payslip.struct_id = self.structure
         self.assertAlmostEqual(self.payslip._get_paid_amount(), contract.wage * 6 / 12, msg='It should count 6/12 months')
 
+    def test_13th_month_paid_amount_multiple_contracts_gap(self):
+        self.create_contract(date(2019, 1, 1), date(2019, 3, 31))
+        contract = self.create_contract(date(2019, 11, 1))
+        work_entries = self.employee.contract_ids._generate_work_entries(datetime(2018, 12, 31), datetime(2019, 12, 31))
+        work_entries.action_validate()
+        self.payslip.contract_id = contract
+        self.payslip.struct_id = self.structure
+        self.assertAlmostEqual(self.payslip._get_paid_amount(), 0, msg='It should count O months as the total is less than 6 months')
+
     def test_13th_month_paid_amount_multiple_contracts_middle(self):
         self.create_contract(date(2019, 1, 1), date(2019, 3, 13))  # middle of the week
         contract = self.create_contract(date(2019, 3, 14))  # starts the following day

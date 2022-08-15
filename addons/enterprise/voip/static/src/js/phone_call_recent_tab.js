@@ -48,7 +48,7 @@ const PhoneCallRecentTab = PhoneCallTab.extend({
      * @param {string} param0.number
      * @param {integer} param0.resId
      * @param {string} param0.resModel
-     * @return {Promise}
+     * @return {voip.PhoneCall}
      */
     async callFromPhoneWidget({ number, resId, resModel }) {
         const phoneCallData = await this._rpc({
@@ -58,7 +58,8 @@ const PhoneCallRecentTab = PhoneCallTab.extend({
         });
         const phoneCallId = await this._displayInQueue(phoneCallData);
         this._currentPhoneCallId = phoneCallId;
-        return this._selectPhoneCall(phoneCallId);
+        await this._selectPhoneCall(phoneCallId);
+        return this._getCurrentPhoneCall();
     },
     /**
      * @override

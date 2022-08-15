@@ -53,7 +53,7 @@ class AccountBankStatementImport(models.TransientModel):
 
         data_list = [
             line.rstrip(b'\r\n')
-            for line in io.BytesIO(data_file)
+            for line in io.BytesIO(data_file.strip())
         ]
         try:
             header = data_list[0].strip().split(b':')[1]

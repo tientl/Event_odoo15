@@ -124,7 +124,7 @@ class AccountPayment(models.Model):
 
         PmtTpInf = create_xml_node_chain(PmtInf, ['PmtTpInf','SvcLvl','Cd'], 'SEPA')[0]
         
-        sdd_scheme = self[0].sdd_mandate_id.sdd_scheme
+        sdd_scheme = self[0].sdd_mandate_id.sdd_scheme or 'CORE'
         create_xml_node_chain(PmtTpInf, ['LclInstrm','Cd'], sdd_scheme)
         
         create_xml_node(PmtTpInf, 'SeqTp', 'RCUR')
@@ -210,8 +210,8 @@ class AccountPayment(models.Model):
         return rslt
 
     @api.depends('is_internal_transfer')
-    def _compute_payment_method_fields(self):
-        return super(AccountPayment, self)._compute_payment_method_fields()
+    def _compute_payment_method_line_fields(self):
+        return super(AccountPayment, self)._compute_payment_method_line_fields()
 
     def _get_payment_method_codes_to_exclude(self):
         res = super(AccountPayment, self)._get_payment_method_codes_to_exclude()

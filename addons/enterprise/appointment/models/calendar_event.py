@@ -51,6 +51,12 @@ class CalendarEvent(models.Model):
             else:
                 self.action_archive()
 
+    def _get_mail_tz(self):
+        self.ensure_one()
+        if not self.event_tz and self.appointment_type_id.appointment_tz:
+            return self.appointment_type_id.appointment_tz
+        return super()._get_mail_tz()
+
     def _track_template(self, changes):
         res = super(CalendarEvent, self)._track_template(changes)
         if 'appointment_type_id' in changes:

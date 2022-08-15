@@ -155,7 +155,6 @@ class Document(models.Model):
         """
         self.ensure_one()
 
-        message = dict(message, id=self.id)
         if message["type"] in ["REMOTE_REVISION", "REVISION_UNDONE", "REVISION_REDONE"]:
             self._check_collaborative_spreadsheet_access("write")
             is_accepted = self._save_concurrent_revision(
@@ -230,7 +229,7 @@ class Document(models.Model):
                 self.env["spreadsheet.revision"].sudo().create(
                     {
                         "document_id": self.id,
-                        "commands": commands,
+                        "commands": json.dumps(commands),
                         "parent_revision_id": parent_revision_id,
                         "revision_id": next_revision_id,
                         "create_date": fields.Datetime.now(),
@@ -246,7 +245,7 @@ class Document(models.Model):
             _logger.info("Wrong base spreadsheet revision on %s", self)
             return False
 
-    def _build_spreadsheet_revision_data(self, message: CollaborationMessage) -> str:
+    def _build_spreadsheet_revision_data(self, message: CollaborationMessage) -> dict:
         """Prepare revision data to save in the database from
         the collaboration message.
         """
@@ -254,7 +253,7 @@ class Document(models.Model):
         message.pop("serverRevisionId", None)
         message.pop("nextRevisionId", None)
         message.pop("clientId", None)
-        return json.dumps(message)
+        return message
 
     def _build_spreadsheet_messages(self) -> List[CollaborationMessage]:
         """Build spreadsheet collaboration messages from the saved
@@ -288,7 +287,7 @@ class Document(models.Model):
     def _broadcast_spreadsheet_message(self, message: CollaborationMessage):
         """Send the message to the spreadsheet channel"""
         self.ensure_one()
-        self.env["bus.bus"]._sendone(self, 'spreadsheet', message)
+        self.env["bus.bus"]._sendone(self, 'spreadsheet', dict(message, id=self.id))
 
     def _delete_spreadsheet_revisions(self):
         """Delete spreadsheet revisions"""

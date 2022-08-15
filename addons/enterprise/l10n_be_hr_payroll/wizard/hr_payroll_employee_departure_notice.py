@@ -121,7 +121,7 @@ class HrPayslipEmployeeDepartureNotice(models.TransientModel):
                 (204, 51), (216, 54), (228, 57), (240, 60), (252, 62), (264, 63), (276, 64), (288, 65)]
         for duration in duration_notice:
             last_valid = duration[1]
-            if duration[0] > duration_worked_month:
+            if duration[0] >= duration_worked_month:
                 return last_valid
         return last_valid
 

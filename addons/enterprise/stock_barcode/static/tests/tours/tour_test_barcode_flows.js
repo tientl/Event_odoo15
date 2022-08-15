@@ -642,7 +642,7 @@ tour.register('test_internal_picking_reserved_1', {test: true}, [
             helper.assertLocationHighlight(true);
             helper.assertDestinationLocationHighlight(true);
             helper.assertPager('2/3');
-            helper.assertValidateVisible(true);
+            helper.assertValidateVisible(false);
             helper.assertValidateIsHighlighted(false);
             helper.assertValidateEnabled(false);
             var $lineproduct1 = helper.getLine({barcode: 'product1'});
@@ -673,7 +673,7 @@ tour.register('test_internal_picking_reserved_1', {test: true}, [
             helper.assertPager('1/3');
             helper.assertValidateVisible(false);
             helper.assertValidateIsHighlighted(false);
-            helper.assertValidateVisible(false);
+            helper.assertValidateEnabled(false);
             var $lineproduct1 = helper.getLine({barcode: 'product1'});
             helper.assertLineIsHighlighted($lineproduct1, false);
             var $lineproduct2 = helper.getLine({barcode: 'product2'});
@@ -1473,8 +1473,8 @@ tour.register('test_delivery_lot_with_package', {test: true}, [
             helper.assertLinesCount(1);
             helper.assertSublinesCount(2);
             helper.assertScanMessage('scan_product');
-            var $line1 = $('.o_sublines .o_barcode_line').eq(0);
-            var $line2 = $('.o_sublines .o_barcode_line').eq(1);
+            const $line1 = helper.getSubline(':eq(0)');
+            const $line2 = helper.getSubline(':eq(1)');
             helper.assert($line1.find('.o_line_lot_name').text(), 'sn1');
             helper.assert($line1.find('.fa-archive').parent().text().includes("pack_sn_1"), true);
             helper.assert($line2.find('.o_line_lot_name').text(), 'sn2');
@@ -1501,10 +1501,10 @@ tour.register('test_delivery_lot_with_package', {test: true}, [
             helper.assertLinesCount(1);
             helper.assertSublinesCount(4);
             helper.assertScanMessage('scan_product');
-            var $line1 = $('.o_sublines .o_barcode_line').eq(0);
-            var $line2 = $('.o_sublines .o_barcode_line').eq(1);
-            var $line3 = $('.o_sublines .o_barcode_line').eq(2);
-            var $line4 = $('.o_sublines .o_barcode_line').eq(3);
+            const $line1 = helper.getSubline(':eq(0)');
+            const $line2 = helper.getSubline(':eq(1)');
+            const $line3 = helper.getSubline(':eq(2)');
+            const $line4 = helper.getSubline(':eq(3)');
             helper.assert($line1.find('.o_line_lot_name').text(), 'sn4');
             helper.assert($line1.find('.fa-user-o').parent().text().trim(), "Particulier");
             helper.assert($line1.find('.fa-archive').parent().text().includes("pack_sn_2"), true);
@@ -1768,7 +1768,7 @@ tour.register('test_delivery_reserved_3', {test: true}, [
     { trigger: '.o_barcode_client_action', run: 'scan product1' },
     { trigger: '.o_barcode_client_action', run: 'scan this_is_not_a_barcode_dude' },
     {
-        trigger: '.o_barcode_line',
+        trigger: '.o_barcode_line.o_highlight',
         run: function() {
             helper.assertPageSummary('');
             helper.assertPreviousVisible(true);
@@ -2218,6 +2218,45 @@ tour.register('test_delivery_from_scratch_with_lots_1', {test: true}, [
         trigger: '.o_field_widget[name="product_id"]',
     },
 
+]);
+
+tour.register('test_delivery_from_scratch_with_common_lots_name', {test: true}, [
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan product1',
+    },
+    {
+        trigger: '.o_barcode_line',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.o_barcode_line[data-barcode="product1"] .qty-done:contains("2")',
+        run: 'scan product2',
+    },
+    {
+        trigger: '.o_barcode_line:contains("product2")',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.qty-done:contains("3")',
+        run: 'scan SUPERSN',
+    },
+    { trigger: '.o_barcode_line:contains("productserial1")' },
+    // Open the form view to trigger a save
+    { trigger: '.o_barcode_line:first-child .o_edit' },
+    { trigger: '.o_discard' },
 ]);
 
 tour.register('test_receipt_from_scratch_with_sn_1', {test: true}, [
@@ -2972,7 +3011,7 @@ tour.register('test_inventory_adjustment_tracked_product', {test: true}, [
     },
 
     {
-        trigger: ':contains("productserial1") .o_sublines .o_barcode_line:nth-child(3)',
+        trigger: ':contains("productserial1") .o_sublines .o_barcode_line:contains("serial3")',
         run: function () {
             helper.assertLinesCount(2);
             helper.assertSublinesCount(3);
@@ -3009,14 +3048,14 @@ tour.register('test_inventory_adjustment_tracked_product', {test: true}, [
         run: 'scan lot2',
     },
     {
-        trigger: '.o_barcode_client_action',
+        trigger: '.o_barcode_line .o_barcode_line.o_selected:contains("lot2")',
         run: 'scan lot3',
     },
 
     // Must have 6 lines in two groups: lot1, lot2, lot3 and serial1, serial2, serial3.
-    // Line groupd for `productlot1` should be unfolded.
+    // Grouped lines for `productlot1` should be unfolded.
     {
-        trigger: '.o_barcode_line:contains("productlot1") .o_sublines .o_barcode_line:nth-child(3)',
+        trigger: '.o_barcode_line:contains("productlot1") .o_sublines>.o_barcode_line.o_selected:contains("lot3")',
         run: function () {
             helper.assertLinesCount(2);
             helper.assertSublinesCount(3);
@@ -3262,7 +3301,6 @@ tour.register('test_pack_common_content_scan', {test: true}, [
     },
 ]);
 
-
 tour.register('test_pack_multiple_location', {test: true}, [
 
     {
@@ -3286,18 +3324,32 @@ tour.register('test_pack_multiple_location', {test: true}, [
 
     {
         trigger: '.o_package_content',
+        run: function() {
+            const $line = $('.o_barcode_lines .o_barcode_line');
+            helper.assertLineQty($line, '1');
+        },
     },
 
+    { // Scan a second time the same package => Should raise a warning.
+        trigger: '.o_current_location:contains("WH/Stock/Section 1")',
+        run: 'scan PACK0000666',
+    },
+    { // A notification is shown and the package's qty. should be unchanged.
+        trigger: '.o_notification.bg-danger',
+        run: function() {
+            const $line = $('.o_barcode_lines .o_barcode_line');
+            helper.assertLineQty($line, '1');
+        },
+    },
+
+    { trigger: '.o_package_content' },
     {
         trigger: '.o_kanban_view:contains("product1")',
         run: function () {
             helper.assertQuantsCount(2);
         },
     },
-
-    {
-        trigger: '.o_close',
-    },
+    { trigger: '.o_close' },
 
     {
         trigger: '.o_barcode_client_action',
@@ -3917,7 +3969,24 @@ tour.register('test_inventory_using_buttons', {test: true}, [
             helper.assert(Boolean(setButton), true);
         }
     },
-    // Clicks on set button: must unset the quantity.
+    // Clicks on set button: must set the inventory quantity equals to the quantity .
+    { trigger: '.o_barcode_line:contains("productserial1") .o_line_button.o_set' },
+    {
+        trigger: '.o_barcode_line.o_selected .fa-check',
+        run: function () {
+            helper.assertLinesCount(2);
+            const $line = helper.getLine({barcode: 'productserial1'});
+            helper.assertLineIsHighlighted($line, true);
+            helper.assertLineQty($line, '0');
+            helper.assertButtonIsNotVisible($line, 'add_quantity');
+            helper.assertButtonIsNotVisible($line, 'remove_unit');
+            const goodQuantitySetButton = document.querySelector('.o_selected .o_line_button.o_set > .fa-check');
+            helper.assert(Boolean(goodQuantitySetButton), true);
+            const differenceSetButton = document.querySelector('.o_selected .o_line_button.o_set.o_difference');
+            helper.assert(Boolean(differenceSetButton), false);
+        }
+    },
+    // Clicks again on set button: must unset the quantity.
     { trigger: '.o_barcode_line:contains("productserial1") .o_line_button.o_set' },
     {
         trigger: '.o_barcode_line:contains("productserial1"):contains("?")',
@@ -4071,6 +4140,120 @@ tour.register('test_inventory_using_buttons', {test: true}, [
     // Validates the inventory.
     { trigger: '.o_apply_page' },
     { trigger: '.o_notification.bg-success' }
+]);
+
+tour.register('test_show_entire_package', {test: true}, [
+    { trigger: 'button.button_operations' },
+    { trigger: '.o_kanban_record:contains(Delivery Orders)' },
+
+    // Opens picking with the package level.
+    { trigger: '.o_kanban_record:contains(Delivery with Package Level)' },
+    {
+        trigger: '.o_barcode_client_action',
+        run: function () {
+            helper.assertLinesCount(1);
+            helper.assertScanMessage('scan_product');
+            helper.assertValidateVisible(true);
+            helper.assertValidateIsHighlighted(false);
+            helper.assertValidateEnabled(true);
+            const $line = $('.o_barcode_line');
+            helper.assertLineIsHighlighted($line, false);
+            helper.assert(
+                $line.find('.o_line_button.o_package_content').length, 1,
+                "Line for package level => the button to inspect package content should be visible"
+            );
+            helper.assert($line.find('.o_barcode_line_details > div:contains(package)').text(), "package001package001");
+            helper.assert($line.find('div[name=quantity]').text(), '0/ 1');
+        },
+    },
+    { trigger: '.o_line_button.o_package_content' },
+    {
+        trigger: '.o_barcode_generic_view .o_kanban_record',
+        run: function () {
+            const records = document.querySelectorAll('.o_kanban_record:not(.o_kanban_ghost)');
+            helper.assert(records.length, 1);
+        },
+    },
+    { trigger: 'button.o_close' },
+    // Scans package001 to be sure no moves will be created but the package line will be done.
+    { trigger: '.o_barcode_lines', run: 'scan package001' },
+    {
+        trigger: '.o_barcode_line:contains("1/ 1")',
+        run: function () {
+            helper.assertLinesCount(1);
+            helper.assertScanMessage('scan_product');
+            helper.assertValidateVisible(true);
+            helper.assertValidateIsHighlighted(false);
+            helper.assertValidateEnabled(true);
+            const $line = $('.o_barcode_line');
+            helper.assertLineIsHighlighted($line, false);
+            helper.assert(
+                $line.find('.o_line_button.o_package_content').length, 1,
+                "Line for package level => the button to inspect package content should be visible"
+            );
+            helper.assert($line.find('.o_barcode_line_details > div:contains(package)').text(), "package001package001");
+            helper.assert($line.find('div[name=quantity]').text(), '1/ 1');
+        },
+    },
+    { trigger: 'button.o_exit' },
+
+    // Opens picking with the move.
+    { trigger: '.o_kanban_record:contains(Delivery with Stock Move)' },
+    {
+        trigger: '.o_barcode_client_action',
+        run: function () {
+            helper.assertLinesCount(1);
+            helper.assertScanMessage('scan_product');
+            helper.assertValidateVisible(true);
+            helper.assertValidateIsHighlighted(false);
+            helper.assertValidateEnabled(true);
+            const $line = $('.o_barcode_line');
+            helper.assertLineIsHighlighted($line, false);
+            helper.assert(
+                $line.find('.o_line_button.o_package_content').length, 0,
+                "Line for move with package => should have no button to inspect package content"
+            );
+            helper.assert($line.find('.o_barcode_line_details > div:contains(package)').text(), "package002");
+            helper.assertLineQuantityOnReservedQty(0, '0 / 2');
+        },
+    },
+]);
+
+tour.register('test_define_the_destination_package', {test: true}, [
+    {
+        trigger: '.o_line_button.o_add_quantity',
+    },
+    {
+        trigger: '.o_barcode_line .qty-done:contains("1")',
+        run: 'scan PACK02',
+    },
+    {
+        extra_trigger: '.o_barcode_line:contains("PACK02")',
+        trigger: '.btn.o_validate_page',
+    },
+    {
+        trigger: '.o_notification.bg-success',
+    },
+]);
+
+tour.register('test_avoid_useless_line_creation', {test: true}, [
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan LOT01',
+    },
+    {
+        trigger: '.o_barcode_line',
+        run: 'scan LOREM',
+    },
+    {
+        trigger: '.o_notification.bg-danger',
+        run: function () {
+            helper.assertErrorMessage('You are expected to scan one or more products.');
+        },
+    },
+    // Open the form view to trigger a save
+    { trigger: '.o_barcode_line:first-child .o_edit' },
+    { trigger: '.o_discard' },
 ]);
 
 });

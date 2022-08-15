@@ -51,4 +51,4 @@ class HrPayrollIndex(models.TransientModel):
         if self.percentage:
             for contract in self.contract_ids:
                 self._index_wage(contract)
-                contract.message_post(body=self.description, message_type="comment", subtype_xmlid="mail.mt_note")
+                contract.with_context(mail_create_nosubscribe=True).message_post(body=self.description, message_type="comment", subtype_xmlid="mail.mt_note")

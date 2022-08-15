@@ -54,14 +54,14 @@ class IrQWeb(models.AbstractModel, QWeb):
             code = [self._indent(dedent("""
                 attrs = {}
                 attrs['data-oe-context'] = values['json'].dumps({
-                    key: type(values[key]).__name__
+                    key: values[key].__class__.__name__
                     for key in values.keys()
                     if  key
                         and key != 'true'
                         and key != 'false'
                         and not key.startswith('_')
                         and ('_' not in key or key.rsplit('_', 1)[0] not in values or key.rsplit('_', 1)[1] not in ['even', 'first', 'index', 'last', 'odd', 'parity', 'size', 'value'])
-                        and (type(values[key]).__name__ not in ['LocalProxy', 'function', 'method', 'Environment', 'module', 'type'])
+                        and (values[key].__class__.__name__ not in ['LocalProxy', 'function', 'method', 'Environment', 'module', 'type'])
                 })
                 """).strip(), indent)]
 

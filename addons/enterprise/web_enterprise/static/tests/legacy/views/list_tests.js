@@ -66,6 +66,9 @@ QUnit.module('web_enterprise', {
             session: {
                 is_system: true
             },
+            action: {
+                xml_id: "action_43",
+            },
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.module.module') {
                     assert.step('studio_module_id');
@@ -137,6 +140,9 @@ QUnit.module('web_enterprise', {
             session: {
                 is_system: true
             },
+            action: {
+                xml_id: "action_43",
+            },
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.module.module') {
                     assert.step('studio_module_id');
@@ -192,6 +198,9 @@ QUnit.module('web_enterprise', {
             session: {
                 is_system: false
             },
+            action: {
+                xml_id: "action_43",
+            },
         });
         assert.containsOnce(list.$('table'), '.o_optional_columns_dropdown_toggle');
         await testUtils.dom.click(list.$('table .o_optional_columns_dropdown_toggle'));
@@ -216,8 +225,33 @@ QUnit.module('web_enterprise', {
             session: {
                 is_system: false
             },
+            action: {
+                xml_id: "action_43",
+            },
         });
         assert.containsNone(list.$('table'), '.o_optional_columns_dropdown_toggle');
+        list.destroy();
+    });
+
+    QUnit.test("add custom field button not shown with invalid action", async function (assert) {
+        assert.expect(1);
+        const list = await testUtils.createView({
+            View: ListView,
+            model: 'foo',
+            data: this.data,
+            arch: `
+                <tree>
+                    <field name="foo"/>
+                    <field name="bar"/>
+                </tree>`,
+            session: {
+                is_system: true
+            },
+            action: {
+                xml_id: null,
+            },
+        });
+        assert.containsNone(list.$('div.o_optional_columns'), 'button.dropdown-item-studio');
         list.destroy();
     });
 

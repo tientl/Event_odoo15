@@ -73,6 +73,7 @@ export class HomeMenu extends Component {
     }
 
     mounted() {
+        this.inputRef.el.focus();
         this._updateScrollBarWidth();
     }
 
@@ -83,7 +84,6 @@ export class HomeMenu extends Component {
             if (selectedItem) {
                 // Center window on the focused item
                 selectedItem.scrollIntoView({ block: "center" });
-                selectedItem.focus();
             }
         }
         this._updateScrollBarWidth();
@@ -317,6 +317,20 @@ export class HomeMenu extends Component {
 
     /**
      * @private
+     * @param {FocusEvent} ev
+     */
+    _onBlurSearch(ev) {
+        // if we blur search input to focus on body (eg. click on any
+        // non-interactive element) restore focus to avoid IME input issue
+        this.env.browser.setTimeout(() => {
+            if (document.activeElement === document.body) {
+                this.inputRef.el.focus();
+            }
+        }, 0);
+    }
+
+    /**
+     * @private
      * @param {InputEvent} ev
      */
     _onInputSearch(ev) {
@@ -348,6 +362,7 @@ export class HomeMenu extends Component {
                 break;
             case "ArrowRight":
                 if (
+                    this.state.focusedIndex == null &&
                     input === document.activeElement &&
                     input.selectionEnd < this.state.query.length
                 ) {
@@ -361,7 +376,11 @@ export class HomeMenu extends Component {
                 ev.preventDefault();
                 break;
             case "ArrowLeft":
-                if (input === document.activeElement && input.selectionStart > 0) {
+                if (
+                    this.state.focusedIndex == null &&
+                    input === document.activeElement &&
+                    input.selectionStart > 0
+                ) {
                     return;
                 }
                 this._updateFocusedIndex("previousColumn");

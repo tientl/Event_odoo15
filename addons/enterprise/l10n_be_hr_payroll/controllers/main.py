@@ -1,15 +1,39 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import re
 import io
+import logging
+import re
 
-from odoo import http, fields
-from odoo.http import request
+from odoo import http, fields, _
+from odoo.http import request, content_disposition
 from odoo.tools.misc import xlsxwriter
+
+_logger = logging.getLogger(__name__)
 
 
 class L10nBeHrPayrollEcoVoucherController(http.Controller):
+
+    @http.route(["/export/individual_accounts/<int:wizard_id>/<int:company_id>"], type='http', auth='user')
+    def export_individual_accounts(self, wizard_id, company_id):
+        wizard = request.env['l10n_be.individual.account.wizard'].browse(wizard_id).with_company(company_id)
+        if not wizard.exists() or not request.env.user.has_group('hr_payroll.group_hr_payroll_user'):
+            return request.render(
+                'http_routing.http_error', {
+                    'status_code': 'Oops',
+                    'status_message': "Please contact an administrator..."})
+
+        pdf_files = wizard._generate_files(request.env['res.company'].browse(company_id))
+        if pdf_files:
+            filename, binary = wizard._process_files(pdf_files, default_filename=_('Individual Accounts PDF') + '- %s.zip' % wizard.year, post_process=False)
+        else:
+            return request.make_response(_("There is no individual account to post for this period."))
+        return request.make_response(
+            binary,
+            headers=[
+                ('Content-Type', 'zip'),
+                ('Content-Length', len(binary)),
+                ('Content-Disposition', content_disposition(filename))])
 
     @http.route(["/export/ecovouchers/<int:wizard_id>"], type='http', auth='user')
     def export_eco_vouchers(self, wizard_id):

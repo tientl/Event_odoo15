@@ -3,7 +3,7 @@
 
 import re
 from odoo import fields, models, tools, _
-
+from odoo.exceptions import UserError
 
 class AccountGenericTaxReport(models.AbstractModel):
     _inherit = "account.generic.tax.report"
@@ -49,9 +49,11 @@ class AccountGenericTaxReport(models.AbstractModel):
         elif date_from_quarter == date_to_quarter:
             period = date_from_quarter
             declaration_type = 'TVA_DECT'
-        else:
+        elif date_from_quarter == 1 and date_to_quarter == 4:
             period = 1
             declaration_type = 'TVA_DECA'
+        else:
+            raise UserError(_('The selected period is not supported for the selected declaration type.'))
 
         lu_template_values.update({
             'forms': [{
@@ -87,15 +89,4 @@ class AccountGenericTaxReport(models.AbstractModel):
         """ Creates a new export wizard for this report."""
         new_context = self.env.context.copy()
         new_context['tax_report_options'] = options
-        tax_report = self.env['l10n_lu.generate.tax.report'].with_context(new_context).create({})
-        if tax_report.period != 'A':
-            return tax_report.get_xml()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Export'),
-            'view_mode': 'form',
-            'res_model': 'l10n_lu.generate.tax.report',
-            'target': 'new',
-            'views': [[self.env.ref('l10n_lu_reports.view_l10n_lu_generate_tax_report').id, 'form']],
-            'context': new_context,
-        }
+        return self.env['l10n_lu.generate.tax.report'].with_context(new_context).create({}).get_xml()

@@ -18,7 +18,7 @@ class AmazonAccount(models.Model):
     _name = 'amazon.account'
     _description = "Amazon Account"
     _check_company_auto = True
-    
+
     name = fields.Char("Name", help="A user-defined name for the account", required=True)
 
     base_marketplace_id = fields.Many2one(
@@ -34,7 +34,7 @@ class AmazonAccount(models.Model):
         help="The MWS Authorization Token of the Amazon Seller Central account for Odoo",
         required=True,
         groups="base.group_system")
-    
+
     available_marketplace_ids = fields.Many2many(
         'amazon.marketplace', 'amazon_account_marketplace_rel', string="Available Marketplaces",
         help="The marketplaces this account has access to", copy=False)
@@ -42,7 +42,7 @@ class AmazonAccount(models.Model):
         'amazon.marketplace', 'amazon_account_active_marketplace_rel', string="Sync Marketplaces",
         help="The marketplaces this account sells on",
         domain="[('id', 'in', available_marketplace_ids)]", copy=False)
-    
+
     user_id = fields.Many2one(
         'res.users', "Salesperson", default=lambda self: self.env.user, check_company=True)
     team_id = fields.Many2one(
@@ -61,7 +61,7 @@ class AmazonAccount(models.Model):
         help="The last synchronization date for orders placed on this account. Orders whose status "
              "has not changed since this date will not be created nor updated in Odoo.",
         default=fields.Datetime.now, required=True)
-    
+
     order_count = fields.Integer(compute='_compute_order_count')
     offer_count = fields.Integer(compute='_compute_offer_count')
     is_follow_up_displayed = fields.Boolean(compute='_compute_is_follow_up_displayed')
@@ -74,7 +74,7 @@ class AmazonAccount(models.Model):
         for account in self:
             account.order_count = len(self.env['sale.order.line'].read_group(
                 [('amazon_offer_id.account_id', '=', account.id)], ['order_id'], ['order_id']))
-    
+
     def _compute_offer_count(self):
         offers_data = self.env['amazon.offer'].read_group(
             [('account_id', 'in', self.ids)], ['account_id'], ['account_id'])
@@ -95,7 +95,7 @@ class AmazonAccount(models.Model):
         """ Remove active marketplaces that are no longer available. """
         for account in self:
             account.active_marketplace_ids &= account.available_marketplace_ids
-    
+
     @api.onchange('last_orders_sync')
     def _onchange_last_orders_sync(self):
         """ Display a warning about the possible consequences of modifying the last orders sync. """
@@ -122,16 +122,8 @@ class AmazonAccount(models.Model):
     
     @api.model
     def create(self, vals):
-        # Fetch available marketplaces and set them all as active marketplaces
-        # In the process, check the credentials and raise if they are incorrect
-        base_marketplace = self.env['amazon.marketplace'].browse([vals['base_marketplace_id']])
-        available_marketplaces, _rate_limit_reached = self._get_available_marketplaces(
-            vals['seller_key'], vals['auth_token'], base_marketplace, True)
-        vals.update(dict.fromkeys(
-            ['available_marketplace_ids', 'active_marketplace_ids'],
-            [(6, 0, available_marketplaces.ids)])
-        )
-        
+        self.update_vals_with_active_marketplaces(vals)
+
         # Find or create the location of the Amazon warehouse to be associated with this account
         location = self.env['stock.location'].search(
             [('amazon_location', '=', True), '|', ('company_id', '=', False),
@@ -159,18 +151,34 @@ class AmazonAccount(models.Model):
                 'amazon_team': True,
             })
         vals.update({'team_id': team.id})
-        
-        return super(AmazonAccount, self).create(vals)
-    
+
+        return super().create(vals)
+
+    def update_vals_with_active_marketplaces(self, vals):
+        """ Pull available marketplaces and set them all as active marketplaces.
+
+        In the process, check the credentials and raise if they are incorrect.
+        """
+        base_marketplace = self.env['amazon.marketplace'].browse([vals['base_marketplace_id']])
+        available_marketplaces, _rate_limit_reached = self._get_available_marketplaces(
+            vals['seller_key'], vals['auth_token'], base_marketplace, True)
+        vals.update(dict.fromkeys(
+            ['available_marketplace_ids', 'active_marketplace_ids'],
+            [(6, 0, available_marketplaces.ids)])
+        )
+
     def write(self, vals):
+        self.check_api_keys(vals)
+        return super().write(vals)
+
+    def check_api_keys(self, vals):
         if any(key in vals for key in ('seller_key', 'auth_token')):
             self.action_check_credentials(
                 vals.get('seller_key'), vals.get('auth_token'))
-        return super(AmazonAccount, self).write(vals)
-    
+
     def toggle_active(self):
         self.filtered(lambda a: not a.active).action_check_credentials()
-        super(AmazonAccount, self).toggle_active()
+        super().toggle_active()
 
     def action_view_offers(self):
         self.ensure_one()
@@ -195,7 +203,7 @@ class AmazonAccount(models.Model):
             'domain': [('id', 'in', order_lines.order_id.ids)],
             'context': {'create': False},
         }
-    
+
     def action_check_credentials(self, seller_key=None, auth_token=None):
         """ Check the credentials validity. Use that of the account if not passed in arguments. """
         self.check_access_rights('write')
@@ -280,17 +288,17 @@ class AmazonAccount(models.Model):
                 account.base_marketplace_id.code,
                 error_message,
                 **self._build_get_api_connector_kwargs())
-    
+
             # The last sync date of the account is used as a lower bound on the orders' last status
             # update date. The upper bound is determined by the API and disclosed in the response.
             updated_after = account.last_orders_sync  # Lower bound
             updated_before = None  # Upper bound
-    
+
             # Orders are fetched one batch (of up to 100 orders) at a time.
             # If the fetched batch is full, a next_token is generated and can be used
             # to fetch the next batch with the same query params as the previous one.
             has_next, next_token = True, None
-    
+
             # Because the rate limits of 'ListOrders' and 'ListOrdersByNextToken' operations are
             # shared, it is not possible to anticipate query throttling by the API.
             # If the rate limit is reached, the lower bound of the next query is set to the
@@ -306,7 +314,7 @@ class AmazonAccount(models.Model):
                     _logger.warning("rate limit reached when synchronizing orders of "
                                     "amazon.account with id %s" % account.id)
                     continue  # The batch is empty, there is no order items to synchronize
-        
+
                 # For each order, the items are fetched separately and a sale order is created.
                 # If the rate limit is reached when fetching the order items, the current order
                 # and all remaining orders are postponed to the next cron run.
@@ -316,8 +324,8 @@ class AmazonAccount(models.Model):
                         amazon_order_ref, rate_limit_reached, sync_failure = account._process_order(
                                 order_data, orders_api)
                         if sync_failure:
-                            account._handle_order_sync_failure(amazon_order_ref)
                             self.env.cr.rollback()
+                            account._handle_order_sync_failure(amazon_order_ref)
                             continue
                         if rate_limit_reached:
                             _logger.warning(
@@ -363,18 +371,18 @@ class AmazonAccount(models.Model):
                                     for marketplace_api_ref in available_marketplace_api_refs])
             available_marketplaces = self.env['amazon.marketplace'].search(domain)
         return available_marketplaces, rate_limit_reached
-    
+
     def _process_order(self, order_data, orders_api):
         """ Create a sale order from the data of an Amazon order. """
         self.ensure_one()
         amazon_order_ref = mwsc.get_string_value(order_data, 'AmazonOrderId')
         items_data = []
-        
+
         # Order items are fetched one batch at a time.
         # If the fetched batch is full, a next_token is generated and can be used
         # to fetch the next batch with the same query params as the previous one.
         has_next, next_token = True, None
-        
+
         # Because the rate limits of 'ListOrderItems' and 'ListOrderItemsByNextToken' are shared,
         # it is impossible to anticipate query throttling by the API. If the rate limit is reached,
         # the synchronization of all remaining orders is postponed to the next run.
@@ -386,7 +394,7 @@ class AmazonAccount(models.Model):
                 orders_api, amazon_order_ref, error_message)
             items_data += items_data_batch
             has_next = bool(next_token)
-        
+
         if not rate_limit_reached:
             try:
                 with self.env.cr.savepoint():
@@ -433,7 +441,7 @@ class AmazonAccount(models.Model):
         self.ensure_one()
         status = mwsc.get_string_value(order_data, 'OrderStatus')
         fulfillment_channel = mwsc.get_string_value(order_data, 'FulfillmentChannel')
-        
+
         order = self.env['sale.order'].search([('amazon_order_ref', '=', amazon_order_ref)], limit=1)
         order_found = bool(order)
         if not order_found and (
@@ -459,7 +467,7 @@ class AmazonAccount(models.Model):
             order_lines_vals = self._process_order_lines(
                 items_data, shipping_code, shipping_product, currency, fiscal_position,
                 marketplace_api_ref)
-            order = self.env['sale.order'].with_context(mail_create_nosubscribe=True).create({
+            order_vals = {
                 'origin': 'Amazon Order %s' % amazon_order_ref,
                 'state': state,
                 'date_order': purchase_date,
@@ -476,14 +484,19 @@ class AmazonAccount(models.Model):
                 'team_id': self.team_id.id,
                 'amazon_order_ref': amazon_order_ref,
                 'amazon_channel': 'fba' if fulfillment_channel == 'AFN' else 'fbm',
-            })
+            }
+            if self.location_id.warehouse_id:
+                order_vals['warehouse_id'] = self.location_id.warehouse_id.id
+            order = self.env['sale.order'].with_context(
+                mail_create_nosubscribe=True,
+            ).with_company(self.company_id).create(order_vals)
         return order, order_found, status
 
     def _process_order_lines(
             self, items_data, shipping_code, shipping_product, currency, fiscal_pos,
             marketplace_api_ref):
         """ Return a list of sale order line vals based on Amazon order items data. """
-        
+
         def _get_order_line_vals(**kwargs):
             """ Convert and complete a dict of values to comply with fields of sale_order_line. """
             _subtotal = kwargs.get('subtotal', 0)
@@ -499,7 +512,7 @@ class AmazonAccount(models.Model):
                 'amazon_item_ref': kwargs.get('amazon_item_ref'),
                 'amazon_offer_id': kwargs.get('amazon_offer_id'),
             }
-        
+
         self.ensure_one()
         new_order_lines_vals = []  # List of dict of values of new order lines
         for item_data in items_data:
@@ -518,13 +531,14 @@ class AmazonAccount(models.Model):
             taxes = fiscal_pos.map_tax(product_taxes)
             subtotal = sales_price - tax_amount if marketplace.tax_included else sales_price
             subtotal = self._recompute_subtotal(subtotal, tax_amount, taxes, currency, fiscal_pos)
-            
+
             description_template = "[%s] %s" \
                 if not main_condition or main_condition.lower() == 'new' \
                 else _("[%s] %s\nCondition: %s - %s")
-            description_fields = (sku, mwsc.get_string_value(item_data, 'Title')) \
+            description_fields = (sku, mwsc.get_string_value(item_data, 'Title', unescape_html=True)) \
                 if not main_condition or main_condition.lower() == 'new' \
-                else (sku, mwsc.get_string_value(item_data, 'Title'), main_condition, sub_condition)
+                else (sku, mwsc.get_string_value(item_data, 'Title', unescape_html=True), 
+                      main_condition, sub_condition)
             new_order_lines_vals.append(_get_order_line_vals(
                 product_id=offer.product_id.id,
                 description=description_template % description_fields,
@@ -556,7 +570,7 @@ class AmazonAccount(models.Model):
                             gift_wrap_code, offer.product_id.name),
                         subtotal=gift_wrap_subtotal,
                         tax_ids=gift_wrap_taxes.ids))
-                gift_message = mwsc.get_string_value(item_data, 'GiftMessageText')
+                gift_message = mwsc.get_string_value(item_data, 'GiftMessageText', unescape_html=True)
                 if gift_message:
                     new_order_lines_vals.append(_get_order_line_vals(
                         description=_("Gift message:\n%s", gift_message),
@@ -621,21 +635,40 @@ class AmazonAccount(models.Model):
         """ Find or create two partners of respective type contact and delivery from Amazon data. """
         self.ensure_one()
         anonymized_email = mwsc.get_string_value(order_data, 'BuyerEmail', False)
-        buyer_name = mwsc.get_string_value(order_data, 'BuyerName', False)
-        shipping_address_name = mwsc.get_string_value(order_data, ('ShippingAddress', 'Name'))
-        street = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine1'))
-        address_line2 = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine2'))
-        address_line3 = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine3'))
+        buyer_name = mwsc.get_string_value(order_data, 'BuyerName', False, unescape_html=True)
+        shipping_address_name = mwsc.get_string_value(order_data, ('ShippingAddress', 'Name'),
+                                                      unescape_html=True)
+        street = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine1'), 
+                                       unescape_html=True)
+        address_line2 = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine2'),
+                                       unescape_html=True)
+        address_line3 = mwsc.get_string_value(order_data, ('ShippingAddress', 'AddressLine3'),
+                                       unescape_html=True)
         street2 = "%s %s" % (address_line2, address_line3) \
             if address_line2 or address_line3 else None
         zip_code = mwsc.get_string_value(order_data, ('ShippingAddress', 'PostalCode'))
-        city = mwsc.get_string_value(order_data, ('ShippingAddress', 'City'))
+        city = mwsc.get_string_value(order_data, ('ShippingAddress', 'City'),
+                                     unescape_html=True)
         country_code = mwsc.get_string_value(order_data, ('ShippingAddress', 'CountryCode'))
         state_code = mwsc.get_string_value(order_data, ('ShippingAddress', 'StateOrRegion'))
         phone = mwsc.get_string_value(order_data, ('ShippingAddress', 'Phone'), None)
         is_company = mwsc.get_string_value(
             order_data, ('ShippingAddress', 'AddressType'), 'Residential') == 'Commercial'
 
+        country, state = self._get_country_and_state(country_code, state_code)
+        partner_vals = self._get_amazon_partner_vals(
+            street, street2, zip_code, city, country, state, phone, anonymized_email
+        )
+        contact = self._get_contact_partner(
+            buyer_name, anonymized_email, amazon_order_ref, is_company, partner_vals
+        )
+        delivery = self._get_delivery_partner(
+            contact, shipping_address_name, street, street2, zip_code, city, country, state,
+            partner_vals,
+        )
+        return contact, delivery
+
+    def _get_country_and_state(self, country_code, state_code):
         country = self.env['res.country'].search([('code', '=', country_code)], limit=1)
         state = self.env['res.country.state'].search(
             [('country_id', '=', country.id), '|', ('code', '=', state_code),
@@ -646,8 +679,12 @@ class AmazonAccount(models.Model):
                 'name': state_code,
                 'code': state_code
             })
+        return country, state
 
-        new_partner_vals = {
+    def _get_amazon_partner_vals(
+        self, street, street2, zip_code, city, country, state, phone, anonymized_email
+    ):
+        return {
             'street': street,
             'street2': street2,
             'zip': zip_code,
@@ -660,13 +697,25 @@ class AmazonAccount(models.Model):
             'amazon_email': anonymized_email,
         }
 
-        # The contact partner is searched based on all the personal information and only if the
-        # amazon email is provided. A match thus only occurs if the customer had already made a
-        # previous order and if the personal information provided by the API did not change in the
-        # meantime. If there is no match, a new contact partner is created. This behavior is
-        # preferred over updating the personal information with new values because it allows using
-        # the correct contact details when invoicing the customer for an earlier order, should there
-        # be a change in the personal information.
+    def _get_contact_partner(
+        self, buyer_name, anonymized_email, amazon_order_ref, is_company, partner_vals
+    ):
+        """ Get the contact partner or create a new one.
+
+        The contact partner is searched based on all the personal information and only if the
+        amazon email is provided. A match thus only occurs if the customer had already made a
+        previous order and if the personal information provided by the API did not change in the
+        meantime. If there is no match, a new contact partner is created. This behavior is
+        preferred over updating the personal information with new values because it allows using
+        the correct contact details when invoicing the customer for an earlier order, should there
+        be a change in the personal information.
+
+        :param str buyer_name: name of the contact partner
+        :param str anonymized_email: amazon address mail of the contact partner
+        :param str amazon_order_ref: amazon order reference
+        :param bool is_company: either or not the contact is a company
+        :param dict partner_vals: other values for the contact partner
+        """
         contact = self.env['res.partner'].search(
             [
                 ('type', '=', 'contact'),
@@ -679,35 +728,64 @@ class AmazonAccount(models.Model):
             contact = self.env['res.partner'].with_context(tracking_disable=True).create({
                 'name': contact_name,
                 'is_company': is_company,
-                **new_partner_vals,
+                **partner_vals,
             })
-        # The contact partner acts as delivery partner if the address is strictly equal to that of
-        # the contact partner. If not, a delivery partner is created.
-        delivery = contact if (contact.name == shipping_address_name and contact.street == street
-                                  and (not contact.street2 or contact.street2 == street2)
-                                  and contact.zip == zip_code and contact.city == city
-                                  and contact.country_id.id == country.id
-                                  and contact.state_id.id == state.id) else None
+        return contact
+
+    def _get_delivery_partner(
+        self, contact, shipping_address_name, street, street2, zip_code, city, country, state,
+        partner_vals
+    ):
+        """ Get the delivery partner or create a new one.
+
+        The contact partner acts as delivery partner if the address is strictly equal to that of
+        the contact partner. If not, a delivery partner is created.
+
+        :param record of `res.partner` contact: the contact partner
+        :param str shipping_address_name: name of the delivery partner
+        :param str street: first line of the delivery address
+        :param str street2: second line of the delivery address
+        :param str zip_code: zip_code of the delivery address
+        :param str city: city of the delivery address
+        :param record of `res.country` country: country of the delivery address
+        :param record of `res.country.state` street2: state of the delivery address
+        :param dict partner_vals: other values for the delivery partner
+        """
+        delivery = contact if (
+            contact.name == shipping_address_name
+            and contact.street == street
+            and (not contact.street2 or contact.street2 == street2)
+            and contact.zip == zip_code
+            and contact.city == city
+            and contact.country_id.id == country.id
+            and contact.state_id.id == state.id
+        ) else None
         if not delivery:
-            delivery = self.env['res.partner'].search(
-                [('parent_id', '=', contact.id), ('type', '=', 'delivery'),
-                 ('name', '=', shipping_address_name), ('street', '=', street),
-                 '|', ('street2', '=', False), ('street2', '=', street2), ('zip', '=', zip_code),
-                 ('city', '=', city), ('country_id', '=', country.id), ('state_id', '=', state.id),
-                 '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)], limit=1)
+            delivery = self.env['res.partner'].search([
+                ('parent_id', '=', contact.id),
+                ('type', '=', 'delivery'),
+                ('name', '=', shipping_address_name),
+                ('street', '=', street),
+                '|', ('street2', '=', False), ('street2', '=', street2),
+                ('zip', '=', zip_code),
+                ('city', '=', city),
+                ('country_id', '=', country.id),
+                ('state_id', '=', state.id),
+                '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
+            ], limit=1)
         if not delivery:
             delivery = self.env['res.partner'].with_context(tracking_disable=True).create({
                 'name': shipping_address_name,
                 'type': 'delivery',
                 'parent_id': contact.id,
-                **new_partner_vals,
+                **partner_vals,
             })
-        return contact, delivery
+        return delivery
 
     def _get_offer(self, sku, marketplace):
         """ Find or create an amazon offer from the SKU. """
         self.ensure_one()
-        
+
         offer = self.env['amazon.offer'].search(
             [('sku', '=', sku), ('account_id', '=', self.id)], limit=1)
         if not offer:
@@ -752,7 +830,7 @@ class AmazonAccount(models.Model):
             if tax.price_include:
                 subtotal += tax_res['amount']
         return subtotal
-    
+
     def _generate_stock_moves(self, order):
         """ Generate a stock move for each product of a sale order. """
         customers_location = self.env.ref('stock.stock_location_customers')
@@ -773,11 +851,12 @@ class AmazonAccount(models.Model):
             stock_move._set_quantity_done(order_line.product_uom_qty)
             stock_move._action_done()
 
-    def _handle_order_sync_failure(self, amazon_order_ref):
+    def _handle_order_sync_failure(self, amazon_order_ref, log=True):
         """ Send a mail to the responsibles to report an order synchronization failure. """
-        _logger.exception(
-            "failed to synchronize order with amazon id %s for amazon.account with "
-            "id %s (seller id %s)" % (amazon_order_ref, self.id, self.seller_key))
+        if log:
+            _logger.exception(
+                "failed to synchronize order with amazon id %s for amazon.account with "
+                "id %s (seller id %s)", amazon_order_ref, self.id, self.seller_key)
         mail_template = self.env.ref('sale_amazon.order_sync_failure', raise_if_not_found=False)
         if not mail_template:
             _logger.warning("the mail template with xmlid sale_amazon.order_sync_failure has "

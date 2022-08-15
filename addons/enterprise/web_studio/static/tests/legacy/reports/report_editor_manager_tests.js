@@ -5,6 +5,7 @@ var ace = require('web_editor.ace');
 const ajax = require('web.ajax');
 var config = require('web.config');
 const core = require('web.core');
+const { Markup } = require('web.utils');
 var MediaDialog = require('wysiwyg.widgets.MediaDialog');
 var testUtils = require('web.test_utils');
 var testUtilsDom = require('web.test_utils_dom');
@@ -949,6 +950,78 @@ QUnit.module('ReportEditorManager', {
             done();
         });
     });
+    QUnit.test('drag & drop components with corrected p inside p', async function (assert) {
+        const done = assert.async();
+        assert.expect(9);
+
+        this.templates.push({
+            key: 'template1',
+            view_id: 55,
+            arch:
+                '<kikou>' +
+                    '<t t-name="template1">' +
+                        '<p class="root_p">hello ' +
+                            '<p class="child_p">world</p>' +
+                            '<t t-out="note"/>' +
+                        '</p>' +
+                    '</t>' +
+                '</kikou>',
+        });
+
+        const templateData = {
+          note: Markup('<p class="html_field_p">!</p>'),
+        };
+
+        const rem = await studioTestUtils.createReportEditorManager({
+            data: this.data,
+            models: this.models,
+            env: {
+                modelName: 'kikou',
+                ids: [42, 43],
+                currentId: 42,
+            },
+            report: {
+                report_name: 'awesome_report',
+            },
+            reportHTML: studioTestUtils.getReportHTML(this.templates, templateData),
+            reportViews: studioTestUtils.getReportViews(this.templates, templateData),
+            reportMainViewID: 42,
+        });
+
+        await rem.editorIframeDef.then(async function () {
+            let $page = rem.$('iframe').contents().find('.page');
+
+            assert.containsOnce($page, '> .root_p[data-oe-id]');
+            assert.containsOnce($page, '> .child_p[data-oe-id]');
+            assert.containsOnce($page, '> .html_field_p:not([data-oe-id])');
+
+            // drag and drop a Field component
+            await testUtils.dom.click(rem.$('.o_web_studio_sidebar .o_web_studio_sidebar_header div[name="new"]'));
+            const $field = rem.$('.o_web_studio_sidebar .o_web_studio_component:contains(Field):eq(0)');
+            await testUtils.dom.dragAndDrop($field, $page.find('.root_p'));
+
+            // hook after p inside the template, but not after p in html field
+            assert.containsOnce($page, '.root_p + .o_web_studio_hook');
+            assert.containsOnce($page, '.child_p + .o_web_studio_hook');
+            assert.containsNone($page, '.html_field_p + .o_web_studio_hook');
+
+            // cancel the field selection
+            await testUtils.dom.click($('.o_web_studio_field_modal .btn-secondary'));
+
+            // drag and drop a Field & Text component
+            await testUtils.dom.click(rem.$('.o_web_studio_sidebar .o_web_studio_sidebar_header div[name="new"]'));
+            const $fieldAndLabel = rem.$('.o_web_studio_sidebar .o_web_studio_component:contains(Field & Label):eq(0)');
+            await testUtils.dom.dragAndDrop($fieldAndLabel, $page.find('.root_p'));
+
+            // hook after p inside the template, but not after p in html field
+            assert.containsOnce($page, '.root_p + .o_web_studio_structure_hook');
+            assert.containsOnce($page, '.child_p + .o_web_studio_structure_hook');
+            assert.containsNone($page, '.html_field_p + .o_web_studio_structure_hook');
+
+            rem.destroy();
+            done();
+        });
+    });
 
     QUnit.test('drag & drop field block', async function (assert) {
         assert.expect(7);
@@ -1697,52 +1770,9 @@ QUnit.module('ReportEditorManager', {
                         content:
                             '<div class="row">' +
                                 '<div class="col-5">' +
-                                    '<table class="table table-sm o_report_block_total">' +
-                                        '<t t-set="total_currency_id" t-value="o.currency_id"/>' +
-                                        '<t t-set="total_amount_total" t-value="o.amount_total"/>' +
-                                        '<t t-set="total_amount_untaxed" t-value="o.amount_untaxed"/>' +
-                                        '<t t-set="total_amount_by_groups" t-value="o.amount_by_group"/>' +
-                                        '<tr class="border-black o_subtotal">' +
-                                        '<td><strong>Subtotal</strong></td>' +
-                                        '<td class="text-right">' +
-                                            '<span t-esc="total_amount_untaxed" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                                        '</td>' +
-                                        '</tr>' +
-                                        '<t t-foreach="total_amount_by_groups" t-as="total_amount_by_group">' +
-                                            '<tr>' +
-                                                '<t t-if="len(total_amount_by_group) == 1 and total_amount_untaxed == total_amount_by_group[2]">' +
-                                                    '<td><span t-esc="total_amount_by_group[0]"/></td>' +
-                                                    '<td class="text-right o_price_total">' +
-                                                        '<span t-esc="total_amount_by_group[3]"/>' +
-                                                    '</td>' +
-                                                '</t>' +
-                                                '<t t-else="">' +
-                                                    '<td>' +
-                                                        '<span t-esc="total_amount_by_group[0]"/>' +
-                                                        '<span><span>on</span>' +
-                                                            '<t t-esc="total_amount_by_group[4]"/>' +
-                                                        '</span>' +
-                                                    '</td>' +
-                                                    '<td class="text-right o_price_total">' +
-                                                        '<span t-esc="total_amount_by_group[3]"/>' +
-                                                    '</td>' +
-                                                '</t>' +
-                                            '</tr>' +
-                                        '</t>' +
-                                        '<t t-if="total_amount_by_groups is None">' +
-                                            '<tr>' +
-                                                '<td>Taxes</td>' +
-                                                '<td class="text-right">' +
-                                                    '<span t-esc="total_amount_total - total_amount_untaxed" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                                                '</td>' +
-                                            '</tr>' +
-                                        '</t>' +
-                                        '<tr class="border-black o_total">' +
-                                            '<td><strong>Total</strong></td>' +
-                                            '<td class="text-right">' +
-                                                '<span t-esc="total_amount_total" t-options="{\'widget\': \'monetary\', \'display_currency\': total_currency_id}"/>' +
-                                            '</td>' +
-                                        '</tr>' +
+                                    '<table class="table table-sm">' +
+                                        '<t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>' +
+                                        '<t t-call="account.document_tax_totals"/>' +
                                     '</table>' +
                                 '</div>' +
                                 '<div class="col-5 offset-2"></div>' +
@@ -2152,8 +2182,10 @@ QUnit.module('ReportEditorManager', {
             await testUtils.dom.click(rem.$('iframe').contents().find('span'));
 
             var $editable = rem.$('.o_web_studio_sidebar .card.o_web_studio_active .note-editable');
+            // The editor will always wrap lone Inline Elements into Paragraphs.
+            var $editableFirstP = $editable.find('>p');
 
-            assert.strictEqual($editable.html(), 'taratata <strong>bo</strong>', 'Should display the text content');
+            assert.strictEqual($editableFirstP.html(), 'taratata <strong>bo</strong>', 'Should display the text content');
 
             $editable.mousedown();
             await testUtils.nextTick();
@@ -2610,6 +2642,62 @@ QUnit.module('ReportEditorManager', {
             rem.destroy();
             done();
         });
+    });
+
+    QUnit.test('preselect appropriate value in t-if dialog', async function (assert) {
+        //Checks that using 'in' operator with '()' does not unnecessarily trigger a view change
+        assert.expect(1);
+        var self = this;
+
+        this.templates.push({
+            key: 'template1',
+            view_id: 55,
+            arch:
+                '<kikou>' +
+                    '<t t-name="template1">' +
+                        '<div class="class1">' +
+                        `<span t-if="true or o in ('foo','bar')">First span</span>` +
+                        '</div>' +
+                    '</t>' +
+                '</kikou>',
+        });
+
+        var templateData = {
+            dataOeContext: '{"docs": "model.test", "o": "model.test"}'
+        };
+
+        var rem = await studioTestUtils.createReportEditorManager({
+            data: this.data,
+            models: this.models,
+            env: {
+                modelName: 'kikou',
+                ids: [42],
+                currentId: 42,
+            },
+            report: {
+                report_name: 'awesome_report',
+            },
+            mockRPC: function (route, args) {
+                if (route === '/web_studio/edit_report_view') {
+                    assert.step('edit_report_view');
+                    return Promise.resolve({
+                        report_html: studioTestUtils.getReportHTML(self.templates),
+                        views: studioTestUtils.getReportViews(self.templates),
+                    });
+                }
+                return this._super.apply(this, arguments);
+            },
+            reportHTML: studioTestUtils.getReportHTML(this.templates, templateData),
+            reportViews: studioTestUtils.getReportViews(this.templates),
+            reportMainViewID: 42,
+        });
+
+        await rem.editorIframeDef;
+        await testUtils.dom.click(rem.$('iframe').contents().find('span:contains(First span)'));
+        await testUtils.dom.click(rem.$('.card.o_web_studio_active .o_field_domain_dialog_button'));
+        await testUtils.dom.click($('body.modal-open .modal-footer button.btn-primary'));
+        assert.verifySteps([], "Shouldn't have changed the view");
+        rem.destroy();
     });
 
 });

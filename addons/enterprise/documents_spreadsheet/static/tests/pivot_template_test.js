@@ -22,6 +22,7 @@ import {
     getCellFormula,
     createSpreadsheetTemplate,
     createSpreadsheet,
+    waitForEvaluation,
 } from "./spreadsheet_test_utils";
 import { createWebClient, doAction } from "@web/../tests/webclient/helpers";
 import { patchWithCleanup } from "@web/../tests/helpers/utils";
@@ -31,6 +32,7 @@ import { spreadsheetService } from "../src/actions/spreadsheet/spreadsheet_servi
 
 const { Model } = spreadsheet;
 const { topbarMenuRegistry } = spreadsheet.registries;
+const { createEmptyWorkbookData } = spreadsheet.helpers;
 const { jsonToBase64, base64ToJson } = pivotUtils;
 
 const { module, test } = QUnit;
@@ -53,7 +55,7 @@ async function convertFormula(config) {
         evalContext: { env },
     });
 
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     setCellContent(model, "A1", `=${config.formula}`);
     model.dispatch(config.convert);
     // Remove the equal sign
@@ -825,11 +827,11 @@ module(
                                 );
                                 assert.ok(context.default_thumbnail);
                                 assert.equal(
-                                    cells.A3.formula.text,
+                                    cells.A3.content,
                                     `=PIVOT.HEADER("1","product_id",PIVOT.POSITION("1","product_id",1))`
                                 );
                                 assert.equal(
-                                    cells.B3.formula.text,
+                                    cells.B3.content,
                                     `=PIVOT("1","probability","product_id",PIVOT.POSITION("1","product_id",1),"bar","110")`
                                 );
                                 assert.equal(cells.A11.content, "😃");
@@ -1330,6 +1332,53 @@ module(
             kanban.destroy();
         });
 
+        test("Can create a blank spreadsheet from template dialog", async function (assert) {
+            const kanban = await createDocumentsView({
+                View: DocumentsKanbanView,
+                model: "documents.document",
+                data: this.data,
+                arch: `
+                    <kanban><templates><t t-name="kanban-box">
+                        <field name="name"/>
+                    </t></templates></kanban>
+                `,
+                archs: {
+                    "spreadsheet.template,false,search": `<search><field name="name"/></search>`,
+                },
+                mockRPC: function (route, args) {
+                    if (args.method === "create" && args.model === "documents.document") {
+                        assert.step("create_sheet");
+                        assert.deepEqual(
+                            JSON.parse(args.args[0].raw),
+                            createEmptyWorkbookData("Sheet1"),
+                            "It should be an empty spreadsheet"
+                        )
+                        assert.equal(
+                            args.args[0].name,
+                            "Untitled spreadsheet",
+                            "It should have the default name"
+                        );
+                    }
+                    return this._super(...arguments);
+                },
+                intercepts: {
+                    do_action: function (ev) {
+                        assert.step("redirect");
+                        assert.equal(ev.data.action.tag, "action_open_spreadsheet");
+                    },
+                },
+            });
+
+            await dom.click(".o_documents_kanban_spreadsheet");
+            const dialog = document.querySelector(".o-spreadsheet-templates-dialog");
+
+            // select blank spreadsheet
+            await dom.triggerEvent(dialog.querySelectorAll(".o-template img")[0], "focus");
+            await dom.click(dialog.querySelector(".o-spreadsheet-create"));
+            assert.verifySteps(["create_sheet", "redirect"]);
+            kanban.destroy();
+        });
+
         test("Will convert additional template position to empty cell", async function (assert) {
             assert.expect(5);
             const data = Object.assign({}, this.data);
@@ -1391,7 +1440,7 @@ module(
                     },
                 },
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
 
             // 2. Set a template position which is too high
             // there are other pivot headers on row 1

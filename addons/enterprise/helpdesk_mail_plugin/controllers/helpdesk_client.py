@@ -19,7 +19,11 @@ class HelpdeskClientController(http.Controller):
             'name': html2plaintext(email_subject),
             'partner_id': partner_id,
             'description': email_body,
-            'user_id': request.env.uid
+            'user_id': request.env.uid,
+            # we don't rely on default values because we want to trigger the ticket acknowledgement email
+            # there is an advanced processing on the "create" method to determine the stage based on the team
+            # (see 'helpdesk.ticket#create' and 'helpdesk.ticket#_track_template')
+            'team_id': request.env['helpdesk.ticket']._default_team_id(),
         })
 
         return {'ticket_id': record.id}

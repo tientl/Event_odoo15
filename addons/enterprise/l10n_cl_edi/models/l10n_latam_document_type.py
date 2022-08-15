@@ -14,7 +14,7 @@ class L10nLatamDocumentType(models.Model):
         return self.code in ['39', '41']
 
     def _is_doc_type_voucher(self):
-        return self.code in ['35', '39', '906', '45', '70', '71']
+        return self.code in ['35', '39', '41', '906', '45', '70', '71']
 
     def _is_doc_type_exempt(self):
         return self.code in ['34', '110', '111', '112']

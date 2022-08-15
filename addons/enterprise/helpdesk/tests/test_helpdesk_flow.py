@@ -323,3 +323,46 @@ Content-Transfer-Encoding: quoted-printable
         #sla policy must be applied
         self.assertTrue(sla in ticket_2.sla_status_ids.mapped('sla_id'))
         self.assertTrue(sla in ticket_3.sla_status_ids.mapped('sla_id'))
+
+    def test_team_privacy_and_visibility_member_ids(self):
+        User = self.env['res.users']
+        Ticket = self.env['helpdesk.ticket']
+
+        ticket = Ticket.with_user(self.helpdesk_manager).create({
+            'name': 'partner ticket 1',
+            'team_id': self.test_team.id,
+        })
+
+        # ensure when privacy is 'user', user can access the ticket
+        self.assertEqual(self.test_team.privacy, 'user')
+        self.assertEqual(self.test_team.visibility_member_ids, User)
+        tickets = Ticket.with_user(self.helpdesk_user).search([('team_id', '=', self.test_team.id)])
+        self.assertTrue(ticket in tickets)
+
+        # Ensure that when privacy is 'invite', user can access the ticket if no visibility_member_ids
+        self.test_team.write({'privacy': 'invite'})
+
+        self.assertEqual(self.test_team.visibility_member_ids, User)
+        tickets = Ticket.with_user(self.helpdesk_user).search([('team_id', '=', self.test_team.id)])
+        self.assertTrue(ticket in tickets)
+
+        # Ensure that when privacy is 'invite', user can't access the ticket if user not in visibility_member_ids
+        self.test_team.write({'visibility_member_ids': self.helpdesk_manager})
+
+        self.assertEqual(self.test_team.visibility_member_ids, self.helpdesk_manager)
+        tickets = Ticket.with_user(self.helpdesk_user).search([('team_id', '=', self.test_team.id)])
+        self.assertTrue(ticket not in tickets)
+
+        # Ensure that when privacy is 'invite', user can access the ticket if user in visibility_member_ids
+        self.test_team.write({'visibility_member_ids': self.helpdesk_user})
+
+        self.assertEqual(self.test_team.visibility_member_ids, self.helpdesk_user)
+        tickets = Ticket.with_user(self.helpdesk_user).search([('team_id', '=', self.test_team.id)])
+        self.assertTrue(ticket in tickets)
+
+        # ensure when privacy is 'user', user can access the ticket and visibility_member_ids is emptied
+        self.test_team.write({'privacy': 'user'})
+
+        self.assertEqual(self.test_team.visibility_member_ids, User)
+        tickets = Ticket.with_user(self.helpdesk_user).search([('team_id', '=', self.test_team.id)])
+        self.assertTrue(ticket in tickets)

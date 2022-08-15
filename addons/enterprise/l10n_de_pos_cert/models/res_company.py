@@ -56,7 +56,7 @@ class ResCompany(models.Model):
             auth_response = requests.post(url + '/auth', json={
                 'api_secret': self.sudo().l10n_de_fiskaly_api_secret,
                 'api_key': self.sudo().l10n_de_fiskaly_api_key
-            }, timeout=5)
+            }, timeout=300)
             if auth_response.status_code == 401:
                 raise ValidationError(_("The combination of your Fiskaly API key and secret is incorrect. " \
                                         "Please update them in your company settings"))
@@ -66,7 +66,7 @@ class ResCompany(models.Model):
 
     def _l10n_de_fiskaly_kassensichv_rpc(self, method, path, json=None, version=2, recursive=False):
         try:
-            timeout = 5
+            timeout = 300
             url, headers = self._l10n_de_fiskaly_kassensichv_auth(version)
             if method == 'GET':
                 res = requests.get(url + path, headers=headers, timeout=timeout)
@@ -97,7 +97,7 @@ class ResCompany(models.Model):
             auth_response = requests.post(url + '/auth', json={
                 'api_secret': self.sudo().l10n_de_fiskaly_api_secret,
                 'api_key': self.sudo().l10n_de_fiskaly_api_key
-            }, timeout=5)
+            }, timeout=300)
             if auth_response.status_code == 401:
                 raise ValidationError(_("The combination of your Fiskaly API key and secret is incorrect. " \
                                         "Please update them in your company settings"))
@@ -105,8 +105,9 @@ class ResCompany(models.Model):
         headers = {'Authorization': 'Bearer ' + self.sudo().l10n_de_fiskaly_dsfinvk_token}
         return url, headers
 
-    def _l10n_de_fiskaly_dsfinvk_rpc(self, method, path, json=None, timeout=5, version=0, recursive=False):
+    def _l10n_de_fiskaly_dsfinvk_rpc(self, method, path, json=None, version=0, recursive=False):
         try:
+            timeout = 300
             url, headers = self._l10n_de_fiskaly_dsfinvk_auth(version)
             if method == 'GET':
                 res = requests.get(url + path, headers=headers, timeout=timeout)
@@ -116,7 +117,7 @@ class ResCompany(models.Model):
                 raise UserError(_('Invalid method'))
             if res.status_code == 401 and not recursive:
                 self.sudo().l10n_de_fiskaly_dsfinvk_token = None
-                res = self._l10n_de_fiskaly_dsfinvk_rpc(method, path, json, timeout, version, True)
+                res = self._l10n_de_fiskaly_dsfinvk_rpc(method, path, json, version, True)
             return res
         except ConnectionError:
             raise UserError(_("Connection lost between Odoo and Fiskaly."))
@@ -139,14 +140,10 @@ class ResCompany(models.Model):
             raise ValidationError(_("The street should not be empty"))
         if not self.zip or not self.zip.strip():
             raise ValidationError(_("The zip should not be empty"))
-        if not self.zip or not self.city.strip():
+        if not self.city or not self.city.strip():
             raise ValidationError(_("The city should not be empty"))
         if not self.vat or not self.vat.strip():
             raise ValidationError(_("The VAT should not be empty"))
-        if not self.l10n_de_stnr or not self.l10n_de_stnr.strip():
-            raise ValidationError(_("The St.-Nr should not be empty"))
-        if not self.l10n_de_widnr or not self.l10n_de_widnr.strip():
-            raise ValidationError(_("The W-IdNr should not be empty"))
 
     def _l10n_de_create_db_payload(self):
         params = {
@@ -169,8 +166,8 @@ class ResCompany(models.Model):
             'display_name': self.name,
             'address_line2': self.street2,
             'vat_id': self.vat,
-            'tax_number': self.l10n_de_stnr,
-            'economy_id': self.l10n_de_widnr
+            'tax_number': self.l10n_de_stnr if self.l10n_de_stnr else '',
+            'economy_id': self.l10n_de_widnr if self.l10n_de_widnr else '',
         }
 
         return {'data': data, **self._l10n_de_create_db_payload()}

@@ -30,6 +30,7 @@ export default class BarcodePickingModel extends BarcodeModel {
             this.destLocationList.push(this.cache.getRecord('stock.location', id));
         });
         this._useReservation = this.initialState.lines.some(line => line.product_uom_qty);
+        this.displayPutInPackButton = this.groups.group_tracking_lot;
     }
 
     async changeDestinationLocation(id, moveScannedLineOnly) {
@@ -215,7 +216,7 @@ export default class BarcodePickingModel extends BarcodeModel {
     }
 
     get printButtons() {
-        return [
+        const buttons = [
             {
                 name: _t("Print Picking Operations"),
                 class: 'o_print_picking',
@@ -230,6 +231,20 @@ export default class BarcodePickingModel extends BarcodeModel {
                 method: 'action_print_barcode_pdf',
             },
         ];
+        const picking_type_code = this.record.picking_type_code;
+        const picking_state = this.record.state;
+        if ( (picking_type_code === 'incoming') && (picking_state === 'done') ||
+             (picking_type_code === 'outgoing') && (picking_state !== 'done') ||
+             (picking_type_code === 'internal')
+           ) {
+            buttons.push({
+                name: _t("Scrap"),
+                class: 'o_scrap',
+                method: 'button_scrap',
+            });
+        }
+
+        return buttons;
     }
 
     get selectedLine() {
@@ -247,6 +262,11 @@ export default class BarcodePickingModel extends BarcodeModel {
     // -------------------------------------------------------------------------
     // Private
     // -------------------------------------------------------------------------
+
+    async _assignEmptyPackage(line, resultPackage) {
+        const fieldsParams = this._convertDataToFieldsParams({ resultPackage });
+        await this.updateLine(line, fieldsParams);
+    }
 
     _getNewLineDefaultContext() {
         const picking = this.cache.getRecord(this.params.model, this.params.id);
@@ -278,6 +298,15 @@ export default class BarcodePickingModel extends BarcodeModel {
         await super._changePage(...arguments);
         this.currentDestLocationId = this.page.destinationLocationId;
         this.highlightDestinationLocation = false;
+    }
+
+    async _closeValidate(ev) {
+        const record = await this.orm.read(this.params.model, [this.record.id], ["state"])
+        if (record[0].state === 'done') {
+            // If all is OK, displays a notification and goes back to the previous page.
+            this.notification.add(this.validateMessage, { type: 'success' });
+            this.trigger('history-back');
+        }
     }
 
     _convertDataToFieldsParams(args) {
@@ -346,8 +375,6 @@ export default class BarcodePickingModel extends BarcodeModel {
             }
             lines.push(Object.assign({}, smlData));
         }
-        // Sorts lines by source location (important to have a deterministic pages' order).
-        lines.sort((l1, l2) => l1.location_id < l2.location_id ? -1 : 0);
         return lines;
     }
 
@@ -492,6 +519,24 @@ export default class BarcodePickingModel extends BarcodeModel {
         )) {
             return; // No package, package's type or package's name => Nothing to do.
         }
+        // If move entire package, checks if the scanned package matches a package line.
+        if (this._moveEntirePackage()) {
+            for (const packageLine of this.packageLines) {
+                if (packageLine.package_id.name !== (packageName || recPackage.name)) {
+                    continue;
+                }
+                barcodeData.stopped = true;
+                if (packageLine.qty_done) {
+                    const message = _t("This package is already scanned.");
+                    return this.notification.add(message, { type: 'danger' });
+                }
+                for (const line of packageLine.lines) {
+                    await this._updateLineQty(line, { qty_done: line.product_uom_qty });
+                    this._markLineAsDirty(line);
+                }
+                return this.trigger('update');
+            }
+        }
         // Scanned a package: fetches package's quant and creates a line for
         // each of them, except if the package is already scanned.
         // TODO: can check if quants already in cache to avoid to make a RPC if
@@ -504,11 +549,8 @@ export default class BarcodePickingModel extends BarcodeModel {
         const quants = res.records['stock.quant'];
         if (!quants.length) { // Empty package => Assigns it to the last scanned line.
             const currentLine = this.selectedLine || this.lastScannedLine;
-            if (currentLine && !currentLine.package_id && !currentLine.result_package_id) {
-                const fieldsParams = this._convertDataToFieldsParams({
-                    resultPackage: recPackage,
-                });
-                await this.updateLine(currentLine, fieldsParams);
+            if (currentLine && !currentLine.result_package_id) {
+                await this._assignEmptyPackage(currentLine, recPackage);
                 barcodeData.stopped = true;
                 this.selectedLineVirtualId = false;
                 this.lastScannedPackage = recPackage.id;
@@ -579,6 +621,7 @@ export default class BarcodePickingModel extends BarcodeModel {
             await this._putInPack(additionalContext);
         } else if (resultPackage.package_type_id.id !== packageType.id) {
             // Changes the package type for the scanned one.
+            await this.save();
             await this.orm.write('stock.quant.package', [resultPackage.id], {
                 package_type_id: packageType.id,
             });
@@ -648,17 +691,18 @@ export default class BarcodePickingModel extends BarcodeModel {
             if (args.uom) {
                 // An UoM was passed alongside the quantity, needs to check it's
                 // compatible with the product's UoM.
-                const productUOM = this.cache.getRecord('uom.uom', line.product_id.uom_id);
-                if (args.uom.category_id !== productUOM.category_id) {
+                const lineUOM = line.product_uom_id;
+                if (args.uom.category_id !== lineUOM.category_id) {
                     // Not the same UoM's category -> Can't be converted.
                     const message = sprintf(
-                        _t("Scanned quantity uses %s as Unit of Measure, but this UoM is not compatible with the product's one (%s)."),
-                        args.uom.name, productUOM.name
+                        _t("Scanned quantity uses %s as Unit of Measure, but this UoM is not compatible with the line's one (%s)."),
+                        args.uom.name, lineUOM.name
                     );
                     return this.notification.add(message, { title: _t("Wrong Unit of Measure"), type: 'danger' });
-                } else if (args.uom.id !== productUOM.id) {
+                } else if (args.uom.id !== lineUOM.id) {
                     // Compatible but not the same UoM => Need a conversion.
-                    args.qty_done = (args.qty_done / args.uom.factor) * productUOM.factor;
+                    args.qty_done = (args.qty_done / args.uom.factor) * lineUOM.factor;
+                    args.uom = lineUOM;
                 }
             }
             line.qty_done += args.qty_done;

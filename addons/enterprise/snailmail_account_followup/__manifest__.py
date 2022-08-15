@@ -27,7 +27,7 @@ Extension to send follow-up documents by post
         'snailmail_account_followup.followup_report_assets_snailmail': [
             ('include', 'web._assets_helpers'),
             'web/static/lib/bootstrap/scss/_variables.scss',
-            'snailmail_account_followup/static/src/scss/snailmail_account_followup_asset.scss',
+            'snailmail_account_followup/static/src/scss/snailmail_account_reports_followup_asset.scss',
         ],
         'web.assets_qweb': [
             'snailmail_account_followup/static/src/xml/**/*',

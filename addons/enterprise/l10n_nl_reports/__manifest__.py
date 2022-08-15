@@ -77,8 +77,10 @@
     'depends': ['l10n_nl', 'account_reports'],
     'data': [
         'data/account_financial_report_profit_loss.xml',
+        'data/account_financial_report_balance_sheet.xml',
         'data/account_financial_report_intrastat.xml',
         'data/xml_audit_file_3_2.xml',
+        'data/xml_audit_file_3_2_v2.xml',
     ],
     'installable': True,
     'auto_install': True,

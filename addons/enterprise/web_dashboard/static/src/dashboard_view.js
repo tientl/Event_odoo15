@@ -94,7 +94,12 @@ export class DashboardView extends Component {
 
     async willStart() {
         let loadViewProms = [];
-        let additionalMeasures = this.aggregates.map((a) => a.field);
+        let additionalMeasures = this.aggregates
+            .filter((a) => {
+                const { type } = this.props.fields[a.field];
+                return type === "many2one";
+            })
+            .map((a) => a.field);
 
         const allViews = Object.entries(this.subViews);
         if (!allViews.length) {
@@ -160,18 +165,18 @@ export class DashboardView extends Component {
     }
 
     async willUpdateProps(nextProps) {
-        if (this.currentMeasure) {
-            const states = this.callRecordedCallbacks("__getLocalState__");
-            Object.entries(this.subViews).forEach(([viewType, subView]) => {
-                subView.state = states[viewType];
-                subView.state.metaData = Object.assign({}, subView.state.metaData);
+        const states = this.callRecordedCallbacks("__getLocalState__");
+        Object.entries(this.subViews).forEach(([viewType, subView]) => {
+            subView.state = states[viewType];
+            subView.state.metaData = Object.assign({}, subView.state.metaData);
+            if (this.currentMeasure) {
                 if (viewType === "graph" || viewType === "cohort") {
                     subView.state.metaData.measure = this.currentMeasure;
                 } else if (viewType === "pivot") {
                     subView.state.metaData.activeMeasures = [this.currentMeasure];
                 }
-            });
-        }
+            }
+        });
 
         const { comparison, domain } = nextProps;
         for (const [type, subView] of Object.entries(this.subViews)) {
@@ -196,9 +201,13 @@ export class DashboardView extends Component {
         for (const [viewType, subView] of Object.entries(this.subViews)) {
             const callbacks = subView.callbackRecorders[name]._callbacks;
             if (callbacks.length) {
-                result[viewType] = callbacks.reduce((res, c) => {
+                const res = callbacks.reduce((res, c) => {
                     return { ...res, ...c.callback() };
                 }, {});
+                if (name === "__getGlobalState__") {
+                    delete res.useSampleModel;
+                }
+                result[viewType] = res;
             }
         }
         return result;
@@ -225,12 +234,11 @@ export class DashboardView extends Component {
      */
     getViewProps(viewType) {
         const subView = this.subViews[viewType];
-        return Object.assign(
+        const viewProps =  Object.assign(
             {
                 domain: this.props.domain,
                 comparison: this.props.comparison,
                 resModel: this.props.resModel,
-                context: Object.assign({}, this.props.context),
                 searchViewArch: this.props.info.searchViewArch,
                 searchViewFields: this.props.info.searchViewFields,
                 type: viewType,
@@ -244,6 +252,16 @@ export class DashboardView extends Component {
                 state: subView.state,
             }
         );
+        // LEGACY CODE: with legacy code removed, we will be sure search defaults cannot be found
+        // here (the WithSearch component remove search defaults keys from the view globalContext)
+        for (const key in viewProps.context) {
+            const searchDefaultMatch = /^search_default_(.*)$/.exec(key);
+            if (searchDefaultMatch) {
+                delete viewProps.context[key];
+                continue;
+            }
+        }
+        return viewProps;
     }
 
     /**

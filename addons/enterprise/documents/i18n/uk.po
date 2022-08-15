@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2022-01-24 08:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2021\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -64,19 +64,31 @@ msgid ", expired on"
 msgstr ", протерміновано на"
 
 #. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+". Scanned files will appear automatically in your workspace. Then, process "
+"your documents in bulk with the split tool: launch user defined actions, "
+"request a signature, convert to vendor bills with AI, etc."
+msgstr ""
+". Відскановані файли автоматично з’являться у вашому робочому просторі. "
+"Потім масово обробляйте свої документи за допомогою інструмента розділення: "
+"запускайте дії, визначені користувачем, запитуйте підпис, конвертуйте в "
+"рахунки постачальника за допомогою штучного інтелекту тощо."
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2020"
-msgstr "2020"
+msgid "2021"
+msgstr "2021"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2021"
-msgstr ""
+msgid "2022"
+msgstr "2022"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
-msgstr ""
+msgstr "<b class=\"tip_title\">Порада: Станьте безпаперовою компанією</b>"
 
 #. module: documents
 #: code:addons/documents/controllers/main.py:0
@@ -327,6 +339,106 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"                    <tbody>\n"
+"                        <!-- HEADER -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\">\n"
+"                                        <span style=\"font-size: 10px;\">\n"
+"                                            Запит на документ: <br/>\n"
+"                                            <t t-if=\"object.name\">\n"
+"                                                <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Вхідні фінансові документи</span>\n"
+"                                            </t>\n"
+"                                        </span><br/>\n"
+"                                    </td><td valign=\"middle\" align=\"right\">\n"
+"                                        <img t-attf-src=\"/logo.png?company={{ object.create_uid.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.create_uid.company_id.name\"/>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- CONTENT -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                                        <div>\n"
+"                                            Вітаємо <t t-out=\"object.owner_id.name or ''\">OdooBot</t>,\n"
+"                                            <br/><br/>\n"
+"                                            <t t-out=\"object.create_uid.name or ''\">OdooBot</t> (<t t-out=\"object.create_uid.email or ''\">odoobot@example.com</t>) просить вас надати наступні документи:\n"
+"                                            <br/><br/>\n"
+"                                            <center>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.name\">\n"
+"                                                        <b t-out=\"object.name or ''\">Вхідні фінансові документи</b>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.activity_note\">\n"
+"                                                        <i t-out=\"object.activity_note or ''\">Приклад примітки.</i>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <br/>\n"
+"                                                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                    <a t-att-href=\"object.full_url\" style=\"background-color: #875A7B; padding: 20px 30px 20px 30px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                                        Завантажте запитувані документи\n"
+"                                                    </a>\n"
+"                                                </div>\n"
+"                                            </center><br/>\n"
+"                                            Надайте нам документ, поки не минув термін дії посилання (заплановано на <t t-out=\"object.date_deadline or ''\">2021-05-17</t>).\n"
+"                                            <t t-if=\"user and user.signature\">\n"
+"                                                <br/>\n"
+"                                                <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                                                <br/>\n"
+"                                            </t>\n"
+"                                        </div>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- FOOTER -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\" align=\"left\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.name or ''\">YourCompany</t>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.email\">\n"
+"                                            | <a t-attf-href=\"'mailto:%s' % {{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                                        </t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.website\">\n"
+"                                            | <a t-attf-href=\"'%s' % {{ object.create_uid.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.website or ''\">http://www.example.com</a>\n"
+"                                        </t>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </tbody>\n"
+"                    </table>\n"
+"                    </td></tr>\n"
+"                    <!-- POWERED BY -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                          <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"                            <t t-if=\"object.date_deadline\">\n"
+"                                Термін дії цього посилання до <b t-out=\"object.date_deadline or ''\">2021-05-17</b>.<br/>\n"
+"                            </t>\n"
+"                            Зроблено <a target=\"_blank\" href=\"https://www.odoo.com/app/documents\" style=\"color: #875A7B;\">Документами Odoo</a>\n"
+"                          </td></tr>\n"
+"                        </table>\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_defaults
@@ -552,7 +664,16 @@ msgstr "Дозволяє вам керувати вашими документа
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Already linked Documents"
+msgstr "Документи вже з посиланням"
+
+#. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+"An easy way to process incoming mails is to configure your scanner to send "
+"PDFs to"
 msgstr ""
+"Простий спосіб обробки вхідних листів – налаштувати сканер на надсилання "
+"PDF-файлів"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
@@ -569,16 +690,6 @@ msgstr ""
 "через інструмент розпиття: запустіть визначені користувачем дії, надішліть "
 "запит на підпис, конвертуйте рахунки постачальників за допомогою штучного "
 "інтелекту тощо."
-
-#. module: documents
-#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
-msgid ""
-"An easy way to process incoming mails is to configure your scanner to send "
-"PDFs to {{ record.alias_id.display_name }}. Scanned files will appear "
-"automatically in your workspace. Then, process your documents in bulk with "
-"the split tool: launch user defined actions, request a signature, convert to"
-" vendor bills with AI, etc."
-msgstr ""
 
 #. module: documents
 #. openerp-web
@@ -606,7 +717,7 @@ msgstr "Заархівовано"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Are you confirm deletion ?"
-msgstr ""
+msgstr "Ви підтверджуєте видалення?"
 
 #. module: documents
 #. openerp-web
@@ -674,6 +785,10 @@ msgid ""
 "class=\"o_folder_description_alias\"><strong>inbox-financial</strong> email "
 "alias</span>."
 msgstr ""
+"Автоматизуйте вашу вхідну скриньку, використовуючи відскановані документи "
+"або електронні листи, надіслані на псевдонім пошти <span "
+"class=\"o_folder_description_alias\"><strong>inbox-"
+"financial</strong></span>."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__available_rule_ids
@@ -744,7 +859,7 @@ msgstr "Checksum/SHA1"
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
-msgstr ""
+msgstr "Оберіть дію для створення посилання"
 
 #. module: documents
 #. openerp-web
@@ -796,7 +911,7 @@ msgstr "Налаштування"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Configure Email Servers"
-msgstr ""
+msgstr "Налаштуйте поштові сервери"
 
 #. module: documents
 #: model:ir.model,name:documents.model_res_partner
@@ -985,6 +1100,7 @@ msgstr "Запит на документ"
 msgid ""
 "Document Request {{ object.name != False and ': '+ object.name or '' }}"
 msgstr ""
+"Запит на документ {{ object.name != False and ': '+ object.name or '' }}"
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
@@ -997,7 +1113,7 @@ msgstr "Запит на документ: %s Завантажив: %s"
 #. module: documents
 #: model:mail.template,name:documents.mail_template_document_request
 msgid "Document Request: Send by email"
-msgstr ""
+msgstr "Запит на документ: надіслати через email"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
@@ -1037,7 +1153,7 @@ msgstr "Документи"
 #. module: documents
 #: model:ir.model,name:documents.model_documents_link_to_record_wizard
 msgid "Documents Link to Record"
-msgstr ""
+msgstr "Документи пов'язані із записом"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_share
@@ -1123,7 +1239,7 @@ msgstr "Тип виконання"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Edit the linked Record"
-msgstr ""
+msgstr "Редагувати пов'язаний запис"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__email_cc
@@ -1229,7 +1345,7 @@ msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Generate URL"
-msgstr ""
+msgstr "Створити URL"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
@@ -1261,7 +1377,7 @@ msgstr "HR"
 #: model:ir.model.fields,field_description:documents.field_documents_document__has_message
 #: model:ir.model.fields,field_description:documents.field_documents_share__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Є повідомлення"
 
 #. module: documents
 #. openerp-web
@@ -1351,6 +1467,9 @@ msgid ""
 "Incoming letters sent to <span class=\"o_folder_description_alias\">inbox "
 "email alias</span> will be added to your inbox automatically."
 msgstr ""
+"Вхідні листи надіслані на <span "
+"class=\"o_folder_description_alias\">псевдонім вхідної пошти</span> будуть "
+"автоматично додані до вашої вхідної скриньки."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__index_content
@@ -1365,7 +1484,7 @@ msgstr "Внутрішній"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_editable_attachment
 msgid "Is Editable Attachment"
-msgstr ""
+msgstr "Прикріплення, що редагується"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_favorited
@@ -1462,6 +1581,8 @@ msgid ""
 "Let's tag this mail as legal<br/> <i>Tips: actions can be tailored to your "
 "process, according to the workspace.</i>"
 msgstr ""
+"Позначте цей лист, як юридичний<br/> <i>Порада: дії можна адаптувати до "
+"вашого процесу, відповідно до папки.</i>"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific
@@ -1471,7 +1592,7 @@ msgstr "Обмежте групи читання документів власн
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific_write
 msgid "Limit Write Groups to the documents of which they are owner."
-msgstr ""
+msgstr "Обмежте групи запису документами, власниками яких вони є."
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_link_to_record_form_view
@@ -1481,7 +1602,7 @@ msgstr "Посилання"
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_rule__create_model__link_to_record
 msgid "Link to record"
-msgstr ""
+msgstr "Пов'язати із записом"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__email_cc
@@ -1675,7 +1796,7 @@ msgstr "Нова група"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Наступна подія календаря дій"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_date_deadline
@@ -1790,7 +1911,7 @@ msgstr ""
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Or send emails to"
-msgstr ""
+msgstr "Або надсилайте електронні листи на адресу"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_other
@@ -1806,7 +1927,7 @@ msgstr "Лише власні документи"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__user_specific_write
 msgid "Own Documents Only (Write)"
-msgstr ""
+msgstr "Лише власні документи (Запис)"
 
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_folder_check_user_specific
@@ -1814,6 +1935,8 @@ msgid ""
 "Own Documents Only may not be enabled for write groups if it is not enabled "
 "for read groups."
 msgstr ""
+"Лише власні документи не можна ввімкнути для груп запису, якщо це не "
+"ввімкнено для груп читання."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__owner_id
@@ -2078,8 +2201,8 @@ msgstr "Послідовність"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2021 Contracts"
-msgstr ""
+msgid "Set As 2022 Contracts"
+msgstr "Встановити як Контракти 2022"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__partner_id
@@ -2198,7 +2321,7 @@ msgstr "Розмір"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__link_model
 msgid "Specific Model Linked"
-msgstr ""
+msgstr "Спеціальна модель пов'язана"
 
 #. module: documents
 #. openerp-web
@@ -2396,6 +2519,7 @@ msgstr "Ескіз"
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
 msgstr ""
+"Примітка: налаштуйте ваш сканер для відправки документів на цю адресу."
 
 #. module: documents
 #: model:digest.tip,name:documents.digest_tip_documents_0
@@ -2423,7 +2547,7 @@ msgstr "Підказка"
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__is_editable_attachment
 msgid "True if we can edit the link attachment."
-msgstr ""
+msgstr "True, якщо ми можемо редагувати посилання прикріплення."
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__type
@@ -2489,8 +2613,8 @@ msgstr "Завантажити"
 #. module: documents
 #: model_terms:ir.actions.act_window,help:documents.document_action
 msgid ""
-"Upload <span class=\"font-weight-normal\">a file or</span> drag <span class"
-"=\"font-weight-normal\">it here.</span>"
+"Upload <span class=\"font-weight-normal\">a file or</span> drag <span "
+"class=\"font-weight-normal\">it here.</span>"
 msgstr ""
 "Завантажте <span class=\"font-weight-normal\">файл або</span> перетягніть "
 "<span class=\"font-weight-normal\">його сюди.</span>"
@@ -2511,7 +2635,7 @@ msgstr "Завантажити через Email"
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
-msgstr ""
+msgstr "Запит на завантаження файлу"
 
 #. module: documents
 #: model:res.groups,name:documents.group_documents_user
@@ -2744,22 +2868,22 @@ msgstr "напр., Фінанси"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
 msgid "e.g. Missing Expense"
-msgstr ""
+msgstr "напр., Відстуні витрати"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "e.g. Status"
-msgstr ""
+msgstr "напр., Статус"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "e.g. To Validate"
-msgstr ""
+msgstr "напр., Затвердити"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "e.g. Validate document"
-msgstr ""
+msgstr "напр., Затвердіть документ"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_upload_url_view
@@ -2769,7 +2893,7 @@ msgstr "напр., https://www.youtube.com/watch?v=CP96yVnXNrY"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_link_to_record_wizard__is_readonly_model
 msgid "is_readonly_model"
-msgstr ""
+msgstr "is_readonly_model"
 
 #. module: documents
 #. openerp-web
@@ -2804,7 +2928,7 @@ msgstr "поділився"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "status code: %s, message: %s"
-msgstr ""
+msgstr "код статусу: %s, повідомлення: %s"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban

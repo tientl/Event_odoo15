@@ -13,5 +13,8 @@
         'views/delivery_dhl_view.xml',
         'views/res_config_settings_views.xml',
     ],
+    'demo': [
+        'demo/demo.xml',
+    ],
     'license': 'OEEL-1',
 }

@@ -52,3 +52,6 @@ class MassMailing(models.Model):
             res['campaign_id'] = activity.campaign_id.utm_campaign_id.id
             res['source_id'] = activity.utm_source_id.id
         return res
+
+    def _get_seen_list_extra(self):
+        return ('LEFT JOIN marketing_trace m ON (s.marketing_trace_id = m.id)', 'AND (m.is_test IS NULL OR m.is_test = false)')

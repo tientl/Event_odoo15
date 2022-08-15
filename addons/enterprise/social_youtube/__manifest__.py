@@ -17,7 +17,7 @@
         'views/social_stream_post_views.xml',
         'views/social_youtube_templates.xml',
     ],
-    # 'auto_install': True,  # temporarily disabled until approved by YouTube
+    'auto_install': True,
     'assets': {
         'web.assets_backend': [
             'social_youtube/static/src/scss/social_youtube.scss',

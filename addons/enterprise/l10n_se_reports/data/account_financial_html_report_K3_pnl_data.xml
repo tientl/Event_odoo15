@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        K3, Main FORMS      -->
+        <!--        Profit and Loss report  by cost type    -->
+        <record id="account_financial_report_pnl_by_cost" model="account.financial.html.report">
+            <field name="name">Profit and Loss</field>
+            <field name="analytic" eval="False"/>
+            <field name="unfold_all_filter" eval="True"/>
+            <field name="show_journal_filter" eval="True"/>
+            <field name="country_id" ref="base.se"/>
+            <field name='parent_id' ref="l10n_se.account_reports_se_statements_menu"/>
+        </record>
+
+        <record id="action_account_report_se_pnl" model="ir.actions.client">
+            <field name="name">Profit and Loss</field>
+            <field name="tag">account_report</field>
+            <field name="context"
+                   eval="{'model': 'account.financial.html.report', 'id': ref('account_financial_report_pnl_by_cost')}"/>
+        </record>
+        <record id="account_financial_report_bs_EL_10106020" model="account.financial.html.report.line">
+            <field name="action_id" ref='action_account_report_se_pnl'/>
+        </record>
+
+        <record id="account_financial_report_pnl_by_cost_I_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Operating income, stock changes, etc.</field>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="code">SE_PNL_I_TOTAL</field>
+            <field name="sequence">1</field>
+            <field name="formulas">SE_PNL_C_1 + SE_PNL_C_2 + SE_PNL_C_3 + SE_PNL_C_4</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_se.account_tag_31'))]"/>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_1" model="account.financial.html.report.line">
+            <field name="name">Net sales</field>
+            <field name="code">SE_PNL_C_1</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_I_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '30%'),
+                   '|', ('account_id.code', '=like', '31%'),
+                   '|', ('account_id.code', '=like', '32%'),
+                   '|', ('account_id.code', '=like', '33%'), 
+                   '|', ('account_id.code', '=like', '34%'),
+                   '|', ('account_id.code', '=like', '35%'),
+                   '|', ('account_id.code', '=like', '36%'), 
+                   ('account_id.code', '=like', '37%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_2" model="account.financial.html.report.line">
+            <field name="name">Changes in inventory</field>
+            <field name="code">SE_PNL_C_2</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_I_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   ('account_id.code', '=like', '49%'),
+                   '!', ('account_id.code', '=like', '492%'),
+                   '!', ('account_id.code', '=like', '491%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_3" model="account.financial.html.report.line">
+            <field name="name">Work for own account</field>
+            <field name="code">SE_PNL_C_3</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_I_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '38%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_4" model="account.financial.html.report.line">
+            <field name="name">Other operating income</field>
+            <field name="code">SE_PNL_C_4</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_I_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '39%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_pnl_by_cost_K_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Operating costs</field>
+            <field name="code">SE_PNL_K_TOTAL</field>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="formulas">SE_PNL_C_5 + SE_PNL_C_6 + SE_PNL_C_7 + SE_PNL_C_8 + SE_PNL_C_9 + SE_PNL_C_10</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_se.account_tag_32'))]"/>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_5" model="account.financial.html.report.line">
+            <field name="name">Raw materials and consumables</field>
+            <field name="code">SE_PNL_C_5</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '40%'),
+                   '|', ('account_id.code', '=like', '41%'),
+                   '|', ('account_id.code', '=like', '42%'),
+                   '|', ('account_id.code', '=like', '43%'), 
+                   '|', ('account_id.code', '=like', '44%'),
+                   '|', ('account_id.code', '=like', '45%'),
+                   '|', ('account_id.code', '=like', '46%'),
+                   '|', ('account_id.code', '=like', '47%'),
+                   '|', ('account_id.code', '=like', '491%'),
+                   '|', ('account_id.code', '=like', '492%'),
+                   ('account_id.code', '=like', '493%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_6" model="account.financial.html.report.line">
+            <field name="name">Other external expenses</field>
+            <field name="code">SE_PNL_C_6</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="['|', ('account_id.code', '=like', '5%'), ('account_id.code', '=like', '6%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_7" model="account.financial.html.report.line">
+            <field name="name">Personnel costs</field>
+            <field name="code">SE_PNL_C_7</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '70%'),
+                   '|', ('account_id.code', '=like', '71%'),
+                   '|', ('account_id.code', '=like', '72%'),
+                   '|', ('account_id.code', '=like', '73%'), 
+                   '|', ('account_id.code', '=like', '74%'),
+                   '|', ('account_id.code', '=like', '75%'), 
+                   ('account_id.code', '=like', '76%')]"/>
+            <field name="formulas">-sum</field>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_8" model="account.financial.html.report.line">
+            <field name="name">Depreciation and write-downs of tangible and intangible non-current assets</field>
+            <field name="code">SE_PNL_C_8</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+            '|', ('account_id.code', '=like', '771%'),
+            '|', ('account_id.code', '=like', '772%'),
+            '|', ('account_id.code', '=like', '773%'),
+            '|', ('account_id.code', '=like', '776%'), 
+            '|', ('account_id.code', '=like', '777%'),
+            '|', ('account_id.code', '=like', '778%'), 
+            ('account_id.code', '=like', '78%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_9" model="account.financial.html.report.line">
+            <field name="name">Depreciation of current assets in addition to normal depreciation</field>
+            <field name="code">SE_PNL_C_9</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '774%'),
+                   ('account_id.code', '=like', '779%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_10" model="account.financial.html.report.line">
+            <field name="name">Other operating expenses</field>
+            <field name="code">SE_PNL_C_10</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_K_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '79%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_pnl_by_cost_RR_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Operating results</field>
+            <field name="code">SE_PNL_RR_TOTAL</field>
+            <field name="formulas">SE_PNL_I_TOTAL + SE_PNL_K_TOTAL</field>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_FP_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Financial items</field>
+            <field name="code">SE_PNL_FP_TOTAL</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_se.account_tag_33'))]"/>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="formulas">SE_PNL_C_11 + SE_PNL_C_12 + SE_PNL_C_13 + SE_PNL_C_14 + SE_PNL_C_15 + SE_PNL_C_16 + SE_PNL_C_17</field>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_11" model="account.financial.html.report.line">
+            <field name="name">Income from shares in group companies</field>
+            <field name="code">SE_PNL_C_11</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '801%'),
+                   '|', ('account_id.code', '=like', '802%'),
+                   '|', ('account_id.code', '=like', '803%'),
+                   '|', ('account_id.code', '=like', '804%'),
+                   '|', ('account_id.code', '=like', '805%'),
+                   ('account_id.code', '=like', '806%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_12" model="account.financial.html.report.line">
+            <field name="name">Income from shares in associated companies and jointly controlled companies</field>
+            <field name="code">SE_PNL_C_12</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '811%'),
+                   '|', ('account_id.code', '=like', '812%'),
+                   ('account_id.code', '=like', '813%'),
+                   ('account_id.code', '!=', '8113'),
+                   ('account_id.code', '!=', '8118'),
+                   ('account_id.code', '!=', '8123'),
+                   ('account_id.code', '!=', '8133')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_13" model="account.financial.html.report.line">
+            <field name="name">Income from other companies in which there is an ownership interest</field>
+            <field name="code">SE_PNL_C_13</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                    ('account_id.code', '=', '8113'),
+                    ('account_id.code', '=', '8118'),
+                    ('account_id.code', '=', '8123'),
+                    ('account_id.code', '=', '8133')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_14" model="account.financial.html.report.line">
+            <field name="name">Income from other securities and receivables that are non-current assets</field>
+            <field name="code">SE_PNL_C_14</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '821%'),
+                    '|', ('account_id.code', '=like', '822%'),
+                    '|', ('account_id.code', '=like', '823%'),
+                    '|', ('account_id.code', '=like', '824%'),
+                    '|', ('account_id.code', '=like', '825%'),
+                    '|', ('account_id.code', '=like', '826%'),
+                    ('account_id.code', '=like', '829%'),]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_15" model="account.financial.html.report.line">
+            <field name="name">Other interest income and similar income</field>
+            <field name="code">SE_PNL_C_15</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '831%'),
+                   '|', ('account_id.code', '=like', '832%'),
+                   '|', ('account_id.code', '=like', '833%'),
+                   '|', ('account_id.code', '=like', '834%'),
+                   '|', ('account_id.code', '=like', '835%'),
+                   '|', ('account_id.code', '=like', '836%'),
+                   ('account_id.code', '=like', '839%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_16" model="account.financial.html.report.line">
+            <field name="name">Depreciation of financial non-current assets and short-term investments</field>
+            <field name="code">SE_PNL_C_16</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '807%'),
+                   '|', ('account_id.code', '=like', '808%'),
+                   '|', ('account_id.code', '=like', '817%'),
+                   '|', ('account_id.code', '=like', '818%'),
+                   '|', ('account_id.code', '=like', '827%'),
+                   '|', ('account_id.code', '=like', '828%'),
+                   '|', ('account_id.code', '=like', '837%'),
+                   ('account_id.code', '=like', '838%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_17" model="account.financial.html.report.line">
+            <field name="name">Interest expenses and similar expenses</field>
+            <field name="code">SE_PNL_C_17</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_FP_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                    ('account_id.code', '=like', '84%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_pnl_by_cost_C_18" model="account.financial.html.report.line">
+            <field name="name">Year-end appropriations</field>
+            <field name="code">SE_PNL_C_18</field>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                    ('account_id.code', '=like', '88%')]"/>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_se.account_tag_34'))]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_RS_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Taxes</field>
+            <field name="code">SE_PNL_RS_TOTAL</field>
+            <field name="formulas">SE_PNL_C_19 + SE_PNL_C_20</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_se.account_tag_35'))]"/>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="level" eval="0"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_19" model="account.financial.html.report.line">
+            <field name="name">Tax on this year's profit</field>
+            <field name="code">SE_PNL_C_19</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_RS_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                   '|', ('account_id.code', '=like', '891%'),
+                   '|', ('account_id.code', '=like', '892%'),
+                   ('account_id.code', '=like', '893%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_C_20" model="account.financial.html.report.line">
+            <field name="name">Other taxes</field>
+            <field name="code">SE_PNL_C_20</field>
+            <field name="parent_id" ref="account_financial_report_pnl_by_cost_RS_TOTAL"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                     '|', ('account_id.code', '=like', '894%'),
+                     ('account_id.code', '=like', '898%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+        </record>
+        <record id="account_financial_report_pnl_by_cost_TOTAL" model="account.financial.html.report.line">
+            <field name="name">Year-end results</field>
+            <field name="code">SE_PNL_TOTAL</field>
+            <field name="financial_report_id" ref="account_financial_report_pnl_by_cost"/>
+            <field name="formulas">SE_PNL_RR_TOTAL + SE_PNL_FP_TOTAL + SE_PNL_C_18 + SE_PNL_RS_TOTAL</field>
+            <field name="level" eval="0"/>
+        </record>
+    </data>
+</odoo>

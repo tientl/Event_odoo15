@@ -28,3 +28,15 @@ class PublisherWarrantyContract(AbstractModel):
         except Exception:
             msg["maintenance"]["errors"] = ['cloc/error']
         return msg
+
+    @api.model
+    def _get_verbose_maintenance(self):
+        """ can be called by a SA to debug cloc issue
+            Without runing odoo-bin cloc which is not always possible
+        """
+        c = cloc.Cloc()
+        c.count_env(self.env)
+        return {
+            "modules_count": c.modules,
+            "modules_excluded": c.excluded,
+        }

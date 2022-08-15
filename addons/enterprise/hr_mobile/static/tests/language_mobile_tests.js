@@ -11,7 +11,8 @@ odoo.define('hr_mobile.language_mobile_tests', function (require) {
     const { createView } = testUtils;
 
     const MY_IMAGE = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
-    
+    const BASE64_PNG_HEADER = "iVBORw0KGg";
+
     QUnit.module('hr_mobile', {
         beforeEach() {
             this.data = {
@@ -31,15 +32,18 @@ odoo.define('hr_mobile.language_mobile_tests', function (require) {
             mobile.methods.updateAccount = function (options) {
                 const { avatar, name, username } = options;
                 assert.ok("should call updateAccount");
-                assert.strictEqual(avatar, MY_IMAGE, "should have a base64 encoded avatar");
+                assert.ok(avatar.startsWith(BASE64_PNG_HEADER), "should have a PNG base64 encoded avatar");
                 assert.strictEqual(name, "Marc Demo");
                 assert.strictEqual(username, "demo");
                 return Promise.resolve();
             };
 
             testUtils.mock.patch(session, {
-                fetchAvatar() {
-                    return Promise.resolve(base64ToBlob(MY_IMAGE, 'image/png'));
+                url(path) {
+                    if (path === '/web/image') {
+                        return `data:image/png;base64,${MY_IMAGE}`;
+                    }
+                    return this._super(...arguments);
                 },
             });
 

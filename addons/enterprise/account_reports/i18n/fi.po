@@ -10,32 +10,45 @@
 # Topi Aura <topi@aurat.fi>, 2021
 # Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2021
 # Tommi Rintala <tommi.rintala@gmail.com>, 2021
-# Martin Trigaux, 2021
 # Kari Lindgren <kari.lindgren@emsystems.fi>, 2021
 # Miku Laitinen <miku.laitinen@gmail.com>, 2021
 # Jussi Lehto <jussi@gulfeo.com>, 2021
 # Mikko Salmela <salmemik@gmail.com>, 2021
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2021
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2021
 # Veikko Väätäjä <veikko.vaataja@gmail.com>, 2021
-# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2021
 # Retropikzel, 2021
 # Mikko Virtanen <mikko.virtanen2013@gmail.com>, 2021
 # Kim Asplund <kim.asplund@gmail.com>, 2021
+# Martin Trigaux, 2022
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2022
+# Joakim Weckman, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Kim Asplund <kim.asplund@gmail.com>, 2021\n"
+"Last-Translator: Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022\n"
 "Language-Team: Finnish (https://www.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr ""
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -407,12 +420,17 @@ msgid "Account Display Representative Field"
 msgstr ""
 
 #. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "Tilin päiväkirjan raportti"
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_payable__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__account_name
 msgid "Account Name"
-msgstr ""
+msgstr "Tilin nimi"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_report
@@ -539,7 +557,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_aged_partner
 msgid "Aged Partner Balances"
-msgstr ""
+msgstr "Erääntymisraportti"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:0
@@ -573,9 +591,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "Kaikki"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr ""
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
@@ -1122,6 +1145,7 @@ msgstr "Cost of Revenue"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "Maa"
 
@@ -1583,7 +1607,7 @@ msgstr "Talousraportit"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_config_settings__account_fiscal_country_id
 msgid "Fiscal Country"
-msgstr ""
+msgstr "Verotuksellinen maa"
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__account_financial_html_report_line__figure_type__float
@@ -1680,7 +1704,7 @@ msgstr ""
 #: code:addons/account_reports/wizard/report_export_wizard.py:0
 #, python-format
 msgid "Generated Documents"
-msgstr ""
+msgstr "Luodut dokumentit"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_generic_tax_report
@@ -1696,7 +1720,12 @@ msgstr ""
 #: code:addons/account_reports/models/account_sales_report.py:0
 #, python-format
 msgid "Goods"
-msgstr ""
+msgstr "Tavarat"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "Taulukko"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
@@ -1778,6 +1807,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__id
 msgid "ID"
 msgstr "Tunniste (ID)"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -2320,6 +2359,8 @@ msgstr ""
 #, python-format
 msgid "Only Billing Administrators are allowed to change lock dates!"
 msgstr ""
+"Vain Billing Administrator -käyttöoikeuden omaavat käyttäjät voivat vaihtaa "
+"kauden lukituspäiviä!"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
@@ -2656,7 +2697,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_line_form
 msgid "Report Line"
-msgstr ""
+msgstr "Raporttirivi"
 
 #. module: account_reports
 #. openerp-web
@@ -2669,7 +2710,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_form
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_line_tree
 msgid "Report Lines"
-msgstr ""
+msgstr "Raporttirivit"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_reports_export_wizard__report_model
@@ -2706,7 +2747,7 @@ msgstr "Peruutuspäivämäärä"
 #: code:addons/account_reports/wizard/multicurrency_revaluation.py:0
 #, python-format
 msgid "Reversal of: %s"
-msgstr ""
+msgstr "Vastakirjaus tositteelle %s"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
@@ -2862,6 +2903,11 @@ msgid "Tax Declaration"
 msgstr "Veron kuvaus"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr ""
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
 msgid "Tax ID"
 msgstr "VAT-numero"
@@ -2987,7 +3033,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_res_config_settings__account_fiscal_country_id
 msgid "The country to use the tax reports from for this company"
-msgstr ""
+msgstr "Maa, jonka veroraportteja käytetään tälle yritykselle"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0

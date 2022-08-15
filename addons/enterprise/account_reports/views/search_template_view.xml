@@ -126,13 +126,7 @@
         <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-toggle="dropdown">
             <span class="fa fa-book"/>
             Journals:
-            <t t-set="selected_journals" t-value="options.get('name_journal_group') or ', '.join(journal.get('code') for journal in options['journals'] if journal.get('selected'))"/>
-            <t t-if="selected_journals">
-                <t t-esc="selected_journals"/>
-            </t>
-            <t t-else="">
-                All
-            </t>
+                <t t-esc="options.get('name_journal_group')"/>
         </button>
         <div class="dropdown-menu o_filter_menu" role="menu">
             <t t-foreach="options['journals']" t-as="j">
@@ -238,9 +232,9 @@
     </template>
 
     <template id="search_template_currency">
-        <a type="button" class="dropdown-toggle" data-toggle="dropdown">
+        <button type="button" class="dropdown-toggle btn btn-secondary" data-toggle="dropdown">
             <span class="fa fa-line-chart"/> Exchange Rates
-        </a>
+        </button>
         <div class="dropdown-menu o_filters_menu" role="menu">
             <div class="o_account_report_search" data-filter='custom_currency'>
                 <div t-foreach="options['currency_rates'].values()" t-as="opt" class="form-group">

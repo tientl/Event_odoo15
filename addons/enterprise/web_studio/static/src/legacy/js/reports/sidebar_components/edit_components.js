@@ -812,7 +812,35 @@ var TIf = AbstractEditComponent.extend({
             return this._super.apply(this, arguments);
         }
         e.stopPropagation();
-    }
+    },
+    _isSameValue(value) {
+        const currentValue = this.node.attrs['t-if'];
+        const newValue = value['t-if'];
+        if (!currentValue || !newValue || typeof newValue !== "string") {
+            return currentValue === newValue;
+        }
+        function normalizeValue(value) {
+            const charset = {
+                "'": /"/,
+                "[": /\(/,
+                "]": /\)/,
+                "','": /',\s+'/,
+                "']": /'\s+]/,
+                "['": /\[\s+'/,
+            }
+            for (const key in charset) {
+                const toReplace = new RegExp(charset[key], "g");
+                value = value.replace(toReplace, key);
+            }
+            return value;
+        }
+        return normalizeValue(currentValue) == normalizeValue(newValue);
+    },
+    _triggerViewChange: function (newAttrs) {
+        if (!this._isSameValue(newAttrs)) {
+            this._super.apply(this, arguments);
+        }
+    },
 });
 
 var TElse = AbstractEditComponent.extend({

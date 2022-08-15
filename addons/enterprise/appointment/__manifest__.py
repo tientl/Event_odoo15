@@ -37,6 +37,9 @@
     'auto_install': False,
     'license': 'OEEL-1',
     'assets': {
+        'web_editor.assets_wysiwyg': [
+            'appointment/static/src/js/wysiwyg.js',
+        ],
         'web.assets_frontend': [
             'appointment/static/src/scss/appointment.scss',
             'appointment/static/src/js/appointment_select_appointment_type.js',

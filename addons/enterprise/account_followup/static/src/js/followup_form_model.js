@@ -277,6 +277,7 @@ var FollowupFormModel = BasicModel.extend({
         var self = this;
         var params = {};
         if (this.localData[id].data.report_manager_id !== undefined) {
+            params.total_due = this.localData[id].data.total_due
             params.keep_summary = true;
         }
         return this._rpc({
@@ -287,6 +288,7 @@ var FollowupFormModel = BasicModel.extend({
         }).then(function (data) {
             self.localData[id].data.report_manager_id = data.report_manager_id;
             self.localData[id].data.followup_html = data.html;
+            self.localData[id].data.total_due = data.total_due;
             if (!params.keep_summary) {
                 self.localData[id].data.followup_level = data.followup_level || {};
             }

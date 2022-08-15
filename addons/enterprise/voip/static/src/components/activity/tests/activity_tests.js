@@ -1,5 +1,7 @@
 /** @odoo-module **/
 
+// ensure the component is registered beforehand.
+import '@mail/components/activity/activity';
 import { getMessagingComponent } from '@mail/utils/messaging_component';
 import {
     afterEach,

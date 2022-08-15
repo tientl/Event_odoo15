@@ -31,7 +31,7 @@ class TestConsolidatedJournalsReport(TestAccountReportsCommon):
             })
 
             journal = cls.env['account.journal'].create({
-                'name': 'journal',
+                'name': f'journal {journal_type}',
                 'code': str(i),
                 'type': journal_type,
                 'company_id': cls.company_data['company'].id,
@@ -63,14 +63,14 @@ class TestConsolidatedJournalsReport(TestAccountReportsCommon):
             #   Name                                    Debit           Credit          Balance
             [   0,                                      1,              2,              3],
             [
-                ('journal (0)',                         2100.0,         2100.0,         0.0),
+                ('journal sale (0)',                    2100.0,         2100.0,         0.0),
                 ('0_1 account_0_1',                     1050.0,         0.0,            1050.0),
                 ('0_2 account_0_1',                     1050.0,         0.0,            1050.0),
                 ('400000 Product Sales',                0.0,            2100.0,         -2100.0),
-                ('journal (1)',                         2100.0,         2100.0,         0.0),
-                ('journal (2)',                         2100.0,         2100.0,         0.0),
-                ('journal (3)',                         2100.0,         2100.0,         0.0),
-                ('journal (4)',                         2100.0,         2100.0,         0.0),
+                ('journal purchase (1)',                2100.0,         2100.0,         0.0),
+                ('journal cash (2)',                    2100.0,         2100.0,         0.0),
+                ('journal bank (3)',                    2100.0,         2100.0,         0.0),
+                ('journal general (4)',                 2100.0,         2100.0,         0.0),
                 ('Total',                               10500.0,        10500.0,        0.0),
                 ('',                                    '',             '',             ''),
                 ('Details per month',                   '',             '',             ''),
@@ -95,7 +95,7 @@ class TestConsolidatedJournalsReport(TestAccountReportsCommon):
             #   Name                                    Debit           Credit          Balance
             [   0,                                      1,              2,              3],
             [
-                ('journal (0)',                         2100.0,         2100.0,         0.0),
+                ('journal sale (0)',                    2100.0,         2100.0,         0.0),
                 ('0_1 account_0_1',                     1050.0,         0.0,            1050.0),
                 ('0_2 account_0_1',                     1050.0,         0.0,            1050.0),
                 ('400000 Product Sales',                0.0,            2100.0,         -2100.0),
@@ -113,7 +113,7 @@ class TestConsolidatedJournalsReport(TestAccountReportsCommon):
             #   Name                                    Debit           Credit          Balance
             [   0,                                      1,              2,              3],
             [
-                ('journal (0)',                         2100.0,         2100.0,         0.0),
+                ('journal sale (0)',                    2100.0,         2100.0,         0.0),
                 ('Total',                               2100.0,         2100.0,         0.0),
                 ('',                                    '',             '',             ''),
                 ('Details per month',                   '',             '',             ''),

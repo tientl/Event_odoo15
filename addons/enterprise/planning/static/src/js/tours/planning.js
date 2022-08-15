@@ -31,7 +31,7 @@ odoo.define('planning.tour', function (require) {
         content: _t("Save this shift once it is ready."),
         position: "bottom",
     }, {
-        trigger: ".o_gantt_pill",
+        trigger: ".o_gantt_pill:not(.o_gantt_consolidated_pill)",
         content: _t("<b>Drag & drop</b> your shift to reschedule it. <i>Tip: hit CTRL (or Cmd) to duplicate it instead.</i> <b>Adjust the size</b> of the shift to modify its period."),
         position: "bottom",
     }, {

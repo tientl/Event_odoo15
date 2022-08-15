@@ -184,6 +184,7 @@ class MxReportAccountTrial(models.AbstractModel):
                     cols += [sum(a[col] for a in child_cols)]
             lines.append({
                 'id': self._get_generic_line_id('account.account.tag', tag.id, markup='level_two'),
+                'parent_id': self._get_generic_line_id('account.financial.html.report.line', line.id, markup='level_one'),
                 'name': name,
                 'columns': cols,
                 'level': 3,
@@ -225,6 +226,7 @@ class MxReportAccountTrial(models.AbstractModel):
                 cols = self._get_cols(initial_balances, account, comparison_table, grouped_accounts)
             lines.append({
                 'id': self._get_generic_line_id('account.account', account.id, markup='level_four'),
+                'parent_id': self._get_generic_line_id('account.account.tag', tag.id, markup='level_two'),
                 'name': name,
                 'level': 4,
                 'columns': cols,

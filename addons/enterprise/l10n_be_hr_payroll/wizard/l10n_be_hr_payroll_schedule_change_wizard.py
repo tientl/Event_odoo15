@@ -23,7 +23,7 @@ class L10nBeHrPayrollScheduleChange(models.TransientModel):
     date_end = fields.Date('End Date', help='End date of the new contract.')
     work_time_rate = fields.Float(related='resource_calendar_id.work_time_rate', readonly=True)
     full_wage = fields.Monetary('Full Time Equivalent Wage', compute='_compute_wages', store=True, readonly=True)
-    current_wage = fields.Monetary(related='contract_id.wage', readonly=True)
+    current_wage = fields.Monetary('Wage', compute='_compute_wages', store=True, readonly=True)
     wage = fields.Monetary(
         compute='_compute_wages', store=True, readonly=False,
         string='New Wage', required=True,
@@ -51,7 +51,8 @@ class L10nBeHrPayrollScheduleChange(models.TransientModel):
 
     leave_type_id = fields.Many2one(
         'hr.leave.type', string='Time Off Type', required=True,
-        domain=[('has_valid_allocation', '=', True), ('requires_allocation', '=', 'yes')])#TODO JUD test this
+        domain=[('requires_allocation', '=', 'yes')],
+        default=lambda self: self.env['hr.leave.type'].search([], limit=1))
     full_time_off_allocation = fields.Float(compute='_compute_full_time_off_allocation', readonly=True)
     time_off_allocation = fields.Float(
         compute='_compute_time_off_allocation', store=True,
@@ -66,7 +67,9 @@ class L10nBeHrPayrollScheduleChange(models.TransientModel):
     def _compute_wages(self):
         for wizard in self:
             #Compute full wage first since wage depends on it
-            wizard.full_wage = wizard.current_wage / (wizard.current_resource_calendar_id.work_time_rate / 100 or 1)
+            wizard.current_wage = wizard.contract_id._get_contract_wage()
+            work_time_rate = wizard.current_resource_calendar_id.work_time_rate
+            wizard.full_wage = wizard.current_wage / ((work_time_rate / 100) if work_time_rate else 1)
             wizard.wage = wizard.full_wage * float(wizard.work_time_rate) / 100
 
     @api.depends('leave_type_id', 'full_resource_calendar_id')

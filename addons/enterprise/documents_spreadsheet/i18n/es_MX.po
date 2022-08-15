@@ -6,8 +6,8 @@
 # Cécile Collart <cco@odoo.com>, 2021
 # Martin Trigaux, 2021
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2021
-# Braulio D. López Vázquez <bdl@odoo.com>, 2021
-# Lucia Pacheco <lpo@odoo.com>, 2021
+# Braulio D. López Vázquez <bdl@odoo.com>, 2022
+# Lucia Pacheco <lpo@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -15,13 +15,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-22 09:02+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2021\n"
+"Last-Translator: Lucia Pacheco <lpo@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: documents_spreadsheet
 #: code:addons/documents_spreadsheet/wizard/save_spreadsheet_template.py:0
@@ -35,7 +35,8 @@ msgstr "\"%s\" guardado como plantilla"
 msgid ""
 "#{ isSpreadsheet and 'Odoo Spreadsheets not available for download' or ''}"
 msgstr ""
-"#{ isSpreadsheet and 'Odoo Spreadsheets not available for download' or ''}"
+"#{ isSpreadsheet and 'Las hojas de cálculo de Odoo no están disponibles para"
+" descarga' or ''}"
 
 #. module: documents_spreadsheet
 #: code:addons/documents_spreadsheet/models/spreadsheet_template.py:0
@@ -366,8 +367,8 @@ msgid ""
 "By default, the spreadsheets in this workspace will only be seen and updated"
 " by their <strong>creator</strong>."
 msgstr ""
-"De forma predeterminada, solo su <strong>creador</strong> podrá ver y "
-"actualizar las hojas de cálculo de este espacio de trabajo."
+"De forma predeterminada, solo el <strong>creador</strong> podrá ver y "
+"actualizar sus hojas de cálculo en este espacio de trabajo."
 
 #. module: documents_spreadsheet
 #. openerp-web
@@ -1307,6 +1308,17 @@ msgstr ""
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid ""
+"Function %s expects its parameters to be single values or single cell "
+"references, not ranges."
+msgstr ""
+"La función %s espera que el parámetro sea un solo valor o una sola "
+"referencia de celda, no un rango."
+
+#. module: documents_spreadsheet
+#. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid ""
 "Function %s expects the parameter %s to be a single value or a single cell "
 "reference, not a range."
 msgstr ""
@@ -1866,6 +1878,15 @@ msgstr ""
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
+#, python-format
+msgid "Invalid reference"
+msgstr "Referencia no válida"
+
+#. module: documents_spreadsheet
+#. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
 #, python-format
 msgid "Invalid sheet"
 msgstr "Hoja no válida"
@@ -2171,7 +2192,6 @@ msgstr "Vincular un menú de Odoo"
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.xml:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.xml:0
 #, python-format
 msgid "Link menu in spreadsheet"
 msgstr "Vincular el menú en la hoja de cálculo"
@@ -2253,7 +2273,7 @@ msgstr "El punto de inflexión inferior debe ser menor que el superior"
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.spreadsheet_template_view_tree
 #, python-format
 msgid "Make a copy"
-msgstr "Haga una copia"
+msgstr "Crear copia"
 
 #. module: documents_spreadsheet
 #: model_terms:documents.folder,description:documents_spreadsheet.documents_spreadsheet_folder
@@ -2559,6 +2579,7 @@ msgstr "Nuevo gráfico"
 
 #. module: documents_spreadsheet
 #. openerp-web
+#: code:addons/documents_spreadsheet/static/src/js/components/spreadsheet_template_dialog.js:0
 #: code:addons/documents_spreadsheet/static/src/js/spreadsheet_selector_dialog.xml:0
 #, python-format
 msgid "New Spreadsheet"
@@ -2573,8 +2594,7 @@ msgstr "Nueva hoja"
 
 #. module: documents_spreadsheet
 #. openerp-web
-#: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.js:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.js:0
+#: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_service.js:0
 #: code:addons/documents_spreadsheet/static/src/js/list_controller.js:0
 #: code:addons/documents_spreadsheet/static/src/js/pivot_view.js:0
 #, python-format
@@ -2596,8 +2616,7 @@ msgstr "Nueva hoja de cálculo"
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_action.js:0
-#: code:addons/documents_spreadsheet/static/src/insert_action_link_menu/insert_action_link_menu.js:0
-#: code:addons/documents_spreadsheet/static/src/js/components/insert_action_link/insert_action_link_menu.js:0
+#: code:addons/documents_spreadsheet/static/src/actions/spreadsheet/spreadsheet_service.js:0
 #: code:addons/documents_spreadsheet/static/src/js/list_controller.js:0
 #: code:addons/documents_spreadsheet/static/src/js/pivot_view.js:0
 #, python-format
@@ -2996,7 +3015,7 @@ msgstr "Actualizar valores"
 #: code:addons/documents_spreadsheet/static/src/xml/spreadsheet.xml:0
 #, python-format
 msgid "Related Model"
-msgstr "Modelo relacional"
+msgstr "Modelo relacionado"
 
 #. module: documents_spreadsheet
 #. openerp-web
@@ -4358,6 +4377,8 @@ msgstr "Arriba"
 #. module: documents_spreadsheet
 #. openerp-web
 #: code:addons/documents_spreadsheet/static/src/js/components/spreadsheet_pivot_dialog.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_autofill_plugin.js:0
+#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_autofill_plugin.js:0
 #: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/plugins/ui/pivot_structure_plugin.js:0
 #, python-format
 msgid "Total"
@@ -4807,13 +4828,6 @@ msgstr "y"
 #, python-format
 msgid "has no cell missing from this sheet"
 msgstr "no falta ninguna celda en esta hoja"
-
-#. module: documents_spreadsheet
-#. openerp-web
-#: code:addons/documents_spreadsheet/static/src/js/o_spreadsheet/o_spreadsheet.js:0
-#, python-format
-msgid "invalid range %s:%s"
-msgstr "rango no válido %s:%s"
 
 #. module: documents_spreadsheet
 #. openerp-web

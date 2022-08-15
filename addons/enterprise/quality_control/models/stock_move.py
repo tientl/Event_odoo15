@@ -34,3 +34,20 @@ class StockMove(models.Model):
                 })
             check_vals_list += picking_check_vals_list
         self.env['quality.check'].sudo().create(check_vals_list)
+
+    def _action_cancel(self):
+        res = super()._action_cancel()
+
+        to_unlink = self.env['quality.check']
+        is_product_canceled = defaultdict(lambda: True)
+        for qc in self.picking_id.sudo().check_ids:
+            if qc.quality_state != 'none':
+                continue
+            if (qc.picking_id, qc.product_id) not in is_product_canceled:
+                for move in qc.picking_id.move_lines:
+                    is_product_canceled[(move.picking_id, move.product_id)] &= move.state == 'cancel'
+            if is_product_canceled[(qc.picking_id, qc.product_id)]:
+                to_unlink |= qc
+        to_unlink.unlink()
+
+        return res

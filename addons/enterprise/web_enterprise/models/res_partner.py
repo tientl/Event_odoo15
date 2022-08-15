@@ -52,16 +52,19 @@ class ResPartner(models.Model):
             tel.value = self.phone
         if self.mobile:
             tel = vcard.add('tel')
-            tel.type_param = 'mobile'
+            tel.type_param = 'cell'
             tel.value = self.mobile
         # URL
         if self.website:
             url = vcard.add('url')
             url.value = self.website
         # Organisation
-        if self.company_name:
+        if self.commercial_company_name:
             org = vcard.add('org')
-            org.value = [self.company_name]
+            org.value = [self.commercial_company_name]
+        if self.function:
+            function = vcard.add('title')
+            function.value = self.function
         # Photo
         photo = vcard.add('photo')
         photo.value = b64decode(self.avatar_512)

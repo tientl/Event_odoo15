@@ -17,11 +17,8 @@ class ResPartner(models.Model):
 
     payment_next_action_date = fields.Date('Next Action Date', copy=False, company_dependent=True,
                                            help="The date before which no action should be taken.")
-    unreconciled_aml_ids = fields.One2many('account.move.line', 'partner_id',
-                                           domain=[('reconciled', '=', False),
-                                                   ('account_id.deprecated', '=', False),
-                                                   ('account_id.internal_type', '=', 'receivable'),
-                                                   ('move_id.state', '=', 'posted')])
+    unreconciled_aml_ids = fields.One2many('account.move.line', compute='_compute_unreconciled_aml_ids')
+
     unpaid_invoices = fields.One2many('account.move', compute='_compute_unpaid_invoices')
     total_due = fields.Monetary(compute='_compute_for_followup')
     total_overdue = fields.Monetary(compute='_compute_for_followup')
@@ -30,7 +27,12 @@ class ResPartner(models.Model):
         compute='_compute_for_followup',
         string='Follow-up Status',
         search='_search_status')
-    followup_level = fields.Many2one('account_followup.followup.line', compute="_compute_for_followup", string="Follow-up Level")
+    followup_level = fields.Many2one(
+        comodel_name='account_followup.followup.line',
+        compute="_compute_for_followup",
+        string="Follow-up Level",
+        search='_search_followup_level',
+    )
     payment_responsible_id = fields.Many2one('res.users', ondelete='set null', string='Follow-up Responsible',
                                              help="Optionally you can assign a user to this field, which will make him responsible for the action.",
                                              tracking=True, copy=False, company_dependent=True)
@@ -47,6 +49,29 @@ class ResPartner(models.Model):
         followup_data = self._query_followup_level(all_partners=True)
         return [('id', 'in', [d['partner_id'] for d in followup_data.values() if d['followup_status'] in value])]
 
+    def _search_followup_level(self, operator, value):
+        company_domain = [('company_id', '=', self.env.company.id)]
+        if isinstance(value, str):
+            domain = [('name', operator, value)]
+        elif isinstance(value, (int, list, tuple)):
+            domain = [('id', operator, value)]
+
+        first_followup_level = self.env['account_followup.followup.line'].search(company_domain, order="delay asc", limit=1)
+        level_ids = set(self.env['account_followup.followup.line'].search(domain+company_domain).ids)
+        if first_followup_level.id in level_ids:
+            # the result from the query is None when it is not  yet at a followup level
+            # but it is set to the first level in the compute method
+            level_ids.add(None)
+
+        followup_data = self._query_followup_level(all_partners=True)
+
+        return [('id', 'in', [
+            d['partner_id']
+            for d in followup_data.values()
+            if d['followup_level'] in level_ids
+        ])]
+
+    @api.depends_context('company', 'allowed_company_ids')
     def _compute_for_followup(self):
         """
         Compute the fields 'total_due', 'total_overdue','followup_level' and 'followup_status'
@@ -57,13 +82,12 @@ class ResPartner(models.Model):
         for record in self:
             total_due = 0
             total_overdue = 0
-            followup_status = "no_action_needed"
             for aml in record.unreconciled_aml_ids:
-                if aml.company_id == self.env.company:
+                if aml.company_id == self.env.company and not aml.blocked:
                     amount = aml.amount_residual
                     total_due += amount
                     is_overdue = today > aml.date_maturity if aml.date_maturity else today > aml.date
-                    if is_overdue and not aml.blocked:
+                    if is_overdue:
                         total_overdue += amount
             record.total_due = total_due
             record.total_overdue = total_overdue
@@ -83,6 +107,30 @@ class ResPartner(models.Model):
                 ('payment_state', 'in', ('not_paid', 'partial')),
                 ('move_type', 'in', self.env['account.move'].get_sale_types())
             ]).filtered(lambda inv: not any(inv.line_ids.mapped('blocked')))
+
+    @api.depends('invoice_ids')
+    @api.depends_context('company', 'allowed_company_ids')
+    def _compute_unreconciled_aml_ids(self):
+        values = {
+            read['partner_id'][0]: read['line_ids']
+            for read in self.env['account.move.line'].read_group(
+                domain=self._get_unreconciled_aml_domain(),
+                fields=['line_ids:array_agg(id)'],
+                groupby=['partner_id']
+            )
+        }
+        for partner in self:
+            partner.unreconciled_aml_ids = values.get(partner.id, False)
+
+    def _get_unreconciled_aml_domain(self):
+        return [
+            ('reconciled', '=', False),
+            ('account_id.deprecated', '=', False),
+            ('account_id.internal_type', '=', 'receivable'),
+            ('move_id.state', '=', 'posted'),
+            ('partner_id', 'in', self.ids),
+            ('company_id', '=', self.env.company.id),
+        ]
 
     def get_next_action(self, followup_line):
         """
@@ -136,6 +184,19 @@ class ResPartner(models.Model):
                 'partner_id': record.id,
             }
             self.env['account.followup.report'].send_email(options)
+
+    def send_followup_sms(self):
+        """
+        Send a follow-up report by sms to customers in self
+        """
+        for partner in self:
+            options = {
+                'partner_id': partner.id,
+            }
+            partner._message_sms(
+                body=self.env['account.followup.report'].with_context(lang=self.lang or self.env.user.lang)._get_sms_summary(options),
+                partner_ids=partner.ids
+            )
 
     def get_followup_html(self):
         """
@@ -292,6 +353,8 @@ class ResPartner(models.Model):
             if followup_line:
                 next_date = followup_line._get_next_date()
                 self.update_next_action(options={'next_action_date': datetime.strftime(next_date, DEFAULT_SERVER_DATE_FORMAT), 'action': 'done'})
+            if followup_line.send_sms:
+               self.send_followup_sms()
             if followup_line.print_letter:
                 return self
         return None
@@ -309,7 +372,7 @@ class ResPartner(models.Model):
             return
         return self.env['account.followup.report'].print_followups(to_print)
 
-    def _cron_execute_followup(self):
+    def _cron_execute_followup_company(self):
         followup_data = self._query_followup_level(all_partners=True)
         in_need_of_action = self.env['res.partner'].browse([d['partner_id'] for d in followup_data.values() if d['followup_status'] == 'in_need_of_action'])
         in_need_of_action_auto = in_need_of_action.filtered(lambda p: p.followup_level.auto_execute)
@@ -320,3 +383,7 @@ class ResPartner(models.Model):
                 # followup may raise exception due to configuration issues
                 # i.e. partner missing email
                 _logger.exception(e)
+
+    def _cron_execute_followup(self):
+        for company in self.env["res.company"].search([]):
+            self.with_context(allowed_company_ids=company.ids)._cron_execute_followup_company()

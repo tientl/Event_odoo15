@@ -104,6 +104,7 @@ class RentalOrder(models.Model):
                     date=date.today(),
                 )
             sol.price_unit = price
+            sol.discount = 0
 
     def _open_rental_wizard(self, status, order_line_ids):
         context = {
@@ -191,12 +192,17 @@ class RentalOrderLine(models.Model):
     @api.onchange('pickup_date', 'return_date')
     def _onchange_rental_info(self):
         """Trigger description recomputation"""
-        self.product_id_change()
+        self._update_description()
 
     @api.onchange('is_rental')
     def _onchange_is_rental(self):
         if self.is_rental and not self.order_id.is_rental_order:
             self.order_id.is_rental_order = True
+
+    @api.onchange('product_id', 'price_unit', 'product_uom', 'product_uom_qty', 'tax_id')
+    def _onchange_discount(self):
+        if not self.is_rental:
+            super(RentalOrderLine, self)._onchange_discount()
 
     _sql_constraints = [
         ('rental_stock_coherence',
@@ -213,12 +219,10 @@ class RentalOrderLine(models.Model):
 
     def get_rental_order_line_description(self):
         if (self.is_rental):
-            if self.pickup_date.date() == self.return_date.date():
+            if self.pickup_date.replace(tzinfo=UTC).astimezone(timezone(self.env.user.tz or 'UTC')).replace(tzinfo=None).date()\
+                 == self.return_date.replace(tzinfo=UTC).astimezone(timezone(self.env.user.tz or 'UTC')).replace(tzinfo=None).date():
                 # If return day is the same as pickup day, don't display return_date Y/M/D in description.
-                return_date = self.return_date
-                if return_date:
-                    return_date = return_date.replace(tzinfo=UTC).astimezone(timezone(self.env.user.tz or 'UTC')).replace(tzinfo=None)
-                return_date_part = format_time(self.with_context(use_babel=True).env, return_date, tz=self.env.user.tz, time_format=False)
+                return_date_part = format_time(self.with_context(use_babel=True).env, self.return_date, tz=self.env.user.tz, time_format=False)
             else:
                 return_date_part = format_datetime(self.with_context(use_babel=True).env, self.return_date, tz=self.env.user.tz, dt_format=False)
 
@@ -229,6 +233,11 @@ class RentalOrderLine(models.Model):
             )
         else:
             return ""
+
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        if not self.is_rental:
+            super().product_uom_change()
 
     def _get_display_price(self, product):
         """Ensure unit price isn't recomputed."""
@@ -311,7 +320,7 @@ class RentalOrderLine(models.Model):
         return "%s\n%s: %s\n%s: %s" % (
             self.product_id.name,
             _("Expected"),
-            format_datetime(self.with_context(use_babel=True).env, self.pickup_date, tz=self.env.user.tz, dt_format=False),
+            format_datetime(self.with_context(use_babel=True).env, self.return_date, tz=self.env.user.tz, dt_format=False),
             _("Returned"),
             format_datetime(self.with_context(use_babel=True).env, fields.Datetime.now(), tz=self.env.user.tz, dt_format=False)
         )

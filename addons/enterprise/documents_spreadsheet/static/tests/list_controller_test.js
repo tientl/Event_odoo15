@@ -4,6 +4,7 @@
 import ListView from "web.ListView";
 import spreadsheet from "documents_spreadsheet.spreadsheet";
 import {
+    createSpreadsheet,
     createSpreadsheetFromList,
     getCell,
     getCellContent,
@@ -11,8 +12,11 @@ import {
     getCells,
     getCellValue,
     setCellContent,
-    setSelection
+    setSelection,
+    waitForEvaluation
 } from "./spreadsheet_test_utils";
+import { session } from "@web/session";
+import { patchWithCleanup } from "@web/../tests/helpers/utils";
 import { nextTick, createView } from "web.test_utils";
 import { getBasicData, getBasicListArch } from "./spreadsheet_test_data";
 
@@ -96,6 +100,15 @@ QUnit.module("documents_spreadsheet > list_controller", {}, () => {
         assert.strictEqual(getCellValue(model, "B5"), "FALSE");
     });
 
+    QUnit.test("Can display a field which is not in the columns", async function (assert) {
+        assert.expect(2);
+        const { model } = await createSpreadsheetFromList();
+        setCellContent(model, "A1", `=LIST("1","1","active")`);
+        assert.strictEqual(getCellValue(model, "A1"), undefined);
+        await waitForEvaluation(model);
+        assert.strictEqual(getCellValue(model, "A1"), true);
+    });
+
     QUnit.test("Open list properties properties", async function (assert) {
         assert.expect(10);
 
@@ -175,7 +188,7 @@ QUnit.module("documents_spreadsheet > list_controller", {}, () => {
         const { model } = await createSpreadsheetFromList();
         assert.strictEqual(getCell(model, "A2").format, "#,##0.00");
         assert.strictEqual(getCell(model, "B2").format, undefined);
-        await model.waitForIdle();
+        await waitForEvaluation(model);
         model.dispatch("REBUILD_ODOO_LIST", {
             listId: "1",
             anchor: [0, 10],
@@ -297,5 +310,123 @@ QUnit.module("documents_spreadsheet > list_controller", {}, () => {
         const A2 = getCell(model,"A2");
         assert.equal(A2.evaluated.type, "error");
         assert.equal(A2.evaluated.error, `The field ${forbiddenFieldName} does not exist or you do not have access to that field`);
+    });
+
+    QUnit.test("user related context is not saved in the spreadsheet", async function (assert) {
+        const context = {
+            allowed_company_ids: [15],
+            default_stage_id: 5,
+            search_default_stage_id: 5,
+            tz: "bx",
+            lang: "FR",
+            uid: 4,
+        };
+        const testSession = {
+            uid: 4,
+            user_companies: {
+                allowed_companies: { 15: { id: 15, name: "Hermit" } },
+                current_company: 15,
+            },
+            user_context: context,
+        };
+        const controller = await createView({
+            View: ListView,
+            arch: `
+                    <tree string="Partners">
+                        <field name="bar"/>
+                        <field name="product_id"/>
+                    </tree>
+                `,
+            data: getBasicData(),
+            model: "partner",
+            session: testSession,
+        });
+        const list = controller._getListForSpreadsheet();
+        assert.deepEqual(
+            list.context,
+            {
+                default_stage_id: 5,
+                search_default_stage_id: 5,
+            },
+            "user related context is not stored in context"
+        );
+        controller.destroy();
+    });
+
+    QUnit.test("user context is combined with list context to fetch data", async function (assert) {
+        const context = {
+            allowed_company_ids: [15],
+            default_stage_id: 5,
+            search_default_stage_id: 5,
+            tz: "bx",
+            lang: "FR",
+            uid: 4,
+        };
+        const testSession = {
+            uid: 4,
+            user_companies: {
+                allowed_companies: {
+                    15: { id: 15, name: "Hermit" },
+                    16: { id: 16, name: "Craft" },
+                },
+                current_company: 15,
+            },
+            user_context: context,
+        };
+        const spreadsheetData = {
+            lists: {
+                1: {
+                    id: 1,
+                    columns: ['name', 'contact_name'],
+                    domain: [],
+                    model: "partner",
+                    orderBy: [],
+                    context: {
+                        allowed_company_ids: [16],
+                        default_stage_id: 9,
+                        search_default_stage_id: 90,
+                        tz: "nz",
+                        lang: "EN",
+                        uid: 40,
+                    },
+                },
+            },
+        };
+        const data = getBasicData();
+        data["documents.document"].records.push({
+            id: 45,
+            raw: JSON.stringify(spreadsheetData),
+            name: "Spreadsheet",
+            handler: "spreadsheet",
+        });
+        const expectedFetchContext = {
+            allowed_company_ids: [15],
+            default_stage_id: 9,
+            search_default_stage_id: 90,
+            tz: "bx",
+            lang: "FR",
+            uid: 4,
+        };
+        patchWithCleanup(session, testSession);
+        await createSpreadsheet({
+            data,
+            spreadsheetId: 45,
+            mockRPC: function (route, { model, method, kwargs }) {
+                if (model !== "partner") {
+                    return;
+                }
+                switch (method) {
+                    case "search_read":
+                        assert.step("search_read");
+                        assert.deepEqual(
+                            kwargs.context,
+                            expectedFetchContext,
+                            "search_read context"
+                        );
+                        break;
+                }
+            },
+        });
+        assert.verifySteps(["search_read"]);
     });
 });

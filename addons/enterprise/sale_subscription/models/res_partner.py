@@ -9,6 +9,13 @@ class ResPartner(models.Model):
 
     subscription_count = fields.Integer(string='Subscriptions', compute='_subscription_count')
 
+    def write(self, vals):
+        if 'active' in vals and not vals.get('active'):
+            Subscription = self.env['sale.subscription']
+            Subscription.search([('partner_invoice_id', 'in', self.ids)]).partner_invoice_id = False
+            Subscription.search([('partner_shipping_id', 'in', self.ids)]).partner_shipping_id = False
+        return super().write(vals)
+
     def _subscription_count(self):
         # retrieve all children partners and prefetch 'parent_id' on them
         all_partners = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])

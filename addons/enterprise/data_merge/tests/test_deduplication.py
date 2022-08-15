@@ -76,6 +76,39 @@ class TestDeduplication(test_common.TestCommon):
         self.assertEqual(self.MyModel.records_to_merge_count, 7, '7 records should have been found')
         self.assertEqual(self.DMGroup.search_count([('model_id', '=', self.MyModel.id)]), 2, '2 groups should have been created')
 
+    def test_deduplication_threshold(self):
+        self._create_rule('x_name', 'exact')
+        self._create_rule('x_email', 'exact')
+
+        self._create_record('x_dm_test_model', x_name='toto', x_email='toto@example.com')
+        self._create_record('x_dm_test_model', x_name='toto', x_email='real_toto@example.com')
+
+        self.assertEqual(self.MyModel.create_threshold, 0, 'Suggestion Threshold shoud be at 0')
+
+        # Ensure that groups added both records
+        self.MyModel.find_duplicates()
+        self.MyModel._compute_records_to_merge_count()
+
+        self.assertEqual(self.MyModel.records_to_merge_count, 2, '2 record should have been found')
+
+        # Ensure that groups are removed after suggested threshold is changed to above similarity
+        self.MyModel.create_threshold = 70
+        self.MyModel._compute_records_to_merge_count()
+
+        self.assertEqual(self.MyModel.records_to_merge_count, 0, '0 record should have been found')
+
+        # Ensure that groups are not updated after suggested threshold is changed to bellow similarity
+        self.MyModel.create_threshold = 40
+        self.MyModel._compute_records_to_merge_count()
+
+        self.assertEqual(self.MyModel.records_to_merge_count, 0, '0 record should have been found')
+
+        # Ensure that groups are updated after find_duplicates
+        self.MyModel.find_duplicates()
+        self.MyModel._compute_records_to_merge_count()
+
+        self.assertEqual(self.MyModel.records_to_merge_count, 2, '2 record should have been found')
+
     def test_record_references(self):
         self._create_rule('x_name', 'exact')
 
@@ -113,3 +146,28 @@ class TestDeduplication(test_common.TestCommon):
         record._compute_active()
         self.assertFalse(record.active, "Record should be inactive")
         self.assertTrue(record.is_deleted, "The record should be deleted")
+
+    def test_multi_model(self):
+        self._create_rule('x_name', 'exact', model_name='x_dm_test_model')
+        self._create_rule('x_name', 'exact', model_name='x_dm_test_model2')
+
+        self._create_record('x_dm_test_model', x_name='abc')
+        self._create_record('x_dm_test_model', x_name='abc')
+
+        self._create_record('x_dm_test_model2', x_name='abc')
+        self._create_record('x_dm_test_model2', x_name='abc')
+        self._create_record('x_dm_test_model2', x_name='abc')
+
+        self.MyModel.find_duplicates()
+        self.MyModel2.find_duplicates()
+
+        records_wrong_company = self.env['data_merge.record'].search([('model_id', '=', self.MyModel.id), ('company_id', '=', 1)])
+        self.assertEqual(len(records_wrong_company), 0, "Should have found 0 records")
+
+        records_model1 = self.env['data_merge.record'].search([('model_id', '=', self.MyModel.id)])
+        records_model2 = self.env['data_merge.record'].search([('model_id', '=', self.MyModel2.id)])
+        self.assertEqual(len(records_model1), 2, "Should have found 2 records")
+        self.assertEqual(len(records_model2), 3, "Should have found 3 records")
+
+        self.assertEqual(records_model1[0].name, 'abc', "Should have read name abc")
+        self.assertEqual(records_model2[0].name, 'abc', "Should have read name abc")

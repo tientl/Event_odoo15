@@ -19,7 +19,7 @@ class HrPayslipWorkedDays(models.Model):
     is_paid = fields.Boolean(compute='_compute_is_paid', store=True)
     amount = fields.Monetary(string='Amount', compute='_compute_amount', store=True, copy=True)
     contract_id = fields.Many2one(related='payslip_id.contract_id', string='Contract',
-        help="The contract for which apply this worked days")
+        help="The contract this worked days should be applied to")
     currency_id = fields.Many2one('res.currency', related='payslip_id.currency_id')
 
     @api.depends(
@@ -30,7 +30,7 @@ class HrPayslipWorkedDays(models.Model):
         for worked_days in self:
             worked_days.is_paid = (worked_days.work_entry_type_id.id not in unpaid[worked_days.payslip_id.struct_id.id]) if worked_days.payslip_id.struct_id.id in unpaid else False
 
-    @api.depends('is_paid', 'number_of_hours', 'payslip_id', 'payslip_id.normal_wage', 'payslip_id.sum_worked_hours')
+    @api.depends('is_paid', 'number_of_hours', 'payslip_id', 'contract_id.wage', 'payslip_id.sum_worked_hours')
     def _compute_amount(self):
         for worked_days in self.filtered(lambda wd: not wd.payslip_id.edited):
             if not worked_days.contract_id or worked_days.code == 'OUT':
@@ -39,7 +39,7 @@ class HrPayslipWorkedDays(models.Model):
             if worked_days.payslip_id.wage_type == "hourly":
                 worked_days.amount = worked_days.payslip_id.contract_id.hourly_wage * worked_days.number_of_hours if worked_days.is_paid else 0
             else:
-                worked_days.amount = worked_days.payslip_id.normal_wage * worked_days.number_of_hours / (worked_days.payslip_id.sum_worked_hours or 1) if worked_days.is_paid else 0
+                worked_days.amount = worked_days.payslip_id.contract_id.contract_wage * worked_days.number_of_hours / (worked_days.payslip_id.sum_worked_hours or 1) if worked_days.is_paid else 0
 
     @api.depends('work_entry_type_id')
     def _compute_name(self):

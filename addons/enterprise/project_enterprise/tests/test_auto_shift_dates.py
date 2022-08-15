@@ -292,3 +292,19 @@ class TestTaskDependencies(AutoShiftDatesCommon):
                          self.task_5.planned_date_begin)
         self.assertEqual(self.task_4.planned_date_begin,
                          datetime(year=2021, month=6, day=28, hour=16), failed_message)
+
+    def test_auto_shift_project_user(self):
+        new_task_6_planned_date_begin = self.task_5_planned_date_begin + timedelta(hours=1)
+        self.task_6.with_user(self.user_projectuser).with_context(tracking_disable=True).write({
+            'planned_date_begin': new_task_6_planned_date_begin,
+            'planned_date_end': new_task_6_planned_date_begin + (self.task_6_planned_date_end - self.task_6_planned_date_begin),
+        })
+        failed_message = "The auto shift date feature should handle correctly dependencies cascades."
+        self.assertEqual(self.task_5.planned_date_end,
+                         new_task_6_planned_date_begin, failed_message)
+        self.assertEqual(self.task_5.planned_date_begin,
+                         datetime(year=2021, month=6, day=29, hour=9), failed_message)
+        self.assertEqual(self.task_4.planned_date_end,
+                         self.task_5.planned_date_begin)
+        self.assertEqual(self.task_4.planned_date_begin,
+                         datetime(year=2021, month=6, day=28, hour=16), failed_message)

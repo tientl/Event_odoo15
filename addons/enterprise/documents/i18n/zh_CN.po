@@ -4,14 +4,16 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# xu aaron, 2021
+# 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2022-01-24 08:59+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,19 +64,28 @@ msgid ", expired on"
 msgstr ", 过期"
 
 #. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+". Scanned files will appear automatically in your workspace. Then, process "
+"your documents in bulk with the split tool: launch user defined actions, "
+"request a signature, convert to vendor bills with AI, etc."
+msgstr ""
+"处理收到的邮件的一个简单方法是配置扫描仪以将PDF发送到您的工作区电子邮件。扫描的文件将自动出现在您的工作区中。然后，使用split工具批量处理文档：启动用户定义的操作、请求签名、使用AI转换为供应商账单等。"
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2020"
-msgstr "2020"
+msgid "2021"
+msgstr "2021"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2021"
-msgstr ""
+msgid "2022"
+msgstr "2022"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
 msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
-msgstr ""
+msgstr "<b class=\"tip_title\">提示：成为一个无纸化公司</b>"
 
 #. module: documents
 #: code:addons/documents/controllers/main.py:0
@@ -323,6 +334,106 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"                    <tbody>\n"
+"                        <!-- HEADER -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\">\n"
+"                                        <span style=\"font-size: 10px;\">\n"
+"                                            文件要求。<br/>\n"
+"                                            <t t-if=\"object.name\">\n"
+"                                                <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">收件箱金融</span>\n"
+"                                            </t>\n"
+"                                        </span><br/>\n"
+"                                    </td><td valign=\"middle\" align=\"right\">\n"
+"                                        <img t-attf-src=\"/logo.png?company={{ object.create_uid.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.create_uid.company_id.name\"/>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- CONTENT -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                                        <div>\n"
+"                                            你好，<t t-out=\"object.owner_id.name or ''\">OdooBot</t>。\n"
+"                                           <br/><br/>\n"
+"                                           <t t-out=\"object.create_uid.name or ''\">OdooBot</t><t t-out=\"object.create_uid.email or ''\">（odoobot@example.com</t>）要求您提供以下文件。\n"
+"                                           <br/><br/>\n"
+"                                            <center>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.name\">\n"
+"                                                        <b t-out=\"object.name or ''\">收件箱金融</b>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <div>\n"
+"                                                    <t t-if=\"object.activity_note\">\n"
+"                                                        <i t-out=\"object.activity_note or ''\">注释的例子。</i>\n"
+"                                                    </t>\n"
+"                                                </div>\n"
+"                                                <br/>\n"
+"                                                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                    <a t-att-href=\"object.full_url\" style=\"background-color: #875A7B; padding: 20px 30px 20px 30px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                                        上传所需文件\n"
+"                                                    </a>\n"
+"                                                </div>\n"
+"                                            </center><br/>\n"
+"                                            请在链接过期前（计划在<t t-out=\"object.date_deadline or ''\">2021-05-17</t>）向我们提供所缺的文件。\n"
+"                                            <t t-if=\"user and user.signature\">\n"
+"                                                <br/>\n"
+"                                                <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                                                <br/>\n"
+"                                            </t>\n"
+"                                        </div>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td style=\"text-align:center;\">\n"
+"                                      <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <!-- FOOTER -->\n"
+"                        <tr>\n"
+"                            <td align=\"center\" style=\"min-width: 590px;\">\n"
+"                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                    <tr><td valign=\"middle\" align=\"left\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.name or ''\">您的公司</t>\n"
+"                                    </td></tr>\n"
+"                                    <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                                        <t t-out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.email\">\n"
+"                                            |<a t-attf-href=\"'mailto:%s' % {{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                                        </t>\n"
+"                                        <t t-if=\"object.create_uid.company_id.website\">\n"
+"                                            |<a t-attf-href=\"'%s' % {{ object.create_uid.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.create_uid.company_id.website or ''\">http://www.example.com</a>\n"
+"                                        </t>\n"
+"                                    </td></tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </tbody>\n"
+"                    </table>\n"
+"                    </td></tr>\n"
+"                    <!-- POWERED BY -->\n"
+"                    <tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                          <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"                           <t t-if=\"object.date_deadline\">\n"
+"                                该链接于<b t-out=\"object.date_deadline or ''\">2021-05-17</b>失效。<br/>\n"
+"                           </t>\n"
+"                            由<a target=\"_blank\" href=\"https://www.odoo.com/app/documents\" style=\"color: #875A7B;\">Odoo文档</a>提供\n"
+"                          </td></tr>\n"
+"                        </table>\n"
+"                    </td></tr>\n"
+"                </table>\n"
+"            "
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_share__alias_defaults
@@ -544,7 +655,14 @@ msgstr "允许您管理文档。"
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Already linked Documents"
-msgstr ""
+msgstr "已经链接的文件"
+
+#. module: documents
+#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
+msgid ""
+"An easy way to process incoming mails is to configure your scanner to send "
+"PDFs to"
+msgstr "处理传入邮件的一种简单方法是将扫描仪配置为将 PDF 发送到"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
@@ -556,16 +674,6 @@ msgid ""
 "with AI, etc."
 msgstr ""
 "处理收到的邮件的一个简单方法是配置扫描仪以将PDF发送到您的工作区电子邮件。扫描的文件将自动出现在您的工作区中。然后，使用split工具批量处理文档：启动用户定义的操作、请求签名、使用AI转换为供应商账单等。"
-
-#. module: documents
-#: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
-msgid ""
-"An easy way to process incoming mails is to configure your scanner to send "
-"PDFs to {{ record.alias_id.display_name }}. Scanned files will appear "
-"automatically in your workspace. Then, process your documents in bulk with "
-"the split tool: launch user defined actions, request a signature, convert to"
-" vendor bills with AI, etc."
-msgstr ""
 
 #. module: documents
 #. openerp-web
@@ -593,7 +701,7 @@ msgstr "已归档"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Are you confirm deletion ?"
-msgstr ""
+msgstr "你是否确认删除了？"
 
 #. module: documents
 #. openerp-web
@@ -659,6 +767,8 @@ msgid ""
 "class=\"o_folder_description_alias\"><strong>inbox-financial</strong> email "
 "alias</span>."
 msgstr ""
+"使用扫描的文件或发送至<span class=\"o_folder_description_alias\"><strong>inbox-"
+"financial</strong></span>电子邮件别名的电子邮件，使你的收件箱自动化。"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__available_rule_ids
@@ -727,7 +837,7 @@ msgstr "校验和/SHA1"
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
-msgstr ""
+msgstr "选择一个要链接的记录"
 
 #. module: documents
 #. openerp-web
@@ -777,7 +887,7 @@ msgstr "基础配置"
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Configure Email Servers"
-msgstr ""
+msgstr "配置电子邮件服务器"
 
 #. module: documents
 #: model:ir.model,name:documents.model_res_partner
@@ -965,7 +1075,7 @@ msgstr "‎文档请求‎"
 #: model:mail.template,subject:documents.mail_template_document_request
 msgid ""
 "Document Request {{ object.name != False and ': '+ object.name or '' }}"
-msgstr ""
+msgstr "文档请求 {{ object.name != False and ':'+ object.name or '' }}."
 
 #. module: documents
 #: code:addons/documents/models/document.py:0
@@ -978,7 +1088,7 @@ msgstr "文档请求：%s上载者：%s"
 #. module: documents
 #: model:mail.template,name:documents.mail_template_document_request
 msgid "Document Request: Send by email"
-msgstr ""
+msgstr "文件请求:通过电子邮件发送"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
@@ -1018,7 +1128,7 @@ msgstr "文档"
 #. module: documents
 #: model:ir.model,name:documents.model_documents_link_to_record_wizard
 msgid "Documents Link to Record"
-msgstr ""
+msgstr "文件 链接到记录"
 
 #. module: documents
 #: model:ir.model,name:documents.model_documents_share
@@ -1104,7 +1214,7 @@ msgstr "到期类型"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "Edit the linked Record"
-msgstr ""
+msgstr "编辑链接的记录"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__email_cc
@@ -1210,7 +1320,7 @@ msgstr "完美的图标，例如FA任务"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
 msgid "Generate URL"
-msgstr ""
+msgstr "生成推广链接"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
@@ -1239,7 +1349,7 @@ msgstr "HR"
 #: model:ir.model.fields,field_description:documents.field_documents_document__has_message
 #: model:ir.model.fields,field_description:documents.field_documents_share__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "有信息"
 
 #. module: documents
 #. openerp-web
@@ -1325,6 +1435,8 @@ msgid ""
 "Incoming letters sent to <span class=\"o_folder_description_alias\">inbox "
 "email alias</span> will be added to your inbox automatically."
 msgstr ""
+"发送到<span "
+"class=\"o_folder_description_alias\">收件箱电子邮件别名的</span>来信将被自动添加到你的收件箱。"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__index_content
@@ -1339,7 +1451,7 @@ msgstr "内部"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_editable_attachment
 msgid "Is Editable Attachment"
-msgstr ""
+msgstr "是可编辑的附件"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__is_favorited
@@ -1431,7 +1543,7 @@ msgstr "让我们处理这个文件，从我们的扫描仪。"
 msgid ""
 "Let's tag this mail as legal<br/> <i>Tips: actions can be tailored to your "
 "process, according to the workspace.</i>"
-msgstr ""
+msgstr "让我们把这封邮件标记为法律<br/> <i>提示：根据工作空间，行动可以根据你的流程进行调整。</i>"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific
@@ -1441,7 +1553,7 @@ msgstr "将读取组限制为其所有者的文档。"
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_folder__user_specific_write
 msgid "Limit Write Groups to the documents of which they are owner."
-msgstr ""
+msgstr "将写组限制在他们所拥有的文件中。"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_link_to_record_form_view
@@ -1451,7 +1563,7 @@ msgstr "链接"
 #. module: documents
 #: model:ir.model.fields.selection,name:documents.selection__documents_workflow_rule__create_model__link_to_record
 msgid "Link to record"
-msgstr ""
+msgstr "链接到记录"
 
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__email_cc
@@ -1645,7 +1757,7 @@ msgstr "新建组"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "下一个活动日历事件"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__activity_date_deadline
@@ -1757,7 +1869,7 @@ msgstr "无论是否回复，所有的接收的邮件都将附上一条线索（
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Or send emails to"
-msgstr ""
+msgstr "或发送电子邮件至"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_other
@@ -1773,14 +1885,14 @@ msgstr "仅限自己的单据"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_folder__user_specific_write
 msgid "Own Documents Only (Write)"
-msgstr ""
+msgstr "只有自己的文件（写）。"
 
 #. module: documents
 #: model:ir.model.constraint,message:documents.constraint_documents_folder_check_user_specific
 msgid ""
 "Own Documents Only may not be enabled for write groups if it is not enabled "
 "for read groups."
-msgstr ""
+msgstr "如果没有为读组启用，则不能为写组启用 \"仅限自己的文件\"。"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__owner_id
@@ -2044,8 +2156,8 @@ msgstr "单号规则"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2021 Contracts"
-msgstr ""
+msgid "Set As 2022 Contracts"
+msgstr "设置为 2022 年合同"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__partner_id
@@ -2164,7 +2276,7 @@ msgstr "大小"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__link_model
 msgid "Specific Model Linked"
-msgstr ""
+msgstr "特定模型链接"
 
 #. module: documents
 #. openerp-web
@@ -2351,7 +2463,7 @@ msgstr "缩略图"
 #: code:addons/documents/static/src/xml/documents_views.xml:0
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
-msgstr ""
+msgstr "提示：将你的扫描仪配置为将所有文件发送到这个地址。"
 
 #. module: documents
 #: model:digest.tip,name:documents.digest_tip_documents_0
@@ -2379,7 +2491,7 @@ msgstr "工具提示"
 #. module: documents
 #: model:ir.model.fields,help:documents.field_documents_document__is_editable_attachment
 msgid "True if we can edit the link attachment."
-msgstr ""
+msgstr "如果我们可以编辑链接的附件，则为真。"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_document__type
@@ -2445,11 +2557,11 @@ msgstr "上传"
 #. module: documents
 #: model_terms:ir.actions.act_window,help:documents.document_action
 msgid ""
-"Upload <span class=\"font-weight-normal\">a file or</span> drag <span class"
-"=\"font-weight-normal\">it here.</span>"
+"Upload <span class=\"font-weight-normal\">a file or</span> drag <span "
+"class=\"font-weight-normal\">it here.</span>"
 msgstr ""
-"‎上传‎ <span class=\"font-weight-normal\"> 一个文件或‎ </span> 拖动‎ <span class"
-"=\"font-weight-normal\"> ‎它在这里。‎</span>"
+"‎上传‎ <span class=\"font-weight-normal\"> 一个文件或‎ </span> 拖动‎ <span "
+"class=\"font-weight-normal\"> ‎它在这里。‎</span>"
 
 #. module: documents
 #. openerp-web
@@ -2467,7 +2579,7 @@ msgstr "通过邮件上传"
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
-msgstr ""
+msgstr "上传文件请求"
 
 #. module: documents
 #: model:res.groups,name:documents.group_documents_user
@@ -2689,27 +2801,27 @@ msgstr "例如.讨论提案"
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 msgid "e.g. Finance"
-msgstr ""
+msgstr "例如：Finance"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
 msgid "e.g. Missing Expense"
-msgstr ""
+msgstr "例如：缺失的费用"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 msgid "e.g. Status"
-msgstr ""
+msgstr "例如：状态"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "e.g. To Validate"
-msgstr ""
+msgstr "例如，为了验证"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.workflow_rule_form_view
 msgid "e.g. Validate document"
-msgstr ""
+msgstr "例如：验证文件"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.documents_upload_url_view
@@ -2719,7 +2831,7 @@ msgstr "e.g. https://www.youtube.com/watch?v=CP96yVnXNrY"
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_link_to_record_wizard__is_readonly_model
 msgid "is_readonly_model"
-msgstr ""
+msgstr "is_readonly_model"
 
 #. module: documents
 #. openerp-web
@@ -2754,7 +2866,7 @@ msgstr "分享者"
 #: code:addons/documents/static/src/js/documents_controller_mixin.js:0
 #, python-format
 msgid "status code: %s, message: %s"
-msgstr ""
+msgstr "状态代码:%s, 消息:%s"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban

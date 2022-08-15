@@ -3,21 +3,22 @@
 # 	* helpdesk_timesheet
 # 
 # Translators:
-# Martin Trigaux, 2019
-# Bole <bole@dajmi5.com>, 2019
-# Davor Bojkić <davor.bojkic@storm.hr>, 2019
-# Vladimir Olujić <olujic.vladimir@storm.hr>, 2019
-# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2019
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2019
-# Tina Milas, 2019
+# Ivica Dimjašević <ivica.dimjasevic@storm.hr>, 2022
+# Tina Milas, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Davor Bojkić <davor.bojkic@storm.hr>, 2022
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Bole <bole@dajmi5.com>, 2022
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 08:05+0000\n"
-"PO-Revision-Date: 2019-08-26 09:36+0000\n"
-"Last-Translator: Tina Milas, 2019\n"
+"POT-Creation-Date: 2021-10-05 11:17+0000\n"
+"PO-Revision-Date: 2021-09-14 12:39+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Croatian (https://www.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,31 +32,65 @@ msgid "# Tickets"
 msgstr ""
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_team_view_form_inherit_helpdesk_timesheet
+msgid "<span class=\"o_stat_text\">Recorded</span>"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: code:addons/helpdesk_timesheet/models/analytic.py:0
 #, python-format
-msgid ""
-"All timesheet hours will be assigned to the selected task on save. Discard "
-"to avoid the change."
+msgid "A timesheet cannot be linked to a task and a ticket at the same time."
 msgstr ""
 
 #. module: helpdesk_timesheet
 #: model:ir.model,name:helpdesk_timesheet.model_account_analytic_line
 msgid "Analytic Line"
-msgstr "Analitičke stavke"
+msgstr "Analitička stavka"
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
 #: code:addons/helpdesk_timesheet/models/helpdesk.py:0
 #, python-format
 msgid "Closed"
 msgstr "Zatvoren"
 
 #. module: helpdesk_timesheet
-#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
-msgid "Customer's task is closed."
+#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
+#, python-format
+msgid "Confirm Time Spent"
 msgstr ""
 
 #. module: helpdesk_timesheet
+#: model:ir.model,name:helpdesk_timesheet.model_helpdesk_ticket_create_timesheet
+msgid "Create Timesheet from ticket"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__create_uid
+msgid "Created by"
+msgstr "Kreirao"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__create_date
+msgid "Created on"
+msgstr "Kreirano"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Days Spent"
+msgstr "Utrošeno dana"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
+msgid "Delete"
+msgstr "Obriši"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
+msgid "Describe your activity..."
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__description
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
 msgid "Description"
 msgstr "Opis"
@@ -66,12 +101,69 @@ msgid "Description of the ticket..."
 msgstr "Opis prijave..."
 
 #. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
+msgid "Discard"
+msgstr "Odbaci"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__display_name
+msgid "Display Name"
+msgstr "Naziv"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer
+msgid "Display Timer"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer_pause
+msgid "Display Timer Pause"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer_resume
+msgid "Display Timer Resume"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer_start_primary
+msgid "Display Timer Start Primary"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer_start_secondary
+msgid "Display Timer Start Secondary"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timer_stop
+msgid "Display Timer Stop"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__display_timesheet_timer
+msgid "Display Timesheet Time"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
 msgid "Duration"
 msgstr "Trajanje"
 
 #. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__encode_uom_in_days
+msgid "Encode Uom In Days"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_project_project__has_helpdesk_team
+msgid "Has Helpdesk Teams"
+msgstr ""
+
+#. module: helpdesk_timesheet
 #: model:ir.model,name:helpdesk_timesheet.model_helpdesk_team
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_project_project__helpdesk_team
 msgid "Helpdesk Team"
 msgstr "Tim podrške"
 
@@ -82,20 +174,62 @@ msgid "Helpdesk Ticket"
 msgstr "Prijava podrške"
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_report_analysis__total_hours_spent
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Hours Spent"
+msgstr "Utrošeno sati"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__id
+msgid "ID"
+msgstr "ID"
+
+#. module: helpdesk_timesheet
 #: code:addons/helpdesk_timesheet/models/helpdesk.py:0
 #, python-format
 msgid "In Progress"
 msgstr "U tijeku"
 
 #. module: helpdesk_timesheet
-#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__is_closed
-msgid "Is Closed"
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__is_timer_running
+msgid "Is Timer Running"
 msgstr ""
 
 #. module: helpdesk_timesheet
-#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__is_task_active
-msgid "Is Task Active"
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet____last_update
+msgid "Last Modified on"
+msgstr "Zadnja promjena"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__write_uid
+msgid "Last Updated by"
+msgstr "Promijenio"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__write_date
+msgid "Last Updated on"
+msgstr "Vrijeme promjene"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.rating_rating_view_search_inherit_helpdesk_timesheet
+msgid "My Team's Ratings"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_sla_report_analysis_view_search_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_report_analysis_view_search_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_search_inherit_helpdesk_timesheet
+msgid "My Team's Tickets"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Pause"
+msgstr "Pauza"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Pause timer"
 msgstr ""
 
 #. module: helpdesk_timesheet
@@ -112,48 +246,119 @@ msgstr "Prijave na projektu"
 
 #. module: helpdesk_timesheet
 #: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_team__project_id
+#: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_ticket__project_id
 msgid ""
 "Project to which the tickets (and the timesheets) will be linked by default."
 msgstr ""
 
 #. module: helpdesk_timesheet
-#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__task_id
-msgid "Task"
-msgstr "Zadatak"
-
-#. module: helpdesk_timesheet
-#: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_ticket__is_closed
-msgid "Tasks in this stage are considered as closed."
-msgstr "Zadaci se u ovoj fazi smatraju zatvorenima."
-
-#. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
-#, python-format
-msgid "The project is required to track time on ticket."
+#: model_terms:ir.actions.act_window,help:helpdesk_timesheet.act_hr_timesheet_line_helpdesk
+msgid "Record a new activity"
 msgstr ""
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
-#, python-format
-msgid "The task must be in ticket's project."
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Resume"
+msgstr "Nastavi"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Resume timer"
 msgstr ""
 
 #. module: helpdesk_timesheet
-#: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_ticket__task_id
-msgid "The task must have the same customer as this ticket."
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
+msgid "Save"
+msgstr "Spremi"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_create_timesheet_view_form
+msgid "Save time"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__total_hours_spent
+msgid "Spent Hours"
+msgstr "Utrošeni sati"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Start"
+msgstr "Start"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Start timer"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Stop"
+msgstr "Kraj"
+
+#. module: helpdesk_timesheet
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
+msgid "Stop timer"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.constraint,message:helpdesk_timesheet.constraint_helpdesk_ticket_create_timesheet_time_positive
+msgid "The timesheet's time must be positive"
 msgstr ""
 
 #. module: helpdesk_timesheet
 #: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_ticket__use_helpdesk_timesheet
-msgid "This required to have project module installed."
+msgid "This requires to have project module installed."
 msgstr ""
 
 #. module: helpdesk_timesheet
+#: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_team__timesheet_encode_uom_id
+msgid ""
+"This will set the unit of measure used to encode timesheet. This will simply provide tools\n"
+"        and widgets to help the encoding. All reporting will still be expressed in hours (default value)."
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__ticket_id
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.hr_timesheet_line_search_helpdesk
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.hr_timesheet_line_tree_helpdesk
+#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.timesheet_view_form_helpdesk
+msgid "Ticket"
+msgstr "Prijava"
+
+#. module: helpdesk_timesheet
+#: model:ir.model,name:helpdesk_timesheet.model_helpdesk_ticket_report_analysis
+msgid "Ticket Analysis"
+msgstr "Analiza prijave"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,help:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__ticket_id
+msgid "Ticket for which we are creating a sales order"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: code:addons/helpdesk_timesheet/models/project.py:0
+#: code:addons/helpdesk_timesheet/models/project.py:0
 #: model:ir.model.fields,field_description:helpdesk_timesheet.field_project_project__ticket_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.project_project_view_form_inherit_helpdesk_timesheet
-#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.project_project_view_project_tickets_kanban_inherited
+#, python-format
 msgid "Tickets"
 msgstr "Prijave"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket_create_timesheet__time_spent
+msgid "Time"
+msgstr "Vrijeme"
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__timer_pause
+msgid "Timer Last Pause"
+msgstr ""
+
+#. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__timer_start
+msgid "Timer Start"
+msgstr ""
 
 #. module: helpdesk_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
@@ -161,36 +366,35 @@ msgid "Timesheet Activities"
 msgstr "Aktivnosti kontrolne kartice"
 
 #. module: helpdesk_timesheet
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_team__timesheet_encode_uom_id
+msgid "Timesheet Encoding Unit"
+msgstr ""
+
+#. module: helpdesk_timesheet
 #: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__use_helpdesk_timesheet
 msgid "Timesheet activated on Team"
-msgstr ""
+msgstr "Evidencija aktivirana na timu"
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
-#, python-format
-msgid ""
-"Timesheet hours will not be assigned to a customer task. Set a task to "
-"charge a customer."
-msgstr ""
-
-#. module: helpdesk_timesheet
+#: model:ir.actions.act_window,name:helpdesk_timesheet.act_hr_timesheet_line_helpdesk
 #: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__timesheet_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
 msgid "Timesheets"
 msgstr "Kontrolne kartice"
 
 #. module: helpdesk_timesheet
-#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
-msgid "Total hours"
-msgstr "Ukupno sati"
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_team__total_timesheet_time
+msgid "Total Timesheet Time"
+msgstr ""
 
 #. module: helpdesk_timesheet
-#: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
-msgid "View task."
-msgstr "Vidi zadatak."
+#: model_terms:ir.actions.act_window,help:helpdesk_timesheet.act_hr_timesheet_line_helpdesk
+msgid ""
+"Track your working hours by projects every day and invoice this time to your"
+" customers."
+msgstr ""
 
 #. module: helpdesk_timesheet
-#: code:addons/helpdesk_timesheet/models/helpdesk.py:0
-#, python-format
-msgid "Warning"
-msgstr "Upozorenje"
+#: model:ir.model.fields,field_description:helpdesk_timesheet.field_helpdesk_ticket__user_timer_id
+msgid "User Timer"
+msgstr ""

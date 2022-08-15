@@ -3,7 +3,7 @@
 
 import logging
 from os.path import join, dirname, realpath
-from odoo import tools
+from odoo import api, tools, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
 
@@ -11,7 +11,9 @@ _logger = logging.getLogger(__name__)
 def post_init_hook(cr, registry):
     _load_unspsc_codes(cr, registry)
     _assign_codes_uom(cr, registry)
-    if tools.config['demo'].get('product_unspsc'):
+    env = api.Environment(cr, SUPERUSER_ID, {})
+    demo_product = env.ref('product.consu_delivery_03', raise_if_not_found=False)
+    if demo_product:
         _assign_codes_demo(cr, registry)
 
 def uninstall_hook(cr, registry):

@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <template id="search_template_intrastat_type">
-            <a type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-toggle="dropdown">
                 <span class="fa fa-filter"/>
                 Types:
                 <t t-set="type_value">All</t>
@@ -12,7 +12,7 @@
                 </t>
                 <t t-esc="type_value"/>
                 <span class="caret"/>
-            </a>
+            </button>
             <div class="dropdown-menu o_filter_menu" role="menu">
                 <t t-foreach="options['intrastat_type']" t-as="c">
                     <a t-att-title="c.get('name')"
@@ -25,12 +25,12 @@
             </div>
         </template>
         <template id="search_template_intrastat_extended">
-            <a type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-toggle="dropdown">
                 <span class="fa fa-filter"/> Options:
                 <t t-if="options['intrastat_extended']">Extended</t>
                 <t t-if="not options['intrastat_extended']">Standard</t>
                 <span class="caret"/>
-            </a>
+            </button>
             <div class="dropdown-menu o_filter_menu" role="menu">
                 <a role="menuitem" title="Extended" data-filter="intrastat_extended"
                     class="dropdown-item js_account_report_bool_filter">
@@ -40,12 +40,12 @@
         </template>
 
         <template id="search_template_vat">
-            <a type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-toggle="dropdown">
                 <span class="fa fa-filter"/> Partners:
                 <t t-if="options['with_vat']">With VAT numbers</t>
                 <t t-if="not options['with_vat']">All</t>
                 <span class="caret"/>
-            </a>
+            </button>
             <div class="dropdown-menu o_filter_menu" role="menu">
                 <a role="menuitem" title="Include VAT" data-filter="with_vat"
                     class="dropdown-item js_account_report_bool_filter">

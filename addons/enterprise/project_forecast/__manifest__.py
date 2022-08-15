@@ -19,6 +19,7 @@
     'application': False,
     'license': 'OEEL-1',
     'post_init_hook': 'post_init',
+    'uninstall_hook': '_uninstall_hook',
     'assets': {
         'web.assets_backend': [
             'project_forecast/static/src/js/forecast_gantt.js',

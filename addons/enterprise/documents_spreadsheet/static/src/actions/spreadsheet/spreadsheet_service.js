@@ -7,7 +7,7 @@ import { buildViewLink } from "@documents_spreadsheet/js/o_spreadsheet/registrie
 import { createEmptySpreadsheet } from "@documents_spreadsheet/js/o_spreadsheet/helpers/helpers";
 import { UNTITLED_SPREADSHEET_NAME } from "../../constants";
 
-const { markdownLink } = spreadsheet.helpers;
+const { markdownLink, createEmptyWorkbookData } = spreadsheet.helpers;
 
 /**
  * Helper to get the function to be called when the spreadsheet is opened
@@ -86,7 +86,7 @@ class SpreadsheetService {
         const data = {
             name: UNTITLED_SPREADSHEET_NAME,
             mimetype: "application/o-spreadsheet",
-            raw: "{}",
+            raw: JSON.stringify(createEmptyWorkbookData(`${this.env._t("Sheet")}1`)),
             handler: "spreadsheet",
         };
         return this.orm.create("documents.document", data);

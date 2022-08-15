@@ -33,7 +33,7 @@ class res_company(models.Model):
         text = {
             'validation': _('validated') if auto_validation else _('draft'),
             'generated_object': generated_object[rule_type],
-            'warehouse': warehouse_id.display_name,
+            'warehouse': warehouse_id.sudo().display_name,
             'event_type': event_type[rule_type],
             'company': self.name,
         }

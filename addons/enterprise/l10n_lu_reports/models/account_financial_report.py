@@ -66,17 +66,18 @@ class ReportAccountFinancialReport(models.Model):
         # we only need `account.financial.html.report.line` record's IDs and line['id'] could hold account.account
         # record's IDs as well. Such can be identified by `financial_group_line_id` in line dictionary's key. So,
         # below first condition filters those lines and second one filters lines having ID such as `total_*`
-        for line in filter(lambda l: 'financial_group_line_id' not in l and isinstance(l.get('id'), int), lines):
+        for line in filter(lambda l: 'financial_group_line_id' not in l and l.get('model_ref'), lines):
+            line_id = line['model_ref'][1]
             # financial report's `code` would contain alpha-numeric string like `LU_BS_XXX/LU_BSABR_XXX`
             # where characters at last three positions will be digits, hence we split with `_`
             # and build dictionary having `code` as dictionary key
-            split_line_code = (ReportLine.browse(line['id']).code or '').split('_') or []
+            split_line_code = (ReportLine.browse(line_id).code or '').split('_') or []
             columns = line['columns']
             # since we have enabled comparison by default, `columns` element will atleast have two dictionary items.
             # First dict will be holding current year's balance and second one will be holding previous year's balance.
             if len(split_line_code) > 2:
                 parent_code = None
-                parent_id = ReportLine.browse(line['id']).parent_id
+                parent_id = ReportLine.browse(line_id).parent_id
                 if parent_id and parent_id.code:
                     parent_split_code = parent_id.code.split('_')
                     if len(parent_split_code) > 2:

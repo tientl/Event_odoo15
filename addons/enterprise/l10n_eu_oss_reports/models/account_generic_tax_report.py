@@ -45,13 +45,6 @@ class AccountGenericTaxReport(models.AbstractModel):
                 ('tax_tag_ids', 'in', self.env.ref('l10n_eu_oss.tag_eu_import').ids),
             ]
 
-        elif isinstance(options['tax_report'], int) or options['fiscal_position'] != 'all':
-            # National report: don't include OSS lines
-            # For tax closing, the generic report is also passed with a fiscal position; we don't want OSS then.
-            domain += [
-                ('tax_tag_ids', 'not in', self.env.ref('l10n_eu_oss.tag_oss').ids),
-            ]
-
         return domain
 
     @api.model
@@ -224,3 +217,11 @@ class AccountGenericTaxReport(models.AbstractModel):
             export_template_ref = 'l10n_eu_oss_reports.eu_oss_generic_export_xml_lu'
 
         return export_template_ref
+
+    def _get_vat_closing_entry_additional_domain(self):
+        # OVERRIDE
+        domain = super()._get_vat_closing_entry_additional_domain()
+        domain += [
+            ('tax_tag_ids', 'not in', self.env.ref('l10n_eu_oss.tag_oss').ids),
+        ]
+        return domain

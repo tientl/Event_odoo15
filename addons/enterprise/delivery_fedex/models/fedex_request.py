@@ -2,13 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import binascii
 import logging
-import os
 import re
 
 from datetime import datetime, date
 from zeep import Client, Plugin, Settings
 from zeep.exceptions import Fault
 from zeep.wsdl.utils import etree_to_string
+
+from odoo.modules.module import get_resource_path
 from odoo.tools import remove_accents
 
 
@@ -46,18 +47,12 @@ class FedexRequest():
         self.hasCommodities = False
         self.hasOnePackage = False
 
+        wsdl_folder = 'prod' if prod_environment else 'test'
         if request_type == "shipping":
-            if not prod_environment:
-                wsdl_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../api/test/ShipService_v15.wsdl')
-            else:
-                wsdl_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../api/prod/ShipService_v15.wsdl')
+            wsdl_path = get_resource_path('delivery_fedex', 'api', wsdl_folder, 'ShipService_v28.wsdl')
             self.start_shipping_transaction(wsdl_path)
-
         elif request_type == "rating":
-            if not prod_environment:
-                wsdl_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../api/test/RateService_v16.wsdl')
-            else:
-                wsdl_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../api/prod/RateService_v16.wsdl')
+            wsdl_path = get_resource_path('delivery_fedex', 'api', wsdl_folder, 'RateService_v31.wsdl')
             self.start_rating_transaction(wsdl_path)
 
     # Authentification stuff
@@ -216,7 +211,7 @@ class FedexRequest():
         self.factory = self.client.type_factory('ns0')
         self.VersionId = self.factory.VersionId()
         self.VersionId.ServiceId = 'crs'
-        self.VersionId.Major = '16'
+        self.VersionId.Major = '31'
         self.VersionId.Intermediate = '0'
         self.VersionId.Minor = '0'
 
@@ -264,7 +259,7 @@ class FedexRequest():
         self.factory = self.client.type_factory("ns0")
         self.VersionId = self.factory.VersionId()
         self.VersionId.ServiceId = 'ship'
-        self.VersionId.Major = '15'
+        self.VersionId.Major = '28'
         self.VersionId.Intermediate = '0'
         self.VersionId.Minor = '0'
 

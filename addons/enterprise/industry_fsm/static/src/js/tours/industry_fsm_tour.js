@@ -37,6 +37,13 @@ tour.register('industry_fsm_tour', {
     trigger: ".ui-autocomplete > li > a",
     auto: true,
 }, {
+    content: "Save the task",
+    trigger: 'button.o_form_button_save',
+}, {
+    trigger: 'button.o_form_button_edit',
+    content: 'Go back to edit mode',
+    run: function(){},
+}, {
     trigger: 'button[name="action_timer_start"]',
     extra_trigger: '.o_form_project_tasks',
     content: _t('Launch the timer to <b>track the time spent</b> on your task.'),

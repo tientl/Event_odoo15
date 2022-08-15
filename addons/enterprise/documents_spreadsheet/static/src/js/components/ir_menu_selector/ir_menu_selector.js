@@ -29,9 +29,7 @@ class MenuSelectorWidgetAdapter extends ComponentAdapter {
     get widgetArgs() {
         const domain = [
             ["action", "!=", false],
-            "|",
-            ["groups_id", "=", false],
-            ["groups_id", "in", this.props.userGroups],
+            ["id", "in", this.props.availableMenuIds],
         ]
         const attrs = {
             placeholder: this.env._t("Select a menu..."),
@@ -45,7 +43,7 @@ export class IrMenuSelector extends Dialog {
     setup() {
         super.setup();
         this.StandaloneMany2OneField = StandaloneMany2OneField;
-        this.user = useService("user");
+        this.menus = useService("menu");
         this.orm = useService("orm");
         this.selectedMenu = useState({
             id: undefined,
@@ -59,10 +57,13 @@ export class IrMenuSelector extends Dialog {
         // The following external listener handles this.
         useExternalListener(document.body, "click", (ev) => ev.stopPropagation())
     }
-    async willStart() {
-        const [{groups_id}] = await this.orm.read("res.users", [this.user.userId], ["groups_id"]);
-        this.userGroups = groups_id;
+
+    get availableMenuIds() {
+        return this.menus.getAll()
+            .map((menu) => menu.id)
+            .filter((menuId) => menuId !== "root");
     }
+
     _onConfirm() {
         this.props.onMenuSelected(this.selectedMenu.id);
     }
@@ -81,7 +82,7 @@ IrMenuSelector.bodyTemplate = xml/* xml */ `
         t-on-click.stop=""
         Component="StandaloneMany2OneField"
         menuId="props.menuId"
-        userGroups="userGroups"
+        availableMenuIds="availableMenuIds"
         t-on-value-changed="_onValueChanged"
     />
 `;

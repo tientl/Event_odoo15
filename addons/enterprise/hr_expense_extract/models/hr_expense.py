@@ -95,16 +95,16 @@ class HrExpense(models.Model):
     extract_can_show_resend_button = fields.Boolean("Can show the ocr resend button", compute=_compute_show_resend_button)
     extract_can_show_send_button = fields.Boolean("Can show the ocr send button", compute=_compute_show_send_button)
 
-    @api.returns('mail.message', lambda value: value.id)
-    def message_post(self, **kwargs):
-        """when a message is posted send the attachment to iap-extract if this is the first attachment"""
-        message = super(HrExpense, self).message_post(**kwargs)
-        
+    def attach_document(self, **kwargs):
+        """when an attachment is uploaded, send the attachment to iap-extract if this is the first attachment"""
         if self.env.company.expense_extract_show_ocr_option_selection == 'auto_send':
             for record in self:
                 if record.extract_state == "no_extract_requested":
                     record.retry_ocr()
-        return message
+
+    def _message_set_main_attachment_id(self, attachment_ids):
+        super(HrExpense, self)._message_set_main_attachment_id(attachment_ids)
+        self.attach_document()
 
     def get_validation(self, field):
 
@@ -112,7 +112,7 @@ class HrExpense(models.Model):
         if field == "total":
             text_to_send["content"] = self.unit_amount
         elif field == "date":
-            text_to_send["content"] = str(self.date)
+            text_to_send["content"] = str(self.date) if self.date else False
         elif field == "description":
             text_to_send["content"] = self.name
         elif field == "currency":
@@ -123,11 +123,12 @@ class HrExpense(models.Model):
 
     def action_submit_expenses(self, **kwargs):
         """Send user corrected values to the ocr"""
+        documents = {}
         res = super(HrExpense, self).action_submit_expenses(**kwargs)
 
         for expense in self.filtered(lambda x: x.extract_state == 'waiting_validation'):
             endpoint = self.env['ir.config_parameter'].sudo().get_param(
-                'hr_expense_extract_endpoint', 'https://iap-extract.odoo.com') + '/iap/expense_extract/validate'
+                'hr_expense_extract_endpoint', 'https://iap-extract.odoo.com') + '/api/extract/expense/1/validate_batch'
 
             values = {
                 'total': expense.get_validation('total'),
@@ -136,14 +137,13 @@ class HrExpense(models.Model):
                 'currency': expense.get_validation('currency'),
                 'bill_reference': expense.get_validation('bill_reference')
             }
-            params = {
-                'document_id': expense.extract_remote_id,
-                'version': CLIENT_OCR_VERSION,
-                'values': values
-            }
+            documents[expense.extract_remote_id] = values
+            expense.extract_state = 'done'
+
+        params = {"documents": documents}
+        if len(documents) >= 1:
             try:
                 iap_tools.iap_jsonrpc(endpoint, params=params)
-                expense.extract_state = 'done'
             except AccessError:
                 pass
         return res
@@ -193,21 +193,34 @@ class HrExpense(models.Model):
             currency_ocr = ocr_results['currency']['selected_value']['content'] if 'currency' in ocr_results else ""
             bill_reference_ocr = ocr_results['bill_reference']['selected_value']['content'] if 'bill_reference' in ocr_results else ""
 
-            self.name = description_ocr
-            self.date = date_ocr
-            self.reference = bill_reference_ocr
-            self.predicted_category = description_ocr
+            if not self.name or self.name == self.message_main_attachment_id.name.split('.')[0]:
+                self.name = description_ocr
+                self.predicted_category = description_ocr
+                predicted_product_id = self._predict_product(description_ocr, category=True)
+                if predicted_product_id:
+                    self.product_id = predicted_product_id if predicted_product_id else self.product_id
+                    self.total_amount = total_ocr
 
-            predicted_product_id = self._predict_product(description_ocr, category = True)
-            self.product_id = predicted_product_id if predicted_product_id else self.product_id
+            context_create_date = fields.Date.context_today(self, self.create_date)
+            if not self.date or self.date == context_create_date:
+                self.date = date_ocr
 
-            if self.user_has_groups('base.group_multi_currency'):
-                self.currency_id = self.env["res.currency"].search([
-                    '|', '|', ('currency_unit_label', 'ilike', currency_ocr),
-                    ('name', 'ilike', currency_ocr), ('symbol', 'ilike', currency_ocr)], limit=1)   
-            
-            self.unit_amount = 0
-            self.total_amount = total_ocr
+            if not self.total_amount:
+                self.total_amount = total_ocr
+
+            if not self.reference:
+                self.reference = bill_reference_ocr
+
+            if self.user_has_groups('base.group_multi_currency') and (not self.currency_id or self.currency_id == self.env.company.currency_id):
+                currency = self.env["res.currency"].search([
+                    '|', '|',
+                    ('currency_unit_label', 'ilike', currency_ocr),
+                    ('name', 'ilike', currency_ocr),
+                    ('symbol', 'ilike', currency_ocr)],
+                    limit=1
+                )
+                if currency:
+                    self.currency_id = currency
 
         elif result['status_code'] == NOT_READY:
             self.extract_state = 'extract_not_ready'
@@ -311,10 +324,12 @@ class HrExpense(models.Model):
             action_id = self.env.ref('hr_expense_extract.action_expense_sample_receipt').id
             html_to_return = """
 <p class="o_view_nocontent_expense_receipt">
-    Did you try the mobile app?
+    <h2 class="d-none d-md-block">
+        Did you try the mobile app?
+    </h2>
 </p>
 <p>Snap pictures of your receipts and let Odoo<br/> automatically create expenses for you.</p>
-<p>
+<p class="d-none d-md-block">
     <a href="https://apps.apple.com/be/app/odoo/id1272543640" target="_blank">
         <img alt="Apple App Store" class="img img-fluid h-100 o_expense_apple_store" src="/hr_expense/static/img/app_store.png"/>
     </a>

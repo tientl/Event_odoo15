@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.l10n_mx_edi_extended.tests.common import TestMxExtendedEdiCommon
+from odoo.addons.l10n_mx_edi_extended_40.tests.common import TestMxExtendedEdiCommon
 from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
 from odoo import fields
 from odoo.tests import tagged

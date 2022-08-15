@@ -39,10 +39,11 @@ class analytic_report(models.AbstractModel):
         date = options.get('date', {})
         action = self.env["ir.actions.actions"]._for_xml_id("analytic.account_analytic_line_action")
         action = clean_action(action, env=self.env)
+        active_id = int(params['id'].split('analytic_account_')[1])
         action['context'] = {
-            'active_id': int(params['id'].split('analytic_account_')[1]),
+            'active_id': active_id,
         }
-        action['domain'] = [('date', '>=', date.get('date_from')), ('date', '<=', date.get('date_to'))]
+        action['domain'] = [('account_id','=',active_id),('date', '>=', date.get('date_from')), ('date', '<=', date.get('date_to'))]
         return action
 
     def _get_amount_of_parents(self, group):

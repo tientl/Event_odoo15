@@ -504,7 +504,7 @@ class DMFAWorkerContribution(DMFANode):
         # the correct value is 0 for 4xx numbers.
         self.contribution_type = 0
         self.calculation_basis = format_amount(basis)
-        self.amount = format_amount(round(basis * 0.3809, 2))
+        self.amount = format_amount(round(basis * 0.3810, 2))
         self.first_hiring_date = -1
 
 class DMFAWorkerContributionFFE(DMFANode):
@@ -537,7 +537,7 @@ class DMFAWorkerContributionSpecialFFE(DMFANode):
         # Pour tous les travailleurs soumis à la réglementation sur le chômage
         # 0,13% (0,14%)
         # Source: https://www.socialsecurity.be/employer/instructions/dmfa/fr/latest/instructions/special_contributions/other_specialcontributions/basiccontributions_closingcompanyfunds.html
-        self.amount = format_amount(round(basis * 0.0014, 2))
+        self.amount = format_amount(round(basis * 0.0010, 2))
         self.first_hiring_date = -1
 
 
@@ -912,7 +912,7 @@ class HrDMFAReport(models.Model):
         dmfa_schema_file_path = get_resource_path(
             'l10n_be_hr_payroll',
             'data',
-            'DmfAOriginal_20211.xsd',
+            'DmfAOriginal_20214.xsd',
         )
         xsd_root = etree.parse(dmfa_schema_file_path)
         schema = etree.XMLSchema(xsd_root)
@@ -982,7 +982,11 @@ class HrDMFAReport(models.Model):
             ('date_to', '<=', self.quarter_end),
             ('state', 'in', ['done', 'paid']),
             ('company_id', '=', self.company_id.id),
+            ('struct_id', '!=', self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_structure_warrant').id),
         ])
+        # Exclude CIP contracts from DmfA, as they only have a DIMONA
+        contract_type_cip = self.env.ref('l10n_be_hr_payroll.l10n_be_contract_type_cip')
+        payslips = payslips.filtered(lambda p: p.contract_id.contract_type_id != contract_type_cip)
         employees = payslips.mapped('employee_id')
         worker_count = len(employees)
 

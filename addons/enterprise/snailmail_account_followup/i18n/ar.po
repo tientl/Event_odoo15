@@ -4,14 +4,15 @@
 # 
 # Translators:
 # Martin Trigaux, 2021
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.4+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-12 07:57+0000\n"
+"POT-Creation-Date: 2022-01-24 09:01+0000\n"
 "PO-Revision-Date: 2021-09-14 12:43+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,6 +27,8 @@ msgid ""
 "%s of the selected partner(s) had an invalid address. The corresponding "
 "followups were not sent"
 msgstr ""
+"%s شريك (شركاء) محددين لديهم عناوين غير صالحة. لم يتم إرسال المتابعات "
+"المقابلة "
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
@@ -33,6 +36,8 @@ msgid ""
 "<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Warning\" title=\"                         The letter will be sent using the IAP service from Odoo.&#10;Make sure you have enough credits on your account or proceed to a recharge.                         \"/>\n"
 "                        <br/>"
 msgstr ""
+"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Warning\" title=\"                         سيتم إرسال الرسالة باستخدام خدمة الوكيل المدرك للهوية من أودو.&amp;#10;تأكد من أنك تملك الرصيد الكافي في حسابك أو باشر بإعادة شحن الرصيد.                         \"/>\n"
+"                        <br/>"
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
@@ -50,6 +55,9 @@ msgid ""
 "                                The recipient's address is incomplete.\n"
 "                            </span>"
 msgstr ""
+"<span class=\"text-danger\" attrs=\"{'invisible': [('letters_qty', '&gt;', 1)]}\">\n"
+"                                عنوان المرسل غير مكتمل.\n"
+"                            </span>"
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
@@ -58,11 +66,19 @@ msgid ""
 "                                    Some customer addresses are not complete.\n"
 "                                </span>"
 msgstr ""
+"<span class=\"text-danger\">\n"
+"                                    بعض عناوين العملاء غير مكتملة.\n"
+"                                </span>"
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
 msgid "Cancel"
-msgstr "الغاء"
+msgstr "إلغاء "
+
+#. module: snailmail_account_followup
+#: model:ir.model,name:snailmail_account_followup.model_res_partner
+msgid "Contact"
+msgstr "جهة اتصال "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__create_uid
@@ -80,7 +96,7 @@ msgstr "أنشئ في"
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__display_name
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_snailmail_confirm_followup__display_name
 msgid "Display Name"
-msgstr "الاسم المعروض"
+msgstr "اسم العرض "
 
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_account_followup_followup_line
@@ -109,12 +125,12 @@ msgstr "المُعرف"
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__invalid_partner_ids
 #, python-format
 msgid "Invalid Addresses"
-msgstr ""
+msgstr "العناوين غير الصالحة "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__invalid_addresses
 msgid "Invalid Addresses Count"
-msgstr ""
+msgstr "عدد العناوين غير الصالحة "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send____last_update
@@ -137,17 +153,17 @@ msgstr "آخر تحديث في"
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_snailmail_confirm_followup__model_name
 msgid "Model Name"
-msgstr "اسم الكائن"
+msgstr "اسم النموذج "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__letters_qty
 msgid "Number of letters"
-msgstr ""
+msgstr "عدد الرسائل "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__partner_ids
 msgid "Recipients"
-msgstr "المستلمون"
+msgstr "المستلمين "
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
@@ -157,12 +173,12 @@ msgstr "إرسال متابعات"
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_followup_send
 msgid "Send Follow-ups"
-msgstr ""
+msgstr "إرسال المتابعات "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_followup_line__send_letter
 msgid "Send a Letter"
-msgstr "إرسال خطاب"
+msgstr "إرسال رسالة "
 
 #. module: snailmail_account_followup
 #. openerp-web
@@ -170,22 +186,22 @@ msgstr "إرسال خطاب"
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
 #, python-format
 msgid "Send by Post"
-msgstr "إرساله بريديًا"
+msgstr "الإرسال عبر البريد "
 
 #. module: snailmail_account_followup
 #: model:ir.actions.act_window,name:snailmail_account_followup.followup_send
 msgid "Send by post"
-msgstr ""
+msgstr "الإرسال عبر البريد "
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
 msgid "Sending these"
-msgstr "جاري إرسال هؤلاء"
+msgstr "جاري إرسال هذه "
 
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_snailmail_confirm_followup
 msgid "Snailmail Confirm Followup"
-msgstr ""
+msgstr "متابعة تأكيد البريد العادي "
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_followup_send__snailmail_cost
@@ -195,12 +211,12 @@ msgstr "الطوابع البريدية"
 #. module: snailmail_account_followup
 #: model:ir.model.fields,help:snailmail_account_followup.field_account_followup_followup_line__send_letter
 msgid "When processing, it will send a letter by Post"
-msgstr "عند إجراء المعالجة، سيقوم بإرسال رسالة بريديًا"
+msgstr "عند إجراء المعالجة، سوف يقوم بإرسال رسالة عبر البريد "
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
 msgid "customers"
-msgstr "عملاء"
+msgstr "العملاء "
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.followup_send_wizard_form
@@ -211,4 +227,4 @@ msgstr "سوف تكلف المستندات"
 #: code:addons/snailmail_account_followup/wizard/followup_send.py:0
 #, python-format
 msgid "follow-up report"
-msgstr ""
+msgstr "تقرير المتابعة"

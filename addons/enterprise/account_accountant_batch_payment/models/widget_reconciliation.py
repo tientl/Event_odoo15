@@ -30,7 +30,7 @@ class AccountReconciliation(models.AbstractModel):
         Batch_payment = self.env['account.batch.payment']
 
         batch_payments = []
-        batch_payments_domain = [('state', '!=', 'reconciled')]
+        batch_payments_domain = [('state', 'not in', ('draft', 'reconciled'))]
         for batch_payment in Batch_payment.search(batch_payments_domain, order='id asc'):
             payments = batch_payment.payment_ids
             journal = batch_payment.journal_id

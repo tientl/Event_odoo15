@@ -33,12 +33,17 @@ class TimerMixin(models.AbstractModel):
             :res_model is the current model
             limit=1 by security but the search should never have more than one record
         """
+        timer_read_group = self.env['timer.timer'].read_group(
+            domain=[
+                ('user_id', '=', self.env.user.id),
+                ('res_id', 'in', self.ids),
+                ('res_model', '=', self._name)
+            ],
+            fields=['res_id', 'ids:array_agg(id)'],
+            groupby=['res_id'])
+        timer_by_model = {res['res_id']: self.env['timer.timer'].browse(res['ids'][0]) for res in timer_read_group}
         for record in self:
-            record.user_timer_id = self.env['timer.timer'].search([
-                ('user_id', '=', record.env.user.id),
-                ('res_id', '=', record.id),
-                ('res_model', '=', record._name)
-            ], limit=1)
+            record.user_timer_id = timer_by_model.get(record.id, False)
 
     @api.model
     def _get_user_timers(self):

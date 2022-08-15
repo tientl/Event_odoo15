@@ -3,6 +3,7 @@
 
 from odoo import api, models, fields, _
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 
 class PlanningSend(models.TransientModel):
@@ -28,14 +29,16 @@ class PlanningSend(models.TransientModel):
     @api.depends('start_datetime', 'end_datetime')
     def _compute_slots_data(self):
         for wiz in self:
-            wiz.slot_ids = self.env['planning.slot'].search([('start_datetime', '>=', wiz.start_datetime),
-                                                             ('end_datetime', '<=', wiz.end_datetime)])
+            wiz.slot_ids = self.env['planning.slot'].with_user(self.env.user).search(
+                [('start_datetime', '>=', wiz.start_datetime),('end_datetime', '<=', wiz.end_datetime)]
+            )
             wiz.employee_ids = wiz.slot_ids.filtered(lambda s: s.resource_type == 'user').mapped('employee_id')
 
     def _inverse_employee_ids(self):
         for wiz in self:
-            wiz.slot_ids = self.env['planning.slot'].search([('start_datetime', '>=', wiz.start_datetime),
-                                                             ('start_datetime', '<=', wiz.end_datetime)])
+            wiz.slot_ids = self.env['planning.slot'].with_user(self.env.user).search(
+                [('start_datetime', '>=', wiz.start_datetime),('end_datetime', '<=', wiz.end_datetime)]
+            )
 
     def get_employees_without_work_email(self):
         self.ensure_one()
@@ -90,9 +93,10 @@ class PlanningSend(models.TransientModel):
             }
 
     def action_publish(self):
-        slot_to_publish = self.slot_ids
-        if not self.include_unassigned:
-            slot_to_publish = slot_to_publish.filtered(lambda s: s.employee_id)
+        domain = [('employee_id', 'in', self.employee_ids.ids)]
+        if self.include_unassigned:
+            domain = expression.OR([[('resource_id', '=', False)], domain])
+        slot_to_publish = self.slot_ids.filtered_domain(domain)
         slot_to_publish.write({
             'state': 'published',
             'publication_warning': False

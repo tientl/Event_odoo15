@@ -41,18 +41,22 @@ class L10nBeSocialBalanceSheet(models.TransientModel):
         report_data = {}
 
         contracts = self.env['hr.employee']._get_all_contracts(self.date_from, self.date_to, states=['open', 'close'])
-        if any(c.employee_id.gender not in ['male', 'female'] for c in contracts):
-            raise UserError(_('Please configure the employees gender using the values male or female.'))
+        invalid_employees = contracts.employee_id.filtered(lambda e: e.gender not in ['male', 'female'])
+        if invalid_employees:
+            raise UserError(_('Please configure a gender (either male or female) for the following employees:\n\n%s', '\n'.join(invalid_employees.mapped('name'))))
 
         date_from = self.date_from + relativedelta(day=1)
         date_to = self.date_to + relativedelta(day=31)
 
+        cip = self.env.ref('l10n_be_hr_payroll.l10n_be_contract_type_cip')
+
         payslips = self.env['hr.payslip'].search([
             ('state', 'in', ['done', 'paid']),
-            ('struct_id', '=', self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary').id),
+            ('struct_id.type_id', '=', self.env.ref('hr_contract.structure_type_employee_cp200').id),
             ('company_id', '=', self.company_id.id),
             ('date_from', '>=', date_from),
-            ('date_to', '<=', date_to)])
+            ('date_to', '<=', date_to),
+            ('contract_id.contract_type_id', '!=', cip.id)])
 
         # SECTION 100
         # Calculated as the average of number of workers entered in the personnel register at
@@ -116,6 +120,8 @@ class L10nBeSocialBalanceSheet(models.TransientModel):
             lines = payslip.worked_days_line_ids.filtered(lambda l: l.work_entry_type_id in attendances)
             if lines:
                 worked_paid_hours = sum(l.number_of_hours for l in lines)
+            else:
+                continue
             calendar = payslip.contract_id.resource_calendar_id
             if calendar.full_time_required_hours == calendar.hours_per_week:
                 workers_data[gender]['full'] += worked_paid_hours
@@ -149,18 +155,22 @@ class L10nBeSocialBalanceSheet(models.TransientModel):
         meal_voucher = dict(male=0, female=0, total=0)
 
         line_values = payslips._get_line_values(
-            ['GROSS', 'CAR.PRIV', 'ONSSEMPLOYER', 'MEAL_V_EMP'], vals_list=['total', 'quantity'])
+            ['GROSS', 'CAR.PRIV', 'ONSSEMPLOYER', 'MEAL_V_EMP', 'PUB.TRANS', 'REP.FEES', 'IP.PART'], vals_list=['total', 'quantity'])
         for payslip in payslips:
             gender = payslip.employee_id.gender
             calendar = payslip.contract_id.resource_calendar_id
             contract_type = 'full' if calendar.full_time_required_hours == calendar.hours_per_week else 'part'
-            gross = round(line_values['GROSS'][payslip.id]['total'], 2)
+            gross = round(line_values['GROSS'][payslip.id]['total'], 2) - round(line_values['IP.PART'][payslip.id]['total'], 2)
             private_car = round(line_values['CAR.PRIV'][payslip.id]['total'], 2)
+            public_transport = round(line_values['PUB.TRANS'][payslip.id]['total'], 2)
             onss_employer = round(line_values['ONSSEMPLOYER'][payslip.id]['total'], 2)
+            reimbursed_expenses = round(line_values['REP.FEES'][payslip.id]['total'], 2)
             workers_data['total_gross'][gender][contract_type] += gross
             workers_data['private_car'][gender][contract_type] += private_car
+            workers_data['public_transport'][gender][contract_type] += public_transport
             workers_data['onss_employer'][gender][contract_type] += onss_employer
-            workers_data['total'][gender][contract_type] = gross + private_car + onss_employer
+            workers_data['reimbursed_expenses'][gender][contract_type] += reimbursed_expenses
+            workers_data['total'][gender][contract_type] += gross + private_car + onss_employer + public_transport + reimbursed_expenses
 
             employer_amount = payslip.contract_id.meal_voucher_paid_by_employer
             meal_voucher[gender] += round(employer_amount * line_values['MEAL_V_EMP'][payslip.id]['quantity'], 2)
@@ -172,6 +182,7 @@ class L10nBeSocialBalanceSheet(models.TransientModel):
         workers_data = collections.defaultdict(lambda: dict(full=0, part=0, fte=0))
 
         end_contracts = self.env['hr.employee']._get_all_contracts(self.date_to, self.date_to, states=['open', 'close'])
+        end_contracts = end_contracts.filtered(lambda c: c.contract_type_id != cip)
 
         cdi = self.env.ref('l10n_be_hr_payroll.l10n_be_contract_type_cdi')
         cdd = self.env.ref('l10n_be_hr_payroll.l10n_be_contract_type_cdd')
@@ -229,9 +240,14 @@ class L10nBeSocialBalanceSheet(models.TransientModel):
             workers_data[gender_certificate_code][contract_time] += 1
             workers_data[gender_certificate_code]['fte'] += 1 * calendar.work_time_rate / 100.0
 
-            if contract.structure_type_id not in mapped_categories:
+            structure_type = contract.structure_type_id
+            if cip and contract.contract_type_id == cip:
+                # CIP Contracts are considered as trainees
+                structure_type = cp200_students
+
+            if structure_type not in mapped_categories:
                 raise UserError(_("The contract %s for %s is not of one the following types: CP200 Employees or Student", contract.name, contract.employee_id.name))
-            category_code = mapped_categories[contract.structure_type_id]
+            category_code = mapped_categories[structure_type]
             workers_data[category_code][contract_time] += 1
             workers_data[category_code]['fte'] += 1 * calendar.work_time_rate / 100.0
 

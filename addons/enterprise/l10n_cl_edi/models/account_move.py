@@ -5,13 +5,14 @@ import logging
 import re
 
 from datetime import datetime
-from html import unescape
 from io import BytesIO
+from markupsafe import Markup
+from psycopg2 import OperationalError
 
 from lxml import etree
 
-from odoo import fields, models, api
-from odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util import UnexpectedXMLResponse
+from odoo import fields, models
+from odoo.addons.l10n_cl_edi.models.l10n_cl_edi_util import UnexpectedXMLResponse, InvalidToken
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
 from odoo.tools.float_utils import float_repr
@@ -84,20 +85,38 @@ class AccountMove(models.Model):
                                             states={'draft': [('readonly', False)]}, string='Reference Records')
 
     def button_cancel(self):
-        for record in self.filtered(lambda x: x.company_id.account_fiscal_country_id.code == "CL"):
-            # The move cannot be modified once the DTE has been accepted by the SII
-            if record.l10n_cl_dte_status == 'accepted':
-                raise UserError(_('This %s is accepted by SII. It cannot be cancelled. '
-                                  'Instead you should revert it.') % record.l10n_latam_document_type_id.name)
+        for record in self.filtered(lambda x: x.company_id.country_id.code == "CL"):
+            # The move cannot be modified once the DTE has been accepted, objected or sent to the SII
+            if record.l10n_cl_dte_status in ['accepted', 'objected']:
+                l10n_cl_dte_status = dict(record._fields['l10n_cl_dte_status']._description_selection(
+                    self.env)).get(record.l10n_cl_dte_status)
+                raise UserError(_('This %s is in SII status: %s. It cannot be cancelled. '
+                                  'Instead you should revert it.') % (
+                    record.l10n_latam_document_type_id.name, l10n_cl_dte_status))
+            elif record.l10n_cl_dte_status == 'ask_for_status':
+                raise UserError(_('This %s is in the intermediate state: \'Ask for Status in the SII\'. '
+                                  'You will be able to cancel it only when the document has reached the state '
+                                  'of rejection. Otherwise, if it were accepted or objected you should revert it '
+                                  'with a suitable document instead of cancelling it.') %
+                                record.l10n_latam_document_type_id.name)
             record.l10n_cl_dte_status = 'cancelled'
         return super().button_cancel()
 
     def button_draft(self):
-        for record in self.filtered(lambda x: x.company_id.account_fiscal_country_id.code == "CL"):
-            # The move cannot be modified once the DTE has been accepted by the SII
-            if record.l10n_cl_dte_status == 'accepted':
-                raise UserError(_('This %s is accepted by SII. It cannot be set to draft state. '
-                                  'Instead you should revert it.') % record.l10n_latam_document_type_id.name)
+        for record in self.filtered(lambda x: x.company_id.country_id.code == "CL"):
+            # The move cannot be modified once the DTE has been accepted, objected or sent to the SII
+            if record.l10n_cl_dte_status in ['accepted', 'objected']:
+                l10n_cl_dte_status = dict(record._fields['l10n_cl_dte_status']._description_selection(
+                    self.env)).get(record.l10n_cl_dte_status)
+                raise UserError(_('This %s is in SII status %s. It cannot be reset to draft state. '
+                                  'Instead you should revert it.') % (
+                    record.l10n_latam_document_type_id.name, l10n_cl_dte_status))
+            elif record.l10n_cl_dte_status == 'ask_for_status':
+                raise UserError(_('This %s is in the intermediate state: \'Ask for Status in the SII\'. '
+                                  'You will be able to reset it to draft only when the document has reached the state '
+                                  'of rejection. Otherwise, if it were accepted or objected you should revert it '
+                                  'with a suitable document instead of cancelling it.') %
+                                record.l10n_latam_document_type_id.name)
             record.l10n_cl_dte_status = None
         return super().button_draft()
 
@@ -116,10 +135,10 @@ class AccountMove(models.Model):
             # generation of customer invoices
             if ((move.move_type in ['out_invoice', 'out_refund'] and move.journal_id.type == 'sale')
                     or (move.move_type in ['in_invoice', 'in_refund'] and move.l10n_latam_document_type_id._is_doc_type_vendor())):
-                move._l10n_cl_edi_post_validation()
                 if move.journal_id.l10n_cl_point_of_sale_type != 'online' and not move.l10n_latam_document_type_id._is_doc_type_vendor():
                     move.l10n_cl_dte_status = 'manual'
                     continue
+                move._l10n_cl_edi_post_validation()
                 move._l10n_cl_create_dte()
                 move.l10n_cl_dte_status = 'not_sent'
                 dte_signed, file_name = move._l10n_cl_create_dte_envelope()
@@ -127,7 +146,7 @@ class AccountMove(models.Model):
                     'name': 'SII_{}'.format(file_name),
                     'res_id': move.id,
                     'res_model': 'account.move',
-                    'datas': base64.b64encode(dte_signed.encode('ISO-8859-1')),
+                    'datas': base64.b64encode(dte_signed.encode('ISO-8859-1', 'replace')),
                     'type': 'binary',
                 })
                 move.l10n_cl_sii_send_file = attachment.id
@@ -180,7 +199,6 @@ class AccountMove(models.Model):
             'code_rejected': '-1' if status_type == 'claimed' else None,
             '__keep_empty_lines': True,
         })
-        response = unescape(response)
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         signed_response = self._sign_full_xml(
             response, digital_signature, '', 'env_resp', self.l10n_latam_document_type_id._is_doc_type_voucher())
@@ -198,8 +216,21 @@ class AccountMove(models.Model):
 
     def l10n_cl_send_dte_to_sii(self, retry_send=True):
         """
-        Send the DTE to the SII. It will be
+        Send the DTE to the SII.
         """
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute('SELECT * FROM account_move WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
+        except OperationalError as e:
+            if e.pgcode == '55P03':
+                if not self.env.context.get('cron_skip_connection_errs'):
+                    raise UserError(_('This invoice is being processed already.'))
+                return
+            raise e
+        # To avoid double send on double-click
+        if self.l10n_cl_dte_status != "not_sent":
+            return None
+        _logger.info('Sending DTE for invoice with ID %s (name: %s)', self.id, self.name)
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         response = self._send_xml_to_sii(
             self.company_id.l10n_cl_dte_service_provider,
@@ -359,10 +390,15 @@ class AccountMove(models.Model):
             self.message_post(body=_('Claim status was not sending to SII. This feature is not available in '
                                      'certification/test mode'))
             return None
-        response = self._send_sii_claim_response(
-            self.company_id.l10n_cl_dte_service_provider, self.partner_id.vat,
-            self.company_id._get_digital_signature(user_id=self.env.user.id), self.l10n_latam_document_type_id.code,
-            self.l10n_latam_document_number, 'ACD')
+        try:
+            response = self._send_sii_claim_response(
+                self.company_id.l10n_cl_dte_service_provider, self.partner_id.vat,
+                self.company_id._get_digital_signature(user_id=self.env.user.id), self.l10n_latam_document_type_id.code,
+                self.l10n_latam_document_number, 'ACD')
+        except InvalidToken:
+            digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
+            digital_signature.last_token = None
+            return self.l10n_cl_accept_document()
         if not response:
             return None
 
@@ -393,15 +429,19 @@ class AccountMove(models.Model):
             self.message_post(body=_('The claim status was not sent to SII as this feature does not work '
                                      'in certification/test mode'))
             return
-
-        response = self._send_sii_claim_response(
-            self.company_id.l10n_cl_dte_service_provider,
-            self.partner_id.vat,
-            self.company_id._get_digital_signature(user_id=self.env.user.id),
-            self.l10n_latam_document_type_id.code,
-            self.l10n_latam_document_number,
-            'RCD'
-        )
+        try:
+            response = self._send_sii_claim_response(
+                self.company_id.l10n_cl_dte_service_provider,
+                self.partner_id.vat,
+                self.company_id._get_digital_signature(user_id=self.env.user.id),
+                self.l10n_latam_document_type_id.code,
+                self.l10n_latam_document_number,
+                'RCD'
+            )
+        except InvalidToken:
+            digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
+            digital_signature.last_token = None
+            return self.l10n_cl_claim_document()
         if not response:
             return None
         try:
@@ -442,7 +482,6 @@ class AccountMove(models.Model):
             'dte': dte_barcode_xml['ted'],
             '__keep_empty_lines': True,
         })
-        dte = unescape(dte).replace(r'&', '&amp;')
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         signed_dte = self._sign_full_xml(
             dte, digital_signature, doc_id_number, 'doc', self.l10n_latam_document_type_id._is_doc_type_voucher())
@@ -451,7 +490,7 @@ class AccountMove(models.Model):
             'res_model': self._name,
             'res_id': self.id,
             'type': 'binary',
-            'datas': base64.b64encode(signed_dte.encode('ISO-8859-1'))
+            'datas': base64.b64encode(signed_dte.encode('ISO-8859-1', 'replace'))
         })
         self.l10n_cl_dte_file = dte_attachment.id
 
@@ -462,7 +501,7 @@ class AccountMove(models.Model):
             'res_model': self._name,
             'res_id': self.id,
             'type': 'binary',
-            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1'))
+            'datas': base64.b64encode(dte_signed.encode('ISO-8859-1', 'replace'))
         })
         self.with_context(no_new_invoice=True).message_post(
             body=_('Partner DTE has been generated'),
@@ -474,6 +513,8 @@ class AccountMove(models.Model):
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
         template = self.l10n_latam_document_type_id._is_doc_type_voucher() and self.env.ref(
             'l10n_cl_edi.envio_boleta') or self.env.ref('l10n_cl_edi.envio_dte')
+        dte = self.l10n_cl_dte_file.raw.decode('ISO-8859-1')
+        dte = Markup(dte.replace('<?xml version="1.0" encoding="ISO-8859-1" ?>', ''))
         dte_rendered = template._render({
             'move': self,
             'RutEmisor': self._l10n_cl_format_vat(self.company_id.vat),
@@ -482,10 +523,10 @@ class AccountMove(models.Model):
             'FchResol': self.company_id.l10n_cl_dte_resolution_date,
             'NroResol': self.company_id.l10n_cl_dte_resolution_number,
             'TmstFirmaEnv': self._get_cl_current_strftime(),
-            'dte': base64.b64decode(self.l10n_cl_dte_file.datas).decode('ISO-8859-1'),
+            'dte': dte,
             '__keep_empty_lines': True,
         })
-        dte_rendered = unescape(dte_rendered).replace('<?xml version="1.0" encoding="ISO-8859-1" ?>', '')
+        dte_rendered = dte_rendered.replace('<?xml version="1.0" encoding="ISO-8859-1" ?>', '')
         dte_signed = self._sign_full_xml(
             dte_rendered, digital_signature, 'SetDoc',
             self.l10n_latam_document_type_id._is_doc_type_voucher() and 'bol' or 'env',
@@ -516,11 +557,13 @@ class AccountMove(models.Model):
                 _('It is not possible to validate invoices in %s for %s, please convert it to CLP') % (
                     self.currency_id.name, self.l10n_latam_document_type_id.name))
         if (self.l10n_cl_journal_point_of_sale_type == 'online' and
-                not (self.partner_id.l10n_cl_dte_email and self.company_id.l10n_cl_dte_email) and
+                not ((self.partner_id.l10n_cl_dte_email or self.commercial_partner_id.l10n_cl_dte_email) and
+                     self.company_id.l10n_cl_dte_email) and
                 not self.l10n_latam_document_type_id._is_doc_type_export() and
                 not self.l10n_latam_document_type_id._is_doc_type_ticket()):
-            raise UserError(_('The %s has not a DTE email defined. This is mandatory for electronic invoicing.') %
-                            'partner' if not self.partner_id.l10n_cl_dte_email else 'company')
+            raise UserError(_('The %s %s has not a DTE email defined. This is mandatory for electronic invoicing.') %
+                            (_('partner') if not (self.partner_id.l10n_cl_dte_email or
+                                                  self.commercial_partner_id.l10n_cl_dte_email) else _('company'), self.partner_id.name))
         if datetime.strptime(self._get_cl_current_strftime(), '%Y-%m-%dT%H:%M:%S').date() < self.invoice_date:
             raise UserError(
                 _('The stamp date and time cannot be prior to the invoice issue date and time. TIP: check '
@@ -543,28 +586,36 @@ class AccountMove(models.Model):
                 'invoicing. Please go to your company and set the regional office, according to your company '
                 'address (www.sii.cl - Mi SII)'))
         if (self.l10n_latam_document_type_id.code not in ['39', '41', '110', '111', '112'] and
-                not self.partner_id.l10n_cl_activity_description):
+                not (self.partner_id.l10n_cl_activity_description or
+                     self.commercial_partner_id.l10n_cl_activity_description)):
             raise UserError(_(
                 'There is not an activity description configured in the '
-                'customer record. This is mandatory for electronic invoicing for this type of '
-                'document. Please go to the partner record and set the activity description'))
+                'customer %s record. This is mandatory for electronic invoicing for this type of '
+                'document. Please go to the partner record and set the activity description') % self.partner_id.name)
         if not self.l10n_latam_document_type_id._is_doc_type_electronic_ticket() and not self.partner_id.street:
             raise UserError(_(
-                'There is no address configured in your customer record. '
+                'There is no address configured in your customer %s record. '
                 'This is mandatory for electronic invoicing for this type of document. '
-                'Please go to the partner record and set the address'))
+                'Please go to the partner record and set the address') % self.partner_id.name)
         if (self.l10n_latam_document_type_id.code in ['34', '41', '110', '111', '112'] and
                 self.amount_untaxed != self.amount_total):
-            raise UserError(_('It seems that you are using items with taxes in exempt documents in invoice %s.'
+            raise UserError(_('It seems that you are using items with taxes in exempt documents in invoice %s - %s.'
                               ' You must either:\n'
                               '   - Change the document type to a not exempt type.\n'
                               '   - Set an exempt fiscal position to remove taxes automatically.\n'
                               '   - Use products without taxes.\n'
-                              '   - Remove taxes from product lines.') % self.name)
+                              '   - Remove taxes from product lines.') % (self.id, self.name))
         if self.l10n_latam_document_type_id.code == '33' and self.amount_untaxed == self.amount_total:
-            raise UserError(_('All the items you are billing in invoice %s, have no taxes.\n'
+            raise UserError(_('All the items you are billing in invoice %s - %s, have no taxes.\n'
                               ' If you need to bill exempt items you must either use exempt invoice document type (34),'
-                              ' or at least one of the items should have vat tax.') % self.name)
+                              ' or at least one of the items should have vat tax.') % (self.id, self.name))
+
+        self._l10n_cl_edi_validate_boletas()
+
+    def _l10n_cl_edi_validate_boletas(self):
+        if self.l10n_latam_document_type_id.code == '39':
+            raise UserError(_('Ticket is not allowed, please contact your administrator to install the '
+                            'l10n_cl_edi_boletas module'))
 
     def _l10n_cl_get_sii_reception_status_message(self, sii_response_status):
         """
@@ -656,19 +707,17 @@ class AccountMove(models.Model):
             'caf': self.l10n_latam_document_type_id._get_caf_file(self.company_id.id, int(self.l10n_latam_document_number)),
             '__keep_empty_lines': True,
         })
-        dd = str(dd).replace(r'&amp;', '&')
         caf_file = self.l10n_latam_document_type_id._get_caf_file(self.company_id.id, int(self.l10n_latam_document_number))
         ted = self.env.ref('l10n_cl_edi.ted_template')._render({
             'dd': dd,
-            'frmt': self._sign_message(dd.encode('ISO-8859-1'), caf_file.findtext('RSASK')),
+            'frmt': self._sign_message(dd.encode('ISO-8859-1', 'replace'), caf_file.findtext('RSASK')),
             'stamp': self._get_cl_current_strftime(),
             '__keep_empty_lines': True,
         })
-        ted = unescape(ted)
         return {
-            'ted': re.sub(r'\n\s*$', '', ted, flags=re.MULTILINE),
+            'ted': Markup(re.sub(r'\n\s*$', '', ted, flags=re.MULTILINE)),
             'barcode': etree.tostring(etree.fromstring(re.sub(
-                r'<TmstFirma>.*</TmstFirma>', '', ted.replace('&', '&amp;')), parser=etree.XMLParser(remove_blank_text=True)))
+                r'<TmstFirma>.*</TmstFirma>', '', ted), parser=etree.XMLParser(remove_blank_text=True)))
         }
 
     def _l10n_cl_get_reverse_doc_type(self):

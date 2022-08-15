@@ -101,10 +101,9 @@ class AccountMove(models.Model):
                     commercial_partner_id.country_id.l10n_ar_legal_entity_vat
                     if commercial_partner_id.is_company else commercial_partner_id.country_id.l10n_ar_natural_vat)
             else:
-                nro_doc_rec = commercial_partner_id._get_id_number_sanitize() if commercial_partner_id.vat else False
+                nro_doc_rec = commercial_partner_id._get_id_number_sanitize() or False
 
-            if nro_doc_rec:
-                data.update({'nroDocRec': nro_doc_rec})
+            data.update({'nroDocRec': nro_doc_rec or 0})
             if commercial_partner_id.l10n_latam_identification_type_id:
                 data.update({'tipoDocRec': int(rec._get_partner_code_id(commercial_partner_id))})
             # For more info go to https://www.afip.gob.ar/fe/qr/especificaciones.asp
@@ -150,11 +149,11 @@ class AccountMove(models.Model):
             # This is useful when duplicating the production database for training purpose or others
             if inv._is_dummy_afip_validation() and not inv.l10n_ar_afip_auth_code:
                 inv._dummy_afip_validation()
-                validated += super(AccountMove, inv)._post(soft)
+                validated += super(AccountMove, inv)._post(soft=soft)
                 continue
 
             client, auth, transport = inv.company_id._l10n_ar_get_connection(inv.journal_id.l10n_ar_afip_ws)._get_client(return_transport=True)
-            validated += super(AccountMove, inv)._post()
+            validated += super(AccountMove, inv)._post(soft=soft)
             return_info = inv._l10n_ar_do_afip_ws_request_cae(client, auth, transport)
             if return_info:
                 error_invoice = inv
@@ -195,7 +194,7 @@ class AccountMove(models.Model):
                 )
             raise UserError(msg)
 
-        return validated + super(AccountMove, self - sale_ar_edi_invoices)._post(soft)
+        return validated + super(AccountMove, self - sale_ar_edi_invoices)._post(soft=soft)
 
     def l10n_ar_verify_on_afip(self):
         """ This method let us to connect to AFIP using WSCDC webservice to verify if a vendor bill is valid on AFIP """
@@ -209,7 +208,7 @@ class AccountMove(models.Model):
             issuer_vat = issuer.ensure_vat()
 
             receptor_identification_code = receptor.l10n_latam_identification_type_id.l10n_ar_afip_code or '99'
-            receptor_id_number = (receptor_identification_code and receptor.vat or "0")
+            receptor_id_number = (receptor_identification_code and str(receptor._get_id_number_sanitize()))
 
             if inv.l10n_latam_document_type_id.l10n_ar_letter in ['A', 'M'] and receptor_identification_code != '80' or not receptor_id_number:
                 raise UserError(_('For type A and M documents the receiver identification is mandatory and should be VAT'))
@@ -455,10 +454,16 @@ class AccountMove(models.Model):
         related_inv = self._found_related_invoice()
         afip_ws = self.journal_id.l10n_ar_afip_ws
 
-        if not related_inv or self.journal_id.l10n_ar_afip_ws == 'wsbfe':
+        if not related_inv:
+            return res
+
+        # WSBFE_1035 We should only send CbtesAsoc if the invoice to validate has any of the next doc type codes
+        if afip_ws == 'wsbfe' and \
+           int(self.l10n_latam_document_type_id.code) not in [1, 2, 3, 6, 7, 8, 91, 201, 202, 203, 206, 207, 208]:
             return res
 
         wskey = {'wsfe': {'type': 'Tipo', 'pos_number': 'PtoVta', 'number': 'Nro', 'cuit': 'Cuit', 'date': 'CbteFch'},
+                 'wsbfe': {'type': 'Tipo_cbte', 'pos_number': 'Punto_vta', 'number': 'Cbte_nro', 'cuit': 'Cuit', 'date': 'Fecha_cbte'},
                  'wsfex': {'type': 'Cbte_tipo', 'pos_number': 'Cbte_punto_vta', 'number': 'Cbte_nro', 'cuit': 'Cbte_cuit'}}
 
         res.update({wskey[afip_ws]['type']: related_inv.l10n_latam_document_type_id.code,
@@ -468,7 +473,7 @@ class AccountMove(models.Model):
 
         # WSFE_10151 send cuit of the issuer if type mipyme refund
         if self._is_mipyme_fce_refund() or afip_ws == 'wsfex':
-            res.update({wskey[afip_ws]['cuit']: int(related_inv.company_id.vat)})
+            res.update({wskey[afip_ws]['cuit']: related_inv.company_id.partner_id._get_id_number_sanitize()})
 
         # WSFE_10158 send orignal invoice date on an mipyme document
         if afip_ws == 'wsfe' and (self._is_mipyme_fce() or self._is_mipyme_fce_refund()):
@@ -588,7 +593,7 @@ class AccountMove(models.Model):
             if 'BaseImp' in item and 'Importe' in item:
                 item['BaseImp'] = float_repr(item['BaseImp'], precision_digits=2)
                 item['Importe'] = float_repr(item['Importe'], precision_digits=2)
-        vat = partner_id_code and self.commercial_partner_id.vat and re.sub(r'\D+', '', self.commercial_partner_id.vat)
+        vat = partner_id_code and self.commercial_partner_id._get_id_number_sanitize()
 
         tributes = self._get_tributes()
         optionals = self._get_optionals_data()
@@ -697,10 +702,13 @@ class AccountMove(models.Model):
     def wsbfe_get_cae_request(self, last_id, client=None):
         partner_id_code = self._get_partner_code_id(self.commercial_partner_id)
         amounts = self._l10n_ar_get_amounts()
+        related_invoices = self._get_related_invoice_data()
         ArrayOfItem = client.get_type('ns0:ArrayOfItem')
+        ArrayOfCbteAsoc = client.get_type('ns0:ArrayOfCbteAsoc')
+        vat = partner_id_code and self.commercial_partner_id._get_id_number_sanitize()
         res = {'Id': last_id,
                'Tipo_doc': int(partner_id_code) or 0,
-               'Nro_doc': int(partner_id_code) and int(self.commercial_partner_id.vat) or 0,
+               'Nro_doc': vat and int(vat) or 0,
                'Zona': 1,  # National (the only one returned by AFIP)
                'Tipo_cbte': int(self.l10n_latam_document_type_id.code),
                'Punto_vta': int(self.journal_id.l10n_ar_afip_pos_number),
@@ -719,13 +727,15 @@ class AccountMove(models.Model):
                'Imp_moneda_Id': self.currency_id.l10n_ar_afip_code,
                'Imp_moneda_ctz': float_repr(self.l10n_ar_currency_rate, precision_digits=6),
                'Fecha_cbte': self.invoice_date.strftime(WS_DATE_FORMAT['wsbfe']),
+               'CbtesAsoc': ArrayOfCbteAsoc([related_invoices]) if related_invoices else None,
                'Items': ArrayOfItem(self._get_line_details())}
         if self.l10n_latam_document_type_id.code in ['201', '206']:  # WS4900
             res.update({'Fecha_vto_pago': self._due_payment_date().strftime(WS_DATE_FORMAT['wsbfe'])})
-            optionals = self._get_optionals_data()
-            if optionals:
-                ArrayOfOpcional = client.get_type('ns0:ArrayOfOpcional')
-                res.update({'Opcionales': ArrayOfOpcional(optionals)})
+
+        optionals = self._get_optionals_data()
+        if optionals:
+            ArrayOfOpcional = client.get_type('ns0:ArrayOfOpcional')
+            res.update({'Opcionales': ArrayOfOpcional(optionals)})
         return res
 
     def _is_argentina_electronic_invoice(self):
@@ -738,10 +748,10 @@ class AccountMove(models.Model):
             else self.journal_id._l10n_ar_get_afip_last_invoice_number(self.l10n_latam_document_type_id)
         return "%s %05d-%08d" % (self.l10n_latam_document_type_id.doc_code_prefix, self.journal_id.l10n_ar_afip_pos_number, last_number)
 
-    def _get_last_sequence(self, relaxed=False, with_prefix=None):
+    def _get_last_sequence(self, relaxed=False, with_prefix=None, lock=True):
         """ For argentina electronic invoice, if there is not sequence already then consult the last number from AFIP
         @return: string with the sequence, something like 'FA-A 00001-00000011' """
-        res = super()._get_last_sequence(relaxed=relaxed, with_prefix=with_prefix)
+        res = super()._get_last_sequence(relaxed=relaxed, with_prefix=with_prefix, lock=lock)
         if not res and self._is_argentina_electronic_invoice() and self.l10n_latam_document_type_id:
             res = self._get_last_sequence_from_afip()
         return res

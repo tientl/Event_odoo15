@@ -425,6 +425,7 @@ class HrPayslip(models.Model):
                 'credit_note': True,
                 'name': _('Refund: %(payslip)s', payslip=payslip.name),
                 'edited': True,
+                'state': 'verify',
             })
             for wd in copied_payslip.worked_days_line_ids:
                 wd.number_of_hours = -wd.number_of_hours

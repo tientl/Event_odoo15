@@ -18,7 +18,8 @@ class TestAccountReportsCommon(AccountTestInvoicingCommon):
         cls.company_data_2['company'].currency_id = cls.currency_data['currency']
         cls.company_data_2['currency'] = cls.currency_data['currency']
 
-    def _init_options(self, report, date_from, date_to, default_options=None):
+    @classmethod
+    def _init_options(cls, report, date_from, date_to, default_options=None):
         ''' Create new options at a certain date.
         :param report:          The report.
         :param filter:          One of the following values: ('today', 'custom', 'this_month', 'this_quarter', 'this_year', 'last_month', 'last_quarter', 'last_year').

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, models, fields, tools, _
 from odoo.tools.xml_utils import _check_with_xsd
+from odoo.tools.float_utils import float_round, float_is_zero
 
 import logging
 import re
@@ -55,10 +56,11 @@ class AccountEdiFormat(models.Model):
 
         cfdi_node = fromstring(cfdi)
         addenda_node = fromstring(addenda)
+        version = cfdi_node.get('Version')
 
         # Add a root node Addenda if not specified explicitly by the user.
-        if addenda_node.tag != '{http://www.sat.gob.mx/cfd/3}Addenda':
-            node = etree.Element(etree.QName('http://www.sat.gob.mx/cfd/3', 'Addenda'))
+        if addenda_node.tag != '{http://www.sat.gob.mx/cfd/%s}Addenda' % version[0]:
+            node = etree.Element(etree.QName('http://www.sat.gob.mx/cfd/%s' % version[0], 'Addenda'))
             node.append(addenda_node)
             addenda_node = node
 
@@ -94,6 +96,22 @@ class AccountEdiFormat(models.Model):
                 "You must get manually a key from the PAC to confirm the "
                 "currency rate is accurate enough.") % move.currency_id)
 
+        # == Check the invoice ==
+        if move.l10n_mx_edi_cfdi_request in ('on_invoice', 'on_refund'):
+            negative_lines = move.invoice_line_ids.filtered(lambda line: line.price_subtotal < 0)
+            if negative_lines:
+                # Line having a negative amount is not allowed.
+                if not move._l10n_mx_edi_is_managing_invoice_negative_lines_allowed():
+                    errors.append(_("Invoice lines having a negative amount are not allowed to generate the CFDI. "
+                                    "Please create a credit note instead."))
+                # Discount line without taxes is not allowed.
+                if negative_lines.filtered(lambda line: not line.tax_ids):
+                    errors.append(_("Invoice lines having a negative amount without a tax set is not allowed to "
+                                    "generate the CFDI."))
+            invalid_unspcs_products = move.invoice_line_ids.product_id.filtered(lambda product: not product.unspsc_code_id)
+            if invalid_unspcs_products:
+                errors.append(_("You need to define an 'UNSPSC Product Category' on the following products: %s")
+                              % ', '.join(invalid_unspcs_products.mapped('display_name')))
         return errors
 
     @api.model
@@ -127,7 +145,7 @@ class AccountEdiFormat(models.Model):
             if amount is None or amount is False:
                 return None
             # Avoid things like -0.0, see: https://stackoverflow.com/a/11010869
-            return '%.*f' % (precision, amount if amount != 0 else 0.0)
+            return '%.*f' % (precision, amount if not float_is_zero(amount, precision_digits=precision) else 0.0)
 
         company = move.company_id
         certificate = company.l10n_mx_edi_certificate_ids.sudo().get_valid_certificate()
@@ -193,13 +211,14 @@ class AccountEdiFormat(models.Model):
             'payment_method_code': (invoice.l10n_mx_edi_payment_method_id.code or '').replace('NA', '99'),
             'payment_policy': invoice.l10n_mx_edi_payment_policy,
             'cfdi_date': cfdi_date,
+            'l10n_mx_edi_external_trade_type': '01', # CFDI 4.0
         }
 
         # ==== Invoice Values ====
         if invoice.currency_id.name == 'MXN':
             cfdi_values['currency_conversion_rate'] = None
         else:  # assumes that invoice.company_id.country_id.code == 'MX', as checked in '_is_required_for_invoice'
-            cfdi_values['currency_conversion_rate'] = abs(invoice.amount_total_signed) / abs(invoice.amount_total)
+            cfdi_values['currency_conversion_rate'] = abs(invoice.amount_total_signed) / abs(invoice.amount_total) if invoice.amount_total else 1.0
 
         if invoice.partner_bank_id:
             digits = [s for s in invoice.partner_bank_id.acc_number if s.isdigit()]
@@ -228,16 +247,45 @@ class AccountEdiFormat(models.Model):
             else:
                 return None
 
+        def filter_void_tax_line(inv_line):
+            return inv_line.discount != 100.0
+
         def filter_tax_transferred(tax_values):
             return tax_values['tax_id'].amount >= 0.0
 
         def filter_tax_withholding(tax_values):
             return tax_values['tax_id'].amount < 0.0
 
+        compute_mode = 'tax_details' if invoice.company_id.tax_calculation_rounding_method == 'round_globally' else 'compute_all'
+
+        tax_details_transferred = invoice._prepare_edi_tax_details(filter_to_apply=filter_tax_transferred, compute_mode=compute_mode, filter_invl_to_apply=filter_void_tax_line)
+        for tax_detail_transferred in (list(tax_details_transferred['invoice_line_tax_details'].values())
+                                       + [tax_details_transferred]):
+            for tax_detail_vals in tax_detail_transferred['tax_details'].values():
+                tax = tax_detail_vals['tax']
+                if tax.l10n_mx_tax_type == 'Tasa':
+                    tax_detail_vals['tax_rate_transferred'] = tax.amount / 100.0
+                elif tax.l10n_mx_tax_type == 'Cuota':
+                    tax_detail_vals['tax_rate_transferred'] = tax_detail_vals['tax_amount_currency'] / tax_detail_vals['base_amount_currency']
+                else:
+                    tax_detail_vals['tax_rate_transferred'] = None
+
+        tax_details_withholding = invoice._prepare_edi_tax_details(filter_to_apply=filter_tax_withholding, compute_mode=compute_mode, filter_invl_to_apply=filter_void_tax_line)
+        for tax_detail_withholding in (list(tax_details_withholding['invoice_line_tax_details'].values())
+                                       + [tax_details_withholding]):
+            for tax_detail_vals in tax_detail_withholding['tax_details'].values():
+                tax = tax_detail_vals['tax']
+                if tax.l10n_mx_tax_type == 'Tasa':
+                    tax_detail_vals['tax_rate_withholding'] = - tax.amount / 100.0
+                elif tax.l10n_mx_tax_type == 'Cuota':
+                    tax_detail_vals['tax_rate_withholding'] = - tax_detail_vals['tax_amount_currency'] / tax_detail_vals['base_amount_currency']
+                else:
+                    tax_detail_vals['tax_rate_withholding'] = None
+
         cfdi_values.update({
             'get_tax_cfdi_name': get_tax_cfdi_name,
-            'tax_details_transferred': invoice._prepare_edi_tax_details(filter_to_apply=filter_tax_transferred),
-            'tax_details_withholding': invoice._prepare_edi_tax_details(filter_to_apply=filter_tax_withholding),
+            'tax_details_transferred': tax_details_transferred,
+            'tax_details_withholding': tax_details_withholding,
         })
 
         cfdi_values.update({
@@ -264,7 +312,7 @@ class AccountEdiFormat(models.Model):
 
             # Update price_discount.
 
-            remaining_discount = discount_vals['price_discount'] - discount_line.price_subtotal
+            remaining_discount = discount_vals['price_discount'] - discount_vals['price_subtotal_before_discount']
             remaining_price_subtotal = other_line_vals['price_subtotal_before_discount'] - other_line_vals['price_discount']
             discount_to_allow = min(remaining_discount, remaining_price_subtotal)
 
@@ -334,6 +382,9 @@ class AccountEdiFormat(models.Model):
 
         return cfdi_values
 
+    def _l10n_mx_edi_get_invoice_templates(self):
+        return self.env.ref('l10n_mx_edi.cfdiv33'), self.sudo().env.ref('l10n_mx_edi.xsd_cached_cfdv33_xsd', False)
+
     def _l10n_mx_edi_export_invoice_cfdi(self, invoice):
         ''' Create the CFDI attachment for the invoice passed as parameter.
 
@@ -343,18 +394,23 @@ class AccountEdiFormat(models.Model):
         * error:        An error if the cfdi was not successfuly generated.
         '''
 
+
         # == CFDI values ==
         cfdi_values = self._l10n_mx_edi_get_invoice_cfdi_values(invoice)
+        qweb_template, xsd_attachment = self._l10n_mx_edi_get_invoice_templates()
 
         # == Generate the CFDI ==
-        cfdi = self.env.ref('l10n_mx_edi.cfdiv33')._render(cfdi_values)
+        cfdi = qweb_template._render(cfdi_values)
         decoded_cfdi_values = invoice._l10n_mx_edi_decode_cfdi(cfdi_data=cfdi)
         cfdi_cadena_crypted = cfdi_values['certificate'].sudo().get_encrypted_cadena(decoded_cfdi_values['cadena'])
         decoded_cfdi_values['cfdi_node'].attrib['Sello'] = cfdi_cadena_crypted
 
         # == Optional check using the XSD ==
-        xsd_attachment = self.env.ref('l10n_mx_edi.xsd_cached_cfdv33_xsd', False)
         xsd_datas = base64.b64decode(xsd_attachment.datas) if xsd_attachment else None
+
+        res = {
+            'cfdi_str': etree.tostring(decoded_cfdi_values['cfdi_node'], pretty_print=True, xml_declaration=True, encoding='UTF-8'),
+        }
 
         if xsd_datas:
             try:
@@ -363,25 +419,46 @@ class AccountEdiFormat(models.Model):
             except (IOError, ValueError):
                 _logger.info(_('The xsd file to validate the XML structure was not found'))
             except Exception as e:
-                return {'errors': str(e).split('\\n')}
+                res['errors'] = str(e).split('\\n')
 
-        return {
-            'cfdi_str': etree.tostring(decoded_cfdi_values['cfdi_node'], pretty_print=True, xml_declaration=True, encoding='UTF-8'),
-        }
+        return res
 
     # -------------------------------------------------------------------------
     # CFDI Generation: Payments
     # -------------------------------------------------------------------------
 
-    def _l10n_mx_edi_export_payment_cfdi(self, move):
-        ''' Create the CFDI attachment for the journal entry passed as parameter being a payment used to pay some
-        invoices.
+    def _l10n_mx_edi_get_payment_cfdi_values(self, move):
 
-        :param move:    An account.move record.
-        :return:        A dictionary with one of the following key:
-        * cfdi_str:     A string of the unsigned cfdi of the invoice.
-        * error:        An error if the cfdi was not successfully generated.
-        '''
+        def get_tax_cfdi_name(tax_detail_vals):
+            tags = set()
+            for detail in tax_detail_vals['group_tax_details']:
+                for tag in detail['tax_repartition_line_id'].tag_ids:
+                    tags.add(tag)
+            tags = list(tags)
+            if len(tags) == 1:
+                return {'ISR': '001', 'IVA': '002', 'IEPS': '003'}.get(tags[0].name)
+            elif tax_detail_vals['tax'].l10n_mx_tax_type == 'Exento':
+                return '002'
+            else:
+                return None
+
+        def divide_tax_details(invoice, tax_details, amount_paid):
+            percentage_paid = amount_paid / invoice.amount_total
+            precision = invoice.currency_id.decimal_places
+            sign = -1 if invoice.is_inbound() else 1
+            for detail in tax_details['tax_details'].values():
+                tax = detail['tax']
+                tax_amount = abs(tax.amount) / 100.0 if tax.amount_type != 'fixed' else abs(detail['tax_amount_currency'] / detail['base_amount_currency'])
+                base_val_proportion = float_round(detail['base_amount_currency'] * percentage_paid * sign, precision)
+                tax_val_proportion = float_round(base_val_proportion * tax_amount, precision)
+                detail.update({
+                    'base_val_prop_amt_curr': base_val_proportion,
+                    'tax_val_prop_amt_curr': tax_val_proportion if tax.l10n_mx_tax_type != 'Exento' else False,
+                    'tax_class': get_tax_cfdi_name(detail),
+                    'tax_amount': tax_amount,
+                })
+            return tax_details
+
         if move.payment_id:
             currency = move.payment_id.currency_id
             total_amount = move.payment_id.amount
@@ -434,6 +511,12 @@ class AccountEdiFormat(models.Model):
                     invoice_rate = abs(invoice_line.amount_currency) / abs(invoice_line.balance)
                     amount_paid_invoice_curr = invoice_line.currency_id.round(partial.amount * invoice_rate)
                     exchange_rate = amount_paid_invoice_curr / amount_paid_invoice_comp_curr
+                    exchange_rate = float_round(exchange_rate, precision_digits=6, rounding_method='UP')
+
+                # for CFDI 4.0
+                cfdi_values = self._l10n_mx_edi_get_invoice_cfdi_values(invoice)
+                tax_details_transferred = divide_tax_details(invoice, cfdi_values['tax_details_transferred'], amount_paid_invoice_curr)
+                tax_details_withholding = divide_tax_details(invoice, cfdi_values['tax_details_withholding'], amount_paid_invoice_curr)
 
                 invoice_vals_list.append({
                     'invoice': invoice,
@@ -442,6 +525,8 @@ class AccountEdiFormat(models.Model):
                     'number_of_payments': len(invoice._get_reconciled_payments()) + len(invoice._get_reconciled_statement_lines()),
                     'amount_paid': amount_paid_invoice_curr,
                     'amount_before_paid': min(invoice.amount_residual + amount_paid_invoice_curr, invoice.amount_total),
+                    'tax_details_transferred': tax_details_transferred,
+                    'tax_details_withholding': tax_details_withholding,
                     **self._l10n_mx_edi_get_serie_and_folio(invoice),
                 })
 
@@ -450,27 +535,78 @@ class AccountEdiFormat(models.Model):
         is_payment_code_receiver_ok = payment_method_code in ('02', '03', '04', '05', '28', '29', '99')
         is_payment_code_bank_ok = payment_method_code in ('02', '03', '04', '28', '29', '99')
 
-        partner_bank = move.partner_bank_id.bank_id
+        bank_accounts = move.partner_id.commercial_partner_id.bank_ids.filtered(lambda x: x.company_id.id in (False, move.company_id.id))
+
+        partner_bank = bank_accounts[:1].bank_id
         if partner_bank.country and partner_bank.country.code != 'MX':
             partner_bank_vat = 'XEXX010101000'
         else:  # if no partner_bank (e.g. cash payment), partner_bank_vat is not set.
             partner_bank_vat = partner_bank.l10n_mx_edi_vat
 
-        payment_account_ord = re.sub(r'\s+', '', move.partner_bank_id.acc_number or '') or None
+        payment_account_ord = re.sub(r'\s+', '', bank_accounts[:1].acc_number or '') or None
         payment_account_receiver = re.sub(r'\s+', '', move.journal_id.bank_account_id.acc_number or '') or None
+
+        # CFDI 4.0: prepare the tax summaries
+        rate_payment_curr_mxn_40 = rate_payment_curr_mxn or 1
+        total_taxes_paid = {}
+        total_taxes_withheld = {
+            '001': {'amount_curr': 0.0, 'amount_mxn': 0.0},
+            '002': {'amount_curr': 0.0, 'amount_mxn': 0.0},
+            '003': {'amount_curr': 0.0, 'amount_mxn': 0.0},
+            None: {'amount_curr': 0.0, 'amount_mxn': 0.0},
+        }
+        for inv_vals in invoice_vals_list:
+            wht_detail = list(inv_vals['tax_details_withholding']['tax_details'].values())
+            trf_detail = list(inv_vals['tax_details_transferred']['tax_details'].values())
+            for detail in wht_detail + trf_detail:
+                tax = detail['tax']
+                tax_class = detail['tax_class']
+                key = (float_round(tax.amount / 100, 6), tax.l10n_mx_tax_type, tax_class)
+                base_val_pay_curr = detail['base_val_prop_amt_curr'] / (inv_vals['exchange_rate'] or 1.0)
+                tax_val_pay_curr = detail['tax_val_prop_amt_curr'] / (inv_vals['exchange_rate'] or 1.0)
+                if key in total_taxes_paid:
+                    total_taxes_paid[key]['base_value'] += base_val_pay_curr
+                    total_taxes_paid[key]['tax_value'] += tax_val_pay_curr
+                elif tax.amount >= 0:
+                    total_taxes_paid[key] = {
+                        'base_value': base_val_pay_curr,
+                        'tax_value': tax_val_pay_curr,
+                        'tax_amount': float_round(detail['tax_amount'], 6),
+                        'tax_type': tax.l10n_mx_tax_type,
+                        'tax_class': tax_class,
+                        'tax_spec': 'W' if tax.amount < 0 else 'T',
+                    }
+                else:
+                    total_taxes_withheld[tax_class]['amount_curr'] += tax_val_pay_curr
+
+        # CFDI 4.0: rounding needs to be done after all DRs are added
+        # We round up for the currency rate and down for the tax values because we lost a lot of time to find out
+        # that Finkok only accepts it this way.  The other PACs accept either way and are reasonable.
+        for v in total_taxes_paid.values():
+            v['base_value'] = float_round(v['base_value'], move.currency_id.decimal_places, rounding_method='DOWN')
+            v['tax_value'] = float_round(v['tax_value'], move.currency_id.decimal_places, rounding_method='DOWN')
+            v['base_value_mxn'] = float_round(v['base_value'] * rate_payment_curr_mxn_40, mxn_currency.decimal_places)
+            v['tax_value_mxn'] = float_round(v['tax_value'] * rate_payment_curr_mxn_40, mxn_currency.decimal_places)
+        for v in total_taxes_withheld.values():
+            v['amount_curr'] = float_round(v['amount_curr'], move.currency_id.decimal_places, rounding_method='DOWN')
+            v['amount_mxn'] = float_round(v['amount_curr'] * rate_payment_curr_mxn_40, mxn_currency.decimal_places)
 
         cfdi_values = {
             **self._l10n_mx_edi_get_common_cfdi_values(move),
             'invoice_vals_list': invoice_vals_list,
             'currency': currency,
             'amount': total_amount,
+            'amount_mxn': float_round(total_amount * rate_payment_curr_mxn_40, mxn_currency.decimal_places),
             'rate_payment_curr_mxn': rate_payment_curr_mxn,
+            'rate_payment_curr_mxn_40': rate_payment_curr_mxn_40,
             'emitter_vat_ord': is_payment_code_emitter_ok and partner_bank_vat,
             'bank_vat_ord': is_payment_code_bank_ok and partner_bank.name,
             'payment_account_ord': is_payment_code_emitter_ok and payment_account_ord,
             'receiver_vat_ord': is_payment_code_receiver_ok and move.journal_id.bank_account_id.bank_id.l10n_mx_edi_vat,
             'payment_account_receiver': is_payment_code_receiver_ok and payment_account_receiver,
             'cfdi_date': move.l10n_mx_edi_post_time.strftime('%Y-%m-%dT%H:%M:%S'),
+            'tax_summary': total_taxes_paid,
+            'withholding_summary': total_taxes_withheld,
         }
 
         cfdi_payment_datetime = datetime.combine(fields.Datetime.from_string(move.date), datetime.strptime('12:00:00', '%H:%M:%S').time())
@@ -481,7 +617,24 @@ class AccountEdiFormat(models.Model):
         else:
             cfdi_values['customer_fiscal_residence'] = None
 
-        cfdi = self.env.ref('l10n_mx_edi.payment10')._render(cfdi_values)
+        return cfdi_values
+
+    def _l10n_mx_edi_get_payment_template(self):
+        return self.env.ref('l10n_mx_edi.payment10')
+
+    def _l10n_mx_edi_export_payment_cfdi(self, move):
+        ''' Create the CFDI attachment for the journal entry passed as parameter being a payment used to pay some
+        invoices.
+
+        :param move:    An account.move record.
+        :return:        A dictionary with one of the following key:
+        * cfdi_str:     A string of the unsigned cfdi of the invoice.
+        * error:        An error if the cfdi was not successfully generated.
+        '''
+        cfdi_values = self._l10n_mx_edi_get_payment_cfdi_values(move)
+
+        qweb_template = self._l10n_mx_edi_get_payment_template()
+        cfdi = qweb_template._render(cfdi_values)
         decoded_cfdi_values = move._l10n_mx_edi_decode_cfdi(cfdi_data=cfdi)
         cfdi_cadena_crypted = cfdi_values['certificate'].sudo().get_encrypted_cadena(decoded_cfdi_values['cadena'])
         decoded_cfdi_values['cfdi_node'].attrib['Sello'] = cfdi_cadena_crypted
@@ -528,7 +681,12 @@ class AccountEdiFormat(models.Model):
         return res
 
     def _l10n_mx_edi_get_finkok_credentials(self, move):
-        if move.company_id.l10n_mx_edi_pac_test_env:
+        return self._l10n_mx_edi_get_finkok_credentials_company(move.company_id)
+
+    def _l10n_mx_edi_get_finkok_credentials_company(self, company):
+        ''' Return the company credentials for PAC: finkok. Does not depend on a recordset
+        '''
+        if company.l10n_mx_edi_pac_test_env:
             return {
                 'username': 'cfdi@vauxoo.com',
                 'password': 'vAux00__',
@@ -536,19 +694,24 @@ class AccountEdiFormat(models.Model):
                 'cancel_url': 'http://demo-facturacion.finkok.com/servicios/soap/cancel.wsdl',
             }
         else:
-            if not move.company_id.l10n_mx_edi_pac_username or not move.company_id.l10n_mx_edi_pac_password:
+            if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
                 return {
                     'errors': [_("The username and/or password are missing.")]
                 }
 
             return {
-                'username': move.company_id.l10n_mx_edi_pac_username,
-                'password': move.company_id.l10n_mx_edi_pac_password,
+                'username': company.l10n_mx_edi_pac_username,
+                'password': company.l10n_mx_edi_pac_password,
                 'sign_url': 'http://facturacion.finkok.com/servicios/soap/stamp.wsdl',
                 'cancel_url': 'http://facturacion.finkok.com/servicios/soap/cancel.wsdl',
             }
 
     def _l10n_mx_edi_finkok_sign(self, move, credentials, cfdi):
+        return self._l10n_mx_edi_finkok_sign_service(credentials, cfdi)
+
+    def _l10n_mx_edi_finkok_sign_service(self, credentials, cfdi):
+        ''' Send the CFDI XML document to Finkok for signature. Does not depend on a recordset
+        '''
         try:
             transport = Transport(timeout=20)
             client = Client(credentials['sign_url'], transport=transport)
@@ -578,20 +741,29 @@ class AccountEdiFormat(models.Model):
         }
 
     def _l10n_mx_edi_finkok_cancel(self, move, credentials, cfdi):
-        uuid = move.l10n_mx_edi_cfdi_uuid
-        certificates = move.company_id.l10n_mx_edi_certificate_ids
+        uuid_replace = move.l10n_mx_edi_cancel_invoice_id.l10n_mx_edi_cfdi_uuid
+        return self._l10n_mx_edi_finkok_cancel_service(move.l10n_mx_edi_cfdi_uuid, move.company_id, credentials,
+                                                       uuid_replace=uuid_replace)
+
+    def _l10n_mx_edi_finkok_cancel_service(self, uuid, company, credentials, uuid_replace=None):
+        ''' Cancel the CFDI document with PAC: finkok. Does not depend on a recordset
+        '''
+        certificates = company.l10n_mx_edi_certificate_ids
         certificate = certificates.sudo().get_valid_certificate()
-        company = move.company_id
         cer_pem = certificate.get_pem_cer(certificate.content)
         key_pem = certificate.get_pem_key(certificate.key, certificate.password)
         try:
             transport = Transport(timeout=20)
             client = Client(credentials['cancel_url'], transport=transport)
-            uuid_type = client.get_type('ns0:stringArray')()
-            uuid_type.string = [uuid]
-            invoices_list = client.get_type('ns1:UUIDS')(uuid_type)
+            factory = client.type_factory('apps.services.soap.core.views')
+            uuid_type = factory.UUID()
+            uuid_type.UUID = uuid
+            uuid_type.Motivo = "01" if uuid_replace else "02"
+            if uuid_replace:
+                uuid_type.FolioSustitucion = uuid_replace
+            docs_list = factory.UUIDArray(uuid_type)
             response = client.service.cancel(
-                invoices_list,
+                docs_list,
                 credentials['username'],
                 credentials['password'],
                 company.vat,
@@ -636,25 +808,35 @@ class AccountEdiFormat(models.Model):
         return self._l10n_mx_edi_finkok_cancel(move, credentials, cfdi)
 
     def _l10n_mx_edi_get_solfact_credentials(self, move):
-        if move.company_id.l10n_mx_edi_pac_test_env:
+        return self._l10n_mx_edi_get_solfact_credentials_company(move.company_id)
+
+    def _l10n_mx_edi_get_solfact_credentials_company(self, company):
+        ''' Return the company credentials for PAC: solucion factible. Does not depend on a recordset
+        '''
+        if company.l10n_mx_edi_pac_test_env:
             return {
                 'username': 'testing@solucionfactible.com',
                 'password': 'timbrado.SF.16672',
                 'url': 'https://testing.solucionfactible.com/ws/services/Timbrado?wsdl',
             }
         else:
-            if not move.company_id.l10n_mx_edi_pac_username or not move.company_id.l10n_mx_edi_pac_password:
+            if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
                 return {
                     'errors': [_("The username and/or password are missing.")]
                 }
 
             return {
-                'username': move.company_id.l10n_mx_edi_pac_username,
-                'password': move.company_id.l10n_mx_edi_pac_password,
+                'username': company.l10n_mx_edi_pac_username,
+                'password': company.l10n_mx_edi_pac_password,
                 'url': 'https://solucionfactible.com/ws/services/Timbrado?wsdl',
             }
 
     def _l10n_mx_edi_solfact_sign(self, move, credentials, cfdi):
+        return self._l10n_mx_edi_solfact_sign_service(credentials, cfdi)
+
+    def _l10n_mx_edi_solfact_sign_service(self, credentials, cfdi):
+        ''' Send the CFDI XML document to Solucion Factible for signature. Does not depend on a recordset
+        '''
         try:
             transport = Transport(timeout=20)
             client = Client(credentials['url'], transport=transport)
@@ -689,8 +871,19 @@ class AccountEdiFormat(models.Model):
         return {'errors': errors}
 
     def _l10n_mx_edi_solfact_cancel(self, move, credentials, cfdi):
-        uuids = [move.l10n_mx_edi_cfdi_uuid]
-        certificates = move.company_id.l10n_mx_edi_certificate_ids
+        uuid_replace = move.l10n_mx_edi_cancel_invoice_id.l10n_mx_edi_cfdi_uuid
+        return self._l10n_mx_edi_solfact_cancel_service(move.l10n_mx_edi_cfdi_uuid, move.company_id, credentials,
+                                                        uuid_replace=uuid_replace)
+
+    def _l10n_mx_edi_solfact_cancel_service(self, uuid, company, credentials, uuid_replace=None):
+        ''' calls the Solucion Factible web service to cancel the document based on the UUID.
+        Method does not depend on a recordset
+        '''
+        motivo = "01" if uuid_replace else "02"
+        uuid = uuid + "|" + motivo + "|"
+        if uuid_replace:
+            uuid = uuid + uuid_replace
+        certificates = company.l10n_mx_edi_certificate_ids
         certificate = certificates.sudo().get_valid_certificate()
         cer_pem = certificate.get_pem_cer(certificate.content)
         key_pem = certificate.get_pem_key(certificate.key, certificate.password)
@@ -700,7 +893,7 @@ class AccountEdiFormat(models.Model):
             transport = Transport(timeout=20)
             client = Client(credentials['url'], transport=transport)
             response = client.service.cancelar(
-                credentials['username'], credentials['password'], uuids, cer_pem, key_pem, key_password)
+                credentials['username'], credentials['password'], uuid, cer_pem, key_pem, key_password)
         except Exception as e:
             return {
                 'errors': [_("The Solucion Factible service failed to cancel with the following error: %s", str(e))],
@@ -767,17 +960,22 @@ class AccountEdiFormat(models.Model):
             }
 
     def _l10n_mx_edi_get_sw_credentials(self, move):
-        if not move.company_id.l10n_mx_edi_pac_username or not move.company_id.l10n_mx_edi_pac_password:
+        return self._l10n_mx_edi_get_sw_credentials_company(move.company_id)
+
+    def _l10n_mx_edi_get_sw_credentials_company(self, company):
+        '''Get the company credentials for PAC: SW. Does not depend on a recordset
+        '''
+        if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
             return {
                 'errors': [_("The username and/or password are missing.")]
             }
 
         credentials = {
-            'username': move.company_id.l10n_mx_edi_pac_username,
-            'password': move.company_id.l10n_mx_edi_pac_password,
+            'username': company.l10n_mx_edi_pac_username,
+            'password': company.l10n_mx_edi_pac_password,
         }
 
-        if move.company_id.l10n_mx_edi_pac_test_env:
+        if company.l10n_mx_edi_pac_test_env:
             credentials.update({
                 'login_url': 'https://services.test.sw.com.mx/security/authenticate',
                 'sign_url': 'https://services.test.sw.com.mx/cfdi33/stamp/v3/b64',
@@ -829,6 +1027,12 @@ class AccountEdiFormat(models.Model):
         return response_json
 
     def _l10n_mx_edi_sw_sign(self, move, credentials, cfdi):
+        return self._l10n_mx_edi_sw_sign_service(credentials, cfdi)
+
+    def _l10n_mx_edi_sw_sign_service(self, credentials, cfdi):
+        ''' calls the SW web service to send and sign the CFDI XML.
+        Method does not depend on a recordset
+        '''
         cfdi_b64 = base64.encodebytes(cfdi).decode('UTF-8')
         random_values = [random.choice(string.ascii_letters + string.digits) for n in range(30)]
         boundary = ''.join(random_values)
@@ -871,22 +1075,32 @@ Content-Disposition: form-data; name="xml"; filename="xml"
             return {'errors': errors}
 
     def _l10n_mx_edi_sw_cancel(self, move, credentials, cfdi):
+        uuid_replace = move.l10n_mx_edi_cancel_invoice_id.l10n_mx_edi_cfdi_uuid
+        return self._l10n_mx_edi_sw_cancel_service(move.l10n_mx_edi_cfdi_uuid, move.company_id, credentials,
+                                                   uuid_replace=uuid_replace)
+
+    def _l10n_mx_edi_sw_cancel_service(self, uuid, company, credentials, uuid_replace=None):
+        ''' Calls the SW web service to cancel the document based on the UUID.
+        Method does not depend on a recordset
+        '''
         headers = {
             'Authorization': "bearer " + credentials['token'],
             'Content-Type': "application/json"
         }
-        certificates = move.company_id.l10n_mx_edi_certificate_ids
+        certificates = company.l10n_mx_edi_certificate_ids
         certificate = certificates.sudo().get_valid_certificate()
-
-        cfdi_infos = move._l10n_mx_edi_decode_cfdi(cfdi_data=cfdi)
-
-        payload = json.dumps({
-            'rfc': cfdi_infos['supplier_rfc'],
+        payload_dict = {
+            'rfc': company.vat,
             'b64Cer': certificate.content.decode('UTF-8'),
             'b64Key': certificate.key.decode('UTF-8'),
             'password': certificate.password,
-            'uuid': cfdi_infos['uuid'],
-        })
+            'uuid': uuid,
+            'motivo': "01" if uuid_replace else "02"
+        }
+        if uuid_replace:
+            payload_dict['folioSustitucion'] = uuid_replace
+        payload = json.dumps(payload_dict)
+
         response_json = self._l10n_mx_edi_sw_call(credentials['cancel_url'], headers, payload=payload.encode('UTF-8'))
 
         cancelled = response_json['status'] == 'success'
@@ -916,9 +1130,55 @@ Content-Disposition: form-data; name="xml"; filename="xml"
     def _l10n_mx_edi_sw_cancel_payment(self, move, credentials, cfdi):
         return self._l10n_mx_edi_sw_cancel(move, credentials, cfdi)
 
+    # --------------------------------------------------------------------------
+    # SAT
+    # --------------------------------------------------------------------------
+    def _l10n_mx_edi_get_sat_status(self, supplier_rfc, customer_rfc, total, uuid):
+        url = 'https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?wsdl'
+        headers = {'SOAPAction': 'http://tempuri.org/IConsultaCFDIService/Consulta', 'Content-Type': 'text/xml; charset=utf-8'}
+        template = """<?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope xmlns:ns0="http://tempuri.org/" xmlns:ns1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+           <SOAP-ENV:Header/>
+           <ns1:Body>
+              <ns0:Consulta>
+                 <ns0:expresionImpresa>${data}</ns0:expresionImpresa>
+              </ns0:Consulta>
+           </ns1:Body>
+        </SOAP-ENV:Envelope>"""
+        namespace = {'a': 'http://schemas.datacontract.org/2004/07/Sat.Cfdi.Negocio.ConsultaCfdi.Servicio'}
+        params = '?re=%s&amp;rr=%s&amp;tt=%s&amp;id=%s' % (
+            tools.html_escape(supplier_rfc or ''),
+            tools.html_escape(customer_rfc or ''),
+            total or 0.0, uuid or '')
+        soap_env = template.format(data=params)
+        #An exception might be raised here and should be managed by the calling function
+        soap_xml = requests.post(url, data=soap_env, headers=headers, timeout=20)
+        response = fromstring(soap_xml.text)
+        fetched_status = response.xpath('//a:Estado', namespaces=namespace)
+        status = fetched_status[0] if fetched_status else ''
+        return status
+
     # -------------------------------------------------------------------------
     # BUSINESS FLOW: EDI
     # -------------------------------------------------------------------------
+
+    def _check_move_configuration(self, move):
+        if self.code != 'cfdi_3_3':
+            return super()._check_move_configuration(move)
+        return self._l10n_mx_edi_check_configuration(move)
+
+    def _get_invoice_edi_content(self, move):
+        #OVERRIDE
+        if self.code != 'cfdi_3_3':
+            return super()._get_invoice_edi_content(move)
+        return self._l10n_mx_edi_export_invoice_cfdi(move).get('cfdi_str')
+
+    def _get_payment_edi_content(self, move):
+        #OVERRIDE
+        if self.code != 'cfdi_3_3':
+            return super()._get_payment_edi_content(move)
+        return self._l10n_mx_edi_export_payment_cfdi(move).get('cfdi_str')
 
     def _needs_web_services(self):
         # OVERRIDE

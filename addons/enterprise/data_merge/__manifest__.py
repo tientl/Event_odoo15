@@ -10,6 +10,7 @@
     'depends': ['mail', 'data_cleaning'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/data_merge_rule_views.xml',
         'views/data_merge_model_views.xml',
         'views/data_merge_record_views.xml',

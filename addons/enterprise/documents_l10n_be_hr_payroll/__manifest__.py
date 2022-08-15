@@ -14,6 +14,7 @@ Employee 281.10 and 281.45 forms will be automatically integrated to the Documen
     'depends': ['documents_hr_payroll', 'l10n_be_hr_payroll'],
     'data': [
         'views/hr_payroll_281_45_wizard_views.xml',
+        'data/mail_template_data.xml',
     ],
     'installable': True,
     'auto_install': True,

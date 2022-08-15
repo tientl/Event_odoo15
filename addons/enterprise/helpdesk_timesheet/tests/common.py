@@ -30,6 +30,5 @@ class TestHelpdeskTimesheetCommon(TransactionCase):
         cls.helpdesk_team = cls.env['helpdesk.team'].create({
             'name': 'Test Team',
             'use_helpdesk_timesheet': True,
-            'use_helpdesk_sale_timesheet': True,
             'project_id': cls.project.id,
         })

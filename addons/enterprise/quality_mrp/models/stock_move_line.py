@@ -24,6 +24,6 @@ class StockMoveLine(models.Model):
 
     def _filter_move_lines_applicable_for_quality_check(self):
         if self.move_id.production_id or self.move_id.raw_material_production_id:
-            return self
+            return self.filtered(lambda sml: not sml.move_id.production_id)
         else:
             return super()._filter_move_lines_applicable_for_quality_check()

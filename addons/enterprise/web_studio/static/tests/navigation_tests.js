@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { legacyExtraNextTick, patchWithCleanup } from "@web/../tests/helpers/utils";
+import { legacyExtraNextTick, makeDeferred, patchWithCleanup } from "@web/../tests/helpers/utils";
 import { getActionManagerServerData } from "@web/../tests/webclient/helpers";
 import { registry } from "@web/core/registry";
 import { companyService } from "@web/webclient/company_service";
@@ -202,6 +202,44 @@ QUnit.module("Studio", (hooks) => {
             $(webClient.el).find('.o_field_widget[name="foo"]').text(),
             "yop",
             "the first partner should be displayed"
+        );
+    });
+
+    QUnit.test("reload the studio view", async function (assert) {
+        assert.expect(5);
+
+        const webClient = await createEnterpriseWebClient({ serverData });
+
+        // open app Partners (act window action), sub menu Partners (action 3)
+        await testUtils.dom.click(webClient.el.querySelector(".o_app[data-menu-xmlid=app_1]"));
+        await legacyExtraNextTick();
+        assert.strictEqual(
+            $(webClient.el).find(".o_kanban_record:contains(yop)").length,
+            1,
+            "the first partner should be displayed"
+        );
+
+        await testUtils.dom.click(webClient.el.querySelector(".o_kanban_record")); // open a record
+        await legacyExtraNextTick();
+        assert.containsOnce(webClient, ".o_form_view");
+        assert.strictEqual(
+            $(webClient.el).find(".o_form_view span:contains(yop)").length,
+            1,
+            "should have open the same record"
+        );
+
+        await openStudio(webClient);
+        await webClient.env.services.studio.reload();
+
+        assert.containsOnce(
+            webClient,
+            ".o_web_studio_client_action .o_web_studio_form_view_editor",
+            "the studio view should be opened after reloading"
+        );
+        assert.strictEqual(
+            $(webClient.el).find(".o_form_view span:contains(yop)").length,
+            1,
+            "should have open the same record"
         );
     });
 
@@ -561,6 +599,37 @@ QUnit.module("Studio", (hooks) => {
                 ".o_web_studio_client_action .o_web_studio_form_view_editor",
                 "the form view should be opened"
             );
+        }
+    );
+
+    QUnit.test(
+        "concurrency: execute a non editable action and try to enter studio",
+        async function (assert) {
+            // the purpose of this test is to ensure that there's no time window
+            // just after an action manager update during which the icon isn't
+            // disabled even though the current action isn't editable
+            assert.expect(5);
+
+            const def = makeDeferred();
+            serverData.actions[4].xml_id = false; // make action 4 non editable
+            const webClient = await createEnterpriseWebClient({ serverData });
+            assert.containsOnce(webClient, ".o_home_menu");
+
+            webClient.env.bus.on("ACTION_MANAGER:UI-UPDATED", null, () => {
+                assert.containsOnce(webClient, ".o_kanban_view");
+                assert.hasClass(
+                    webClient.el.querySelector(".o_web_studio_navbar_item"),
+                    "o_disabled"
+                );
+                def.resolve();
+            });
+
+            // open app Partners (non editable act window action)
+            await testUtils.dom.click(webClient.el.querySelector(".o_app[data-menu-xmlid=app_1]"));
+            await def;
+
+            assert.containsOnce(webClient, ".o_kanban_view");
+            assert.hasClass(webClient.el.querySelector(".o_web_studio_navbar_item"), "o_disabled");
         }
     );
 });

@@ -13,6 +13,6 @@ class AccountPaymentMethod(models.Model):
         res['aba_ct'] = {
             'mode': 'multi',
             'domain': [('type', '=', 'bank')],
-            'currency_id': self.env.ref("base.AUD").id,
+            'currency_ids': self.env.ref("base.AUD").ids,
         }
         return res

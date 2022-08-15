@@ -90,7 +90,7 @@ class ProviderBpost(models.Model):
                 quote_currency = self.env['res.currency'].search([('name', '=', 'EUR')], limit=1)
                 carrier_price = quote_currency._convert(shipping['price'], order_currency, company, order.date_order or fields.Date.today())
             carrier_tracking_ref = TRACKING_REF_DELIM.join(shipping['main_label']['tracking_codes'])
-            tracking_links = '<br/>'.join(self._tracking_link_element(code) for code in shipping['main_label']['tracking_codes'])
+            tracking_links = '<br/>'.join(self._tracking_link_element(code, picking.partner_id.zip) for code in shipping['main_label']['tracking_codes'])
             logmessage = (_("Shipment created into bpost <br/> <b>Tracking Links</b> <br/>%s") % (tracking_links))
             bpost_labels = [('Labels-bpost.%s' % self.bpost_label_format, shipping['main_label']['label'])]
             if picking.sale_id:
@@ -109,11 +109,11 @@ class ProviderBpost(models.Model):
             res = res + [shipping_data]
         return res
 
-    def _tracking_link_element(self, tracking_code):
-        return f'<a href="{self._generate_tracking_link(tracking_code)}" target="_blank" rel="noopener noreferrer">{tracking_code}</a>'
+    def _tracking_link_element(self, tracking_code, zip_code=0000):
+        return f'<a href="{self._generate_tracking_link(tracking_code, zip_code)}" target="_blank" rel="noopener noreferrer">{tracking_code}</a>'
 
-    def _generate_tracking_link(self, tracking_code):
-        return f"http://track.bpost.be/btr/web/#/search?itemCode={tracking_code}&lang=en"
+    def _generate_tracking_link(self, tracking_code, zip_code=0000):
+        return f"http://track.bpost.be/btr/web/#/search?itemCode={tracking_code}&lang=en&postalCode={zip_code}"
 
     def bpost_get_tracking_link(self, picking):
         # Using similar trick done in easypost, which is supported in the main delivery module.
@@ -123,7 +123,7 @@ class ProviderBpost(models.Model):
         tracking_urls = []
         for tracking_code in picking.carrier_tracking_ref.split(TRACKING_REF_DELIM):
             tracking_code = tracking_code.strip()
-            tracking_urls.append([tracking_code, self._generate_tracking_link(tracking_code)])
+            tracking_urls.append([tracking_code, self._generate_tracking_link(tracking_code, picking.partner_id.zip)])
         return tracking_urls[0][1] if len(tracking_urls) == 1 else json.dumps(tracking_urls)
 
     def bpost_cancel_shipment(self, picking):

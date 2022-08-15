@@ -27,7 +27,7 @@ Would your payment have been carried out after this mail was sent, please ignore
 
 Best Regards,
             """))
-    email_subject = fields.Char(default=lambda s: _('%(company_name)s Payment Reminder - %(partner_name)s'))
+    email_subject = fields.Char(translate=True, default=lambda s: _('%(company_name)s Payment Reminder - %(partner_name)s'))
     send_email = fields.Boolean('Send an Email', help="When processing, it will send an email", default=True)
     print_letter = fields.Boolean('Print a Letter', help="When processing, it will print a PDF", default=True)
     send_sms = fields.Boolean('Send an SMS Message', help="When processing, it will send an sms text message", default=False)
@@ -78,6 +78,10 @@ Best Regards,
                     line.email_subject % {'partner_name': '', 'date': '', 'user_signature': '', 'company_name': '', 'amount_due': ''}
                 except KeyError:
                     raise Warning(_('Your email subject is invalid, use the right legend or %% if you want to use the percent character.'))
+
+    def _amount_due_in_description(self):
+        self.ensure_one()
+        return self.description and '%(amount_due)s' in self.description
 
     @api.constrains('sms_description')
     def _check_sms_description(self):

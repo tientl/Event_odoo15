@@ -9,7 +9,9 @@ class AccountJournal(models.Model):
 
     def _default_inbound_payment_methods(self):
         res = super()._default_inbound_payment_methods()
-        return res | self.env.ref('account_batch_payment.account_payment_method_batch_deposit')
+        if self._is_payment_method_available('batch_payment'):
+            res |= self.env.ref('account_batch_payment.account_payment_method_batch_deposit')
+        return res
 
     @api.model
     def _create_batch_payment_outbound_sequence(self):

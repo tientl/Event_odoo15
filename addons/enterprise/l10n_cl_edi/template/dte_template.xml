@@ -41,9 +41,9 @@
                         <NumId t-esc="move.partner_id.vat"/>
                         <IdAdicRecep t-esc="format_length(move.partner_id.country_id.name or move.commercial_partner_id.country_id.name, 20)"/>
                     </Extranjero>
-                    <GiroRecep t-if="not move.partner_id._l10n_cl_is_foreign() and not move.l10n_latam_document_type_id._is_doc_type_export() and not move.l10n_latam_document_type_id._is_doc_type_voucher()" t-esc="format_length(move.partner_id.l10n_cl_activity_description, 40)"/>
+                    <GiroRecep t-if="not move.partner_id._l10n_cl_is_foreign() and not move.l10n_latam_document_type_id._is_doc_type_export() and not move.l10n_latam_document_type_id._is_doc_type_voucher()" t-esc="format_length(move.partner_id.l10n_cl_activity_description or move.commercial_partner_id.l10n_cl_activity_description, 40)"/>
                     <Contacto t-esc="format_length(move.partner_id.phone or move.commercial_partner_id.phone or move.partner_id.email or '', 80)"/>
-                    <CorreoRecep t-if="(move.commercial_partner_id.email or move.commercial_partner_id.l10n_cl_dte_email or move.partner_id.email or move.partner_id.l10n_cl_dte_email) and not move.l10n_latam_document_type_id._is_doc_type_voucher()" t-esc="move.commercial_partner_id.l10n_cl_dte_email or move.partner_id.l10n_cl_dte_email or move.commercial_partner_id.email or move.partner_id.email"/>
+                    <CorreoRecep t-if="(move.partner_id.email or move.commercial_partner_id.email or move.partner_id.l10n_cl_dte_email or move.commercial_partner_id.l10n_cl_dte_email) and not move.l10n_latam_document_type_id._is_doc_type_voucher()" t-esc="move.partner_id.email or move.commercial_partner_id.email or move.partner_id.l10n_cl_dte_email or move.commercial_partner_id.l10n_cl_dte_email"/>
                     <DirRecep t-esc="format_length(move.partner_id.street or move.commercial_partner_id.street or '' + ' ' + move.partner_id.street2 or move.commercial_partner_id.street2 or '', 70)"/>
                     <CmnaRecep t-esc="move._l10n_cl_get_comuna_recep()"/>
                 </Receptor>
@@ -154,10 +154,10 @@
             <Referencia>
                 <NroLinRef t-esc="reference_number"/>
                 <TpoDocRef t-esc="reference_id.l10n_cl_reference_doc_type_selection"/>
-                <FolioRef t-esc="reference_id.origin_doc_number"/>
+                <FolioRef t-esc="reference_id.origin_doc_number[:18]"/>
                 <FchRef t-esc="reference_id.date"/>
                 <CodRef t-esc="reference_id.reference_doc_code"/>
-                <RazonRef t-esc="reference_id.reason"/>
+                <RazonRef t-esc="reference_id.reason[:90]"/>
             </Referencia>
             <t t-set="reference_number" t-value="reference_number + 1"/>
             </t>

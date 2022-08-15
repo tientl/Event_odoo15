@@ -10,6 +10,11 @@ class TestClEightColumnsReport(TestAccountReportsCommon):
     @classmethod
     def setUpClass(cls, chart_template_ref='l10n_cl.cl_chart_template'):
         super().setUpClass(chart_template_ref=chart_template_ref)
+        cls.partner_a.write({
+            'country_id': cls.env.ref('base.cl').id,
+            'l10n_cl_sii_taxpayer_type': '1',
+            'vat': 'CL762012243',
+        })
 
         invoice = cls.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -29,6 +34,7 @@ class TestClEightColumnsReport(TestAccountReportsCommon):
         report = self.env['account.eightcolumns.report.cl']
         options = self._init_options(report, fields.Date.from_string('2017-01-01'), fields.Date.from_string('2017-12-31'))
 
+        # pylint: disable=bad-whitespace
         self.assertLinesValues(
             report._get_lines(options),
             #   Cuenta                                  Debe            Haber   Deudor  Acreedor    Activo  Pasivo  Perdida Ganancia
@@ -38,7 +44,7 @@ class TestClEightColumnsReport(TestAccountReportsCommon):
                 ('210710 IVA Débito Fiscal',            0.0,            190.0,  0.0,    190.0,      0.0,    190.0,  0.0,    0.0),
                 ('310110 Ingresos por Consultoría',     0.0,            1000.0, 0.0,    1000.0,     0.0,    0.0,    0.0,    1000.0),
                 ('Subtotal',                            1190.0,         1190.0, 1190.0, 1190.0,     1190.0, 190.0,  0.0,    1000.0),
-                ('Resultado del Ejercicio',             '',             '',     '',     '',         '',     1000.0, 0.0,    1000.0),
-                ('Total',                               1190.0,         1190.0, 1190.0, 1190.0,     1190.0, 1190.0, 0.0,    1000.0),
+                ('Profit and Loss',                     '',             '',     '',     '',         0.0,    1000.0, 1000.0, 0.0),
+                ('Total',                               1190.0,         1190.0, 1190.0, 1190.0,     1190.0, 1190.0, 1000.0, 1000.0),
             ],
         )

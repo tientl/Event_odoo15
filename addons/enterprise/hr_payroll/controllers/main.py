@@ -8,7 +8,7 @@ import datetime
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from odoo import models
-from odoo.http import request, route, Controller
+from odoo.http import request, route, Controller, content_disposition
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -49,7 +49,7 @@ class HrPayroll(Controller):
         pdfhttpheaders = [
             ('Content-Type', 'application/pdf'),
             ('Content-Length', len(merged_pdf)),
-            ('Content-Disposition', 'attachment; filename=' + report_name + '.pdf;')
+            ('Content-Disposition', content_disposition(report_name + '.pdf'))
         ]
 
         return request.make_response(merged_pdf, headers=pdfhttpheaders)

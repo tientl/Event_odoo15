@@ -227,7 +227,7 @@ class Task(models.Model):
                 'create': self.env['product.template'].check_access_rights('create', raise_exception=False),
                 'fsm_task_id': self.id,  # avoid 'default_' context key as we are going to create SOL with this context
                 'pricelist': self.partner_id.property_product_pricelist.id,
-                'hide_qty_buttons': self.sale_order_id.state == 'done',
+                'hide_qty_buttons': self.sale_order_id.sudo().state == 'done',
                 'default_invoice_policy': 'delivery',
             },
             'help': _("""<p class="o_view_nocontent_smiling_face">
@@ -251,7 +251,8 @@ class Task(models.Model):
             if not task.sale_order_id and not timesheet_count:  # Prevent creating/confirming a SO if there are no products and timesheets
                 continue
             task._fsm_ensure_sale_order()
-            task._fsm_create_sale_order_line()
+            if task.allow_timesheets:
+                task._fsm_create_sale_order_line()
             if task.sudo().sale_order_id.state in ['draft', 'sent']:
                 task.sudo().sale_order_id.action_confirm()
         billable_tasks._prepare_materials_delivery()
@@ -287,6 +288,8 @@ class Task(models.Model):
             'team_id': team.id if team else False,
         })
         sale_order.onchange_partner_id()
+        # invoking onchange_partner_shipping_id to update fiscal position
+        sale_order.onchange_partner_shipping_id()
         # update after creation since onchange_partner_id sets the current user
         sale_order.user_id = user_id.id
         sale_order.onchange_user_id()

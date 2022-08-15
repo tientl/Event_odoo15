@@ -8,6 +8,7 @@ class ReportProjectTaskUser(models.Model):
     _name = 'report.project.task.user.fsm'
     _inherit = 'report.project.task.user'
     _description = "FSM Tasks Analysis"
+    _auto = False
 
     def init(self):
         tools.drop_view_if_exists(self._cr, self._table)

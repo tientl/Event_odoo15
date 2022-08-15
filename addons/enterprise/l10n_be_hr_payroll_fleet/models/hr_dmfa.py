@@ -25,6 +25,7 @@ class HrDMFAReport(models.Model):
 
     @api.depends('quarter_end')
     def _compute_vehicle_ids(self):
+        monthly_pay = self.env.ref('l10n_be_hr_payroll.hr_payroll_structure_cp200_employee_salary')
         for dmfa in self:
             vehicles = self.env['hr.payslip'].search([
                 # ('employee_id', 'in', employees.ids),
@@ -32,6 +33,7 @@ class HrDMFAReport(models.Model):
                 ('date_to', '<=', self.quarter_end),
                 ('state', 'in', ['done', 'paid']),
                 ('company_id', '=', self.company_id.id),
+                ('struct_id', '=', monthly_pay.id),
             ]).mapped('vehicle_id')
             dmfa.vehicle_ids = [(6, False, vehicles.ids)]
 

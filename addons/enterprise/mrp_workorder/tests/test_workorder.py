@@ -1558,3 +1558,100 @@ class TestWorkOrder(common.TestMrpCommon):
         self.assertEqual(len(production_a2.workorder_ids.check_ids), 1)
         self.assertEqual(production_a2.workorder_ids.check_ids.point_id, p2)
         self.assertEqual(len(production_a3.workorder_ids.check_ids), 0)
+
+    def test_add_workorder_into_a_backorder(self):
+        """ Checks a new workorder can be created and processed into a backorder."""
+        (self.submarine_pod | self.elon_musk | self.metal_cylinder).tracking = 'none'
+        self.bom_submarine.consumption = 'flexible'
+
+        def process_workorder(workorders, qty, next_and_finish=False):
+            for wo in workorders:
+                wo.button_start()
+                wo_form = Form(wo, view='mrp_workorder.mrp_workorder_view_form_tablet')
+                wo_form.qty_producing = qty
+                wo = wo_form.save()
+                if next_and_finish:
+                    wo._next()
+                    wo.do_finish()
+                else:
+                    wo.action_continue()
+
+        # Creates a MO with 2 WO.
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.product_id = self.submarine_pod
+        mo_form.product_qty = 10
+        mo = mo_form.save()
+        mo.action_confirm()
+        mo.button_plan()
+
+        # Processes partially the workorders.
+        process_workorder(mo.workorder_ids.sorted(), 2)
+
+        # Marks the MO as done and creates a backorder.
+        action = mo.button_mark_done()
+        backorder_form = Form(self.env[action['res_model']].with_context(**action['context']))
+        backorder_form.save().action_backorder()
+
+        backorder = mo.procurement_group_id.mrp_production_ids[-1]
+        self.assertEqual(mo.state, 'done')
+        self.assertEqual(backorder.state, 'progress')
+        self.assertEqual(len(backorder.workorder_ids), 3)
+        self.assertEqual(backorder.workorder_ids.mapped('qty_production'), [8.0, 8.0, 8.0])
+
+        # Adds a new WO in the backorder.
+        mo_form = Form(backorder)
+        with mo_form.workorder_ids.new() as wo_line:
+            wo_line.name = "OP-SP"
+            wo_line.workcenter_id = self.workcenter_1
+        mo_form.save()
+
+        # Again, processes partially the workorders.
+        process_workorder(backorder.workorder_ids.sorted(), 5, True)
+
+    def test_operations_with_test_type_register_consumed_materials(self):
+        """ Production with a strict consumption
+        Check that operation must contain related consumption material"""
+
+        # create operation
+        operation1 = self.env['mrp.routing.workcenter'].create({
+            'name': 'Operation1',
+            'bom_id': self.bom_2.id,
+            'workcenter_id': self.workcenter_2.id,
+        })
+        operation2 = self.env['mrp.routing.workcenter'].create({
+            'name': 'Operation2',
+            'bom_id': self.bom_2.id,
+            'workcenter_id': self.workcenter_2.id,
+        })
+
+        # update operations in bom
+        self.bom_2.write({'operation_ids': [(6, 0, [operation1.id, operation2.id])]})
+
+        # create quality point
+        self.env['quality.point'].create({
+            'product_ids': [(6, 0, self.product_5.ids)],
+            'picking_type_ids': [(6, 0, self.bom_2.picking_type_id.ids)],
+            'operation_id': operation1.id,
+            'test_type_id': self.env.ref('mrp_workorder.test_type_register_consumed_materials').id,
+            'component_id': self.product_3.id,
+        })
+        # update quantities
+        self.env['stock.quant']._update_available_quantity(self.product_3, self.location_1, 20.0)
+        self.env['stock.quant']._update_available_quantity(self.product_4, self.location_1, 20.0)
+
+        # create a mo
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.product_id = self.product_5
+        mo_form.bom_id = self.bom_2
+        mo_form.product_qty = 2
+        mo = mo_form.save()
+        mo.action_confirm()
+        mo.action_assign()
+        mo.button_plan()
+
+        wo = mo.workorder_ids[0]
+        wo.button_start()
+        wo_form = Form(wo, view='mrp_workorder.mrp_workorder_view_form_tablet')
+        wo_form.qty_producing = 3
+        self.assertEqual(wo_form.component_id, self.product_3, 'operation must contain related consumption material')
+        self.assertEqual(len(wo_form.current_quality_check_id), 1, "their should be 1 quality check")

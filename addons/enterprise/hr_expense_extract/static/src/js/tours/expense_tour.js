@@ -30,13 +30,11 @@ odoo.define('hr_expense_extract.tour', function(require) {
         content: _t("Report this expense to your manager for validation."),
         position: 'bottom',
     }, {
-        trigger: '.o_menu_header_lvl_1[data-menu-xmlid="hr_expense.menu_hr_expense_report"]',
-        extra_trigger: '.o_form_button_edit',
+        trigger: '.dropdown-toggle[data-menu-xmlid="hr_expense.menu_hr_expense_report"]',
         content: _t("Your manager will have to approve (or refuse) your expense reports."),
         position: 'bottom',
     }, {
-        trigger: '.o_menu_entry_lvl_2[data-menu-xmlid="hr_expense.menu_hr_expense_sheet_all_to_approve"]',
-        extra_trigger: '.o_form_button_edit',
+        trigger: '.dropdown-item[data-menu-xmlid="hr_expense.menu_hr_expense_sheet_all_to_approve"]',
         content: _t("Your manager will have to approve (or refuse) your expense reports."),
         position: 'bottom',
     }]);

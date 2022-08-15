@@ -25,7 +25,7 @@ class AccountEdiFormat(models.Model):
             else:
                 vals['ext_trade_num_exp'] = None
 
-            vals['ext_trade_rate_usd_mxn'] = usd._convert(1.0, mxn, invoice.company_id, invoice.date)
+            vals['ext_trade_rate_usd_mxn'] = usd._convert(1.0, mxn, invoice.company_id, invoice.date, round=False)
 
             invoice_lines_gb_products = {}
             for line_vals in vals['invoice_line_vals_list']:

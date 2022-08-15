@@ -19,9 +19,9 @@ export class ViewWrapper extends Component {
     setup() {
         useSubEnv(this.props.callbackRecorders);
         useEffect(() => {
-            const btns = this.el.querySelectorAll(".btn-primary, .btn-secondary");
+            const btns = this.el.querySelectorAll(".btn-primary, .btn-secondary, .btn-light");
             btns.forEach((btn) => {
-                btn.classList.remove("btn-primary", "btn-secondary");
+                btn.classList.remove("btn-primary", "btn-secondary", "btn-light");
                 btn.classList.add("btn-outline-secondary");
             });
             if (this.props.type === "cohort") {

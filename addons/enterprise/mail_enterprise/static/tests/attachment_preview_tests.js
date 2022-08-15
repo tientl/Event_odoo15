@@ -41,6 +41,63 @@ QUnit.module('attachment_preview_tests.js', {
     },
 }, function () {
 
+    QUnit.test('Should not have attachment preview for still uploading attachment', async function (assert) {
+        assert.expect(2);
+        let form;
+        await afterNextRender(async () => { // because of chatter container
+            const { env, widget } = await start({
+                hasView: true,
+                View: FormView,
+                model: 'res.partner',
+                data: this.data,
+                arch: '<form string="Partners">' +
+                        '<div class="o_attachment_preview" options="{\'order\':\'desc\'}"></div>' +
+                        '<div class="oe_chatter">' +
+                            '<field name="message_ids"/>' +
+                        '</div>' +
+                    '</form>',
+                // FIXME could be removed once task-2248306 is done
+                archs: {
+                    'mail.message,false,list': '<tree/>',
+                },
+                res_id: 2,
+                config: {
+                    device: {
+                        size_class: config.device.SIZES.XXL,
+                    },
+                },
+                async mockRPC(route, args) {
+                    if (_.str.contains(route, '/web/static/lib/pdfjs/web/viewer.html')) {
+                        assert.step("pdf viewer");
+                    }
+                    return this._super.apply(this, arguments);
+                },
+                async mockFetch(resource, init) {
+                    const res = this._super(...arguments);
+                    if (resource === '/mail/attachment/upload') {
+                        await new Promise(() => {});
+                    }
+                    return res;
+                }
+            });
+            this.env = env;
+            form = widget;
+        });
+
+        await afterNextRender(() =>
+            document.querySelector('.o_ChatterTopbar_buttonAttachments').click()
+        );
+        const files = [
+            await createFile({ name: 'invoice.pdf', contentType: 'application/pdf' }),
+        ];
+        await afterNextRender(() =>
+            inputFiles(document.querySelector('.o_FileUploader_input'), files)
+        );
+        assert.containsNone(form, '.o_attachment_preview_container');
+        assert.verifySteps([], "The page should never render a PDF while it is uploading, as the uploading is blocked in this test we should never render a PDF preview");
+        form.destroy();
+    });
+
     QUnit.test('Attachment on side', async function (assert) {
         assert.expect(10);
 
@@ -142,6 +199,104 @@ QUnit.module('attachment_preview_tests.js', {
             "Display preview attachment");
         form.destroy();
     });
+
+    QUnit.test('After switching record with the form pager, when using the attachment preview navigation, the attachment should be switched',
+        async function (assert) {
+            assert.expect(4);
+
+            this.data.partner.records[0].message_ids = [11, 12];
+            this.data['ir.attachment'].records.push({
+                id: 1,
+                mimetype: 'image/jpeg',
+                res_id: 2,
+                res_model: 'partner',
+            });
+            this.data['mail.message'].records.push({
+                id: 11,
+                attachment_ids: [1],
+                model: 'partner',
+                res_id: 2,
+            });
+
+            this.data['ir.attachment'].records.push({
+                id: 2,
+                mimetype: 'application/pdf',
+                res_id: 2,
+                res_model: 'partner',
+            });
+            this.data['mail.message'].records.push({
+                id: 12,
+                attachment_ids: [3],
+                model: 'partner',
+                res_id: 2,
+            });
+
+            this.data.partner.records.push({
+                id: 3,
+                message_attachment_count: 0,
+                display_name: 'second partner',
+                foo: 'HELLO',
+                message_ids: [],
+            });
+
+            const {widget: form} = await start({
+                hasView: true,
+                View: FormView,
+                model: 'partner',
+                data: this.data,
+                arch: `
+                    <form string="Partners">
+                        <sheet>
+                            <field name="foo"/>
+                        </sheet>
+                        <div class="o_attachment_preview" options="{'order':'desc'}"></div>
+                        <div class="oe_chatter">
+                            <field name="message_ids"/>
+                        </div>
+                    </form>`,
+                // FIXME could be removed once task-2248306 is done
+                archs: {
+                    'mail.message,false,list': '<tree/>',
+                },
+                res_id: 2,
+                viewOptions: {
+                    ids: [2, 3],
+                    index: 0,
+                },
+                config: {
+                    device: {
+                        size_class: config.device.SIZES.XXL,
+                    },
+                },
+                async mockRPC(route, args) {
+                    if (route.includes('/web/static/lib/pdfjs/web/viewer.html')) {
+                        return document.createElement('canvas').toDataURL();
+                    }
+                    if (args.method === 'register_as_main_attachment') {
+                        return true;
+                    }
+                    return this._super(...arguments);
+                },
+            });
+
+            assert.strictEqual($('.o_pager_counter').text(), '1 / 2',
+                'The form view pager should display 1 / 2');
+
+            await testUtils.dom.click(form.$('.o_pager_next'));
+            await testUtils.dom.click(form.$('.o_pager_previous'));
+            assert.containsN(form, '.arrow', 2,
+                'The attachment preview should contain 2 arrows to navigated between attachments');
+
+            await testUtils.dom.click(form.$('.o_attachment_preview_container .o_move_next'), {allowInvisible: true});
+            assert.containsOnce(form, '.o_attachment_preview_img img',
+                'The second attachment (of type img) should be displayed');
+
+            await testUtils.dom.click(form.$('.o_attachment_preview_container .o_move_previous'), {allowInvisible: true});
+            assert.containsOnce(form, '.o_attachment_preview_container iframe',
+                'The first attachment (of type pdf) should be displayed');
+
+            form.destroy();
+        });
 
     QUnit.test('Attachment on side on new record', async function (assert) {
         assert.expect(3);

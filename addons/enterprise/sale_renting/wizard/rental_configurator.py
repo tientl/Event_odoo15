@@ -104,6 +104,44 @@ class RentalWizard(models.TransientModel):
             elif wizard.duration > 0:
                 wizard.unit_price = wizard.product_id.lst_price
 
+            product_taxes = wizard.product_id.taxes_id.filtered(lambda tax: tax.company_id.id == wizard.company_id.id)
+            if wizard.rental_order_line_id:
+                product_taxes_after_fp = wizard.rental_order_line_id.tax_id
+            elif 'default_tax_ids' in self.env.context:
+                product_taxes_after_fp = self.env['account.tax'].browse(self.env.context['default_tax_ids'] or [])
+            else:
+                product_taxes_after_fp = product_taxes
+
+            # TODO : switch to _get_tax_included_unit_price() when it allow the usage of taxes_after_fpos instead
+            # of fiscal position. We cannot currently use the fpos because JS only has access to the line information
+            # when opening the wizard.
+            product_unit_price = wizard.unit_price
+            if set(product_taxes.ids) != set(product_taxes_after_fp.ids):
+                flattened_taxes_before_fp = product_taxes._origin.flatten_taxes_hierarchy()
+                if any(tax.price_include for tax in flattened_taxes_before_fp):
+                    taxes_res = flattened_taxes_before_fp.compute_all(
+                        product_unit_price,
+                        quantity=wizard.quantity,
+                        currency=wizard.currency_id,
+                        product=wizard.product_id,
+                    )
+                    product_unit_price = taxes_res['total_excluded']
+
+                flattened_taxes_after_fp = product_taxes_after_fp._origin.flatten_taxes_hierarchy()
+                if any(tax.price_include for tax in flattened_taxes_after_fp):
+                    taxes_res = flattened_taxes_after_fp.compute_all(
+                        product_unit_price,
+                        quantity=wizard.quantity,
+                        currency=wizard.currency_id,
+                        product=wizard.product_id,
+                        handle_price_include=False,
+                    )
+                    for tax_res in taxes_res['taxes']:
+                        tax = self.env['account.tax'].browse(tax_res['id'])
+                        if tax.price_include:
+                            product_unit_price += tax_res['amount']
+                wizard.unit_price = product_unit_price
+
     @api.depends('unit_price', 'pricing_id')
     def _compute_pricing_explanation(self):
         translated_pricing_duration_unit = dict()

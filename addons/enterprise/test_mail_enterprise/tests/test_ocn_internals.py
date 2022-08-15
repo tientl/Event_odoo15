@@ -40,7 +40,7 @@ class TestPushNotification(MailCommon):
             cls.user_inbox.partner_id.id,
         ])
 
-        cls.direct_message_channel = channel.create({
+        cls.direct_message_channel = channel.with_user(cls.user_email).create({
             'channel_partner_ids': [
                 (4, cls.user_email.partner_id.id),
                 (4, cls.user_inbox.partner_id.id),
@@ -212,3 +212,22 @@ class TestPushNotification(MailCommon):
             jsonrpc.call_args[1]['params']['data']['body'],
             'The body must contain the text send by mail'
         )
+
+    @patch('odoo.addons.mail_mobile.models.mail_thread.iap_tools.iap_jsonrpc')
+    def test_push_notifications_binary_body(self, jsonrpc):
+        template = self.env['ir.ui.view'].create({
+            'name': "dummy",
+            'type': 'qweb',
+            'arch': u"""
+                <p>Test</p>
+            """
+        })
+        kwargs = {
+            'body': template._render(),
+            'partner_ids': self.user_inbox.partner_id.ids,
+            'msg_type': 'user_notification'
+        }
+        # Here is the test: notifying user with template rendered from an 'ir.ui.view'
+        # should not raised an error an when searching model and res_id in body with regex
+        self.env['mail.thread'].with_context(mail_notify_author=True).message_notify(**kwargs)
+        jsonrpc.assert_called_once()

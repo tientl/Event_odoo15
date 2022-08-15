@@ -78,7 +78,8 @@ class AbstractBuilder(ABC):
         """
         accounts = self._get_all_accounts(options, **kwargs)
         totals, lines = self._handle_accounts(accounts, options, 3, **kwargs)
-        lines.append(self._build_total_line(totals, options, **kwargs))
+        if totals:
+            lines.append(self._build_total_line(totals, options, **kwargs))
         return lines
 
     def _get_hierarchy(self, options: dict, line_id: str = None, **kwargs) -> list:
@@ -124,7 +125,7 @@ class AbstractBuilder(ABC):
                             zip(super_totals, section_totals)] if super_totals is not None else section_totals
             lines += section_lines
 
-        if line_id is None:
+        if line_id is None and super_totals:
             lines.append(self._build_total_line(super_totals, options, **kwargs))
         return lines
 

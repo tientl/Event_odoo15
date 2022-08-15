@@ -44,7 +44,7 @@ var DashboardView = BasicView.extend({
         var fields = this.fieldsInfo.dashboard;
         const additionalMeasures = [];
         for (const f of Object.values(fields)) {
-            if (!f.invisible) {
+            if (f.realType === "many2one" && !f.invisible) {
                 additionalMeasures.push(f.field);
             }
         }

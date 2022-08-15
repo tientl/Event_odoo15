@@ -1,18 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import logging
-
-from . import mws_connector as mwsc
-from odoo import api, fields, models, _
-
-from odoo.addons.sale_amazon.lib import mws
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models, _
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
-    
+
     amazon_order_ref = fields.Char(help="The Amazon-defined order reference")
     amazon_channel = fields.Selection(
         [('fbm', "Fulfillment by Merchant"), ('fba', "Fulfillment by Amazon")],
@@ -24,7 +17,7 @@ class SaleOrder(models.Model):
         "There can only exist one sale order for a given Amazon Order Reference."
     )]
 
-    def action_cancel(self):
+    def _action_cancel(self):
         out_of_sync_orders = self.env[self._name]
         if self.env.context.get('canceled_by_amazon'):
             for order in self:
@@ -42,12 +35,12 @@ class SaleOrder(models.Model):
                         )
                     )
                     out_of_sync_orders |= order
-        return super(SaleOrder, self - out_of_sync_orders).action_cancel()
+        return super(SaleOrder, self - out_of_sync_orders)._action_cancel()
 
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
-    
+
     amazon_item_ref = fields.Char("Amazon-defined item reference")
     amazon_offer_id = fields.Many2one('amazon.offer', "Amazon Offer", ondelete='set null')
 

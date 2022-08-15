@@ -35,6 +35,11 @@ class DataMergeGroup(models.Model):
 
         return result
 
+    def _get_similarity_fields(self):
+        self.ensure_one()
+        group_fields = self.env[self.res_model_name]._fields.items()
+        return [name for name, field in group_fields if field.type == 'char']
+
     @api.depends('record_ids')
     def _compute_similarity(self):
         for group in self:
@@ -43,8 +48,7 @@ class DataMergeGroup(models.Model):
                 group.similarity = 1
                 continue
 
-            group_fields = self.env[group.res_model_name]._fields.items()
-            read_fields = [name for name, field in group_fields if field.type == 'char']
+            read_fields = group._get_similarity_fields()
 
             record_ids = group.record_ids.mapped('res_id')
             records = self.env[group.res_model_name].browse(record_ids).read(read_fields)

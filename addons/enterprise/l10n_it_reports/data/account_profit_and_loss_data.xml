@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="account_financial_report_it_ce" model="account.financial.html.report">
+        <field name="name">Conto Economico</field>
+        <field name="date_range" eval="False" />
+        <field name="analytic" eval="True" />
+        <field name="unfold_all_filter" eval="True" />
+        <field name='parent_id' ref='account_reports_it_statements_menu' />
+        <field name="country_id" ref="base.it" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A" model="account.financial.html.report.line">
+        <field name="name">A. VALORE DELLA PRODUZIONE</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_1" model="account.financial.html.report.line">
+        <field name="name">1. Ricavi delle vendite e delle prestazioni</field>
+        <field name="code">IT_CEA_1</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_A" />
+        <field name="formulas">- (IT_CEA_1_V - IT_CEA_1_R)</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_1_V" model="account.financial.html.report.line">
+        <field name="name">value ricavi delle vendite e delle prestazioni</field>
+        <field name="code">IT_CEA_1_V</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="['|', '|', '|', '|',
+            ('account_id.code', '=like', '3101%'),
+            ('account_id.code', '=like', '3102%'),
+            ('account_id.code', '=like', '3103%'),
+            ('account_id.code', '=like', '3104%'),
+            ('account_id.code', '=like', '3105%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_R" model="account.financial.html.report.line">
+        <field name="name">rettificative ricavi delle vendite e delle prestazioni</field>
+        <field name="code">IT_CEA_1_R</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '3110%'),
+            ('account_id.code', '=like', '3111%'),
+            ('account_id.code', '=like', '3112%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_2" model="account.financial.html.report.line">
+        <field name="name">2. Variazioni delle rimanenze di prodotti in corso di lavorazione, semilavorati e finiti</field>
+        <field name="code">IT_CEA_2</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_A" />
+        <field name="formulas">IT_CEA_2_V - IT_CEA_2_C</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_2_V" model="account.financial.html.report.line">
+        <field name="name">finiti variazioni delle rimanenze di prodotti in corso di lavorazione, semilavorati e finiti</field>
+        <field name="code">IT_CEA_2_V</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '3130%'),
+            ('account_id.code', '=like', '3131%'),
+            ('account_id.code', '=like', '3132%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_2_C" model="account.financial.html.report.line">
+        <field name="name">iniziali variazioni delle rimanenze di prodotti in corso di lavorazione, semilavorati e finiti</field>
+        <field name="code">IT_CEA_2_C</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="['|', '|', '|', '|',
+            ('account_id.code', '=like', '3120%'),
+            ('account_id.code', '=like', '3121%'),
+            ('account_id.code', '=like', '3122%'),
+            ('account_id.code', '=like', '3125%'),
+            ('account_id.code', '=like', '3126%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_3" model="account.financial.html.report.line">
+        <field name="name">3. Variazione dei lavori in corso su ordinazione</field>
+        <field name="code">IT_CEA_3</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_A" />
+        <field name="formulas">IT_CEA_3_V - IT_CEA_3_I</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_3_F" model="account.financial.html.report.line">
+        <field name="name">finiti variazione dei lavori in corso su ordinazione</field>
+        <field name="code">IT_CEA_3_V</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="[('account_id.code', '=like', '3141%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_3_I" model="account.financial.html.report.line">
+        <field name="name">iniziali variazione dei lavori in corso su ordinazione</field>
+        <field name="code">IT_CEA_3_I</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="[('account_id.code', '=like', '3140%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_4" model="account.financial.html.report.line">
+        <field name="name">4. Incrementi di immobilizzazioni per lavori interni</field>
+        <field name="code">IT_CEA_4</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_A" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '3150%'),
+            ('account_id.code', '=like', '3151%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_5" model="account.financial.html.report.line">
+        <field name="name">5. Altri ricavi e proventi</field>
+        <field name="code">IT_CEA_5</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_A" />
+        <field name="domain" eval="[('account_id.code', '=like', '32%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_TOT" model="account.financial.html.report.line">
+        <field name="name">Totale Valore della Produzione (A)</field>
+        <field name="code">IT_CEA</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_A_PL'))]" />
+        <field name="formulas">IT_CEA_1 + IT_CEA_2 + IT_CEA_3 + IT_CEA_4 + IT_CEA_5</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B" model="account.financial.html.report.line">
+        <field name="name">B. COSTI DELLA PRODUZIONE</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_6" model="account.financial.html.report.line">
+        <field name="name">6. Per materie prime, sussidiarie, di consumo e merci</field>
+        <field name="code">IT_CEB_6</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="formulas">B_6_V - B_6_R</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_6_V" model="account.financial.html.report.line">
+        <field name="name">costi per materie prime, sussidiarie, di consumo e merci</field>
+        <field name="code">B_6_V</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="['|', '|', '|', '|', '|', '|',
+            ('account_id.code', '=like', '4101%'),
+            ('account_id.code', '=like', '4102%'),
+            ('account_id.code', '=like', '4103%'),
+            ('account_id.code', '=like', '4104%'),
+            ('account_id.code', '=like', '4105%'),
+            ('account_id.code', '=like', '4106%'),
+            ('account_id.code', '=like', '4107%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_6_R" model="account.financial.html.report.line">
+        <field name="name">rettificative per materie prime, sussidiarie, di consumo e merci</field>
+        <field name="code">B_6_R</field>
+        <field name="level" eval="2" />
+        <field name="domain" eval="[('account_id.code', '=like', '411%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_7" model="account.financial.html.report.line">
+        <field name="name">7. Per servizi</field>
+        <field name="code">IT_CEB_7</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '42%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_8" model="account.financial.html.report.line">
+        <field name="name">8. Per godimento di beni di terzi</field>
+        <field name="code">IT_CEB_8</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '43%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9" model="account.financial.html.report.line">
+        <field name="name">9. Per il personale</field>
+        <field name="code">IT_CEB_9</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="formulas">IT_CEB_9_a + IT_CEB_9_b + IT_CEB_9_c + IT_CEB_9_d + IT_CEB_9_e</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9_a" model="account.financial.html.report.line">
+        <field name="name">a. Salari e stipendi</field>
+        <field name="code">IT_CEB_9_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_9" />
+        <field name="domain" eval="[('account_id.code', '=like', '4401%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9_b" model="account.financial.html.report.line">
+        <field name="name">b. Oneri sociali</field>
+        <field name="code">IT_CEB_9_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_9" />
+        <field name="domain" eval="[('account_id.code', '=like', '4402%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9_c" model="account.financial.html.report.line">
+        <field name="name">c. Trattamento di fine rapporto</field>
+        <field name="code">IT_CEB_9_c</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_9" />
+        <field name="domain" eval="[('account_id.code', '=like', '4403%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9_d" model="account.financial.html.report.line">
+        <field name="name">d. Trattamento di quiescenza e simili</field>
+        <field name="code">IT_CEB_9_d</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_9" />
+        <field name="domain" eval="[('account_id.code', '=like', '4405%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_9_e" model="account.financial.html.report.line">
+        <field name="name">e. Altri costi</field>
+        <field name="code">IT_CEB_9_e</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_9" />
+        <field name="domain" eval="[('account_id.code', '=like', '4404%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_10" model="account.financial.html.report.line">
+        <field name="name">10. Ammortamenti e svalutazioni</field>
+        <field name="code">IT_CEB_10</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="formulas">IT_CEB_10_a + IT_CEB_10_b + IT_CEB_10_c + IT_CEB_10_d</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_10_a" model="account.financial.html.report.line">
+        <field name="name">a. Ammortamento delle immobilizzazioni immateriali</field>
+        <field name="code">IT_CEB_10_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_10" />
+        <field name="domain" eval="[('account_id.code', '=like', '45%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_10_b" model="account.financial.html.report.line">
+        <field name="name">b. Ammortamento delle immobilizzazioni materiali</field>
+        <field name="code">IT_CEB_10_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_10" />
+        <field name="domain" eval="[('account_id.code', '=like', '46%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_10_c" model="account.financial.html.report.line">
+        <field name="name">c. Altre svalutazioni delle immobilizzazioni</field>
+        <field name="code">IT_CEB_10_c</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_10" />
+        <field name="domain" eval="['|', '|', '|', '|', '|',
+            ('account_id.code', '=like', '4701%'),
+            ('account_id.code', '=like', '4702%'),
+            ('account_id.code', '=like', '4703%'),
+            ('account_id.code', '=like', '4704%'),
+            ('account_id.code', '=like', '4705%'),
+            ('account_id.code', '=like', '4706%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_10_d" model="account.financial.html.report.line">
+        <field name="name">d. Svalutazione dei crediti compresi nell'attivo circolante e delle disponibilità liquide</field>
+        <field name="code">IT_CEB_10_d</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B_10" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '4707%'),
+            ('account_id.code', '=like', '4708%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_11" model="account.financial.html.report.line">
+        <field name="name">11. Variazione delle rimanenze di materie prime, sussidiarie, di consumo e merci</field>
+        <field name="code">IT_CEB_11</field>
+        <field name="sequence" eval="6" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '480%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_12" model="account.financial.html.report.line">
+        <field name="name"> 12. Accantonamenti per rischi</field>
+        <field name="code">IT_CEB_12</field>
+        <field name="sequence" eval="7" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '481%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_13" model="account.financial.html.report.line">
+        <field name="name">13. Altri accantonamenti</field>
+        <field name="code">IT_CEB_13</field>
+        <field name="sequence" eval="8" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '482%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_14" model="account.financial.html.report.line">
+        <field name="name">14. Oneri diversi di gestione</field>
+        <field name="code">IT_CEB_14</field>
+        <field name="sequence" eval="9" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_B" />
+        <field name="domain" eval="[('account_id.code', '=like', '49%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_B_TOT" model="account.financial.html.report.line">
+        <field name="name">Totale Costi della Produzione (B)</field>
+        <field name="code">IT_CEB</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_B_PL'))]" />
+        <field name="formulas">IT_CEB_6 + IT_CEB_7 + IT_CEB_8 + IT_CEB_9 + IT_CEB_10 + IT_CEB_11 + IT_CEB_12 + IT_CEB_13 + IT_CEB_14</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_A_B_DIFFERENCE" model="account.financial.html.report.line">
+        <field name="name">DIFFERENZA TRA VALORE E COSTI DELLA PRODUZIONE (A - B)</field>
+        <field name="code">IT_CEA_CEB_DIFFERENCE</field>
+        <field name="sequence" eval="5" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="formulas">IT_CEA - IT_CEB</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C" model="account.financial.html.report.line">
+        <field name="name">C. PROVENTI E ONERI FINANZIARI</field>
+        <field name="sequence" eval="6" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_15" model="account.financial.html.report.line">
+        <field name="name">15. Proventi da partecipazioni</field>
+        <field name="code">IT_CEC_15</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C" />
+        <field name="domain" eval="[('account_id.code', '=like', '5101%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16" model="account.financial.html.report.line">
+        <field name="name">16. Altri proventi finanziari</field>
+        <field name="code">IT_CEC_16</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C" />
+        <field name="formulas">IT_CEC_16_a + IT_CEC_16_b + IT_CEC_16_c + IT_CEC_16_d</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_a" model="account.financial.html.report.line">
+        <field name="name">a. Da crediti iscritti nelle immobilizzazioni</field>
+        <field name="code">IT_CEC_16_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16" />
+        <field name="formulas">IT_CEC_16_a_I + IT_CEC_16_a_II + IT_CEC_16_a_III</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_a_1" model="account.financial.html.report.line">
+        <field name="name">verso imprese controllate/collegate</field>
+        <field name="code">IT_CEC_16_a_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_a" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '5131%'),
+            ('account_id.code', '=like', '5130%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_a_2" model="account.financial.html.report.line">
+        <field name="name">verso controllanti</field>
+        <field name="code">IT_CEC_16_a_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_a" />
+        <field name="domain" eval="[('account_id.code', '=like', '5132%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_a_3" model="account.financial.html.report.line">
+        <field name="name">verso imprese sottoposte al controllo delle controllanti</field>
+        <field name="code">IT_CEC_16_a_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_a" />
+        <field name="domain" eval="[('account_id.code', '=like', '5134%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_b" model="account.financial.html.report.line">
+        <field name="name">b. Da titoli iscritti nelle immobilizzazioni che non costituiscono partecipazioni</field>
+        <field name="code">IT_CEC_16_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '5120%'),
+            ('account_id.code', '=like', '5125%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_c" model="account.financial.html.report.line">
+        <field name="name">c. Da titoli iscritti nell'attivo circolante che non costituiscono partecipazioni</field>
+        <field name="code">IT_CEC_16_c</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16" />
+        <field name="domain" eval="[('account_id.code', '=like', '5161%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_d" model="account.financial.html.report.line">
+        <field name="name">d. Proventi diversi dai precedenti</field>
+        <field name="code">IT_CEC_16_d</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16" />
+        <field name="formulas">IT_CEC_16_d_I + IT_CEC_16_d_II + IT_CEC_16_d_III + IT_CEC_16_d_IV</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_d_1" model="account.financial.html.report.line">
+        <field name="name">verso imprese controllate/collegate</field>
+        <field name="code">IT_CEC_16_d_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_d" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '5170%'),
+            ('account_id.code', '=like', '5171%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_d_2" model="account.financial.html.report.line">
+        <field name="name">verso controllanti</field>
+        <field name="code">IT_CEC_16_d_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_d" />
+        <field name="domain" eval="[('account_id.code', '=like', '5172%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_d_3" model="account.financial.html.report.line">
+        <field name="name">verso imprese sottoposte al controllo delle controllanti</field>
+        <field name="code">IT_CEC_16_d_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_d" />
+        <field name="domain" eval="[('account_id.code', '=like', '5173%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_16_d_4" model="account.financial.html.report.line">
+        <field name="name">verso altri</field>
+        <field name="code">IT_CEC_16_d_IV</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_16_d" />
+        <field name="domain" eval="['|', '|', '|',
+            ('account_id.code', '=like', '5110%'),
+            ('account_id.code', '=like', '5115%'),
+            ('account_id.code', '=like', '5116%'),
+            ('account_id.code', '=like', '514%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+
+    <record id="account_financial_report_line_it_ce_C_17" model="account.financial.html.report.line">
+        <field name="name">17. Interessi ed altri oneri finanziari</field>
+        <field name="code">IT_CEC_17</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C" />
+        <field name="formulas">IT_CEC_17_I + IT_CEC_17_II + IT_CEC_17_III + IT_CEC_17_IV</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_17_1" model="account.financial.html.report.line">
+        <field name="name">verso imprese controllate/collegate</field>
+        <field name="code">IT_CEC_17_I</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_17" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '5220%'),
+            ('account_id.code', '=like', '5221%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_17_2" model="account.financial.html.report.line">
+        <field name="name">verso controllanti</field>
+        <field name="code">IT_CEC_17_II</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_17" />
+        <field name="domain" eval="[('account_id.code', '=like', '522%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_17_3" model="account.financial.html.report.line">
+        <field name="name">verso imprese sottoposte al controllo delle controllanti</field>
+        <field name="code">IT_CEC_17_III</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_17" />
+        <field name="domain" eval="[('account_id.code', '=like', '5223%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_17_4" model="account.financial.html.report.line">
+        <field name="name">verso altri</field>
+        <field name="code">IT_CEC_17_IV</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="4" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C_17" />
+        <field name="domain" eval="['|', '|',
+            ('account_id.code', '=like', '520%'),
+            ('account_id.code', '=like', '521%'),
+            ('account_id.code', '=like', '524%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_17_bis" model="account.financial.html.report.line">
+        <field name="name">17-bis. Utili e perdite su cambi</field>
+        <field name="code">IT_CEC_17_bis</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_C" />
+        <field name="domain" eval="['|',
+            ('account_id.code', '=like', '519%'),
+            ('account_id.code', '=like', '529%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_C_TOT" model="account.financial.html.report.line">
+        <field name="name">Totale Proventi e Oneri Finanziari (rif. 15 + 16 - 17 ± 17 bis)</field>
+        <field name="code">IT_CEC</field>
+        <field name="sequence" eval="7" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_C_PL'))]" />
+        <field name="formulas">IT_CEC_15 + IT_CEC_16 - IT_CEC_17 + IT_CEC_17_bis</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D" model="account.financial.html.report.line">
+        <field name="name">D. RETTIFICHE DI VALORE DI ATTIVITÀ E PASSIVITÀ FINANZIARIE</field>
+        <field name="sequence" eval="8" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_18" model="account.financial.html.report.line">
+        <field name="name">18. Rivalutazioni</field>
+        <field name="code">IT_CED_18</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D" />
+        <field name="formulas">IT_CED_18_a + IT_CED_18_b + IT_CED_18_c + IT_CED_18_d</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_18_a" model="account.financial.html.report.line">
+        <field name="name">a. di partecipazioni</field>
+        <field name="code">IT_CED_18_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_18" />
+        <field name="domain" eval="[('account_id.code', '=like', '6101%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_18_b" model="account.financial.html.report.line">
+        <field name="name">b. di immobilizzazioni finanziarie che non costituiscono partecipazioni</field>
+        <field name="code">IT_CED_18_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_18" />
+        <field name="domain" eval="[('account_id.code', '=like', '6102%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_18_c" model="account.financial.html.report.line">
+        <field name="name">c. di titoli iscritti all'attivo circolante che non costituiscono partecipazioni</field>
+        <field name="code">IT_CED_18_c</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_18" />
+        <field name="domain" eval="[('account_id.code', '=like', '6110%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_18_d" model="account.financial.html.report.line">
+        <field name="name">d. di strumenti finanziari derivati</field>
+        <field name="code">IT_CED_18_d</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_18" />
+        <field name="domain" eval="[('account_id.code', '=like', '6115%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_19" model="account.financial.html.report.line">
+        <field name="name">19. Svalutazioni</field>
+        <field name="code">IT_CED_19</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D" />
+        <field name="formulas">IT_CED_19_a + IT_CED_19_b + IT_CED_19_c + IT_CED_19_d</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_19_a" model="account.financial.html.report.line">
+        <field name="name">a. di partecipazioni</field>
+        <field name="code">IT_CED_19_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_19" />
+        <field name="domain" eval="[('account_id.code', '=like', '6201%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_19_b" model="account.financial.html.report.line">
+        <field name="name">b. di immobilizzazioni finanziarie che non costituiscono partecipazioni</field>
+        <field name="code">IT_CED_19_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_19" />
+        <field name="domain" eval="[('account_id.code', '=like', '6202%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_19_c" model="account.financial.html.report.line">
+        <field name="name">c. di titoli iscritti all'attivo circolante che non costituiscono partecipazioni</field>
+        <field name="code">IT_CED_19_c</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_19" />
+        <field name="domain" eval="[('account_id.code', '=like', '6210%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_19_d" model="account.financial.html.report.line">
+        <field name="name">d. di strumenti finanziari derivati</field>
+        <field name="code">IT_CED_19_d</field>
+        <field name="sequence" eval="4" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_D_19" />
+        <field name="domain" eval="[('account_id.code', '=like', '6215%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_D_TOT" model="account.financial.html.report.line">
+        <field name="name">Totale delle Rettifiche (rif. 18 - 19)</field>
+        <field name="code">IT_CED</field>
+        <field name="sequence" eval="9" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_D_PL'))]" />
+        <field name="formulas">IT_CED_18 - IT_CED_19</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_RISULTATO_PRIMA_IMPOSTE" model="account.financial.html.report.line">
+        <field name="name">RISULTATO PRIMA DELLE IT_CERis_20 (A - B ± C ± D)</field>
+        <field name="code">RISULTATO_PRIMA_IMPOSTE</field>
+        <field name="sequence" eval="10" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="formulas">IT_CEA - IT_CEB + IT_CEC + IT_CED</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E" model="account.financial.html.report.line">
+        <field name="name">PROVENTI E ONERI STRAORDINAR</field>
+        <field name="sequence" eval="11" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_20" model="account.financial.html.report.line">
+        <field name="name">20. Proventi straordinari</field>
+        <field name="code">IT_CEE_20</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_E" />
+        <field name="domain" eval="[('account_id.code', '=like', '71%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_21" model="account.financial.html.report.line">
+        <field name="name">21. Oneri straordinari</field>
+        <field name="code">IT_CEE_21</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_E" />
+        <field name="domain" eval="[('account_id.code', '=like', '72%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_22" model="account.financial.html.report.line">
+        <field name="name">22. Imposte sul reddito dell'esercizio</field>
+        <field name="code">IT_CEE_22</field>
+        <field name="sequence" eval="3" />
+        <field name="level" eval="2" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_E" />
+        <field name="formulas">IT_CEE_22_a + IT_CEE_22_b</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_22_a" model="account.financial.html.report.line">
+        <field name="name">a. Imposte correnti</field>
+        <field name="code">IT_CEE_22_a</field>
+        <field name="sequence" eval="1" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_E_22" />
+        <field name="domain" eval="[('account_id.code', '=like', '8101%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_22_b" model="account.financial.html.report.line">
+        <field name="name">b. Imposte differite e anticipate</field>
+        <field name="code">IT_CEE_22_b</field>
+        <field name="sequence" eval="2" />
+        <field name="level" eval="3" />
+        <field name="parent_id" ref="account_financial_report_line_it_ce_E_22" />
+        <field name="domain" eval="[('account_id.code', '=like', '8102%')]" />
+        <field name="groupby">account_id</field>
+        <field name="formulas">sum</field>
+        <field name="hide_if_zero" eval="True" />
+    </record>
+
+    <record id="account_financial_report_line_it_ce_E_TOT" model="account.financial.html.report.line">
+        <field name="name">Totale Proventi e Oneri straordinari</field>
+        <field name="code">IT_CEE_TOT</field>
+        <field name="sequence" eval="12" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_it.account_tag_E_PL'))]" />
+        <field name="formulas">IT_CEE_20 + IT_CEE_21 + IT_CEE_22</field>
+    </record>
+
+    <record id="account_financial_report_line_it_ce_UTILE_PERDITA" model="account.financial.html.report.line">
+        <field name="name">21. UTILE (PERDITA) DELL'ESERCIZIO</field>
+        <field name="code">UTILE_PERDITA</field>
+        <field name="sequence" eval="13" />
+        <field name="level" eval="1" />
+        <field name="financial_report_id" ref="account_financial_report_it_ce" />
+        <field name="formulas">RISULTATO_PRIMA_IMPOSTE + IT_CEE_20 + IT_CEE_21 - IT_CEE_22</field>
+    </record>
+
+
+</odoo>

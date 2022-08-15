@@ -2,7 +2,6 @@
 <templates>
     <div t-name="web_grid.GridRenderer" class="o_grid_view"
         t-on-grid-cell-focus="_onFocusComponent"
-        t-on-grid-cell-update-temporary="_onUpdateValueTemporary"
         t-on-grid-cell-update="_onUpdateValue" owl="1">
         <div t-if="showNoContentHelp" class="o_view_nocontent">
             <div class="o_nocontent_help">
@@ -356,8 +355,7 @@
                 class="o_grid_float_toggle btn btn-default d-inline-block w-100 text-right pr-0"
                 t-att-class="{'text-danger': state.value lt 0}"
                 t-att-disabled="props.readonly or state.disabled"
-                t-on-click="_onClickButton"
-                t-on-blur="_onBlurButton">
+                t-on-click="_onClickButton">
                 <t t-esc="_format(state.value)"/>
             </button>
         </t>

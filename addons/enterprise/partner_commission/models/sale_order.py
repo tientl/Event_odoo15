@@ -75,3 +75,13 @@ class SaleOrder(models.Model):
                 'commission_plan_frozen': self.referrer_id.commission_plan_id != self.commission_plan_id,
             })
         return values
+
+
+class SaleAdvancePaymentInv(models.TransientModel):
+    _inherit = 'sale.advance.payment.inv'
+
+    def _prepare_invoice_values(self, order, name, amount, so_line):
+        res = super()._prepare_invoice_values(order, name, amount, so_line)
+        res['referrer_id'] = order.referrer_id.id
+
+        return res

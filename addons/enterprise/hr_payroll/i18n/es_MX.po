@@ -6,15 +6,15 @@
 # Martin Trigaux, 2021
 # Cécile Collart <cco@odoo.com>, 2021
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2021
-# Braulio D. López Vázquez <bdl@odoo.com>, 2021
+# Braulio D. López Vázquez <bdl@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"POT-Creation-Date: 2021-11-19 10:26+0000\n"
 "PO-Revision-Date: 2021-09-14 12:40+0000\n"
-"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2021\n"
+"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,6 +34,24 @@ msgstr "# Recibo de nómina"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "# Recibos de nómina"
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_salary_rule.py:0
+#, python-format
+msgid ""
+"%s:\n"
+"- Employee: %s\n"
+"- Contract: %s\n"
+"- Payslip: %s\n"
+"- Salary rule: %s (%s)\n"
+"- Error: %s"
+msgstr ""
+"%s:\n"
+"- Empleado: %s\n"
+"- Contrato: %s\n"
+"- Recibo de nómina: %s\n"
+"- Regla de salario: %s (%s)\n"
+"- Error: %s"
 
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
@@ -2776,10 +2794,10 @@ msgstr "Recibos por confirmar"
 #, python-format
 msgid ""
 "Some part of %s's calendar is not covered by any work entry. Please complete"
-" the schedule."
+" the schedule. Time intervals to look for:%s"
 msgstr ""
 "Alguna parte del calendario de %s no está cubierta por ninguna entrada de "
-"trabajo. Por favor, complete el horario."
+"trabajo. Complete el horario. Intervalos de tiempo que buscar:%s"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
@@ -2920,13 +2938,13 @@ msgstr "El método de cálculo para el importe de la regla."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_input__contract_id
-msgid "The contract for which apply this input"
-msgstr "El contrato para el que aplica esta entrada "
+msgid "The contract this input should be applied to"
+msgstr "El contrato al que se debe aplicar esta entrada"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_worked_days__contract_id
-msgid "The contract for which apply this worked days"
-msgstr "El contrato para el que aplican estos días trabajados"
+msgid "The contract this worked days should be applied to"
+msgstr "El contrato al que se debe aplicar estos días trabajados"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0
@@ -3049,6 +3067,12 @@ msgstr ""
 "Se usará para calcular el valor de los campos %; en general se utiliza lo "
 "básico, pero también puede usar campos de código de categorías en minúscula "
 "como nombres de variables (hra, ma, lta, etc.) y las variables básicas."
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
+#, python-format
+msgid "Time intervals to look for:%s"
+msgstr "Intervalos de tiempo que buscar:%s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__date_to
@@ -3430,44 +3454,32 @@ msgstr "Horario laboral"
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong percentage base or quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Porcentaje de base o cantidad incorrecto en la regla salarial%s(%s).\n"
-"Error: %s"
+msgid "Wrong percentage base or quantity defined for:"
+msgstr "Base porcentual o cantidad errónea definida para:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong python code defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Código Python incorrecto en la regla salarial %s (%s).\n"
-"Error: %s"
+msgid "Wrong python code defined for:"
+msgstr "Código Python erróneo definido para:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong python condition defined for salary rule %s (%s)."
-msgstr "Código python erróneo en la regla salarial %s (%s)."
+msgid "Wrong python condition defined for:"
+msgstr "Condición Python errónea definida para:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid ""
-"Wrong quantity defined for salary rule %s (%s).\n"
-"Error: %s"
-msgstr ""
-"Cantidad incorrecta definida para la regla salarial %s (%s).\n"
-"Error: %s"
+msgid "Wrong quantity defined for:"
+msgstr "Cantidad errónea definida para:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
-msgid "Wrong range condition defined for salary rule %s (%s)."
-msgstr "Rango de condición erróneo para la regla de salario %s (%s)."
+msgid "Wrong range condition defined for:"
+msgstr "Condición de rango errónea definida para:"
 
 #. module: hr_payroll
 #: code:addons/hr_payroll/models/hr_payslip.py:0

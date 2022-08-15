@@ -64,7 +64,7 @@ var AttachmentViewer = Widget.extend({
     _renderAttachment: function () {
         this.$el.empty();
         this.$el.append(QWeb.render('mail_enterprise.AttachmentPreview', {widget: this}));
-        if (this.activeAttachment.type === 'pdf') {
+        if (this.activeAttachment && this.activeAttachment.type === 'pdf') {
             hidePDFJSButtons(this.el);
         }
     },

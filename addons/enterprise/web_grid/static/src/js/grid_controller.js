@@ -15,7 +15,6 @@ var GridController = AbstractController.extend({
     custom_events: Object.assign({}, AbstractController.prototype.custom_events, {
         'create_inline': '_addLine',
         'cell_edited': '_onCellEdited',
-        'cell_edited_temporary': '_onCellEditedTemporary',
         'open_cell_information': '_onOpenCellInformation',
     }),
 
@@ -234,20 +233,6 @@ var GridController = AbstractController.extend({
                 event.data.doneCallback();
             }
         });
-    },
-    /**
-     * @private
-     * @param {OdooEvent} e
-     */
-    _onCellEditedTemporary: function (event) {
-        var state = this.model.get();
-        var oldValue = utils.into(state.data, event.data.cell_path).value;
-        // We put new value in state to compute total, then we set old value.
-        utils.into(state.data, event.data.cell_path).value = event.data.value;
-        state = this.model.computeAllTotals(state);
-        utils.into(state.data, event.data.cell_path).value = oldValue;
-
-        this.renderer.update(state);
     },
     /**
      * @private

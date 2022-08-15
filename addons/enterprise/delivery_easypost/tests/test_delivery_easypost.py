@@ -178,3 +178,7 @@ class TestDeliveryEasypost(EasypostTestCommon):
         self.assertGreater(choose_delivery_carrier.delivery_price, 0.00, "Could't get rate for this order from easypost fedex")
         choose_delivery_carrier.button_confirm()
         sale_order_fedex.action_confirm()
+
+    def test_easypost_sends_correct_delivery_type_for_amazon(self):
+        amazon_expected_delivery_type = self.easypost_fedex_carrier._get_delivery_type()
+        self.assertEqual(amazon_expected_delivery_type, 'FedEx')

@@ -5,7 +5,7 @@
 
         <!-- base data -->
 
-        <record id="documents_attachment_video_documents" model="documents.document">
+        <record id="documents_attachment_video_documents" model="documents.document" forcecreate="0">
             <field name="name">Video: Odoo Documents</field>
             <field name="type">url</field>
             <field name="url">https://youtu.be/Ayab6wZ_U1A</field>
@@ -14,14 +14,14 @@
                                                ref('documents.documents_internal_status_validated')])]"/>
         </record>
 
-        <record id="documents_image_multi_pdf_document" model="documents.document">
+        <record id="documents_image_multi_pdf_document" model="documents.document" forcecreate="0">
             <field name="name">Mails_inbox.pdf</field>
             <field name="datas" type="base64" file="documents/data/files/Mails_inbox.pdf"/>
             <field name="folder_id" ref="documents.documents_internal_folder"/>
             <field name="tag_ids" eval="[(6,0,[ref('documents.documents_internal_status_inbox')])]"/>
         </record>
 
-        <record id="documents_mail_png" model="documents.document">
+        <record id="documents_mail_png" model="documents.document" forcecreate="0">
             <field name="name">mail.png</field>
             <field name="datas" type="base64" file="documents/data/files/mail.png"/>
             <field name="folder_id" ref="documents.documents_internal_folder"/>

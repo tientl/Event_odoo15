@@ -6,7 +6,7 @@ import datetime
 
 from dateutil import relativedelta
 from collections import defaultdict
-from odoo import api, fields, models, _
+from odoo import api, Command, fields, models, _
 from odoo.addons.helpdesk.models.helpdesk_ticket import TICKET_PRIORITY
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.web.controllers.main import clean_action
@@ -198,6 +198,8 @@ class HelpdeskTeam(models.Model):
         return teams
 
     def write(self, vals):
+        if 'privacy' in vals and vals['privacy'] == 'user':
+            vals['visibility_member_ids'] = [Command.clear()]
         result = super(HelpdeskTeam, self).write(vals)
         if 'active' in vals:
             self.with_context(active_test=False).mapped('ticket_ids').write({'active': vals['active']})
@@ -302,7 +304,7 @@ class HelpdeskTeam(models.Model):
         list_fields = ['priority', 'create_date', 'stage_id', 'close_hours']
         #TODO: remove SLA calculations if user_uses_sla is false.
         user_uses_sla = self.user_has_groups('helpdesk.group_use_sla') and\
-            bool(self.env['helpdesk.team'].search([('use_sla', '=', True), ('member_ids', 'in', self._uid)]))
+            bool(self.env['helpdesk.team'].search([('use_sla', '=', True)], limit=1))
 
         if user_uses_sla:
             group_fields.insert(1, 'sla_deadline:year')
@@ -346,7 +348,7 @@ class HelpdeskTeam(models.Model):
             if ticket['priority'] == '3':
                 add_to(ticket, 'my_urgent')
 
-        dt = fields.Date.today()
+        dt = fields.Date.context_today(self)
         tickets = HelpdeskTicket.read_group(domain + [('stage_id.is_close', '=', True), ('close_date', '>=', dt)], list_fields, group_fields, lazy=False)
         for ticket in tickets:
             result['today']['count'] += ticket['__count']
@@ -366,7 +368,7 @@ class HelpdeskTeam(models.Model):
         result['my_high']['hours'] = fields.Float.round(result['my_high']['hours'] / (result['my_high']['count'] or 1), 2)
         result['my_urgent']['hours'] = fields.Float.round(result['my_urgent']['hours'] / (result['my_urgent']['count'] or 1), 2)
 
-        if self.env['helpdesk.team'].search([('use_rating', '=', True), ('member_ids', 'in', self._uid)]):
+        if self.env['helpdesk.team'].search([('use_rating', '=', True)], limit=1):
             result['rating_enable'] = True
             # rating of today
             domain = [('user_id', '=', self.env.uid)]

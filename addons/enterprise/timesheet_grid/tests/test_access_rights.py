@@ -15,14 +15,16 @@ class TestAccessRightsTimesheetGrid(TestCommonTimesheet):
 
         self.empl_approver = self.env['hr.employee'].create({
             'name': 'Empl Approver 1',
-            'user_id': self.user_approver.id
+            'user_id': self.user_approver.id,
+            'timesheet_manager_id': self.user_manager.id,
         })
 
         self.user_approver2 = new_test_user(self.env, 'user_approver2', groups='hr_timesheet.group_hr_timesheet_approver')
 
         self.empl_approver2 = self.env['hr.employee'].create({
             'name': 'Empl Approver 2',
-            'user_id': self.user_approver2.id
+            'user_id': self.user_approver2.id,
+            'timesheet_manager_id': self.user_approver.id,
         })
 
         self.empl_employee.write({
@@ -66,6 +68,15 @@ class TestAccessRightsTimesheetGrid(TestCommonTimesheet):
         self.project_follower.message_subscribe(partner_ids=[
             self.user_approver.partner_id.id, self.user_employee.partner_id.id, self.user_manager.partner_id.id
         ])
+
+        self.timesheet_approver2 = self.env['account.analytic.line'].with_user(self.user_approver2).create({
+            'name': 'Timesheet Approver2',
+            'project_id': self.project_customer.id,
+            'task_id': self.task1.id,
+            'date': today,
+            'unit_amount': 1,
+            'employee_id': self.empl_approver2.id
+        })
 
     def test_access_rights_for_employee(self):
         """ Check the operations of employee with the lowest access
@@ -173,6 +184,15 @@ class TestAccessRightsTimesheetGrid(TestCommonTimesheet):
         timesheet_to_validate = self.timesheet
         timesheet_to_validate.with_user(self.user_approver).action_validate_timesheet()
         self.assertEqual(timesheet_to_validate.validated, True)
+
+    def test_timesheet_validation_approver_own_timesheet(self):
+        """ Check that the approver cannot validate his/her own timesheet.
+        But the manager can approve it."""
+        timesheet_to_validate = self.timesheet_approver2
+        timesheet_to_validate.with_user(self.user_approver2).action_validate_timesheet()
+        self.assertFalse(timesheet_to_validate.validated)
+        timesheet_to_validate.with_user(self.user_approver).action_validate_timesheet()
+        self.assertTrue(timesheet_to_validate.validated)
 
     def test_timesheet_validation_by_approver_when_he_is_not_responsible(self):
         """Check if an approver can validate an timesheet, if he isn't the Timesheet Responsible."""

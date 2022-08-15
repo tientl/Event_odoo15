@@ -85,7 +85,7 @@
                                 <t t-set="webimage"
                                    t-value="new RegExp('image.*(gif|jpeg|jpg|png)').test(record.mimetype.value)"/>
                                 <t t-set="binaryPreviewable"
-                                   t-value="new RegExp('(image|video|application/pdf|text)').test(record.mimetype.value) &amp;&amp; record.type.raw_value === 'binary'"/>
+                                   t-value="new RegExp('(image|video|application/pdf|text/)').test(record.mimetype.value) &amp;&amp; record.type.raw_value === 'binary'"/>
                                 <!-- should be made more generic if we support different websites for videos -->
                                 <t t-set="youtubeUrlMatch" t-value="record.url.raw_value ? record.url.raw_value.match('youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]{11})') : false"/>
                                 <t t-set="youtubeVideoToken" t-value="youtubeUrlMatch ? youtubeUrlMatch.length > 1 ? youtubeUrlMatch[1] : false : false"/>
@@ -457,6 +457,8 @@
                             </div>
                             <field name="activity_user_id"/>
                         </group>
+                    </group>
+                    <group>
                         <field name="activity_note" placeholder="Log a note..."/>
                     </group>
                     <field name="document_ids" groups="base.group_no_one" readonly="1"/>
@@ -534,6 +536,8 @@
                             </div>
                             <field name="activity_user_id"/>
                         </group>
+                    </group>
+                    <group>
                         <field name="activity_note" placeholder="Log a note..."/>
                     </group>
                     <field name="document_ids" invisible="1" readonly="1"/>

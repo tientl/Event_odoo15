@@ -113,6 +113,23 @@ tour.register(
             trigger: ".o_web_studio_sidebar .o_web_studio_new",
             content: _t("Good job! To add more <b>fields</b>, come back to the <i>Add tab</i>."),
             position: "bottom",
+            // the rename operation (/web_studio/rename_field + /web_studio/edit_view)
+            // takes a while and sometimes reaches the default 10s timeout
+            timeout: 20000,
+            async run() {
+                // During the rename, the UI is blocked. When the rpc returns, the UI is
+                // unblocked and the sidebar is re-rendered. Without this, the step is
+                // sometimes executed exactly when the sidebar is about to be replaced,
+                // and it doesn't work. We thus here wait for 1s to ensure that the
+                // sidebar has been re-rendered, before going further.
+                // note1: there's nothing in the DOM that could be used to determine that
+                // we're ready to continue (the sidebar is just replaced by itself, same state)
+                // note2: ideally, it should work whenever we click, but with the current
+                // architecture of studio, it's really hard to fix. Hopefully, when studio
+                // will be converted to owl, this should no longer be an issue.
+                await new Promise((r) => setTimeout(r, 1000));
+                $(".o_web_studio_sidebar .o_web_studio_new").click();
+            },
         },
         {
             trigger:

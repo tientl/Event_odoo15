@@ -8,6 +8,7 @@
 # SebastianoPistore <SebastianoPistore.info@protonmail.ch>, 2021
 # Paolo Valier, 2021
 # Léonie Bouchat <lbo@odoo.com>, 2021
+# Friederike Fasterling-Nesselbosch, 2022
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-05 11:16+0000\n"
 "PO-Revision-Date: 2021-09-14 12:39+0000\n"
-"Last-Translator: Léonie Bouchat <lbo@odoo.com>, 2021\n"
+"Last-Translator: Friederike Fasterling-Nesselbosch, 2022\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +27,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "- Feedback requested by -"
-msgstr ""
+msgstr "- Feedback richiesto da -"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -53,6 +54,27 @@ msgid ""
 "            </ul>\n"
 "        </data>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<data><h2>Scopo generale della valutazione dei dipendenti</h2>\n"
+"            <ul>\n"
+"                <li>Avviare una comunicazione chiara e aperta delle aspettative di performance</li>\n"
+"                <li>Assistere i dipendenti nella loro crescita professionale, attraverso l'identificazione dei punti di forza e delle opportunità di sviluppo</li>\n"
+"            </ul>\n"
+"\n"
+"            <h2>All'inizio del periodo di valutazione</h2>\n"
+"            <ul>\n"
+"                <li>È responsabilità comune del dipendente e del supervisore (valutatore) stabilire un piano di lavoro fattibile per l'anno successivo, includendo le principali responsabilità del dipendente e i corrispondenti parametri di riferimento rispetto ai quali saranno valutati i risultati.</li>\n"
+"                <li>Gli elementi critici o chiave della performance e le esigenze di sviluppo professionale (se presenti), dovrebbero essere annotati in questo momento.</li>\n"
+"            </ul>\n"
+"\n"
+"            <h2>Alla conclusione del periodo di valutazione</h2>\n"
+"            <ul>\n"
+"                <li>Il dipendente sarà responsabile della compilazione di una bozza del modulo di valutazione come strumento di autovalutazione e punto di partenza per la valutazione del supervisore. Il dipendente può aggiungere esempi di risultati per ogni criterio. Una volta compilato il modulo, il dipendente lo invia al suo supervisore.</li>\n"
+"                <li>È responsabilità primaria del supervisore raccogliere gli input necessari dalle fonti di feedback appropriate (clienti interni e/o esterni, colleghi).</li>\n"
+"                <li>Il supervisore sintetizza e integra tutti gli input nella valutazione completa. La motivazione della valutazione è spiegata nei campi ad hoc.</li>\n"
+"                <li>Il dipendente può scegliere di offrire commenti o spiegazioni riguardo alla revisione completata.</li>\n"
+"            </ul>\n"
+"        </data>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_3
@@ -94,6 +116,8 @@ msgid ""
 "<?xml version=\"1.0\"?>\n"
 "<p>Identify professional, performance, or project objectives you recommend for employee’s continued career development over the coming year.</p>"
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p>Identifica gli obiettivi professionali, di performance o di progetto che raccomandi per lo sviluppo continuo della carriera del dipendente nel corso del prossimo anno.</p>"
 
 #. module: hr_appraisal_survey
 #: model:survey.survey,description:hr_appraisal_survey.appraisal_feedback_template
@@ -102,6 +126,9 @@ msgid ""
 "<p>This survey allows you to give a feedback about your collaboration with an employee. Filling it helps us improving the appraisal process.</p>\n"
 "        "
 msgstr ""
+"<?xml version=\"1.0\"?>\n"
+"<p>Questo sondaggio ti permette di dare un feedback sulla tua collaborazione con un dipendente. Compilarlo ci aiuta a migliorare il processo di valutazione.</p>\n"
+"        "
 
 #. module: hr_appraisal_survey
 #: model:mail.template,body_html:hr_appraisal_survey.mail_template_appraisal_ask_feedback
@@ -142,6 +169,41 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Ciao <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,\n"
+"                        <br/><br/>\n"
+"                        È stato richiesto un feedback di valutazione per <t t-out=\"object.appraisal_id.employee_id.name or 'this'\">questo</t>.\n"
+"                        <br/>\n"
+"                        Per favore, prendi del tempo per compilare il sondaggio.\n"
+"                        <br/><br/>\n"
+"                        Grazie!\n"
+"                        <br/><br/>\n"
+"                        <t t-if=\"ctx.get('recipient_users')\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                                    Guarda valutazione\n"
+"                                </a>\n"
+"                            </p>\n"
+"                        </t>\n"
+"                        <t t-if=\"ctx.get('user_body')\">\n"
+"                            <div style=\"background-color:#F8F8F8;\">\n"
+"                                <t t-out=\"ctx.get('user_body')\">Valutazione annuale.</t>\n"
+"                            </div>\n"
+"                        </t>\n"
+"                        <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
+"                            <a t-att-href=\"object.get_start_url()\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                <t t-if=\"object.survey_id.certification\">\n"
+"                                    Inizia la certificazione\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    Inizia sondaggio\n"
+"                                </t>\n"
+"                            </a>\n"
+"                        </div>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
@@ -149,6 +211,8 @@ msgid ""
 "<span class=\"o_stat_text\">Feedback</span>\n"
 "                        <span class=\"o_stat_text\">Survey</span>"
 msgstr ""
+"<span class=\"o_stat_text\">Feedback</span>\n"
+"                        <span class=\"o_stat_text\">Sondaggio</span>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_1
@@ -198,6 +262,8 @@ msgid ""
 "An appraisal feedback was requested. Please take time to fill the <a "
 "href=\"%s\" target=\"_blank\">survey</a>"
 msgstr ""
+"È stato richiesto un feedback di valutazione. Per favore, prenditi del tempo"
+" per riempire il <a href=\"%s\" target=\"_blank\">sondaggio</a>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
@@ -218,23 +284,23 @@ msgstr "Valutazione"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__employee_id
 msgid "Appraisal Employee"
-msgstr ""
+msgstr "Valutazione dipendente"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_survey_survey__is_appraisal
 msgid "Appraisal Managers Only"
-msgstr ""
+msgstr "Solo manager di valutazione"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_department__appraisal_survey_template_id
 msgid "Appraisal Survey"
-msgstr ""
+msgstr "Sondaggio valutazione"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_res_company__appraisal_survey_template_id
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_res_config_settings__appraisal_survey_template_id
 msgid "Appraisal Survey Template"
-msgstr ""
+msgstr "Template Sondaggio Valutazione"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_3
@@ -244,7 +310,7 @@ msgstr "Valutazione per il periodo"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Appraisal of"
-msgstr ""
+msgstr "Valutazione di"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_5
@@ -255,17 +321,17 @@ msgstr "Valutatore"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "Ask Feedback"
-msgstr ""
+msgstr "Chiedi feedback"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_appraisal_ask_feedback
 msgid "Ask Feedback for Appraisal"
-msgstr ""
+msgstr "Chiedi feedback per valutazione"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_appraisal__employee_feedback_ids
 msgid "Asked Feedback"
-msgstr ""
+msgstr "Feedback richiesto"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__attachment_ids
@@ -290,7 +356,7 @@ msgstr "Ritorna alla valutazione"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__can_edit_body
 msgid "Can Edit Body"
-msgstr ""
+msgstr "Può modificare corpo"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
@@ -301,6 +367,8 @@ msgstr "Annulla"
 #: model:ir.model.fields,help:hr_appraisal_survey.field_survey_survey__is_appraisal
 msgid "Check this option to restrict the answers to appraisal managers only."
 msgstr ""
+"Seleziona questa opzione per limitare le risposte solo ai manager di "
+"valutazione."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -443,7 +511,7 @@ msgstr "Campo"
 #: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
 #, python-format
 msgid "Fill the feedback form on survey"
-msgstr ""
+msgstr "Compila il modulo di feedback sul sondaggio"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__copyvalue
@@ -462,7 +530,7 @@ msgstr "Da"
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR Appraisal: Ask Feedback"
-msgstr ""
+msgstr "Valutazione HR: Chiedere feedback"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__id
@@ -534,7 +602,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_2_4
 msgid "Leadership: sustain subordinates in their professional growth"
-msgstr ""
+msgstr "Leadership: aiutare i subordinati nella loro crescita professionale"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__template_id
@@ -554,7 +622,7 @@ msgstr "Obiettivi"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 msgid "Optional message"
-msgstr ""
+msgstr "Messaggio opzionale"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -564,6 +632,10 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"Lingua di traduzione opzionale (codice ISO) da selezionare quando si invia "
+"un'email. Se non impostato, verrà usata la versione inglese. Di solito "
+"dovrebbe essere un'espressione segnaposto che fornisce la lingua "
+"appropriata, ad esempio {{ object.partner_id.lang }}."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__null_value
@@ -603,7 +675,7 @@ msgstr "Obiettivi del progetto"
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_12
 msgid "Promptness and attendance record"
-msgstr ""
+msgstr "Registro presenze e puntualità"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__employee_ids
@@ -613,12 +685,12 @@ msgstr "Destinatari"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "Rendering Model"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "Responded:"
-msgstr ""
+msgstr "Ha risposto:"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_2
@@ -649,7 +721,7 @@ msgstr "Invia"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_hr_appraisal__survey_ids
 msgid "Sent out surveys"
-msgstr ""
+msgstr "Invia sondaggi"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -690,7 +762,7 @@ msgstr "Sondaggio"
 #: code:addons/hr_appraisal_survey/models/survey.py:0
 #, python-format
 msgid "Survey Feedback"
-msgstr ""
+msgstr "Feedback Sondaggio"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_question_answer
@@ -716,7 +788,7 @@ msgstr "Sondaggi"
 #. module: hr_appraisal_survey
 #: model:mail.template,subject:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "Take part in {{ object.employee_id.name or 'this' }} appraisal"
-msgstr ""
+msgstr "Partecipa a {{ object.employee_id.name or 'this' }} valutazione"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -761,6 +833,9 @@ msgid ""
 "This field is used with 360 Feedback setting on Appraisal App, the aim is to"
 " define a default Survey Template related to this department."
 msgstr ""
+"Questo campo è usato con l'impostazione Feedback 360° su Odoo Valutazione, "
+"lo scopo è quello di definire un modello di indagine relativo a questo "
+"dipartimento."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -814,7 +889,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__user_body
 msgid "User Contents"
-msgstr ""
+msgstr "Contenuti Utenti"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__sub_model_object_field
@@ -846,6 +921,8 @@ msgid ""
 "You can create surveys used for appraisals. Design easily your appraisal,\n"
 "                send invitations and analyze answers."
 msgstr ""
+"Puoi creare sondaggi utilizzati per le valutazioni. Progetta facilmente la tua valutazione, \n"
+"invia inviti e analizza le risposte."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view

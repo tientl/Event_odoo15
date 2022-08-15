@@ -58,14 +58,16 @@ QUnit.module("Studio", (hooks) => {
         const { wrapper, appCreator } = await createAppCreator({
             env: {
                 services: {
-                    blockUI: () => assert.step("UI blocked"),
+                    ui: {
+                        block: () => assert.step("UI blocked"),
+                        unblock: () => assert.step("UI unblocked")
+                    },
                     httpRequest: (route) => {
                         if (route === "/web/binary/upload_attachment") {
                             assert.step(route);
                             return Promise.resolve('[{ "id": 666 }]');
                         }
                     },
-                    unblockUI: () => assert.step("UI unblocked"),
                     http: {
                         post(route) {
                             if (route === "/web/binary/upload_attachment") {
@@ -328,8 +330,7 @@ QUnit.module("Studio", (hooks) => {
         const { wrapper, appCreator } = await createAppCreator({
             env: {
                 services: {
-                    blockUI: () => {},
-                    unblockUI: () => {},
+                    ui: { block: () => {}, unblock: () => {}},
                 },
             },
             rpc: async (route, params) => {
@@ -373,8 +374,7 @@ QUnit.module("Studio", (hooks) => {
             env: {
                 isDebug: () => true,
                 services: {
-                    blockUI() {},
-                    unblockUI() {},
+                    ui: { block: () => {}, unblock: () => {}},
                 },
             },
             async rpc(route, params) {
@@ -488,8 +488,10 @@ QUnit.module("Studio", (hooks) => {
         const { wrapper, appCreator } = await createAppCreator({
             env: {
                 services: {
-                    blockUI: () => assert.step("UI blocked"),
-                    unblockUI: () => assert.step("UI unblocked"),
+                    ui: {
+                        block: () => assert.step("UI blocked"),
+                        unblock: () => assert.step("UI unblocked")
+                    },
                 },
             },
             events: {

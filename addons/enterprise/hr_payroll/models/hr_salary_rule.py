@@ -83,7 +83,23 @@ result = rules.NET > categories.NET * 0.10''',
         help="Eventual third party involved in the salary payment of the employees.")
     note = fields.Html(string='Description')
 
+    def _raise_error(self, localdict, error_type, e):
+        raise UserError(_("""%s:
+- Employee: %s
+- Contract: %s
+- Payslip: %s
+- Salary rule: %s (%s)
+- Error: %s""") % (
+            error_type,
+            localdict['employee'].name,
+            localdict['contract'].name,
+            localdict['payslip'].dict.name,
+            self.name,
+            self.code,
+            e))
+
     def _compute_rule(self, localdict):
+
         """
         :param localdict: dictionary containing the current computation environment
         :return: returns a tuple (amount, qty, rate)
@@ -94,20 +110,20 @@ result = rules.NET > categories.NET * 0.10''',
             try:
                 return self.amount_fix or 0.0, float(safe_eval(self.quantity, localdict)), 100.0
             except Exception as e:
-                raise UserError(_('Wrong quantity defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
+                self._raise_error(localdict, _("Wrong quantity defined for:"), e)
         if self.amount_select == 'percentage':
             try:
                 return (float(safe_eval(self.amount_percentage_base, localdict)),
                         float(safe_eval(self.quantity, localdict)),
                         self.amount_percentage or 0.0)
             except Exception as e:
-                raise UserError(_('Wrong percentage base or quantity defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
+                self._raise_error(localdict, _("Wrong percentage base or quantity defined for:"), e)
         else:  # python code
             try:
                 safe_eval(self.amount_python_compute or 0.0, localdict, mode='exec', nocopy=True)
                 return float(localdict['result']), localdict.get('result_qty', 1.0), localdict.get('result_rate', 100.0)
             except Exception as e:
-                raise UserError(_('Wrong python code defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
+                self._raise_error(localdict, _("Wrong python code defined for:"), e)
 
     def _satisfy_condition(self, localdict):
         self.ensure_one()
@@ -117,11 +133,11 @@ result = rules.NET > categories.NET * 0.10''',
             try:
                 result = safe_eval(self.condition_range, localdict)
                 return self.condition_range_min <= result <= self.condition_range_max
-            except:
-                raise UserError(_('Wrong range condition defined for salary rule %s (%s).') % (self.name, self.code))
+            except Exception as e:
+                self._raise_error(localdict, _("Wrong range condition defined for:"), e)
         else:  # python code
             try:
                 safe_eval(self.condition_python, localdict, mode='exec', nocopy=True)
                 return localdict.get('result', False)
-            except:
-                raise UserError(_('Wrong python condition defined for salary rule %s (%s).') % (self.name, self.code))
+            except Exception as e:
+                self._raise_error(localdict, _("Wrong python condition defined for:"), e)

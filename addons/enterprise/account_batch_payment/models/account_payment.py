@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields, api, _
+from odoo import models, fields, Command, api, _
 
 
 class AccountPayment(models.Model):
@@ -16,8 +16,10 @@ class AccountPayment(models.Model):
 
     @api.depends('state')
     def _compute_batch_payment_id(self):
-        for payment in self:
-            payment.batch_payment_id = payment.state == 'posted' and payment.batch_payment_id or None
+        for payment in self.filtered(lambda p: p.state != 'posted'):
+            # unlink the payment from the batch payment ids, hovewer _compute_amount
+            # is not triggered by the ORM when setting batch_payment_id to None
+            payment.batch_payment_id.write({'payment_ids': [Command.unlink(payment.id)]})
 
     @api.depends('amount', 'payment_type')
     def _compute_amount_signed(self):

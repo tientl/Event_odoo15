@@ -6,7 +6,7 @@ var publicWidget = require('web.public.widget');
 publicWidget.registry.appointmentForm = publicWidget.Widget.extend({
     selector: '.o_appointment_attendee_form',
     events: {
-        'click .appointment_submit_form .btn': '_validateCheckboxes',
+        'click .appointment_submit_form .btn': ' async _validateCheckboxes',
     },
 
     _validateCheckboxes: function() {
@@ -14,6 +14,9 @@ publicWidget.registry.appointmentForm = publicWidget.Widget.extend({
             var checkboxes = $(this).find('.checkbox input');
             checkboxes.prop('required', !_.any(checkboxes, checkbox => checkbox.checked));
         });
+        if ($(this.$target.find('form'))[0].checkValidity()) {
+            return new Promise((resolve, reject) => {});
+        }
     },
 });
 });

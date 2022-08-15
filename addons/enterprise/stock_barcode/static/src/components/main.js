@@ -2,6 +2,7 @@
 
 import BarcodePickingModel from '@stock_barcode/models/barcode_picking_model';
 import BarcodeQuantModel from '@stock_barcode/models/barcode_quant_model';
+import config from 'web.config';
 import core from 'web.core';
 import GroupedLineComponent from '@stock_barcode/components/grouped_line';
 import LineComponent from '@stock_barcode/components/line';
@@ -12,6 +13,7 @@ import { useService } from "@web/core/utils/hooks";
 import ViewsWidget from '@stock_barcode/widgets/views_widget';
 import ViewsWidgetAdapter from '@stock_barcode/components/views_widget_adapter';
 import * as BarcodeScanner from '@web_enterprise/webclient/barcode/barcode_scanner';
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 const { Component } = owl;
 const { useSubEnv, useState } = owl.hooks;
@@ -41,6 +43,7 @@ class MainComponent extends Component {
         const model = this._getModel(this.props);
         useSubEnv({model});
         this._scrollBehavior = 'smooth';
+        this.isMobile = config.device.isMobile;
     }
 
     async willStart() {
@@ -67,6 +70,7 @@ class MainComponent extends Component {
         this.el.addEventListener('exit', this.exit.bind(this));
         this.el.addEventListener('open-package', this._onOpenPackage.bind(this));
         this.el.addEventListener('refresh', this._onRefreshState.bind(this));
+        this.el.addEventListener('warning', this._onWarning.bind(this));
     }
 
     willUnmount() {
@@ -205,7 +209,8 @@ class MainComponent extends Component {
             const header = document.querySelector('.o_barcode_header');
             const lineRect = selectedLine.getBoundingClientRect();
             const navbar = document.querySelector('.o_main_navbar');
-            const page = document.querySelector('.o_barcode_lines');
+            // On mobile, overflow is on the html.
+            const page = document.querySelector(this.isMobile ? 'html' : '.o_barcode_lines');
             // Computes the real header's height (the navbar is present if the page was refreshed).
             const headerHeight = navbar ? navbar.offsetHeight + header.offsetHeight : header.offsetHeight;
             let scrollCoordY = false;
@@ -214,6 +219,10 @@ class MainComponent extends Component {
             } else if (lineRect.bottom > window.innerHeight - footer.offsetHeight) {
                 const pageRect = page.getBoundingClientRect();
                 scrollCoordY = page.scrollTop - (pageRect.bottom - lineRect.bottom);
+                if (this.isMobile) {
+                    // The footer can hide the line on mobile, we increase the scroll coord to avoid that.
+                    scrollCoordY += footer.offsetHeight;
+                }
             }
             if (scrollCoordY !== false) { // Scrolls to the line only if it's not entirely visible.
                 page.scroll({ left: 0, top: scrollCoordY, behavior: this._scrollBehavior });
@@ -335,6 +344,11 @@ class MainComponent extends Component {
     }
 
     async print(action, method) {
+        await this.env.model.save();
+        const options = this.env.model._getPrintOptions();
+        if (options.warning) {
+            return this.env.model.notification.add(options.warning, { type: 'warning' });
+        }
         if (!action && method) {
             action = await this.orm.call(
                 this.props.model,
@@ -342,7 +356,7 @@ class MainComponent extends Component {
                 [[this.props.id]]
             );
         }
-        this.trigger('do-action', { action });
+        this.trigger('do-action', { action, options });
     }
 
     putInPack(ev) {
@@ -445,6 +459,16 @@ class MainComponent extends Component {
         const result = await this.rpc(route, params);
         await this.env.model.refreshCache(result.data.records);
         this.toggleBarcodeLines(recordId);
+    }
+
+    /**
+     * Handles triggered warnings. It can happen from an onchange for example.
+     *
+     * @param {CustomEvent} ev
+     */
+    _onWarning(ev) {
+        const { title, message } = ev.detail;
+        this.env.services.dialog.add(ConfirmationDialog, { title, body: message });
     }
 }
 MainComponent.template = 'stock_barcode.MainComponent';

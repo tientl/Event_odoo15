@@ -2,11 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, api
+from odoo.tools import float_compare
 from itertools import accumulate
 
 
 class AccountDisallowedExpensesReport(models.AbstractModel):
     _inherit = 'account.disallowed.expenses.report'
+
+    filter_vehicle_split = False
 
     def _get_options(self, previous_options=None):
         options = super(AccountDisallowedExpensesReport, self)._get_options(previous_options)
@@ -35,7 +38,7 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         """
         where += current.get('vehicle') and """
               AND vehicle.id = %(vehicle)s""" or ""
-        where += current.get('account') and not current.get('vehicle') and """
+        where += current.get('account') and not current.get('vehicle') and options.get('vehicle_split') and """
               AND vehicle.id IS NULL""" or ""
         group_by += ", vehicle.id, vehicle.name"
         group_by += options['multi_rate_in_period'] and ", fleet_rate.rate" or ""
@@ -54,7 +57,7 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
             if len(split) > 4 and split[4] == 'account':
                 current['account'] = int(split[5])
                 if len(split) > 6 and split[6] == 'rate':
-                    current['fleet_rate'] = float(split[7])
+                    current['rate'] = float(split[7])
         return current
 
     def _build_line_id(self, current, parent=False):
@@ -64,9 +67,26 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
             res += '_vehicle_' + str(current['vehicle'])
             if current.get('account'):
                 res += '_account_' + str(current['account'])
-                if current.get('fleet_rate') is not None:
-                    res += '_rate_' + str(current['fleet_rate'])
+                if current.get('rate') is not None:
+                    res += '_rate_' + str(current['rate'])
         return '_'.join(res.split('_')[:-2]) if parent else res
+
+    def _get_applicable_rate(self, values):
+        # EXTENDS 'account_disallowed_expenses' in order to use the vehicle rate, if it has been defined.
+        return values['fleet_rate'] or super()._get_applicable_rate(values)
+
+    @api.model
+    def _get_lines(self, options, line_id=None):
+        # Overridden in order to hide rates that are inconsistent (to avoid confusion).
+        # A rate can be defined on the expense category and/or the vehicle,
+        # which could lead to inconsistencies in the report when aggregating values.
+        lines = super()._get_lines(options, line_id)
+        for line in lines:
+            total, rate, disallowed = line['columns']
+            computed_rate = disallowed['no_format'] / total['no_format'] * 100 if total['no_format'] else 0
+            if float_compare(computed_rate, rate['no_format'], precision_digits=2):
+                rate['name'] = ''
+        return lines
 
     def _set_line(self, options, values, lines, current, totals):
         if not values['vehicle_id']:
@@ -76,25 +96,27 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
         else:
             if values['category_id'] != current['category']:
                 current['category'] = values['category_id']
-                current['account'] = current['account'] = current['fleet_rate'] = None
+                current['account'] = current['account'] = current['rate'] = None
                 lines.append(self._get_category_line(options, values, current))
-            if values['vehicle_id'] != current.get('vehicle'):
-                current['vehicle'] = values['vehicle_id']
-                current['account'] = current['fleet_rate'] = None
-                if self._need_to_unfold(current, options, parent=True):
-                    lines.append(self._get_vehicle_line(options, values, current))
+            # Only append vehicle lines to the report if the 'vehicle_split' options is selected
+            if options.get('vehicle_split'):
+                if values['vehicle_id'] != current.get('vehicle'):
+                    current['vehicle'] = values['vehicle_id']
+                    current['account'] = current['rate'] = None
+                    if self._need_to_unfold(current, options, parent=True):
+                        lines.append(self._get_vehicle_line(options, values, current))
             if values['account_id'] != current.get('account'):
                 current['account'] = values['account_id']
-                current['fleet_rate'] = None
+                current['rate'] = None
                 if self._need_to_unfold(current, options, parent=True):
                     lines.append(self._get_vehicle_account_line(options, values, current))
-            if options['multi_rate_in_period'] and values['fleet_rate'] != current.get('fleet_rate'):
-                current['fleet_rate'] = values['fleet_rate']
+            if options['multi_rate_in_period'] and values['rate'] != current.get('rate'):
+                current['rate'] = values['rate']
                 if self._need_to_unfold(current, options, parent=True):
-                    lines.append(self._get_vehicle_rate_line(options, values, current))
+                    lines.append(self._get_vehicle_rate_line(options, values, current, level=len(list(current.values()))))
             for id in ['_'.join(v) for v in accumulate(zip(*[iter(self._build_line_id(current).split('_'))]*2))]:
                 totals[id][0] += values['balance']
-                totals[id][1] += values['balance'] * values['fleet_rate'] / 100
+                totals[id][1] += values['balance'] * values['rate'] / 100
 
     def _get_vehicle_line(self, options, values, current):
         return {**self._get_base_line(options, values, current), **{
@@ -113,10 +135,10 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
             'account_id': values['account_id'],
         }}
 
-    def _get_vehicle_rate_line(self, options, values, current):
+    def _get_vehicle_rate_line(self, options, values, current, level):
         return {**self._get_base_line(options, values, current), **{
             'name': '%s %s' % (values['account_code'], values['account_name']),
-            'level': 4,
+            'level': level,
             'unfoldable': False,
             'caret_options': 'account.account',
             'account_id': values['account_id'],
@@ -125,5 +147,8 @@ class AccountDisallowedExpensesReport(models.AbstractModel):
     def _get_base_line(self, options, values, current):
         res = super()._get_base_line(options, values, current)
         if values['vehicle_id']:
-            res['columns'][1] = {'name': ('%s %%' % values['fleet_rate']) if not options['multi_rate_in_period'] or (current.get('fleet_rate') is not None) else ""}
+            res['columns'][1] = {
+                'name': ('%s %%' % values['rate']) if not options['multi_rate_in_period'] or current.get('rate') is not None else '',
+                'no_format': values['rate'],
+            }
         return res

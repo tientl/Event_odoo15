@@ -5,21 +5,21 @@
 # Translators:
 # Lucia Pacheco <lpo@odoo.com>, 2021
 # Martin Trigaux, 2021
-# Braulio D. López Vázquez <bdl@odoo.com>, 2021
+# Braulio D. López Vázquez <bdl@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-08 06:47+0000\n"
+"POT-Creation-Date: 2021-11-16 13:42+0000\n"
 "PO-Revision-Date: 2021-09-14 12:43+0000\n"
-"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2021\n"
+"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2022\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
@@ -141,11 +141,6 @@ msgid "<span> / </span>"
 msgstr "<span> / </span>"
 
 #. module: stock_barcode
-#: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
-msgid "<span>On Hand</span>"
-msgstr "<span>A la mano</span>"
-
-#. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_model.js:0
 #, python-format
@@ -153,7 +148,7 @@ msgid ""
 "A product tracked by serial numbers can't have multiple quantities for the "
 "same serial number."
 msgstr ""
-"Un producto rastreado por números de series no puede tener múltiples "
+"Un producto rastreado por números de serie no puede tener múltiples "
 "cantidades para el mismo número de serie."
 
 #. module: stock_barcode
@@ -178,6 +173,13 @@ msgid ""
 msgstr ""
 "Se escaneó un tipo de paquete que no existe. No se puede procesar esta parte"
 " del código de barras."
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/components/main.xml:0
+#, python-format
+msgid "Apply"
+msgstr "Aplicar"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_cancel_operation_view
@@ -225,7 +227,7 @@ msgstr "Código de barras escaneado"
 #: code:addons/stock_barcode/static/src/stock_barcode_menu.xml:0
 #, python-format
 msgid "Barcode Scanning"
-msgstr "Código de barras escaneado"
+msgstr "Escaneo de código de barras"
 
 #. module: stock_barcode
 #. openerp-web
@@ -343,7 +345,7 @@ msgstr "Movimiento predeterminado"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_res_config_settings__stock_barcode_demo_active
 msgid "Demo Data Active"
-msgstr "Datos demo activos"
+msgstr "Datos de prueba activos"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
@@ -456,6 +458,13 @@ msgstr "Ajustes de inventario"
 #: model:ir.model,name:stock_barcode.model_stock_location
 msgid "Inventory Locations"
 msgstr "Ubicaciones de inventario"
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
+#, python-format
+msgid "Inventory adjustment was saved"
+msgstr "Se guardó el ajuste de inventario"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_barcode_lot_line
@@ -601,6 +610,15 @@ msgstr "Propietario"
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Package"
 msgstr "Paquete"
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
+#, python-format
+msgid "%s can't be inventoried. Only storable products can be inventoried."
+msgstr ""
+"%s no se puede incluir en el inventario. Solo se pueden incluir productos "
+"almacenables."
 
 #. module: stock_barcode
 #. openerp-web
@@ -828,6 +846,17 @@ msgstr "Escanee la ubicación de origen, o escanee un producto"
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
+#, python-format
+msgid ""
+"Scanned quantity uses %s as Unit of Measure, but this UoM is not compatible "
+"with the line's one (%s)."
+msgstr ""
+"La cantidad escaneada utiliza %s como Unidad de Medida, pero esta UdM no es "
+"compatible con la de la línea (%s)."
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid ""
@@ -904,6 +933,7 @@ msgstr ""
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
+#: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "The inventory adjustment has been validated"
 msgstr "Se validó el ajuste de inventario"
@@ -935,6 +965,20 @@ msgstr "Se canceló el traslado"
 #, python-format
 msgid "The transfer has been validated"
 msgstr "Se validó el traslado"
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
+#, python-format
+msgid "There is nothing to apply in this page."
+msgstr "No hay nada que aplicar en esta página."
+
+#. module: stock_barcode
+#. openerp-web
+#: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
+#, python-format
+msgid "There is nothing to print in this page."
+msgstr "No hay nada para imprimir en esta página."
 
 #. module: stock_barcode
 #. openerp-web
@@ -982,7 +1026,7 @@ msgstr "Por procesar"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "To use packages, enable 'Packages' in the settings"
-msgstr "Habilite \"paquetes\" en los ajustes para utilizar paquetes."
+msgstr "Habilite \"paquetes\" en los ajustes para utilizarlos."
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_picking
@@ -1002,7 +1046,6 @@ msgstr "Los traslados le permiten mover productos de una ubicación a otra."
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
-#: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode_kanban
 msgid "Unit of Measure"
 msgstr "Unidad de medida"

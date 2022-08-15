@@ -8,7 +8,7 @@ data.params.data["account.reconciliation.widget"].get_batch_payments_data = func
 };
 
 data.params.data["account.reconciliation.widget"].get_move_lines_by_batch_payment = function (args) {
-    return Promise.resolve(data.params.mv_lines['[5,"b",0]']);
+    return Promise.resolve(data.params.mv_lines['{"st_line_id":5,"search_str":"b"}']);
 };
 
 data.params.data_preprocess.batch_payments = [{

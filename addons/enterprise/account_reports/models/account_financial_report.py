@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import ast
 import json
+import re
 
 from .formula import FormulaSolver, PROTECTED_KEYWORDS
 from dateutil.relativedelta import relativedelta
@@ -325,26 +326,27 @@ class ReportAccountFinancialReport(models.Model):
                 groupby_keys,
             )
 
-            # Manage 'hide_if_zero' field.
-            if financial_line.hide_if_zero and all(self.env.company.currency_id.is_zero(column['no_format'])
-                                                   for column in financial_report_line['columns'] if 'no_format' in column):
+            # Manage 'hide_if_zero' field with formulas.
+            are_all_columns_zero = all(self.env.company.currency_id.is_zero(column['no_format'])
+                                       for column in financial_report_line['columns'] if 'no_format' in column)
+            if financial_line.hide_if_zero and are_all_columns_zero and financial_line.formulas:
                 continue
 
             # Manage 'hide_if_empty' field.
             if financial_line.hide_if_empty and is_leaf and not has_lines:
                 continue
 
-            lines.append(financial_report_line)
-
             aml_lines = []
+            children = []
             if financial_line.children_ids:
                 # Travel children.
-                lines += self._build_lines_hierarchy(options_list, financial_line.children_ids, solver, groupby_keys)
+                children += self._build_lines_hierarchy(options_list, financial_line.children_ids, solver, groupby_keys)
             elif is_leaf and financial_report_line['unfolded']:
                 # Fetch the account.move.lines.
                 solver_results = solver.get_results(financial_line)
                 sign = solver_results['amls']['sign']
-                for groupby_id, display_name, results in financial_line._compute_amls_results(options_list, self, sign=sign):
+                operator = solver_results['amls']['operator']
+                for groupby_id, display_name, results in financial_line._compute_amls_results(options_list, self, sign=sign, operator=operator):
                     aml_lines.append(self._get_financial_aml_report_line(
                         options_list[0],
                         financial_report_line['id'],
@@ -354,6 +356,17 @@ class ReportAccountFinancialReport(models.Model):
                         results,
                         groupby_keys,
                     ))
+            # Manage 'hide_if_zero' field without formulas.
+            # If a line hi 'hide_if_zero' and has no formulas, we have to check the sum of all the columns from its children
+            # If all sums are zero, we hide the line
+            if financial_line.hide_if_zero and not financial_line.formulas:
+                amounts_by_line = [[col['no_format'] for col in child['columns'] if 'no_format' in col] for child in children]
+                amounts_by_column = zip(*amounts_by_line)
+                all_columns_have_children_zero = all(self.env.company.currency_id.is_zero(sum(col)) for col in amounts_by_column)
+                if all_columns_have_children_zero:
+                    continue
+            lines.append(financial_report_line)
+            lines += children
             lines += aml_lines
 
             if self.env.company.totals_below_sections and (financial_line.children_ids or (is_leaf and financial_report_line['unfolded'] and aml_lines)):
@@ -645,7 +658,7 @@ class ReportAccountFinancialReport(models.Model):
             is_unfolded = False
         elif financial_line.show_domain == 'always':
             is_unfolded = True
-        elif financial_line.show_domain == 'foldable' and report_line_id in options['unfolded_lines']:
+        elif financial_line.show_domain == 'foldable' and (report_line_id in options['unfolded_lines'] or options.get('unfold_all')):
             is_unfolded = True
         else:
             is_unfolded = False
@@ -811,8 +824,9 @@ class ReportAccountFinancialReport(models.Model):
             default = {}
         default.update({'name': self._get_copied_name()})
         copied_report_id = super(ReportAccountFinancialReport, self).copy(default=default)
+        code_mapping = {}
         for line in self.line_ids:
-            line._copy_hierarchy(report_id=self, copied_report_id=copied_report_id)
+            line._copy_hierarchy(report_id=self, copied_report_id=copied_report_id, code_mapping=code_mapping)
         return copied_report_id
 
     # -------------------------------------------------------------------------
@@ -931,7 +945,7 @@ class ReportAccountFinancialReport(models.Model):
 class AccountFinancialReportLine(models.Model):
     _name = "account.financial.html.report.line"
     _description = "Account Report (HTML Line)"
-    _order = "sequence"
+    _order = "sequence, id"
     _parent_store = True
 
     name = fields.Char('Section Name', translate=True)
@@ -1023,7 +1037,7 @@ class AccountFinancialReportLine(models.Model):
         # are used in some balance sheet formulas. However, the balance sheet is a single-date mode report but not the
         # P&L.
         if parent_financial_report and calling_financial_report != parent_financial_report:
-            new_options = parent_financial_report._get_options(previous_options=options)
+            new_options = parent_financial_report._get_options(previous_options={**options, 'date': {**options['date'], 'filter': 'custom'}})
 
             # Propate the 'ir_filters' manually because 'applicable_filters_ids' could be different
             # in both reports. In that case, we need to propagate it whatever the configuration.
@@ -1092,7 +1106,7 @@ class AccountFinancialReportLine(models.Model):
     # QUERIES
     # -------------------------------------------------------------------------
 
-    def _compute_amls_results(self, options_list, calling_financial_report, sign=1):
+    def _compute_amls_results(self, options_list, calling_financial_report, sign=1, operator=None):
         ''' Compute the results for the unfolded lines by taking care about the line order and the group by filter.
 
         Suppose the line has '-sum' as formulas with 'partner_id' in groupby and 'currency_id' in group by filter.
@@ -1109,6 +1123,7 @@ class AccountFinancialReportLine(models.Model):
                                             being the comparisons.
         :param calling_financial_report:    The financial report called by the user to be rendered.
         :param sign:                        1 or -1 to get negative values in case of '-sum' formula.
+        :param operator:                    The operator initiating the computation of the amls.
         :return:                            A list (groupby_key, display_name, {key: <balance>...}).
         '''
         self.ensure_one()
@@ -1136,29 +1151,50 @@ class AccountFinancialReportLine(models.Model):
                 SELECT
                     ''' + (groupby_clause and '%s,' % groupby_clause) + '''
                     %s AS period_index,
-                    COALESCE(SUM(ROUND(%s * account_move_line.balance * currency_table.rate, currency_table.precision)), 0.0) AS balance
+                    COALESCE(SUM(ROUND(account_move_line.balance * currency_table.rate, currency_table.precision)), 0.0) AS balance
                 FROM ''' + tables + '''
                 JOIN ''' + ct_query + ''' ON currency_table.company_id = account_move_line.company_id
                 WHERE ''' + where_clause + '''
                 ''' + (groupby_clause and 'GROUP BY %s' % groupby_clause) + '''
             ''')
-            params += [i, sign] + where_params
+            params += [i] + where_params
 
         # Fetch the results.
         # /!\ Take care of both vertical and horizontal group by clauses.
 
         results = {}
 
+        total_balance = 0.0
         self._cr.execute(' UNION ALL '.join(queries), params)
         for res in self._cr.dictfetchall():
+            balance = res['balance']
+            total_balance += balance
+
             # Build the key.
             key = [res['period_index']]
             for gb in horizontal_groupby_list:
                 key.append(res[gb])
             key = tuple(key)
 
-            results.setdefault(res[self.groupby], {})
-            results[res[self.groupby]][key] = res['balance']
+            add_line = (
+                not operator
+                or operator in ('sum', 'sum_if_pos', 'sum_if_neg')
+                or (operator == 'sum_if_pos_groupby' and balance >= 0.0)
+                or (operator == 'sum_if_neg_groupby' and balance < 0.0)
+            )
+
+            if add_line:
+                results.setdefault(res[self.groupby], {})
+                results[res[self.groupby]][key] = sign * balance
+
+        add_line = (
+            not operator
+            or operator in ('sum', 'sum_if_pos_groupby', 'sum_if_neg_groupby')
+            or (operator == 'sum_if_pos' and total_balance >= 0.0)
+            or (operator == 'sum_if_neg' and total_balance < 0.0)
+        )
+        if not add_line:
+            results = {}
 
         # Sort the lines according to the vertical groupby and compute their display name.
         if groupby_field.relational:
@@ -1390,12 +1426,10 @@ class AccountFinancialReportLine(models.Model):
             line._copy_hierarchy(parent_id=copy_line_id, code_mapping=code_mapping)
         # Update formulas
         if self.formulas:
-            copied_formulas = self.formulas
-            for k, v in code_mapping.items():
-                for field in ('debit', 'credit', 'balance'):
-                    suffix = '.' + field
-                    copied_formulas = copied_formulas.replace(k + suffix, v + suffix)
-            copy_line_id.formulas = copied_formulas
+            copied_formulas = f" {self.formulas} " # Add spaces so that the lookahead/lookbehind of the regex can work (we can't do a | in those)
+            for old_code, new_code in code_mapping.items():
+                copied_formulas = re.sub(f"(?<=\\W){old_code}(?=\\W)", new_code, copied_formulas)
+            copy_line_id.formulas = copied_formulas.strip() # Remove the spaces introduced for lookahead/lookbehind
 
     def action_view_journal_entries(self, options, calling_financial_report_id):
         ''' Action when clicking on the "View Journal Items" in the debug info popup.

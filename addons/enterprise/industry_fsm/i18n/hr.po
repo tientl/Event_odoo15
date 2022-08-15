@@ -3,24 +3,25 @@
 # 	* industry_fsm
 # 
 # Translators:
-# Ivan Marijanović <ivanm101@yahoo.com>, 2019
-# Martin Trigaux, 2019
-# Vladimir Olujić <olujic.vladimir@storm.hr>, 2019
-# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2019
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2019
-# KRISTINA PALAŠ <kristina.palas@storm.hr>, 2019
-# Mario Jureša <mario.juresa@uvid.hr>, 2019
-# Tina Milas, 2019
-# Stjepan Lovasić <stjepan.lovasic@gmail.com>, 2019
-# Bole <bole@dajmi5.com>, 2019
+# KRISTINA PALAŠ <kristina.palas@storm.hr>, 2022
+# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2022
+# Stjepan Lovasić <stjepan.lovasic@gmail.com>, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Ivan Marijanović <ivanm101@yahoo.com>, 2022
+# Hrvoje Sić <hrvoje.sic@gmail.com>, 2022
+# Bole <bole@dajmi5.com>, 2022
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Tina Milas, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-23 13:19+0000\n"
-"PO-Revision-Date: 2019-08-26 09:36+0000\n"
-"Last-Translator: Bole <bole@dajmi5.com>, 2019\n"
+"POT-Creation-Date: 2021-10-05 11:16+0000\n"
+"PO-Revision-Date: 2021-09-14 12:40+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Croatian (https://www.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,83 +30,66 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__delay_endings_days
-msgid "# Days to Deadline"
-msgstr "# Dana do krajnjeg roka"
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_days_open
-msgid "# Working Days to Assign"
-msgstr "# Radnih dana do dodjeljivanja"
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_days_close
-msgid "# Working Days to Close"
-msgstr "# Radnih dana do zatvaranja"
-
-#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__nbr
 msgid "# of Tasks"
 msgstr " # zadataka"
 
 #. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
+#: model:mail.template,body_html:industry_fsm.mail_template_data_intervention_details
+msgid ""
+"<div>\n"
+"    <t t-set=\"date_begin\" t-value=\"format_datetime(object.planned_date_begin, tz=object.partner_id.tz, lang_code=object.partner_id.lang)\"/>\n"
+"\n"
+"    <t t-set=\"date_end\" t-value=\"format_datetime(object.planned_date_end, tz=object.partner_id.tz, lang_code=object.partner_id.lang)\"/>\n"
+"\n"
+"    Dear <t t-out=\"object.partner_id.name or 'customer'\">customer</t>,<br/><br/>\n"
+"    <t t-if=\"date_begin and date_end\">\n"
+"        Your <t t-out=\"object.name or ''\">Boiler maintenance</t> intervention is scheduled from the <t t-out=\"date_begin or ''\">05/31/2021 12:30:00</t> to the <t t-out=\"date_end or ''\">05/31/2021 14:30:00</t>.\n"
+"    </t>\n"
+"    <t t-else=\"\">\n"
+"        Your <t t-out=\"object.name or ''\">Boiler maintenance</t> intervention is scheduled.\n"
+"    </t>\n"
+"    <br/><br/>\n"
+"    Best regards,\n"
+"    <t t-if=\"user.signature\">\n"
+"        <br/>\n"
+"        <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"    </t>\n"
+"</div>\n"
+"        "
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_inherit_project_task_view_form
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow icon\" title=\"Arrow\"/>\n"
+"                        <i class=\"fa fa-long-arrow-right mx-2 oe_read_only\" aria-label=\"Arrow icon\" title=\"Arrow\" attrs=\"{'invisible': [('planned_date_begin', '=', False), ('planned_date_end', '=', False)]}\"/>"
+msgstr ""
+
+#. module: industry_fsm
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid ""
-"<p class=\"o_view_nocontent_smiling_face\">\n"
-"                            Create a new product\n"
-"                        </p><p>\n"
-"                            You must define a product for everything you sell or purchase,\n"
-"                            whether it's a storable product, a consumable or a service.\n"
-"                        </p>"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-msgid ""
-"<span attrs=\"{'invisible': [('planned_date_end', '=', False)]}\"> to "
-"</span>"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-msgid ""
-"<span attrs=\"{'invisible': [('timesheet_timer_last_stop', '=', False)]}\"> "
-"to </span>"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "<span class=\"align-middle\">for this employee at the same time.</span>"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Add materials"
+"Add a <b>title</b> <i>(e.g. Boiler maintenance, Air-conditioning "
+"installation, etc.).</i>"
 msgstr ""
 
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_manager
 msgid "Administrator"
-msgstr ""
+msgstr "Administrator"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_all_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_root
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_todo
 msgid "All Tasks"
-msgstr ""
+msgstr "Svi zadaci"
 
 #. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_invoice_fsm
-msgid "All tasks were invoiced"
-msgstr ""
-
-#. module: industry_fsm
-#: model:ir.model.constraint,message:industry_fsm.constraint_project_project_fsm_imply_task_rate
-msgid "An FSM project must be billed at task rate."
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
+msgid "Analyze the performance of your tasks and your workers."
 msgstr ""
 
 #. module: industry_fsm
@@ -114,19 +98,45 @@ msgid "Archived"
 msgstr "Arhivirano"
 
 #. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__user_ids
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__user_ids
+msgid "Assignees"
+msgstr ""
+
+#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_assign
-msgid "Assignation Date"
+msgid "Assignment Date"
 msgstr "Datum dodjeljivanja"
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__user_id
-msgid "Assigned To"
-msgstr "Dodijeljeno"
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__user_id
-msgid "Assigned to"
-msgstr "Dodjeljen"
+#: model:project.task,legend_blocked:industry_fsm.planning_task_0
+#: model:project.task,legend_blocked:industry_fsm.planning_task_1
+#: model:project.task,legend_blocked:industry_fsm.planning_task_10
+#: model:project.task,legend_blocked:industry_fsm.planning_task_11
+#: model:project.task,legend_blocked:industry_fsm.planning_task_12
+#: model:project.task,legend_blocked:industry_fsm.planning_task_13
+#: model:project.task,legend_blocked:industry_fsm.planning_task_14
+#: model:project.task,legend_blocked:industry_fsm.planning_task_15
+#: model:project.task,legend_blocked:industry_fsm.planning_task_16
+#: model:project.task,legend_blocked:industry_fsm.planning_task_17
+#: model:project.task,legend_blocked:industry_fsm.planning_task_18
+#: model:project.task,legend_blocked:industry_fsm.planning_task_19
+#: model:project.task,legend_blocked:industry_fsm.planning_task_2
+#: model:project.task,legend_blocked:industry_fsm.planning_task_20
+#: model:project.task,legend_blocked:industry_fsm.planning_task_3
+#: model:project.task,legend_blocked:industry_fsm.planning_task_4
+#: model:project.task,legend_blocked:industry_fsm.planning_task_5
+#: model:project.task,legend_blocked:industry_fsm.planning_task_6
+#: model:project.task,legend_blocked:industry_fsm.planning_task_7
+#: model:project.task,legend_blocked:industry_fsm.planning_task_8
+#: model:project.task,legend_blocked:industry_fsm.planning_task_9
+#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_0
+#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_1
+#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_2
+#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_3
+#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_4
+msgid "Blocked"
+msgstr "Blokirano"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.project_task_menu_planning_by_project_fsm
@@ -139,15 +149,14 @@ msgid "By User"
 msgstr "Po korisniku"
 
 #. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#, python-format
-msgid "Choose Products"
-msgstr ""
+#: model:project.task.type,name:industry_fsm.planning_project_stage_4
+msgid "Cancelled"
+msgstr "Otkazano"
 
 #. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_schedule_fsm
-msgid "Click Create to start a new task"
-msgstr ""
+#: model:ir.model,name:industry_fsm.model_res_company
+msgid "Companies"
+msgstr "Tvrtke"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__company_id
@@ -166,43 +175,33 @@ msgid "Configuration"
 msgstr "Postava"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Create Invoice"
-msgstr "Kreiraj račun"
-
-#. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
-msgid "Create a new task"
-msgstr ""
-
-#. module: industry_fsm
 #. openerp-web
-#: code:addons/industry_fsm/static/src/js/tours/industry_fsm.js:0
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
-msgid "Create and plan your first Field Service Task"
+msgid ""
+"Confirm the <b>time spent</b> on your task. <i>Tip: a rounding of 15min has "
+"automatically been applied.</i>"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.actions.server,name:industry_fsm.project_task_server_action_batch_invoice_fsm
-msgid "Create invoice"
-msgstr "Kreiraj račun"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
-msgid "Create new quotations directly from tasks"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
 #: model:res.groups,name:industry_fsm.group_fsm_quotation_from_task
 msgid "Create new quotations directly from the tasks"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__currency_id
-msgid "Currency"
-msgstr "Valuta"
+#: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
+msgid "Create new quotations directly from your tasks"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__create_uid
+msgid "Created by"
+msgstr "Kreirao"
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__create_date
+msgid "Created on"
+msgstr "Kreirano"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__partner_id
@@ -210,9 +209,9 @@ msgid "Customer"
 msgstr "Kupac"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-msgid "Date"
-msgstr "Datum"
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__delay_endings_days
+msgid "Days to Deadline"
+msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_deadline
@@ -220,9 +219,29 @@ msgid "Deadline"
 msgstr "Krajnji rok"
 
 #. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_enabled_conditions_count
+msgid "Display Enabled Conditions Count"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_mark_as_done_primary
+msgid "Display Mark As Done Primary"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_mark_as_done_secondary
+msgid "Display Mark As Done Secondary"
+msgstr ""
+
+#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__display_name
 msgid "Display Name"
 msgstr "Naziv"
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_satisfied_conditions_count
+msgid "Display Satisfied Conditions Count"
+msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,help:industry_fsm.field_project_project__is_fsm
@@ -233,13 +252,13 @@ msgid ""
 msgstr ""
 
 #. module: industry_fsm
-#: model:project.task.type,name:industry_fsm.planning_project_stage_1
+#: model:project.task.type,name:industry_fsm.planning_project_stage_3
 msgid "Done"
 msgstr "Riješeno"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__hours_effective
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 msgid "Effective Hours"
 msgstr "Efektivni sati"
 
@@ -249,8 +268,6 @@ msgid "Ending Date"
 msgstr "Završni datum"
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_quotations
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__allow_quotations
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__group_industry_fsm_quotations
 msgid "Extra Quotations"
 msgstr ""
@@ -261,13 +278,24 @@ msgid "FSM Tasks Analysis"
 msgstr ""
 
 #. module: industry_fsm
+#: code:addons/industry_fsm/models/company.py:0
 #: model:ir.model.fields,field_description:industry_fsm.field_project_project__is_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__is_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_root
+#: model:project.project,name:industry_fsm.fsm_project
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
-#: model:product.product,name:industry_fsm.field_service_product
-#: model:product.template,name:industry_fsm.field_service_product_product_template
+#, python-format
 msgid "Field Service"
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_map
+msgid "Find here your itinerary for today's tasks."
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm
+msgid "Find here your tasks planned for the following days."
 msgstr ""
 
 #. module: industry_fsm
@@ -281,34 +309,62 @@ msgid "Group By"
 msgstr "Grupiraj po"
 
 #. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_task__has_complete_partner_address
+msgid "Has Complete Partner Address"
+msgstr ""
+
+#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__id
 msgid "ID"
 msgstr "ID"
 
 #. module: industry_fsm
+#: model:project.task,legend_normal:industry_fsm.planning_task_0
+#: model:project.task,legend_normal:industry_fsm.planning_task_1
+#: model:project.task,legend_normal:industry_fsm.planning_task_10
+#: model:project.task,legend_normal:industry_fsm.planning_task_11
+#: model:project.task,legend_normal:industry_fsm.planning_task_12
+#: model:project.task,legend_normal:industry_fsm.planning_task_13
+#: model:project.task,legend_normal:industry_fsm.planning_task_14
+#: model:project.task,legend_normal:industry_fsm.planning_task_15
+#: model:project.task,legend_normal:industry_fsm.planning_task_16
+#: model:project.task,legend_normal:industry_fsm.planning_task_17
+#: model:project.task,legend_normal:industry_fsm.planning_task_18
+#: model:project.task,legend_normal:industry_fsm.planning_task_19
+#: model:project.task,legend_normal:industry_fsm.planning_task_2
+#: model:project.task,legend_normal:industry_fsm.planning_task_20
+#: model:project.task,legend_normal:industry_fsm.planning_task_3
+#: model:project.task,legend_normal:industry_fsm.planning_task_4
+#: model:project.task,legend_normal:industry_fsm.planning_task_5
+#: model:project.task,legend_normal:industry_fsm.planning_task_6
+#: model:project.task,legend_normal:industry_fsm.planning_task_7
+#: model:project.task,legend_normal:industry_fsm.planning_task_8
+#: model:project.task,legend_normal:industry_fsm.planning_task_9
 #: model:project.task.type,legend_normal:industry_fsm.planning_project_stage_0
 #: model:project.task.type,legend_normal:industry_fsm.planning_project_stage_1
+#: model:project.task.type,legend_normal:industry_fsm.planning_project_stage_2
+#: model:project.task.type,legend_normal:industry_fsm.planning_project_stage_3
+#: model:project.task.type,legend_normal:industry_fsm.planning_project_stage_4
+#: model:project.task.type,name:industry_fsm.planning_project_stage_2
 msgid "In Progress"
 msgstr "U tijeku"
 
 #. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#, python-format
-msgid "Invoice"
-msgstr "Račun"
-
-#. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-#, python-format
-msgid "Invoices"
-msgstr "Računi"
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
+msgid "Initially Planned Hours"
+msgstr "Inicijalno planirani sati"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__state
 msgid "Kanban State"
 msgstr "Kanban stanje"
+
+#. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
+msgid ""
+"Keep track of the products used for your tasks, and invoice your time and "
+"material to your customers"
+msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm____last_update
@@ -321,9 +377,41 @@ msgid "Last Stage Update"
 msgstr "Posljednja faza ažuriranja"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Launch the Timer"
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__write_uid
+msgid "Last Updated by"
+msgstr "Promijenio"
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__write_date
+msgid "Last Updated on"
+msgstr "Vrijeme promjene"
+
+#. module: industry_fsm
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
+#, python-format
+msgid "Launch the timer to <b>track the time spent</b> on your task."
+msgstr ""
+
+#. module: industry_fsm
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
+#, python-format
+msgid ""
+"Let's <b>mark your task as done!</b> <i>Tip: when doing so, your stock will "
+"automatically be updated, and your task will move to the next stage.</i>"
+msgstr ""
+
+#. module: industry_fsm
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
+#, python-format
+msgid "Let's create your first <b>task</b>."
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
+msgid "Manage tasks in the Field Service module"
 msgstr ""
 
 #. module: industry_fsm
@@ -333,25 +421,9 @@ msgid "Map"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Mark as done"
 msgstr "Označi kao izvršeno"
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__material_line_product_count
-msgid "Material Line Product Count"
-msgstr ""
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__material_line_total_price
-msgid "Material Line Total Price"
-msgstr ""
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_product_product__fsm_quantity
-msgid "Material Quantity"
-msgstr ""
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm
@@ -361,40 +433,39 @@ msgid "My Tasks"
 msgstr "Moji zadaci"
 
 #. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_inherit_project_task_view_form
+#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
+msgid "Navigate To"
+msgstr ""
+
+#. module: industry_fsm
 #: model:project.task.type,name:industry_fsm.planning_project_stage_0
 msgid "New"
 msgstr "Novi"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form_fsm_quotation
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "New Quotation"
-msgstr "Nova ponuda"
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
+msgid "No data yet!"
+msgstr "Nema još podataka!"
 
 #. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_project_action_only_fsm
+msgid "No projects found. Let's create one!"
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_type_action_fsm
+msgid "No stages found. Let's create one!"
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm
-msgid "No future Tasks planned"
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_invoice_fsm
-msgid "No task to Invoice"
-msgstr ""
-
-#. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_map
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_planning_groupby_project
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_planning_groupby_user
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_schedule_fsm
-msgid "No task to schedule"
-msgstr ""
-
-#. module: industry_fsm
-#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_0
-#: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_1
-msgid "Not validated"
-msgstr "Nije potvrđeno"
-
-#. module: industry_fsm
-#: model:ir.model.fields,help:industry_fsm.field_report_project_task_user_fsm__working_days_open
-msgid "Number of Working Days to Open the task"
+msgid "No tasks found. Let's create one!"
 msgstr ""
 
 #. module: industry_fsm
@@ -403,20 +474,29 @@ msgid "Number of Working Days to close the task"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__invoice_count
-msgid "Number of invoices"
+#: model:ir.model.fields,help:industry_fsm.field_report_project_task_user_fsm__working_days_open
+msgid "Number of Working Days to open the task"
 msgstr ""
 
 #. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#, python-format
-msgid "Overlapping Tasks"
+#: model:ir.model.fields,help:industry_fsm.field_report_project_task_user_fsm__working_hours_close
+msgid "Number of Working Hours to close the task"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-msgid "Pause"
-msgstr "Pauza"
+#: model:ir.model.fields,help:industry_fsm.field_report_project_task_user_fsm__working_hours_open
+msgid "Number of Working Hours to open the task"
+msgstr ""
+
+#. module: industry_fsm
+#: model:project.task.type,name:industry_fsm.planning_project_stage_1
+msgid "Planned"
+msgstr "Planirano"
+
+#. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_inherit_project_task_view_form
+msgid "Planned Date"
+msgstr "Planiran datum"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__hours_planned
@@ -434,11 +514,6 @@ msgid "Planning"
 msgstr "Planiranje"
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__planning_overlap
-msgid "Planning Overlap"
-msgstr ""
-
-#. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm_planning_groupby_project
 msgid "Planning by Project"
 msgstr ""
@@ -449,34 +524,9 @@ msgid "Planning by User"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_product_product_kanban_material
-msgid "Price:"
-msgstr "Cijena:"
-
-#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__priority
 msgid "Priority"
 msgstr "Prioritet"
-
-#. module: industry_fsm
-#: model:ir.model,name:industry_fsm.model_product_product
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_product_product_kanban_material
-msgid "Product"
-msgstr "Proizvod"
-
-#. module: industry_fsm
-#: model:ir.actions.act_window,name:industry_fsm.product_action_fsm
-#: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_product
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Products"
-msgstr "Proizvodi"
-
-#. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_material
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__allow_material
-msgid "Products on Tasks"
-msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__progress
@@ -497,29 +547,62 @@ msgid "Projects"
 msgstr "Projekti"
 
 #. module: industry_fsm
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_project_action_only_fsm
+msgid "Projects regroup tasks on the same topic, and each has its dashboard."
+msgstr ""
+
+#. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
-msgid "Provide worksheet reports to be signed off by customers"
+msgid "Provide custom worksheet reports to be signed off by customers"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__quotation_count
-msgid "Quotation Count"
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__rating_last_value
+msgid "Rating Value (/5)"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form_fsm_quotation
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form_quotation
-msgid "Quotations"
-msgstr "Ponude"
-
-#. module: industry_fsm
+#: model:project.task,legend_done:industry_fsm.planning_task_0
+#: model:project.task,legend_done:industry_fsm.planning_task_1
+#: model:project.task,legend_done:industry_fsm.planning_task_10
+#: model:project.task,legend_done:industry_fsm.planning_task_11
+#: model:project.task,legend_done:industry_fsm.planning_task_12
+#: model:project.task,legend_done:industry_fsm.planning_task_13
+#: model:project.task,legend_done:industry_fsm.planning_task_14
+#: model:project.task,legend_done:industry_fsm.planning_task_15
+#: model:project.task,legend_done:industry_fsm.planning_task_16
+#: model:project.task,legend_done:industry_fsm.planning_task_17
+#: model:project.task,legend_done:industry_fsm.planning_task_18
+#: model:project.task,legend_done:industry_fsm.planning_task_19
+#: model:project.task,legend_done:industry_fsm.planning_task_2
+#: model:project.task,legend_done:industry_fsm.planning_task_20
+#: model:project.task,legend_done:industry_fsm.planning_task_3
+#: model:project.task,legend_done:industry_fsm.planning_task_4
+#: model:project.task,legend_done:industry_fsm.planning_task_5
+#: model:project.task,legend_done:industry_fsm.planning_task_6
+#: model:project.task,legend_done:industry_fsm.planning_task_7
+#: model:project.task,legend_done:industry_fsm.planning_task_8
+#: model:project.task,legend_done:industry_fsm.planning_task_9
 #: model:project.task.type,legend_done:industry_fsm.planning_project_stage_0
 #: model:project.task.type,legend_done:industry_fsm.planning_project_stage_1
-msgid "Ready for Next Stage"
+#: model:project.task.type,legend_done:industry_fsm.planning_project_stage_2
+#: model:project.task.type,legend_done:industry_fsm.planning_project_stage_3
+#: model:project.task.type,legend_done:industry_fsm.planning_project_stage_4
+msgid "Ready"
+msgstr "Spremno"
+
+#. module: industry_fsm
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
+#, python-format
+msgid ""
+"Ready to <b>manage your onsite interventions</b>? <i>Click Field Service to "
+"start.</i>"
 msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__remaining_hours
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 msgid "Remaining Hours"
 msgstr "Preostali sati"
 
@@ -534,14 +617,15 @@ msgid "Responsible"
 msgstr "Odgovoran"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-msgid "Resume"
-msgstr "Nastavi"
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_schedule_fsm
+msgid "Schedule tasks and assign them to your workers."
+msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model,name:industry_fsm.model_sale_order
-msgid "Sales Order"
-msgstr "Prodajni nalog"
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_planning_groupby_project
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_planning_groupby_user
+msgid "Schedule your tasks and assign them to your workers."
+msgstr ""
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -549,16 +633,10 @@ msgid "Search planning"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,help:industry_fsm.field_project_project__timesheet_product_id
-msgid ""
-"Select a Service product with which you would like to bill your time spent "
-"on tasks."
-msgstr ""
-
-#. module: industry_fsm
-#: model:product.product,name:industry_fsm.fsm_time_product
-#: model:product.template,name:industry_fsm.fsm_time_product_product_template
-msgid "Service on Timesheet"
+#. openerp-web
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
+#, python-format
+msgid "Select the <b>customer</b> of your task."
 msgstr ""
 
 #. module: industry_fsm
@@ -574,40 +652,50 @@ msgid "Stage"
 msgstr "Faza"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Start"
-msgstr "Start"
+#: model:ir.actions.act_window,name:industry_fsm.project_task_type_action_fsm
+#: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_stage
+msgid "Stages"
+msgstr "Faze"
 
 #. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_project_task_inherit_view_kanban
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_kanban
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 msgid "Start Date"
 msgstr "Početni datum"
 
 #. module: industry_fsm
 #. openerp-web
-#: code:addons/industry_fsm/static/src/js/tours/industry_fsm.js:0
+#: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
-msgid "Start to manage your Onsite Intervention with the Field Service app."
+msgid "Stop the <b>timer</b> when you are done."
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Stop"
-msgstr "Kraj"
+#: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_subtasks
+msgid "Sub-tasks"
+msgstr "Pod zadaci"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
-#: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "Stop the Timer"
+#: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_tree
+msgid "Sum of Effective Hours"
 msgstr ""
+
+#. module: industry_fsm
+#: model:ir.ui.menu,name:industry_fsm.menu_project_tags_act
+msgid "Tags"
+msgstr "Oznake"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_project_task
-#: model:ir.model.fields,field_description:industry_fsm.field_sale_order__task_id
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__name
 msgid "Task"
 msgstr "Zadatak"
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_task_dependencies
+msgid "Task Dependencies"
+msgstr ""
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__fsm_done
@@ -615,18 +703,14 @@ msgid "Task Done"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__name
-#: model_terms:ir.ui.view,arch_db:industry_fsm.quick_create_task_form_fsm
-msgid "Task Title"
-msgstr "Naslov zadatka"
-
-#. module: industry_fsm
-#: model:ir.model.fields,help:industry_fsm.field_sale_order__task_id
-msgid "Task from which quotation have been created"
+#: model:mail.template,name:industry_fsm.mail_template_data_intervention_details
+msgid "Task: Intervention Scheduled"
 msgstr ""
 
 #. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__task_id
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_tasks_kanban
+#: model:project.project,label_tasks:industry_fsm.fsm_project
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_calendar_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -638,52 +722,17 @@ msgstr "Zadaci"
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_reporting_task_analysis
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_graph
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_pivot
+#: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_tree
 msgid "Tasks Analysis"
 msgstr "Analiza zadataka"
 
 #. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#, python-format
-msgid "The FSM task must have a customer set to be sold."
-msgstr ""
-
-#. module: industry_fsm
-#: model:ir.model.constraint,message:industry_fsm.constraint_project_project_material_imply_billable
-msgid "The material can be allowed only when the task can be billed."
-msgstr ""
-
-#. module: industry_fsm
-#: model:ir.model.constraint,message:industry_fsm.constraint_project_project_timesheet_product_required_if_billable_and_timesheets
-msgid ""
-"The timesheet product is required when the task can be billed and timesheets"
-" are allowed."
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
-msgid "There are currently no tasks, click on create to create one"
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
+msgid "Tasks in Conflict"
 msgstr ""
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/models/project.py:0
-#, python-format
-msgid "This action is only allowed on FSM project."
-msgstr ""
-
-#. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
-msgid ""
-"This report allows you to analyse the performance of your projects and "
-"users. You can analyse the quantities of tasks, the hours spent compared to "
-"the planned hours, the average number of days to open or close a task, etc."
-msgstr ""
-"Ovaj izvještaj omogućuje vam analizu  učinka po projektima i korisnicima. "
-"Možete analizirati količine na zadacima, utrošene sate u odnosu na "
-"planirane, prosječan broj dana do zatvaranja zadatka isl."
-
-#. module: industry_fsm
-#: code:addons/industry_fsm/models/project.py:0
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 #, python-format
 msgid "Time"
@@ -695,7 +744,11 @@ msgid "Time Spent"
 msgstr "Utrošeno vrijeme"
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
+#: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_sale
+msgid "Time and Material"
+msgstr ""
+
+#. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Time recorded on this task"
 msgstr ""
@@ -706,49 +759,27 @@ msgid "Timesheet"
 msgstr "Evidencija rada"
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_project__timesheet_product_id
-msgid "Timesheet Product"
-msgstr ""
-
-#. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 msgid "To Do"
 msgstr "Za napraviti"
 
 #. module: industry_fsm
-#: model:ir.actions.act_window,name:industry_fsm.project_task_action_to_invoice_fsm
-#: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_invoice
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
-msgid "To Invoice"
-msgstr "Za izdavanje računa"
-
-#. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_to_schedule_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_schedule
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 msgid "To Schedule"
 msgstr ""
 
 #. module: industry_fsm
-#: model:ir.model.fields,field_description:industry_fsm.field_project_task__fsm_to_invoice
-msgid "To invoice"
-msgstr "Za fakturiranje"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
-msgid "To schedule"
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
+msgid ""
+"To get things done, use activities and status on tasks.<br>\n"
+"                Chat in real-time or by email to collaborate efficiently."
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
-msgid "Track the material used to complete tasks"
-msgstr ""
-
-#. module: industry_fsm
-#: model:product.product,uom_name:industry_fsm.field_service_product
-#: model:product.product,uom_name:industry_fsm.fsm_time_product
-#: model:product.template,uom_name:industry_fsm.field_service_product_product_template
-#: model:product.template,uom_name:industry_fsm.fsm_time_product_product_template
-msgid "Units"
+#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_type_action_fsm
+msgid "Track the progress of your tasks from their creation to their closing."
 msgstr ""
 
 #. module: industry_fsm
@@ -757,17 +788,55 @@ msgid "User"
 msgstr "Korisnik"
 
 #. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_days_open
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_graph
+msgid "Working Days to Assign"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_days_close
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_graph
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_pivot
+msgid "Working Days to Close"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_hours_open
+msgid "Working Hours to Assign"
+msgstr ""
+
+#. module: industry_fsm
+#: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__working_hours_close
+msgid "Working Hours to Close"
+msgstr ""
+
+#. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_report
-msgid "Worksheet Templates"
+msgid "Worksheets"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm
-msgid "You can create one for yourself by clicking on Create."
+#: model:mail.template,subject:industry_fsm.mail_template_data_intervention_details
+msgid ""
+"Your intervention is scheduled {{ object.planned_date_begin and "
+"object.planned_date_end and 'from the ' + "
+"format_datetime(object.planned_date_begin, tz=object.partner_id.tz, "
+"lang_code=object.partner_id.lang) + ' to the ' + "
+"format_datetime(object.planned_date_end, tz=object.partner_id.tz, "
+"lang_code=object.partner_id.lang) or '' }}"
 msgstr ""
 
 #. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_form
+#: model_terms:ir.ui.view,arch_db:industry_fsm.quick_create_task_form_fsm
+msgid "e.g. Boiler replacement"
+msgstr ""
+
+#. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
-msgid "other tasks"
+msgid "is FSM ?"
+msgstr ""
+
+#. module: industry_fsm
+#: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_pivot
+msgid "working days to assign"
 msgstr ""

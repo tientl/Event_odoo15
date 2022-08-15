@@ -7,6 +7,7 @@ from unittest.mock import patch
 from odoo.addons.social.tests.common import SocialCase
 from odoo.addons.social_linkedin.models.social_live_post import SocialLivePostLinkedin
 from odoo.addons.social_linkedin.models.social_account import SocialAccountLinkedin
+from odoo.tools.misc import mute_logger
 
 
 class SocialLinkedinCase(SocialCase):
@@ -22,6 +23,7 @@ class SocialLinkedinCase(SocialCase):
     def test_post_failure(self):
         self._test_post(False)
 
+    @mute_logger("odoo.addons.social.models.social_account")
     def _test_post(self, success=True):
         self.assertEqual(self.social_post.state, 'draft')
 

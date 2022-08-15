@@ -7,6 +7,8 @@ from odoo.exceptions import UserError
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
+    _start_name = "date_planned_start"
+    _stop_name = "date_planned_finished"
 
     check_ids = fields.One2many('quality.check', 'production_id', string="Checks")
 

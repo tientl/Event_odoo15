@@ -1,20 +1,20 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * quality
+# 	* quality
 # 
 # Translators:
-# Kostas Goutoudis <goutoudis@gmail.com>, 2019
-# Stefanos Nikou <stefanos.nikou@gmail.com>, 2019
-# George Tarasidis <george_tarasidis@yahoo.com>, 2019
-# Martin Trigaux, 2019
+# Stefanos Nikou <stefanos.nikou@gmail.com>, 2022
+# George Tarasidis <george_tarasidis@yahoo.com>, 2022
+# Kostas Goutoudis <goutoudis@gmail.com>, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.2+e\n"
+"Project-Id-Version: Odoo Server saas~14.5+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-20 14:07+0000\n"
-"PO-Revision-Date: 2016-08-05 13:31+0000\n"
-"Last-Translator: Martin Trigaux, 2019\n"
+"POT-Creation-Date: 2021-09-14 10:59+0000\n"
+"PO-Revision-Date: 2021-09-14 12:42+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Greek (https://www.transifex.com/odoo/teams/41243/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,13 +62,42 @@ msgstr "Σε Ισχύ"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_ids
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_ids
 msgid "Activities"
 msgstr "Δραστηριότητες"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__activity_exception_decoration
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_state
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_state
 msgid "Activity State"
 msgstr "Κατάσταση Δραστηριότητας"
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__activity_type_icon
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_check__additional_note
+msgid "Additional Note"
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_check__additional_note
+msgid "Additional remarks concerning this check."
+msgstr ""
+
+#. module: quality
+#: model:res.groups,name:quality.group_quality_manager
+msgid "Administrator"
+msgstr ""
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__done
@@ -106,6 +135,11 @@ msgid "Aliased Model"
 msgstr "Μοντέλο Ψευδωνύμου"
 
 #. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
+msgid "Archived"
+msgstr "Αρχειοθετημένα"
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_attachment_count
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__message_attachment_count
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_attachment_count
@@ -131,14 +165,16 @@ msgstr ""
 
 #. module: quality
 #. openerp-web
-#: code:addons/quality/static/src/xml/widget_template.xml:8
+#: code:addons/quality/static/src/xml/widget_template.xml:0
+#: code:addons/quality/static/src/xml/widget_template.xml:0
 #, python-format
 msgid "Clear"
 msgstr "Καθαρισμός"
 
 #. module: quality
 #. openerp-web
-#: code:addons/quality/static/src/xml/widget_template.xml:28
+#: code:addons/quality/static/src/xml/widget_template.xml:0
+#: code:addons/quality/static/src/xml/widget_template.xml:0
 #, python-format
 msgid "Close"
 msgstr "Κλείσιμο"
@@ -206,6 +242,16 @@ msgid "Created on"
 msgstr "Δημιουργήθηκε στις"
 
 #. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Creation Date"
+msgstr "Ημερομηνία Δημιουργίας"
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_bounced_content
+msgid "Custom Bounced Message"
+msgstr ""
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__date_assign
 msgid "Date Assigned"
 msgstr ""
@@ -253,7 +299,17 @@ msgid "Display Name"
 msgstr "Εμφάνιση Ονόματος"
 
 #. module: quality
-#: selection:quality.check,quality_state:0
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Done"
+msgstr "Ολοκληρωμένη"
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__email_cc
+msgid "Email cc"
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__fail
 msgid "Failed"
 msgstr "Αποτυχία"
 
@@ -271,14 +327,6 @@ msgid "Followers"
 msgstr "Ακόλουθοι"
 
 #. module: quality
-#: model:ir.model.fields,field_description:quality.field_quality_alert__message_channel_ids
-#: model:ir.model.fields,field_description:quality.field_quality_alert_team__message_channel_ids
-#: model:ir.model.fields,field_description:quality.field_quality_check__message_channel_ids
-#: model:ir.model.fields,field_description:quality.field_quality_point__message_channel_ids
-msgid "Followers (Channels)"
-msgstr "Ακόλουθοι (Κανάλια)"
-
-#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_partner_ids
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__message_partner_ids
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_partner_ids
@@ -287,12 +335,31 @@ msgid "Followers (Partners)"
 msgstr "Ακόλουθοι (Συνεργάτες)"
 
 #. module: quality
-#: model:ir.module.category,description:quality.module_category_quality
-msgid "Helps you manage your quality alerts and quality checks."
+#: model:ir.model.fields,help:quality.field_quality_alert__activity_type_icon
+#: model:ir.model.fields,help:quality.field_quality_check__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Γραμματοσειρά awesome  π.χ. fa-tasks"
+
+#. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Future Activities"
+msgstr "Μελλοντικές Δραστηριότητες"
+
+#. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Group By"
+msgstr "Ομαδοποίηση κατά"
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__has_message
+#: model:ir.model.fields,field_description:quality.field_quality_alert_team__has_message
+#: model:ir.model.fields,field_description:quality.field_quality_check__has_message
+#: model:ir.model.fields,field_description:quality.field_quality_point__has_message
+msgid "Has Message"
 msgstr ""
 
 #. module: quality
-#: selection:quality.alert,priority:0
+#: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__2
 msgid "High"
 msgstr "Υψηλή"
 
@@ -318,28 +385,52 @@ msgstr ""
 " που κατέχει το ψευδώνυμο της δημιουργίας εργασίας)"
 
 #. module: quality
-#: model:ir.model.fields,help:quality.field_quality_alert__message_unread
-#: model:ir.model.fields,help:quality.field_quality_alert_team__message_unread
-#: model:ir.model.fields,help:quality.field_quality_check__message_unread
-#: model:ir.model.fields,help:quality.field_quality_point__message_unread
-msgid "If checked new messages require your attention."
-msgstr "Εάν επιλεγεί τα νέα μηνύματα χρειάζονται την προσοχή σας"
+#: model:ir.model.fields,field_description:quality.field_quality_alert__activity_exception_icon
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_exception_icon
+msgid "Icon"
+msgstr "Εικονίδιο"
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_alert__activity_exception_icon
+#: model:ir.model.fields,help:quality.field_quality_check__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__message_needaction
+#: model:ir.model.fields,help:quality.field_quality_alert__message_unread
 #: model:ir.model.fields,help:quality.field_quality_alert_team__message_needaction
+#: model:ir.model.fields,help:quality.field_quality_alert_team__message_unread
 #: model:ir.model.fields,help:quality.field_quality_check__message_needaction
+#: model:ir.model.fields,help:quality.field_quality_check__message_unread
 #: model:ir.model.fields,help:quality.field_quality_point__message_needaction
+#: model:ir.model.fields,help:quality.field_quality_point__message_unread
 msgid "If checked, new messages require your attention."
 msgstr "Εάν επιλεγεί τα νέα μηνύματα χρειάζονται την προσοχή σας."
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__message_has_error
+#: model:ir.model.fields,help:quality.field_quality_alert__message_has_sms_error
 #: model:ir.model.fields,help:quality.field_quality_alert_team__message_has_error
+#: model:ir.model.fields,help:quality.field_quality_alert_team__message_has_sms_error
 #: model:ir.model.fields,help:quality.field_quality_check__message_has_error
+#: model:ir.model.fields,help:quality.field_quality_check__message_has_sms_error
 #: model:ir.model.fields,help:quality.field_quality_point__message_has_error
+#: model:ir.model.fields,help:quality.field_quality_point__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_alert_team__alias_bounced_content
+msgid ""
+"If set, this content will automatically be sent out to unauthorized users "
+"instead of the default message."
+msgstr ""
+
+#. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "In Progress"
+msgstr "Σε εξέλιξη"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
@@ -391,13 +482,27 @@ msgid "Last Updated on"
 msgstr "Τελευταία Ενημέρωση στις"
 
 #. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Late Activities"
+msgstr "Καθυστερημένες Δραστηριότητες"
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_alert__email_cc
+msgid "List of cc from incoming emails."
+msgstr ""
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__lot_id
-#: model:ir.model.fields,field_description:quality.field_quality_check__lot_id
 msgid "Lot"
 msgstr "Παρτίδα"
 
 #. module: quality
-#: selection:quality.alert,priority:0
+#: model:ir.model.fields,field_description:quality.field_quality_check__lot_id
+msgid "Lot/Serial"
+msgstr "Παρτίδα/Σειριακός"
+
+#. module: quality
+#: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__1
 msgid "Low"
 msgstr "Χαμηλή"
 
@@ -408,11 +513,6 @@ msgstr "Χαμηλή"
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
-
-#. module: quality
-#: model:res.groups,name:quality.group_quality_manager
-msgid "Manager"
-msgstr "Διευθυντής"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_has_error
@@ -431,48 +531,74 @@ msgid "Messages"
 msgstr "Μηνύματα"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__my_activity_date_deadline
+#: model:ir.model.fields,field_description:quality.field_quality_check__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "My Alerts"
+msgstr ""
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__name
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__name
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__name
-#: model:ir.model.fields,field_description:quality.field_quality_check__name
 #: model:ir.model.fields,field_description:quality.field_quality_point_test_type__name
 #: model:ir.model.fields,field_description:quality.field_quality_reason__name
-#: model:ir.model.fields,field_description:quality.field_quality_tag__name
 msgid "Name"
 msgstr "Περιγραφή"
 
 #. module: quality
-#: code:addons/quality/models/quality.py:32
-#: code:addons/quality/models/quality.py:69
-#: code:addons/quality/models/quality.py:70
-#: code:addons/quality/models/quality.py:144
-#: code:addons/quality/models/quality.py:181
-#: code:addons/quality/models/quality.py:182
-#: code:addons/quality/models/quality.py:209
-#: code:addons/quality/models/quality.py:244
-#: code:addons/quality/models/quality.py:245
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
+#: code:addons/quality/models/quality.py:0
 #: model:quality.alert.stage,name:quality.quality_alert_stage_0
 #, python-format
 msgid "New"
 msgstr "Νέα"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__activity_calendar_event_id
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_date_deadline
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Επόμενη Προθεσμία Δραστηριότητας"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_summary
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_summary
 msgid "Next Activity Summary"
 msgstr "Σύνοψη Επόμενης Δραστηριότητας"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_type_id
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_type_id
 msgid "Next Activity Type"
 msgstr "Επόμενος Τύπος Δραστηριότητας"
 
 #. module: quality
-#: selection:quality.alert,priority:0
+#: code:addons/quality/models/quality.py:0
+#, python-format
+msgid ""
+"No quality team found for this company.\n"
+"Please go to configuration and create one first."
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__0
 msgid "Normal"
 msgstr "Κανονική"
 
@@ -501,7 +627,7 @@ msgstr "Πλήθος ενεργειών"
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__message_has_error_counter
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_has_error_counter
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_has_error_counter
-msgid "Number of error"
+msgid "Number of errors"
 msgstr ""
 
 #. module: quality
@@ -529,14 +655,15 @@ msgid "Number of unread messages"
 msgstr "Πλήθος μη αναγνωσμένων μηνυμάτων"
 
 #. module: quality
-#: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
-msgid "Operation"
-msgstr "Λειτουργία"
+#: model:ir.model.fields,field_description:quality.field_quality_point__picking_type_ids
+msgid "Operation Types"
+msgstr "Τύποι Λειτουργίας"
 
 #. module: quality
-#: model:ir.model.fields,field_description:quality.field_quality_point__picking_type_id
-msgid "Operation Type"
-msgstr "Τύπος Λειτουργίας"
+#: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
+#: model_terms:ir.ui.view,arch_db:quality.quality_point_view_tree
+msgid "Operations"
+msgstr "Λειτουργίες"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert_team__alias_force_thread_id
@@ -553,11 +680,6 @@ msgstr ""
 #: model:quality.reason,name:quality.reason_other
 msgid "Others"
 msgstr ""
-
-#. module: quality
-#: selection:quality.alert,activity_state:0
-msgid "Overdue"
-msgstr "Εκπρόθεσμο"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_user_id
@@ -586,12 +708,17 @@ msgstr ""
 "(παράδειγμα: Έργο (parent_model) και Εργασία (μοντέλο))"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_check__partner_id
+msgid "Partner"
+msgstr "Συναλλασόμενος"
+
+#. module: quality
 #: model:quality.reason,name:quality.reason_parts
 msgid "Parts Quality"
 msgstr ""
 
 #. module: quality
-#: selection:quality.check,quality_state:0
+#: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__pass
 msgid "Passed"
 msgstr ""
 
@@ -605,11 +732,6 @@ msgstr "Συλλογή"
 #: model:ir.model.fields,field_description:quality.field_quality_check__picture
 msgid "Picture"
 msgstr "Εικόνα"
-
-#. module: quality
-#: selection:quality.alert,activity_state:0
-msgid "Planned"
-msgstr "Προγραμματισμένη"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert_team__alias_contact
@@ -637,23 +759,28 @@ msgstr "Προτεραιότητα"
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__product_tmpl_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__product_id
-#: model:ir.model.fields,field_description:quality.field_quality_point__product_tmpl_id
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Product"
 msgstr "Είδος"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_point__product_category_ids
+msgid "Product Categories"
+msgstr "Κατηγορίες Είδους"
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__product_id
-#: model:ir.model.fields,field_description:quality.field_quality_point__product_id
 msgid "Product Variant"
 msgstr "Μεταβλητή Είδους"
 
 #. module: quality
-#: model:ir.module.category,name:quality.module_category_quality
-msgid "Quality"
-msgstr "Ποιότητα"
+#: model:ir.model.fields,field_description:quality.field_quality_point__product_ids
+msgid "Products"
+msgstr "Είδη"
 
 #. module: quality
 #: model:ir.model,name:quality.model_quality_alert
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Quality Alert"
 msgstr ""
 
@@ -683,8 +810,25 @@ msgid "Quality Control Test Type"
 msgstr ""
 
 #. module: quality
+#: model:ir.model.fields,help:quality.field_quality_point__product_category_ids
+msgid ""
+"Quality Point will apply to every Products in the selected Product "
+"Categories."
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_point__product_ids
+msgid "Quality Point will apply to every selected Products."
+msgstr ""
+
+#. module: quality
 #: model:ir.model,name:quality.model_quality_tag
 msgid "Quality Tag"
+msgstr ""
+
+#. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Quality Team"
 msgstr ""
 
 #. module: quality
@@ -693,6 +837,7 @@ msgid "Record Thread ID"
 msgstr "Ταυτότητα εγγραφής νήματος"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_check__name
 #: model:ir.model.fields,field_description:quality.field_quality_point__name
 msgid "Reference"
 msgstr "Σχετικό"
@@ -701,22 +846,33 @@ msgstr "Σχετικό"
 #: model:ir.model.fields,field_description:quality.field_quality_alert__user_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__user_id
 #: model:ir.model.fields,field_description:quality.field_quality_point__user_id
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Responsible"
 msgstr "Υπεύθυνοι"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_user_id
+#: model:ir.model.fields,field_description:quality.field_quality_check__activity_user_id
 msgid "Responsible User"
 msgstr "Υπεύθυνος Χρήστης"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__reason_id
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Root Cause"
 msgstr "Βασική Αιτία"
 
 #. module: quality
 #: model:ir.model,name:quality.model_quality_reason
 msgid "Root Cause for Quality Failure"
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert__message_has_sms_error
+#: model:ir.model.fields,field_description:quality.field_quality_alert_team__message_has_sms_error
+#: model:ir.model.fields,field_description:quality.field_quality_check__message_has_sms_error
+#: model:ir.model.fields,field_description:quality.field_quality_point__message_has_sms_error
+msgid "SMS Delivery error"
 msgstr ""
 
 #. module: quality
@@ -727,12 +883,20 @@ msgid "Sequence"
 msgstr "Ακολουθία"
 
 #. module: quality
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Show all records which has next action date is before today"
+msgstr ""
+"Εμφάνιση όλων των εγγραφών όπου η ημερομηνία επόμενης δράσης είναι πριν από "
+"σήμερα"
+
+#. module: quality
 #: model:quality.alert.stage,name:quality.quality_alert_stage_3
 msgid "Solved"
 msgstr ""
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__stage_id
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Stage"
 msgstr "Στάδιο"
 
@@ -743,6 +907,7 @@ msgstr "Κατάσταση"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_state
+#: model:ir.model.fields,help:quality.field_quality_check__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -755,13 +920,18 @@ msgstr ""
 "Προγραμματισμένες: Μελλοντικές δραστηριότητες."
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_tag__name
+msgid "Tag Name"
+msgstr "Όνομα Ετικέτας"
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__tag_ids
 msgid "Tags"
 msgstr "Ετικέτες"
 
 #. module: quality
 #. openerp-web
-#: code:addons/quality/static/src/xml/widget_template.xml:17
+#: code:addons/quality/static/src/xml/widget_template.xml:0
 #, python-format
 msgid "Take a Picture"
 msgstr ""
@@ -774,6 +944,11 @@ msgid "Team"
 msgstr "Ομάδα"
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_alert_stage__team_ids
+msgid "Teams"
+msgstr "Ομάδες"
+
+#. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__test_type
 #: model:ir.model.fields,field_description:quality.field_quality_point__test_type
 #: model:ir.model.fields,field_description:quality.field_quality_point_test_type__technical_name
@@ -781,6 +956,7 @@ msgid "Technical name"
 msgstr ""
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_check__test_type_id
 #: model:ir.model.fields,field_description:quality.field_quality_point__test_type_id
 msgid "Test Type"
 msgstr ""
@@ -828,24 +1004,32 @@ msgid "The quality user uses the quality process"
 msgstr ""
 
 #. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_check__title
 #: model:ir.model.fields,field_description:quality.field_quality_point__title
 msgid "Title"
 msgstr "Τίτλος"
 
 #. module: quality
-#: selection:quality.check,quality_state:0
+#: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__none
 msgid "To do"
 msgstr "Να κάνω"
 
 #. module: quality
-#: selection:quality.alert,activity_state:0
-msgid "Today"
-msgstr "Σήμερα"
+#: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
+msgid "Today Activities"
+msgstr "Σημερινές Δραστηριότητες"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
+#: model_terms:ir.ui.view,arch_db:quality.quality_point_view_tree
 msgid "Type"
 msgstr "Τύπος"
+
+#. module: quality
+#: model:ir.model.fields,help:quality.field_quality_alert__activity_exception_decoration
+#: model:ir.model.fields,help:quality.field_quality_check__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_unread
@@ -865,7 +1049,7 @@ msgstr "Μετρητής μη αναγνωσμένων μηνυμάτων"
 
 #. module: quality
 #. openerp-web
-#: code:addons/quality/static/src/xml/widget_template.xml:10
+#: code:addons/quality/static/src/xml/widget_template.xml:0
 #, python-format
 msgid "Uploading..."
 msgstr "Αποστολή..."
@@ -886,13 +1070,13 @@ msgid "Vendor"
 msgstr "Προμηθευτής"
 
 #. module: quality
-#: selection:quality.alert,priority:0
+#: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__3
 msgid "Very High"
 msgstr "Πολύ υψηλή"
 
 #. module: quality
 #. openerp-web
-#: code:addons/quality/static/src/xml/widget_template.xml:32
+#: code:addons/quality/static/src/xml/widget_template.xml:0
 #, python-format
 msgid "Viewer"
 msgstr ""
@@ -921,4 +1105,9 @@ msgstr ""
 #. module: quality
 #: model:quality.reason,name:quality.reason_workcenter
 msgid "Workcenter Failure"
+msgstr ""
+
+#. module: quality
+#: model:ir.model.fields,field_description:quality.field_quality_point_test_type__active
+msgid "active"
 msgstr ""

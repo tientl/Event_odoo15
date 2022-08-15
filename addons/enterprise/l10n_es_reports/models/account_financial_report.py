@@ -79,11 +79,11 @@ This feature is only supported/useful in spanish MOD347 report.""")
                 new_options_list.append(options)
         return new_options_list
 
-    def _compute_amls_results(self, options_list, calling_financial_report, sign=1):
+    def _compute_amls_results(self, options_list, calling_financial_report, sign=1, operator=None):
         # OVERRIDE to filter out lines that are under the threshold given by the 'l10n_es_mod347_threshold' field.
         if self.l10n_es_mod347_threshold:
             options_list = self._get_options_with_threshold(options_list)
-        return super()._compute_amls_results(options_list, calling_financial_report, sign=sign)
+        return super()._compute_amls_results(options_list, calling_financial_report, sign=sign, operator=operator)
 
     def _compute_sum(self, options_list, calling_financial_report):
         # OVERRIDE to filter out lines that are under the threshold given by the 'l10n_es_mod347_threshold' field.

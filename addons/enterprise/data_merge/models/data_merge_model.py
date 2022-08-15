@@ -308,6 +308,9 @@ class DataMergeModel(models.Model):
         if 'active' in vals and not vals['active']:
             self.env['data_merge.group'].search([('model_id', 'in', self.ids)]).unlink()
 
+        if 'create_threshold' in vals and vals['create_threshold']:
+            self.env['data_merge.group'].search([('model_id', 'in', self.ids), ('similarity', '<=', vals['create_threshold'] / 100)]).unlink()
+
         return super(DataMergeModel, self).write(vals)
 
     #############

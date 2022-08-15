@@ -129,7 +129,7 @@ var ReportEditor = Widget.extend(EditorMixin, {
             });
 
             var $page = this.$content.find('.page');
-            var $children = $page.children().not('.o_web_studio_hook');
+            var $children = $page.children().not('.o_web_studio_hook,p:not([data-oe-id])');
 
             if ($children.length) {
                 $gridHooks.find('.o_web_studio_hook').data('oe-node', $children.first()).data('oe-position', 'before');
@@ -459,7 +459,7 @@ var ReportEditor = Widget.extend(EditorMixin, {
         var $hook = this._createHook($node, component);
         var $newHook = $hook.clone();
         var $children = $node.children()
-            .not('.o_web_studio_hook')
+            .not('.o_web_studio_hook,p:not([data-oe-id])')
 
         // display the hook with max height of this sibling
         if ($children.length === 1 && $children.is('td[colspan="99"]')) {
@@ -729,7 +729,11 @@ var ReportEditor = Widget.extend(EditorMixin, {
                 resolve();
             };
             if (reportHTML.error) {
-                throw new Error(reportHTML.message || reportHTML.error);
+                self.displayNotification({
+                    message: _.str.sprintf(
+                        _t('This report could not be previewed or edited because it could not be rendered with this message: %s. This could be happening because this is a custom report type that needs custom data to be rendered and so is not editable by studio.'),
+                        reportHTML.message
+                    ), type: 'danger' });
             } else {
                 // determine when the body has been inserted
                 reportHTML = reportHTML.replace(

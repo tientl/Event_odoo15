@@ -258,7 +258,7 @@ publicWidget.registry.SalaryPackageWidget = publicWidget.Widget.extend({
         }
         if (event.target.type !== 'file') {
             const result = await this._rpc({
-                route: '/salary_package/onchange_advantage/',
+                route: '/salary_package/onchange_advantage',
                 params: {
                     'advantage_field': advantageField,
                     'new_value': newValue,
@@ -306,7 +306,7 @@ publicWidget.registry.SalaryPackageWidget = publicWidget.Widget.extend({
 
         return this.dp.add(
             self._rpc({
-                route: '/salary_package/update_salary/',
+                route: '/salary_package/update_salary',
                 params: {
                     'contract_id': parseInt($("input[name='contract']").val()),
                     'advantages': self.getAdvantages({includeFiles: false}),
@@ -436,7 +436,7 @@ publicWidget.registry.SalaryPackageWidget = publicWidget.Widget.extend({
         if (this.checkFormValidity()) {
             const formInfo = await this.getFormInfo();
             const data = await this._rpc({
-                    route: '/salary_package/submit/',
+                    route: '/salary_package/submit',
                     params: formInfo,
                 });
             if (data['error']) {

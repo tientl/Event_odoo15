@@ -8,10 +8,14 @@
             <field name="arch" type="xml">
                 <field name="state" position="before">
                     <field name="l10n_mx_closing_move" invisible="1"/>
-                    <button string="Mark as closing entry for the fiscal year"
+                    <field name="country_code" invisible="1"/>
+                    <button string="Mark As Closing Entry"
                             name="action_mark_as_closing_move"
+                            help="Mark the current entry as the closing entry for the Mexican fiscal year.
+                                 It will remove any previous mark from another entry for the same fiscal year."
                             type="object"
-                            attrs="{'invisible':['|','|', ('state','!=','posted'), ('l10n_mx_closing_move','=',True), ('move_type', '!=', 'entry')]}"/>
+                            attrs="{'invisible':['|','|', '|', ('state','!=','posted'), ('l10n_mx_closing_move','=',True),
+                                                 ('move_type', '!=', 'entry'), ('country_code', '!=', 'MX')]}"/>
                 </field>
             </field>
         </record>

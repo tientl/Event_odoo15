@@ -29,7 +29,7 @@ class SocialLivePostPushNotifications(models.Model):
             post = live_post.post_id
             account = live_post.account_id
             title = post.push_notification_title or _('New Message')
-            icon_url = '/web/image/social.post/%s/push_notification_image/64x64' % post.id if post.push_notification_image else '/mail/static/src/img/odoobot_transparent.png'
+            icon_url = '/social_push_notifications/social_post/%s/push_notification_image' % post.id if post.push_notification_image else '/mail/static/src/img/odoobot_transparent.png'
 
             # TODO awa: force push_token domain here in case user manually removed it in form view?
             visitor_domain = ast.literal_eval(live_post.post_id.visitor_domain)

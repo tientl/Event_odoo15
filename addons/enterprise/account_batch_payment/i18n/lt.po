@@ -3,21 +3,22 @@
 # 	* account_batch_payment
 # 
 # Translators:
-# Martin Trigaux, 2019
-# Arminas Grigonis <arminas@versada.lt>, 2019
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2019
-# Audrius Palenskis <audrius.palenskis@gmail.com>, 2019
-# digitouch UAB <digitouchagencyeur@gmail.com>, 2019
-# Linas Versada <linaskrisiukenas@gmail.com>, 2019
-# Rolandas <info@paninfo.lt>, 2019
+# Arminas Grigonis <arminas@versada.lt>, 2022
+# Arunas V. <arunas@devoro.com>, 2022
+# digitouch UAB <digitouchagencyeur@gmail.com>, 2022
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2022
+# Audrius Palenskis <audrius.palenskis@gmail.com>, 2022
+# Linas Versada <linaskrisiukenas@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~12.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-23 11:38+0000\n"
-"PO-Revision-Date: 2019-08-26 09:34+0000\n"
-"Last-Translator: Rolandas <info@paninfo.lt>, 2019\n"
+"POT-Creation-Date: 2021-11-16 13:43+0000\n"
+"PO-Revision-Date: 2021-09-14 12:37+0000\n"
+"Last-Translator: Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2022\n"
 "Language-Team: Lithuanian (https://www.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,14 +27,36 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_account_payment_form_inherit_account_batch_payment
+msgid "<span>Batch Payment</span>"
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid ""
+"<strong attrs=\"{'invisible': [('warning_line_ids', '=', [])]}\">The "
+"following warnings were also raised; they do not impeach validation</strong>"
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid "<strong>Please first consider the following warnings</strong>"
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid "<strong>The following errors occurred</strong>"
+msgstr ""
+
+#. module: account_batch_payment
 #: model:ir.model,name:account_batch_payment.model_account_batch_download_wizard
 msgid "Account Batch download wizard"
 msgstr "Sąskaitos grupinio atsisiuntimo vedlys"
 
 #. module: account_batch_payment
-#: model:ir.model,name:account_batch_payment.model_account_reconciliation_widget
-msgid "Account Reconciliation widget"
-msgstr "Sąskaitos sudengimo valdiklis"
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard_line__help_message
+msgid "Additional help message about the error"
+msgstr ""
 
 #. module: account_batch_payment
 #: code:addons/account_batch_payment/models/account_batch_payment.py:0
@@ -50,8 +73,14 @@ msgstr "Visi grupės mokėjimai turi turėti tą patį mokėjimo būdą."
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__amount
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.print_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
 msgid "Amount"
 msgstr "Suma"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_payment__amount_signed
+msgid "Amount Signed"
+msgstr ""
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__available_payment_method_ids
@@ -85,22 +114,23 @@ msgid "Batch Deposit Report"
 msgstr "Grupinio depozito ataskaita"
 
 #. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_payment.py:0
 #: model:ir.model,name:account_batch_payment.model_account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__batch_payment_id
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__batch_payment_id
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_payment__batch_payment_id
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_search
+#, python-format
 msgid "Batch Payment"
 msgstr "Grupinis mokėjimas"
 
 #. module: account_batch_payment
-#. openerp-web
-#: code:addons/account_batch_payment/static/src/xml/account_reconciliation.xml:0
 #: model:ir.actions.act_window,name:account_batch_payment.action_batch_payment_in
 #: model:ir.actions.act_window,name:account_batch_payment.action_batch_payment_out
 #: model:ir.ui.menu,name:account_batch_payment.menu_batch_payment_purchases
 #: model:ir.ui.menu,name:account_batch_payment.menu_batch_payment_sales
-#, python-format
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_account_payment_search_inherit_account_batch_payment
 msgid "Batch Payments"
 msgstr "Grupiniai mokėjimai"
 
@@ -127,11 +157,28 @@ msgstr ""
 "čekius bankui."
 
 #. module: account_batch_payment
+#: model:ir.model,name:account_batch_payment.model_account_batch_error_wizard
+msgid "Batch payments error reporting wizard"
+msgstr ""
+
+#. module: account_batch_payment
+#: model:ir.model,name:account_batch_payment.model_account_batch_error_wizard_line
+msgid "Batch payments error reporting wizard line"
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
+#, python-format
+msgid "Cannot validate an empty batch. Please add some payments to it first."
+msgstr ""
+
+#. module: account_batch_payment
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.download_xml_form
 msgid "Click here to download the generated file:"
 msgstr "Norėdami atsisiųsti sugeneruotą failą, paspauskite čia:"
 
 #. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.download_xml_form
 msgid "Close"
 msgstr "Uždaryti"
@@ -160,16 +207,20 @@ msgstr "Sukurkite naują grupinį tiekėjo mokėjimą"
 #. module: account_batch_payment
 #: model:ir.actions.server,name:account_batch_payment.action_account_create_batch_payment
 msgid "Create batch payment"
-msgstr ""
+msgstr "Sukurti grupinį mokėjimą"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__create_uid
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__create_uid
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__create_uid
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__create_uid
 msgid "Created by"
 msgstr "Sukūrė"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__create_date
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__create_date
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__create_date
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__create_date
 msgid "Created on"
 msgstr "Sukurta"
@@ -196,9 +247,20 @@ msgid "Date"
 msgstr "Data"
 
 #. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__description
+msgid "Description"
+msgstr "Aprašymas"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard_line__description
+msgid "Description of the error"
+msgstr "Klaidos aprašymas"
+
+#. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__display_name
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__display_name
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__display_name
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__display_name
-#: model:ir.model.fields,field_description:account_batch_payment.field_report_account_batch_payment_print_batch_payment__display_name
 msgid "Display Name"
 msgstr "Rodomas pavadinimas"
 
@@ -206,6 +268,21 @@ msgstr "Rodomas pavadinimas"
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.download_xml_form
 msgid "Download export file"
 msgstr "Atsisiųsti eksporto failą"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__error_line_ids
+msgid "Error Line"
+msgstr ""
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__error_wizard_id
+msgid "Error Wizard"
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_line_tree
+msgid "Exclude Payments"
+msgstr ""
 
 #. module: account_batch_payment
 #: model:ir.model.fields,help:account_batch_payment.field_account_batch_payment__export_file
@@ -239,13 +316,6 @@ msgid "File name"
 msgstr "Failo pavadinimas"
 
 #. module: account_batch_payment
-#. openerp-web
-#: code:addons/account_batch_payment/static/src/xml/account_reconciliation.xml:0
-#, python-format
-msgid "Filter..."
-msgstr "Filtruoti..."
-
-#. module: account_batch_payment
 #: model:ir.model.fields,help:account_batch_payment.field_account_batch_download_wizard__export_file
 msgid "Generated XML file"
 msgstr "Sugeneruotas XML failas"
@@ -261,13 +331,20 @@ msgid "Group By"
 msgstr "Grupuoti pagal"
 
 #. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__help_message
+msgid "Help"
+msgstr "Pagalba"
+
+#. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__id
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__id
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__id
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__id
-#: model:ir.model.fields,field_description:account_batch_payment.field_report_account_batch_payment_print_batch_payment__id
 msgid "ID"
 msgstr "ID"
 
 #. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
 #: code:addons/account_batch_payment/models/account_batch_payment.py:0
 #, python-format
 msgid "Id: %s"
@@ -285,32 +362,30 @@ msgid "Inbound Batch Payments Sequence"
 msgstr "Įeinančių grupinių mokėjimų seka"
 
 #. module: account_batch_payment
-#. openerp-web
-#: code:addons/account_batch_payment/static/src/js/account_batch_payment_reconciliation.js:0
-#, python-format
-msgid "Incorrect Operation"
-msgstr "Neteisinga operacija"
-
-#. module: account_batch_payment
 #: model:ir.model,name:account_batch_payment.model_account_journal
 msgid "Journal"
 msgstr "Žurnalas"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard____last_update
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard____last_update
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line____last_update
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment____last_update
-#: model:ir.model.fields,field_description:account_batch_payment.field_report_account_batch_payment_print_batch_payment____last_update
 msgid "Last Modified on"
 msgstr "Paskutinį kartą keista"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__write_uid
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__write_uid
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__write_uid
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__write_uid
 msgid "Last Updated by"
 msgstr "Paskutinį kartą atnaujino"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__write_date
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__write_date
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__write_date
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__write_date
 msgid "Last Updated on"
 msgstr "Paskutinį kartą atnaujinta"
@@ -319,6 +394,11 @@ msgstr "Paskutinį kartą atnaujinta"
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.print_batch_payment
 msgid "Memo"
 msgstr "Priminimas"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_payment__payment_method_name
+msgid "Name"
+msgstr "Pavadinimas"
 
 #. module: account_batch_payment
 #: model:ir.model.fields,help:account_batch_payment.field_account_batch_payment__export_filename
@@ -331,9 +411,19 @@ msgid "Name of the generated XML file"
 msgstr "Sugeneruoto XML failo pavadinimas"
 
 #. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_payment__amount_signed
+msgid "Negative value of amount field if payment_type is outbound"
+msgstr ""
+
+#. module: account_batch_payment
 #: model:ir.model.fields.selection,name:account_batch_payment.selection__account_batch_payment__state__draft
 msgid "New"
 msgstr "Naujas"
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_account_payment_search_inherit_account_batch_payment
+msgid "Not reconciled"
+msgstr ""
 
 #. module: account_batch_payment
 #: model:ir.model.fields.selection,name:account_batch_payment.selection__account_batch_payment__batch_type__outbound
@@ -352,11 +442,39 @@ msgid "Payment Method"
 msgstr "Mokėjimo būdas"
 
 #. module: account_batch_payment
+#: model:ir.model,name:account_batch_payment.model_account_payment_method
+msgid "Payment Methods"
+msgstr "Mokėjimo būdai"
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
+msgid "Payment method"
+msgstr ""
+
+#. module: account_batch_payment
 #: model:ir.model,name:account_batch_payment.model_account_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__payment_ids
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__payment_ids
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
 msgid "Payments"
 msgstr "Mokėjimai"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard_line__payment_ids
+msgid "Payments causing this error"
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/wizard/batch_error.py:0
+#, python-format
+msgid "Payments in Error"
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
+#, python-format
+msgid "Payments must be posted to be added to a batch."
+msgstr ""
 
 #. module: account_batch_payment
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
@@ -369,6 +487,16 @@ msgid "Print Batch Payment"
 msgstr "Spausdinti grupinį mokėjimą"
 
 #. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid "Proceed with validation"
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
+msgid "Re-generate Export File"
+msgstr ""
+
+#. module: account_batch_payment
 #: model:ir.model.fields.selection,name:account_batch_payment.selection__account_batch_payment__state__reconciled
 msgid "Reconciled"
 msgstr "Sudengta"
@@ -379,31 +507,58 @@ msgid "Reference"
 msgstr "Numeris"
 
 #. module: account_batch_payment
-#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
-msgid "Register Payment"
-msgstr "Užregistruoti mokėjimą"
-
-#. module: account_batch_payment
 #: model:ir.model.fields.selection,name:account_batch_payment.selection__account_batch_payment__state__sent
 msgid "Sent"
 msgstr "Išsiųsta"
 
 #. module: account_batch_payment
-#. openerp-web
-#: code:addons/account_batch_payment/static/src/js/account_batch_payment_reconciliation.js:0
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
 #, python-format
-msgid ""
-"Some journal items from the selected batch payment are already selected in "
-"another reconciliation : "
+msgid "Set payments state to \"posted\"."
 msgstr ""
-"Kai kurie pasirinktos grupės žurnalo įrašai jau yra pasirinkti kitame "
-"sudengime:"
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_line_tree
+msgid "Show"
+msgstr "Rodyti"
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__show_remove_button
+msgid "Show Remove Button"
+msgstr ""
+
+#. module: account_batch_payment
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__show_remove_options
+msgid "Show Remove Options"
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
+#, python-format
+msgid "Some payments have already been matched with a bank statement."
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
+#, python-format
+msgid "Some payments have already been sent."
+msgstr ""
 
 #. module: account_batch_payment
 #: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_payment__state
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_search
 msgid "State"
 msgstr "Būsena"
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid "The batch cannot be validated."
+msgstr ""
+
+#. module: account_batch_payment
+#: model_terms:ir.ui.view,arch_db:account_batch_payment.batch_error_wizard_form
+msgid "The batch could not be validated"
+msgstr ""
 
 #. module: account_batch_payment
 #: code:addons/account_batch_payment/models/account_batch_payment.py:0
@@ -420,6 +575,13 @@ msgstr ""
 msgid "The batch must have the same type as the payments it contains."
 msgstr ""
 "Grupė turi turėti tą patį tipą kaip ir mokėjimai, kuriuos ji apjungia."
+
+#. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard__batch_payment_id
+msgid ""
+"The batch payment generating the errors and warnings displayed in this "
+"wizard."
+msgstr ""
 
 #. module: account_batch_payment
 #: code:addons/account_batch_payment/models/account_batch_payment.py:0
@@ -440,6 +602,13 @@ msgid "Total"
 msgstr "Suma"
 
 #. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard__show_remove_options
+msgid ""
+"True if and only if the options to remove the payments causing the errors or"
+" warnings from the batch should be shown"
+msgstr ""
+
+#. module: account_batch_payment
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_search
 msgid "Unreconciled"
 msgstr "Nesudengta"
@@ -450,14 +619,14 @@ msgid "Validate"
 msgstr "Patvirtinti"
 
 #. module: account_batch_payment
-#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_download_wizard__warning_message
-msgid "Warning"
-msgstr "Įspėjimas"
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard__warning_line_ids
+msgid "Warning Line"
+msgstr ""
 
 #. module: account_batch_payment
-#: model:ir.model.fields,help:account_batch_payment.field_account_batch_download_wizard__warning_message
-msgid "Warning message to display about the content of the downloadable file."
-msgstr "Įspėjimo apie atsisiunčiamo failo turinį žinutė."
+#: model:ir.model.fields,field_description:account_batch_payment.field_account_batch_error_wizard_line__warning_wizard_id
+msgid "Warning Wizard"
+msgstr ""
 
 #. module: account_batch_payment
 #: model:ir.model.fields,help:account_batch_payment.field_account_batch_payment__file_generation_enabled
@@ -469,6 +638,22 @@ msgstr ""
 " Failą\" vietoje \"Spausdinti\""
 
 #. module: account_batch_payment
+#: model:ir.model.fields,help:account_batch_payment.field_account_batch_error_wizard_line__show_remove_button
+msgid ""
+"Whether or not this line should display a button allowing to remove its "
+"related payments from the batch"
+msgstr ""
+
+#. module: account_batch_payment
+#: code:addons/account_batch_payment/models/account_batch_payment.py:0
+#, python-format
+msgid ""
+"You cannot add payments that are not posted.\n"
+"Payments:\n"
+"%s"
+msgstr ""
+
+#. module: account_batch_payment
 #: code:addons/account_batch_payment/models/account_batch_payment.py:0
 #, python-format
 msgid ""
@@ -478,19 +663,6 @@ msgid ""
 msgstr ""
 
 #. module: account_batch_payment
-#: code:addons/account_batch_payment/models/account_payment.py:0
-#, python-format
-msgid ""
-"You cannot make a batch payment with internal transfers. Internal transfers "
-"ids: %s"
-msgstr ""
-
-#. module: account_batch_payment
 #: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
 msgid "auto ..."
 msgstr "auto ..."
-
-#. module: account_batch_payment
-#: model_terms:ir.ui.view,arch_db:account_batch_payment.view_batch_payment_form
-msgid "re-Generate Export File"
-msgstr "Iš naujo generuoti eksporto failą"

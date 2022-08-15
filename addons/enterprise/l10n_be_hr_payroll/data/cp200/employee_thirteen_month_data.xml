@@ -39,6 +39,21 @@ result = categories.BASIC
         <field name="struct_id" ref="hr_payroll_structure_cp200_thirteen_month"/>
     </record>
 
+    <record id="cp200_employees_thirteen_month_pp_total" model="hr.salary.rule">
+        <field name="category_id" ref="hr_salary_rule_category_withholding_taxes_total"/>
+        <field name="name">Withholding Taxes (Total)</field>
+        <field name="code">PPTOTAL</field>
+        <field name="amount_select">code</field>
+        <field name="sequence">110</field>
+        <field name="condition_select">none</field>
+        <field name="appears_on_payslip" eval="False"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = -categories.PP
+        </field>
+        <field name="struct_id" ref="hr_payroll_structure_cp200_thirteen_month"/>
+    </record>
+
     <record id="cp200_employees_thirteen_month_mis_ex_onss" model="hr.salary.rule">
         <field name="category_id" ref="hr_salary_rule_category_spec_soc_contribution"/>
         <field name="name">Special social cotisation</field>

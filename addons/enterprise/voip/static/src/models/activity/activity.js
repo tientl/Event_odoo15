@@ -3,7 +3,6 @@
 import {
     registerClassPatchModel,
     registerFieldPatchModel,
-    registerInstancePatchModel,
 } from '@mail/model/model_core';
 import { attr } from '@mail/model/model_field';
 
@@ -36,39 +35,4 @@ registerFieldPatchModel('mail.activity', 'voip/static/src/models/activity/activi
      * String to store the phone number in a call activity.
      */
     phone: attr(),
-});
-
-registerInstancePatchModel('mail.activity', 'voip/static/src/models/activity/activity.js', {
-
-    /**
-     * @override
-     */
-    _created() {
-        const res = this._super(...arguments);
-        this._onReloadChatter = this._onReloadChatter.bind(this);
-        this.env.bus.on('voip_reload_chatter', undefined, this._onReloadChatter);
-        return res;
-    },
-    /**
-     * @override
-     */
-    _willDelete() {
-        this.env.bus.off('voip_reload_chatter', undefined, this._onReloadChatter);
-        return this._super(...arguments);
-    },
-
-    //----------------------------------------------------------------------
-    // Handlers
-    //----------------------------------------------------------------------
-
-    /**
-     * @private
-     */
-    _onReloadChatter() {
-        if (!this.thread) {
-            return;
-        }
-        this.thread.refreshActivities();
-        this.thread.refresh();
-    },
 });

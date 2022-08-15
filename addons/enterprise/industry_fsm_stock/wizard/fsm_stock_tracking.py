@@ -19,6 +19,7 @@ class FsmStockTracking(models.TransientModel):
     company_id = fields.Many2one('res.company', 'Company')
 
     def generate_lot(self):
+        self.ensure_one()
         if self.fsm_done:
             return
 

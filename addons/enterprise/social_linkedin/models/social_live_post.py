@@ -43,7 +43,7 @@ class SocialLivePostLinkedin(models.Model):
                     headers=account._linkedin_bearer_headers(), timeout=10)
 
                 if response.status_code != 200 or 'elements' not in response.json():
-                    account.sudo().is_media_disconnected = True
+                    account._action_disconnect_accounts(response.json())
                     break
 
                 for stats in response.json()['elements']:
@@ -131,7 +131,7 @@ class SocialLivePostLinkedin(models.Model):
 
             if response.get('serviceErrorCode') == 65600:
                 # Invalid access token
-                self.account_id.write({'is_media_disconnected': True})
+                self.account_id._action_disconnect_accounts(response)
 
             live_post.write(values)
 

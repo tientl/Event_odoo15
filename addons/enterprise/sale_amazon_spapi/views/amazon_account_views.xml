@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="amazon_account_view_form_inherit" model="ir.ui.view">
+        <field name="name">amazon.account.form.inherit</field>
+        <field name="model">amazon.account</field>
+        <field name="inherit_id" ref="sale_amazon.amazon_account_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='credentials']//group" position="before">
+                <field name="refresh_token" invisible="1"/>
+                <p class="text-muted" attrs="{'invisible': [('refresh_token', '!=', False)]}">
+                    Link your Amazon account with Odoo to start synchronizing your Amazon orders.
+                </p>
+                <p class="text-muted" attrs="{'invisible': [('refresh_token', '=', False)]}">
+                    Your Amazon account is linked with Odoo.
+                </p>
+            </xpath>
+            <xpath expr="//field[@name='seller_key']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="required">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='auth_token']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="required">0</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_check_credentials']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_check_credentials']" position="after">
+                <button string="Link with Amazon"
+                        type="object"
+                        name="action_redirect_to_oauth_url"
+                        class="btn-primary"
+                        attrs="{'invisible': [('refresh_token', '!=', False)]}"/>
+                <button string="Unlink account"
+                        type="object"
+                        name="action_reset_refresh_token"
+                        class="btn-secondary pl-0"
+                        groups="base.group_no_one"
+                        attrs="{'invisible': [('refresh_token', '=', False)]}"
+                        confirm="This action will disconnect your account with Amazon and cannot be
+                                 undone. Are you sure you want to proceed?"/>
+            </xpath>
+            <xpath expr="//page[@name='marketplaces']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('id', '=', False), ('refresh_token', '=', False)]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="amazon_account_view_search_inherit" model="ir.ui.view">
+        <field name="name">amazon.account.search</field>
+        <field name="model">amazon.account</field>
+        <field name="inherit_id" ref="sale_amazon.amazon_account_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active_marketplace_ids']" position="attributes">
+                <attribute name="filter_domain">
+                    [
+                        '|', ('active_marketplace_ids.name', 'ilike', self),
+                        ('active_marketplace_ids.domain', 'ilike', self)
+                    ]
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

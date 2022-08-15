@@ -17,6 +17,7 @@ import { PivotView } from "@web/views/pivot/pivot_view";
 import { makeFakeUserService } from "@web/../tests/helpers/mock_services";
 import { registry } from "@web/core/registry";
 import { spreadsheetService } from "@documents_spreadsheet/actions/spreadsheet/spreadsheet_service";
+import { nextTick } from "@web/../tests/helpers/utils";
 
 const { Model } = spreadsheet;
 const { toCartesian, toZone } = spreadsheet.helpers;
@@ -24,6 +25,17 @@ const { jsonToBase64 } = pivotUtils;
 const { loadJS } = owl.utils;
 
 const serviceRegistry = registry.category("services");
+
+export async function waitForEvaluation(model) {
+    /**
+     * Here, we need to wait for two nextTick:
+     * The first one to resolve the name_get that could be triggered by the evaluation
+     * The second one to resolve the debounce method of the evaluation
+     */
+    await model.waitForIdle();
+    await nextTick();
+    await nextTick();
+}
 
 /**
  * Get the value of the given cell
@@ -41,7 +53,7 @@ export function getCellValue(model, xc, sheetId = model.getters.getActiveSheetId
  */
 export async function addGlobalFilter(model, filter) {
     const result = model.dispatch("ADD_GLOBAL_FILTER", filter);
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return result;
 }
 
@@ -50,7 +62,7 @@ export async function addGlobalFilter(model, filter) {
  */
 export async function removeGlobalFilter(model, id) {
     const result = model.dispatch("REMOVE_GLOBAL_FILTER", { id });
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return result;
 }
 
@@ -59,7 +71,7 @@ export async function removeGlobalFilter(model, id) {
  */
 export async function editGlobalFilter(model, filter) {
     const result = model.dispatch("EDIT_GLOBAL_FILTER", filter);
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return result;
 }
 
@@ -69,7 +81,7 @@ export async function editGlobalFilter(model, filter) {
  */
 export async function setGlobalFilterValue(model, payload) {
     const result = model.dispatch("SET_GLOBAL_FILTER_VALUE", payload);
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return result;
 }
 
@@ -248,7 +260,9 @@ export async function createSpreadsheetAction(actionTag, params = {}) {
             spreadsheet_id: spreadsheetId,
             transportService,
         },
-    });
+    },
+    { clearBreadcrumbs: true } // Sometimes in test defining custom action, Odoo opens on the action instead of opening on root
+    );
     return {
         webClient,
         model: getSpreadsheetActionModel(spreadsheetAction),
@@ -364,7 +378,7 @@ export async function createSpreadsheetFromList(params = {}) {
         services: model.config.evalContext.env.services,
         openSidePanel: oSpreadsheetComponent.openSidePanel.bind(oSpreadsheetComponent),
     });
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return {
         webClient,
         env,
@@ -418,7 +432,7 @@ export async function createSpreadsheetWithPivotAndList() {
         linesNumber: 10,
         types,
     });
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return { model, webClient, env };
 }
 
@@ -528,7 +542,7 @@ export async function createSpreadsheetFromPivot(params = {}) {
         services: model.config.evalContext.env.services,
         openSidePanel: oSpreadsheetComponent.openSidePanel.bind(oSpreadsheetComponent),
     });
-    await model.waitForIdle();
+    await waitForEvaluation(model);
     return {
         webClient,
         env,

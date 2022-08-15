@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _lt
 
 class Project(models.Model):
     _inherit = 'project.project'
@@ -44,7 +44,7 @@ class Project(models.Model):
         if self.user_has_groups('hr_payroll.group_hr_payroll_user'):
             buttons.append({
                 'icon': 'book',
-                'text': _('Contracts'),
+                'text': _lt('Contracts'),
                 'number': self.contracts_count,
                 'action_type': 'object',
                 'action': 'action_open_project_contracts',

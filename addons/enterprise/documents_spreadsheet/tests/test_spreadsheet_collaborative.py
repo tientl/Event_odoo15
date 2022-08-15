@@ -103,6 +103,12 @@ class SpreadsheetCollaborative(SpreadsheetTestCommon):
             0,
             "It should have archived the revision history",
         )
+        snapshot_revision = spreadsheet.with_context(active_test=False).spreadsheet_revision_ids[-1]
+        self.assertEqual(
+            json.loads(snapshot_revision.commands),
+            {"type": "SNAPSHOT_CREATED", "version": 1},
+            "It should have saved a snapshot revision"
+        )
         self.assertEqual(base64.decodebytes(spreadsheet.spreadsheet_snapshot), b'{"sheets": []}', "It should have saved the data")
         self.assertEqual(
             self.get_revision(spreadsheet),

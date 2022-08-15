@@ -224,6 +224,15 @@ class SocialPost(models.Model):
             for index, vals in enumerate(vals_list):
                 vals['utm_source_id'] = sources[index].id
 
+            # if a scheduled_date / published_date is specified, it should be the one used as the calendar date
+            # this is normally handled by the `_compute_calendar_date` but in create mode,
+            # it is not called when a default value for the calendar_date field is passed
+            for vals in vals_list:
+                if vals.get('state') == 'posted' and 'published_date' in vals:
+                    vals['calendar_date'] = vals['published_date']
+                elif 'scheduled_date' in vals:
+                    vals['calendar_date'] = vals['scheduled_date']
+
         res = super(SocialPost, self).create(vals_list)
 
         cron = self.env.ref('social.ir_cron_post_scheduled')
@@ -313,7 +322,7 @@ class SocialPost(models.Model):
                     for live_post in post._prepare_live_post_values()]
             })
 
-        if not getattr(threading.currentThread(), 'testing', False):
+        if not getattr(threading.current_thread(), 'testing', False):
             # If there's a link in the message, the Facebook / Twitter API will fetch it
             # to build a preview. But when posting, the SQL transaction will not
             # yet be committed, and so the link tracker associated to this link

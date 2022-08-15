@@ -46,3 +46,34 @@ class TestAccountBatchPayment(AccountTestInvoicingCommon):
         batch_payment_action = payments.create_batch_payment()
         batch_payment_id = self.env['account.batch.payment'].browse(batch_payment_action.get('res_id'))
         self.assertEqual(len(batch_payment_id.payment_ids), 2)
+
+    def test_change_payment_state(self):
+        """
+        Check if the amount is well computed when we change a payment state
+        """
+        payments = self.env['account.payment']
+        for _ in range(2):
+            payments += self.env['account.payment'].create({
+                'amount': 100.0,
+                'payment_type': 'inbound',
+                'partner_type': 'supplier',
+                'partner_id': self.partner_a.id,
+                'destination_account_id': self.partner_a.property_account_payable_id.id,
+                'partner_bank_id': self.partner_bank_account.id,
+            })
+        payments.action_post()
+
+        batch_payment = self.env['account.batch.payment'].create(
+            {
+                'journal_id': payments.journal_id.id,
+                'payment_method_id': payments.payment_method_id.id,
+                'payment_ids': [
+                    (6, 0, payments.ids)
+                ],
+            }
+        )
+
+        self.assertEqual(batch_payment.amount, 200)
+
+        payments[0].action_draft()
+        self.assertEqual(batch_payment.amount, 100)

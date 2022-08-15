@@ -43,7 +43,7 @@
         <t t-if="context.get('snailmail_layout')" t-set="contact_widget_fields" t-value="['address', 'name']"/>
         <t t-else="" t-set="contact_widget_fields" t-value="['address', 'name', 'phone']"/>
                 <div class="row fallback_header">
-                    <div class="col-5 offset-7" style='margin-top: 15px;'>
+                    <div class="col-5 offset-7">
                         <div t-field="partner_addr.self"
                             t-options='{"widget": "contact", "fields": contact_widget_fields, "no_marker": True}'/>
                         <span t-field="partner_addr.vat"/>
@@ -59,7 +59,7 @@
         <template id="line_template_followup_report" inherit_id="account_reports.line_template" primary="True">
             <xpath expr="//div[hasclass('dropdown-menu')]" position="replace">
                 <div t-if='context.get("print_mode") != True' class="dropdown-menu o_account_reports_domain_dropdown" role="menu">
-                    <a role="menuitem" tabindex="-1" t-att-data-id="line['move_id']" action="open_invoice" groups="account.group_account_readonly" class="dropdown-item">View Invoice</a>
+                    <a role="menuitem" tabindex="-1" t-att-data-id="line['move_id']" action="open_invoice" class="dropdown-item">View Invoice</a>
                     <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" class="o_change_expected_date dropdown-item">Change expected payment date</a>
                 </div>
             </xpath>
@@ -108,7 +108,7 @@
                         <button t-att-data-id="partner.id" class="btn btn-primary js_account_report_save_email_subject">Save</button>
                 </div>
                 <div class="o_account_reports_summary">
-                    <i class="fa fa-fw fa-pencil o_account_reports_edit_summary_pencil" role="img" aria-label="Edit Summary" title="Edit Summary"></i>
+                    <i class="fa fa-fw fa-pencil o_account_reports_edit_summary_pencil" t-if="not context.get('print_mode')" role="img" aria-label="Edit Summary" title="Edit Summary"></i>
                     <div class="o_account_report_summary" role="alert">
                         <span class="o_account_report_summary_content" t-att-style="'' if report.get('summary') else 'display: none;'">
                             <t t-esc="report.get('summary','')" t-options="{'widget': 'text'}"/>
@@ -126,7 +126,10 @@
             <xpath expr="//table[hasclass('o_account_reports_table')]" position="attributes">
               <attribute name="width">100%</attribute>
             </xpath>
-            <xpath expr="//t[@t-call='account_reports.filter_info_template']" position="replace"><t t-call="account_followup.followup_filter_info_template"/></xpath>
+            <xpath expr="//t[@t-call='account_reports.filter_info_template']" position="replace"></xpath>
+            <xpath expr="//div[hasclass('o_account_reports_header')]" position="before">
+                <t t-call="account_followup.followup_filter_info_template"/>
+            </xpath>
             <xpath expr="//div[hasclass('o_account_reports_header')]" position="inside">
                 <div class="row">
                     <div class="col-xl-6">

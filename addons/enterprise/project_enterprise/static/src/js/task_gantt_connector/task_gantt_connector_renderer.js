@@ -147,28 +147,34 @@ const TaskGanttConnectorRenderer = TaskGanttRenderer.extend(WidgetAdapterMixin, 
             rows: { },
         };
         for (const row of this.state.rows) {
-            // We need to escape '"' & '\' from the row.id before calling the querySelector
-            const rowElementSelector = `${this._connectorsCssSelectors.groupByNoGroup}[data-row-id="${row.id.replace(/["\\]/g, '\\$&')}"]`;
+            // We need to remove the closing "}]" from the row.id in order to ensure that things works
+            // smoothly when collapse_first_level option is activated. Then we need to escape '"' &
+            // '\' from the row.id before calling the querySelector.
+            const rowId = row.id.replace("}]", "").replace(/["\\]/g, '\\$&')
+            const rowElementSelector = `${this._connectorsCssSelectors.groupByNoGroup}[data-row-id^="${rowId}"]`;
             const rowElement = this.el.querySelector(rowElementSelector);
+            if (!rowElement) continue;
             this._rowsAndRecordsDict.rows[row.id] = {
                 records: { }
             };
             for (const record of row.records) {
-                const recordElementSelector = `${this._connectorsCssSelectors.pill}[data-id="${record.id}"]`;
-                const pillElement = rowElement.querySelector(recordElementSelector);
-                this._rowsAndRecordsDict.rows[row.id].records[record.id] = {
-                    pillElement: pillElement,
-                    record: record,
-                };
-                if (!(record.id in this._rowsAndRecordsDict.records)) {
-                    this._rowsAndRecordsDict.records[record.id] = {
+                if (record.allow_task_dependencies) {
+                    const recordElementSelector = `${this._connectorsCssSelectors.pill}[data-id="${record.id}"]`;
+                    const pillElement = rowElement.querySelector(recordElementSelector);
+                    this._rowsAndRecordsDict.rows[row.id].records[record.id] = {
+                        pillElement: pillElement,
                         record: record,
-                        rowsInfo: { },
+                    };
+                    if (!(record.id in this._rowsAndRecordsDict.records)) {
+                        this._rowsAndRecordsDict.records[record.id] = {
+                            record: record,
+                            rowsInfo: { },
+                        };
+                    }
+                    this._rowsAndRecordsDict.records[record.id].rowsInfo[row.id] = {
+                        pillElement: pillElement,
                     };
                 }
-                this._rowsAndRecordsDict.records[record.id].rowsInfo[row.id] = {
-                    pillElement: pillElement,
-                };
             }
         }
 
@@ -197,7 +203,9 @@ const TaskGanttConnectorRenderer = TaskGanttRenderer.extend(WidgetAdapterMixin, 
         for (const masterTaskId of task.depend_on_ids) {
             if (masterTaskId in this._rowsAndRecordsDict.records) {
                 let connectors = [];
+                if (!this._rowsAndRecordsDict.records[task.id]) continue;
                 for (const taskRowId in this._rowsAndRecordsDict.records[task.id].rowsInfo) {
+                    if (!this._rowsAndRecordsDict.records[masterTaskId]) continue;
                     for (const masterTaskRowId in this._rowsAndRecordsDict.records[masterTaskId].rowsInfo) {
                         /**
                          *   Having:
@@ -572,7 +580,9 @@ const TaskGanttConnectorRenderer = TaskGanttRenderer.extend(WidgetAdapterMixin, 
      */
     togglePreventConnectorsHoverEffect(prevent){
         this._preventHoverEffect = prevent;
-        this._connectorContainerComponent.update(this._getConnectorContainerProps());
+        if (this._shouldRenderConnectors()) {
+            this._connectorContainerComponent.update(this._getConnectorContainerProps());
+        }
     },
     /**
      * Toggles the highlighting of the pill and connector creator of the provided element.
@@ -597,6 +607,13 @@ const TaskGanttConnectorRenderer = TaskGanttRenderer.extend(WidgetAdapterMixin, 
                 });
                 await this._connectorContainerComponent.update(this._getConnectorContainerProps());
             }
+            // Check if connector should be rendered
+            if (!(
+                this._shouldRenderConnectors()
+                && this._rowsAndRecordsDict
+                && this._rowsAndRecordsDict.records[connectorCreatorInfo.pill.dataset.id]
+                && this._rowsAndRecordsDict.records[connectorCreatorInfo.pill.dataset.id].rowsInfo)
+            ) return;
             for (const pill of Object.values(this._rowsAndRecordsDict.records[connectorCreatorInfo.pill.dataset.id].rowsInfo).map((rowInfo) => rowInfo.pillElement)) {
                 const tempConnectorCreatorInfo = this._getConnectorCreatorInfo(pill);
                 if (highlighted || !this._isConnectorCreatorDragged(tempConnectorCreatorInfo)) {
@@ -609,6 +626,17 @@ const TaskGanttConnectorRenderer = TaskGanttRenderer.extend(WidgetAdapterMixin, 
                 }
             }
         }
+    },
+    /**
+     * @override
+     * @public
+     */
+    updateRow(rowState) {
+        return this._super(...arguments).then(() => {
+            if (this._shouldRenderConnectors()) {
+                this._connectorContainerComponent.update(this._generateAndGetConnectorContainerProps())
+            }
+        });
     },
 
     //--------------------------------------------------------------------------

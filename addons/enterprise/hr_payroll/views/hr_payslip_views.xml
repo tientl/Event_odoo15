@@ -70,8 +70,8 @@
                 <button string="Refund" name="refund_sheet" type='object' attrs="{'invisible': ['|', '|', ('has_refund_slip', '=', False), ('credit_note', '=', True), ('state', 'not in', ('done', 'paid'))]}"
                     confirm="Another refund payslip with the same amount has been found. Do you want to create a new one ?"/>
                 <button string="Set to Draft" name="action_payslip_draft" type="object" states="cancel"/>
-                <button string="Compute Sheet" name="compute_sheet" type="object" states="draft" class="oe_highlight" help="Recompute the payslip lines only, not the worked days / input lines"/>
-                <button string="Compute Sheet" name="compute_sheet" type="object" states="verify" help="Recompute the payslip lines only, not the worked days / input lines"/>
+                <button string="Compute Sheet" name="compute_sheet" type="object" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('credit_note', '=', True)]}" class="oe_highlight" help="Recompute the payslip lines only, not the worked days / input lines"/>
+                <button string="Compute Sheet" name="compute_sheet" type="object" attrs="{'invisible': ['|', ('state', '!=', 'verify'), ('credit_note', '=', True)]}" help="Recompute the payslip lines only, not the worked days / input lines"/>
                 <button string="Cancel" name="action_payslip_cancel" type="object" states="draft,done,verify"/>
                 <button string="Print" name="action_print_payslip" type="object"/>
                 <button string="Export Payslip" name="action_export_payslip" type="object" attrs="{'invisible': [('is_superuser', '=', False)]}"/>
@@ -109,8 +109,6 @@
                     <field name="sum_worked_hours" invisible="1"/>
                     <field name="normal_wage" invisible="1"/>
                     <field name="credit_note" invisible="1"/>
-                    <field name="has_negative_net_to_report" invisible="1"/>
-                    <field name="negative_net_to_report_display" invisible="1"/>
                     <field name="is_superuser" invisible="1"/>
                     <field name="has_refund_slip" invisible="1"/>
                 </group>
@@ -212,6 +210,8 @@
                                 <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             </group>
                             <group name="accounting">
+                                <field name="has_negative_net_to_report"/>
+                                <field name="negative_net_to_report_display" invisible="1"/>
                                 <field name="paid"/>
                             </group>
                         </group>

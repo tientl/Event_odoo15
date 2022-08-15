@@ -18,7 +18,7 @@ class CalendarAppointmentShare(models.TransientModel):
     suggested_employee_ids = fields.Many2many('hr.employee', related='appointment_type_ids.employee_ids', string='Possible employees',
         help="Get the employees link to the appointment type selected to apply a domain on the employees that can be selected")
     employee_ids = fields.Many2many('hr.employee', domain=[('user_id', '!=', False)], string='Employees',
-        compute='_compute_employee_id', inverse='_inverse_employee_id',
+        compute='_compute_employee_ids', inverse='_inverse_employee_ids',
         help="The employees that will be display/filter for the user to make its appointment")
     share_link = fields.Char('Link', compute='_compute_share_link')
 

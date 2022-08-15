@@ -1,9 +1,11 @@
 /** @odoo-module **/
 
+import AbstractView from "web.AbstractView";
 import { MockServer } from "@web/../tests/helpers/mock_server";
 import { makeFakeUserService } from "@web/../tests/helpers/mock_services";
 import {
     click,
+    getFixture,
     legacyExtraNextTick,
     nextTick,
     patchDate,
@@ -14,9 +16,11 @@ import {
     getFacetTexts,
     isItemSelected,
     isOptionSelected,
+    removeFacet,
     saveFavorite,
     setupControlPanelFavoriteMenuRegistry,
     setupControlPanelServiceRegistry,
+    switchView,
     toggleAddCustomFilter,
     toggleComparisonMenu,
     toggleFavoriteMenu,
@@ -40,6 +44,7 @@ import { companyService } from "@web/webclient/company_service";
 import { DashboardModel } from "@web_dashboard/dashboard_model";
 import { FieldFloat } from "web.basic_fields";
 import legacyFieldRegistry from "web.field_registry";
+import legacyViewRegistry from "web.view_registry";
 import PieChart from "web.PieChart";
 import Widget from "web.Widget";
 import widgetRegistry from "web.widget_registry";
@@ -59,13 +64,15 @@ QUnit.module("Views", (hooks) => {
                             type: "many2one",
                             relation: "test_report",
                             store: true,
+                            sortable: true,
                         },
-                        sold: { string: "Sold", type: "float", store: true, group_operator: "sum" },
+                        sold: { string: "Sold", type: "float", store: true, group_operator: "sum", sortable: true },
                         untaxed: {
                             string: "Untaxed",
                             type: "float",
                             group_operator: "sum",
                             store: true,
+                            sortable: true,
                         },
                     },
                     records: [
@@ -87,13 +94,14 @@ QUnit.module("Views", (hooks) => {
                 },
                 test_time_range: {
                     fields: {
-                        categ_id: { string: "categ_id", type: "many2one", relation: "test_report" },
-                        sold: { string: "Sold", type: "float", store: true, group_operator: "sum" },
+                        categ_id: { string: "categ_id", type: "many2one", relation: "test_report", sortable: true },
+                        sold: { string: "Sold", type: "float", store: true, group_operator: "sum", sortable: true },
                         untaxed: {
                             string: "Untaxed",
                             type: "float",
                             group_operator: "sum",
                             store: true,
+                            sortable: true,
                         },
                         date: { string: "Date", type: "date", store: true, sortable: true },
                         transformation_date: {
@@ -172,6 +180,50 @@ QUnit.module("Views", (hooks) => {
             "inner group should have className o_group_col_2"
         );
     });
+
+    QUnit.test(
+        "basic rendering of a dashboard with quotes in string attributes",
+        async function (assert) {
+            assert.expect(4);
+
+            serverData.models.test_report.fields.my_field = {
+                type: "float",
+                group_operator: "sum",
+            };
+            const dashboard = await makeView({
+                type: "dashboard",
+                resModel: "test_report",
+                serverData,
+                arch: `
+                    <dashboard>
+                        <group>
+                            <aggregate
+                                name='my_field'
+                                string='test " 1'
+                                value_label='test " 2'
+                                help='test " 3'
+                                field="my_field"
+                            />
+                        </group>
+                    </dashboard>
+                `,
+            });
+            const agg = dashboard.el.querySelector(".o_aggregate");
+            const tooltipInfo = JSON.parse(agg.dataset.tooltipInfo);
+            assert.strictEqual(tooltipInfo.name, "my_field", "the help value should be `my_field`");
+            assert.strictEqual(
+                tooltipInfo.displayName,
+                'test " 1',
+                'the help value should be `test " 1`'
+            );
+            assert.strictEqual(
+                tooltipInfo.valueLabel,
+                'test " 2',
+                'the valueLabel should be `test " 2`'
+            );
+            assert.strictEqual(tooltipInfo.help, 'test " 3', 'the help value should be `test " 3`');
+        }
+    );
 
     QUnit.test("basic rendering of a widget tag", async function (assert) {
         assert.expect(1);
@@ -694,10 +746,10 @@ QUnit.module("Views", (hooks) => {
     });
 
     QUnit.test("graph tag with aggregate and invisible field", async function (assert) {
+        assert.expect(2);
         serverData.views["test_report,some_xmlid,graph"] = `
             <graph>
-                <field name="categ_id"/>
-                <field name="sold" invisible="1"/>
+                <field name="categ_id" invisible="1"/>
             </graph>
         `;
         const dashboard = await makeView({
@@ -708,7 +760,7 @@ QUnit.module("Views", (hooks) => {
                 <dashboard>
                     <view type="graph" ref="some_xmlid"/>
                     <group>
-                        <aggregate name="sold" string="Avg Sold" group_operator="avg" field="sold"/>
+                        <aggregate name="categ_id_agg" field="categ_id"/>
                     </group>
                 </dashboard>
             `,
@@ -717,7 +769,83 @@ QUnit.module("Views", (hooks) => {
         assert.containsOnce(
             dashboard,
             '.o_menu_item:contains("Sold")',
-            "the sold field should be in the measures"
+            "the sold field should be available as a graph measure"
+        );
+        assert.containsOnce(
+            dashboard,
+            '.o_menu_item:contains("categ_id")',
+            "the categ_id field should be available as a graph measure"
+        );
+    });
+
+    QUnit.test("graph tag with no aggregate and invisible field", async function (assert) {
+        assert.expect(2);
+        serverData.views["test_report,some_xmlid,graph"] = `
+            <graph>
+                <field name="categ_id" invisible="1"/>
+            </graph>
+        `;
+
+        const dashboard = await makeView({
+            type: "dashboard",
+            resModel: "test_report",
+            serverData,
+            arch: `
+                <dashboard>
+                    <view type="graph" ref="some_xmlid"/>
+                </dashboard>`,
+        });
+
+        await toggleMenu(dashboard, "Measures");
+        assert.containsOnce(
+            dashboard,
+            '.o_menu_item:contains("Sold")',
+            "the sold field should be available as a graph measure"
+        );
+        assert.containsNone(
+            dashboard,
+            '.o_menu_item:contains("categ_id")',
+            "the categ field should not be available as a graph measure"
+        );
+    });
+
+    QUnit.test("graph tag and date aggregate", async function (assert) {
+        assert.expect(2);
+        serverData.views["test_time_range,some_xmlid,graph"] = `<graph/>`;
+
+        const dashboard = await makeView({
+            type: "dashboard",
+            resModel: "test_time_range",
+            serverData,
+            arch: `
+                <dashboard>
+                    <view type="graph" ref="some_xmlid"/>
+                    <group>
+                        <aggregate name="date_agg" group_operator="max" field="date"/>
+                    </group>
+                </dashboard>`,
+            mockRPC: function (route, args) {
+                if (args.method === "read_group") {
+                    return Promise.resolve([
+                        {
+                            __count: 1,
+                            date: "1983-07-15",
+                        },
+                    ]);
+                }
+            },
+        });
+
+        await toggleMenu(dashboard, "Measures");
+        assert.containsOnce(
+            dashboard,
+            '.o_menu_item:contains("Sold")',
+            "the sold field should be available as a graph measure"
+        );
+        assert.containsNone(
+            dashboard,
+            '.o_menu_item:contains("Date")',
+            "the Date field should not be available as a graph measure"
         );
     });
 
@@ -795,10 +923,10 @@ QUnit.module("Views", (hooks) => {
     });
 
     QUnit.test("pivot tag with aggregate and invisible field", async function (assert) {
+        assert.expect(2);
         serverData.views["test_report,some_xmlid,pivot"] = `
             <pivot>
-                <field name="categ_id" type="row"/>
-                <field name="sold" invisible="1"/>
+                <field name="categ_id" invisible="1" type="measure"/>
             </pivot>
         `;
         const dashboard = await makeView({
@@ -809,7 +937,7 @@ QUnit.module("Views", (hooks) => {
                 <dashboard>
                     <view type="pivot" ref="some_xmlid"/>
                     <group>
-                        <aggregate name="sold" string="Avg Sold" group_operator="avg" field="sold"/>
+                        <aggregate name="categ_id_agg" field="categ_id"/>
                     </group>
                 </dashboard>
             `,
@@ -819,7 +947,12 @@ QUnit.module("Views", (hooks) => {
         assert.containsOnce(
             dashboard,
             '.o_menu_item:contains("Sold")',
-            "the sold field should be in the measures"
+            "the sold field should be available as a pivot measure"
+        );
+        assert.containsOnce(
+            dashboard,
+            '.o_menu_item:contains("categ_id")',
+            "the categ_id field should be available as a pivot measure"
         );
     });
 
@@ -926,7 +1059,7 @@ QUnit.module("Views", (hooks) => {
     QUnit.test("cohort tag with aggregate and invisible field", async function (assert) {
         serverData.views["test_report,some_xmlid,cohort"] = `
             <cohort string="Cohort" date_start="create_date" date_stop="transformation_date" interval="week">
-                <field name="sold" invisible="1"/>
+                <field name="categ_id" invisible="1"/>
             </cohort>
         `;
         serverData.models.test_report.fields.create_date = {
@@ -951,7 +1084,7 @@ QUnit.module("Views", (hooks) => {
                 <dashboard>
                     <view type="cohort" ref="some_xmlid"/>
                     <group>
-                        <aggregate name="sold" string="Avg Sold" group_operator="avg" field="sold"/>
+                        <aggregate name="categ_id_agg" field="categ_id"/>
                     </group>
                 </dashboard>
             `,
@@ -963,6 +1096,11 @@ QUnit.module("Views", (hooks) => {
             '.o_menu_item:contains("Sold")',
             "the sold field should be in the measures"
         );
+        assert.containsNone(
+            dashboard,
+            '.o_cohort_measures_list button[data-field="categ_id"]',
+            "the categ_id field should not be in the measures"
+        ); // this is wrong and should be fixed!
     });
 
     QUnit.test("rendering of an aggregate with widget monetary", async function (assert) {
@@ -1688,6 +1826,7 @@ QUnit.module("Views", (hooks) => {
                 string: "Untaxed_2",
                 type: "float",
                 store: true,
+                sortable: true,
             };
             serverData.models.test_report.records.forEach((record) => (record.untaxed_2 = 3.1415));
 
@@ -2098,6 +2237,7 @@ QUnit.module("Views", (hooks) => {
                 type: "many2one",
                 relation: "product",
                 store: true,
+                sortable: true,
             };
             serverData.models.product = {
                 fields: {
@@ -3506,6 +3646,70 @@ QUnit.module("Views", (hooks) => {
         }
     });
 
+    QUnit.test("basic rendering of a date aggregate and empty result set", async function (assert) {
+        assert.expect(1);
+
+        const dashboard = await makeView({
+            type: "dashboard",
+            resModel: "test_time_range",
+            serverData,
+            arch: `
+                <dashboard>
+                    <group>
+                        <aggregate name="date_max" field="date" group_operator="max" />
+                    </group>
+                </dashboard>
+            `,
+            mockRPC(route, args) {
+                if (args.method === "read_group") {
+                    return [{ date_max: null, __count: 0 }];
+                }
+            },
+        });
+
+        assert.strictEqual(
+            dashboard.el.querySelector(".o_value").textContent.trim(),
+            "-",
+            "should correctly display the aggregate's value"
+        );
+    });
+
+    QUnit.test(
+        "basic rendering of a many2one aggregate with empty result set",
+        async function (assert) {
+            assert.expect(3);
+
+            const dashboard = await makeView({
+                type: "dashboard",
+                resModel: "test_time_range",
+                serverData,
+                arch: `
+                <dashboard>
+                    <group>
+                        <aggregate name="category_count" field="categ_id" help="some help" />
+                    </group>
+                </dashboard>
+            `,
+                mockRPC(route, args) {
+                    if (args.method === "read_group") {
+                        return [{ category_count: 0, __count: 0 }];
+                    }
+                },
+            });
+
+            assert.strictEqual(
+                dashboard.el.querySelector(".o_value").textContent.trim(),
+                "0",
+                "should correctly display the aggregate's value"
+            );
+
+            const agg = dashboard.el.querySelector(".o_aggregate");
+            const tooltipInfo = JSON.parse(agg.dataset.tooltipInfo);
+            assert.strictEqual(serverData.models.test_time_range.fields.categ_id.type, "many2one");
+            assert.strictEqual(tooltipInfo.formatter, "integer");
+        }
+    );
+
     QUnit.test(
         "click on a non empty cell in an embedded pivot view redirects to a list view",
         async function (assert) {
@@ -3807,6 +4011,55 @@ QUnit.module("Views", (hooks) => {
         assert.containsOnce(dashboard, ".o_subview[type=pivot] .o_view_nocontent");
         assert.containsNone(dashboard, ".o_subview[type=pivot] .o_view_nocontent .abc");
         assert.containsNone(dashboard, ".o_view_nocontent .abc");
+    });
+
+    QUnit.test("empty dashboard view with sub views and sample data (2)", async function (assert) {
+        serverData.models.test_report.records = [];
+        serverData.views = {
+            "test_report,false,graph": `
+                <graph>
+                    <field name="categ_id"/>
+                </graph>
+            `,
+            "test_report,false,pivot": `
+                <pivot>
+                    <field name="categ_id" type="row"/>
+                </pivot>
+            `,
+        };
+
+        const searchViewArch = `
+            <search>
+                <filter name="noId" domain="[('id', '&lt;', 0)]" />
+            </search>
+        `;
+
+        const dashboard = await makeView({
+            type: "dashboard",
+            resModel: "test_report",
+            serverData,
+            searchViewArch,
+            arch: `
+                <dashboard sample="1">
+                    <view type="graph"/>
+                    <view type="pivot"/>
+                </dashboard>
+            `,
+            context: { search_default_noId: 1 },
+        });
+
+        assert.hasClass(dashboard.el, "o_view_sample_data");
+        assert.hasClass(dashboard.el.querySelector(".o_graph_view"), "o_view_sample_data");
+        assert.hasClass(dashboard.el.querySelector(".o_pivot_view"), "o_view_sample_data");
+        assert.containsOnce(dashboard, ".o_subview[type=graph] canvas");
+        assert.containsOnce(dashboard, ".o_subview[type=pivot] table");
+
+        await toggleFilterMenu(dashboard);
+        await toggleMenuItem(dashboard, "noId");
+
+        assert.doesNotHaveClass(dashboard.el, "o_view_sample_data");
+        assert.doesNotHaveClass(dashboard.el.querySelector(".o_graph_view"), "o_view_sample_data");
+        assert.doesNotHaveClass(dashboard.el.querySelector(".o_pivot_view"), "o_view_sample_data");
     });
 
     QUnit.test("non empty dashboard view with sub views and sample data", async function (assert) {
@@ -4129,5 +4382,140 @@ QUnit.module("Views", (hooks) => {
             dashboard.el.querySelector(".o_aggregate .o_comparison").textContent,
             "The value is 16 vs The value is 4"
         );
+    });
+
+    QUnit.test("sub views do not use dashboard search_defaults", async function (assert) {
+        serverData.views = {
+            "test_report,false,legacy_toy": `<legacy_toy/>`,
+            "test_report,false,dashboard": `
+                <dashboard>
+                    <view type="pivot"/>
+                </dashboard>
+            `,
+            "test_report,false,pivot": `
+                <pivot/>
+            `,
+            "test_report,false,search": `
+                <search>
+                    <filter name="noId" string="Filter" domain="[('0', '=', 1)]" />
+                </search>
+            `,
+        };
+
+        const LegacyToyView = AbstractView.extend({
+            display_name: "Legacy toy view",
+            icon: "fa fa-bars",
+            multiRecord: true,
+            viewType: "legacy_toy",
+            searchMenuTypes: [],
+        });
+
+        legacyViewRegistry.add("legacy_toy", LegacyToyView);
+
+        const target = getFixture();
+
+        const webClient = await createWebClient({ serverData });
+
+        await doAction(webClient, {
+            name: "Dashboard",
+            res_model: "test_report",
+            type: "ir.actions.act_window",
+            views: [[false, "legacy_toy"], [false, "dashboard"], [false, "search"]],
+            context: { search_default_noId: 1 },
+        });
+
+        assert.deepEqual(getFacetTexts(target), ["Filter"]);
+
+        await switchView(target, "dashboard");
+
+        assert.deepEqual(getFacetTexts(target), ["Filter"]);
+        assert.containsOnce(target, ".o_pivot_view .o_nocontent_help");
+        assert.containsNone(target, ".o_pivot_view table");
+
+        await removeFacet(target);
+
+        assert.deepEqual(getFacetTexts(target), []);
+        assert.containsNone(target, ".o_pivot_view .o_nocontent_help");
+        assert.containsOnce(target, ".o_pivot_view table");
+    });
+
+    QUnit.test(
+        "the group by menu button of a graph sub view should have the same style as other buttons",
+        async function (assert) {
+            serverData.views = {
+                "test_report,false,graph": `
+                  <graph/>
+                `,
+            };
+
+            const dashboard = await makeView({
+                serverData,
+                type: "dashboard",
+                resModel: "test_report",
+                arch: `
+                    <dashboard>
+                        <view type="graph"/>
+                    </dashboard>
+                `,
+            });
+
+            const groupByMenuButton = dashboard.el.querySelector(".o_group_by_menu button");
+
+            assert.hasClass(groupByMenuButton, "btn-outline-secondary");
+            assert.doesNotHaveClass(groupByMenuButton, "btn-light");
+        }
+    );
+
+    QUnit.test("keep states of sub views after update of props", async function (assert) {
+        serverData.views = {
+            "test_report,false,pivot": `
+                <pivot>
+                    <field name="categ_id" type="row"/>
+                    <field name="sold" type="measure"/>
+                </pivot>
+            `,
+        };
+
+        const dashboard = await makeView({
+            serverData,
+            type: "dashboard",
+            resModel: "test_report",
+            arch: `
+                <dashboard>
+                    <view type="pivot"/>
+                </dashboard>
+            `,
+            searchViewArch: `
+                <search>
+                    <filter name="noId" string="Filter" domain="[(1, '=', 1)]" />
+                </search>
+            `,
+        });
+
+        assert.deepEqual(
+            [...dashboard.el.querySelectorAll(".o_pivot_cell_value div")].map(
+                (el) => el.innerText
+            ),
+            ["8.00", "5.00", "3.00"]
+        )
+
+        await click(dashboard.el, ".o_pivot_flip_button");
+
+        assert.deepEqual(
+            [...dashboard.el.querySelectorAll(".o_pivot_cell_value div")].map(
+                (el) => el.innerText
+            ),
+            ["5.00", "3.00", "8.00"]
+        )
+
+        await toggleFilterMenu(dashboard);
+        await toggleMenuItem(dashboard, "Filter");
+
+        assert.deepEqual(
+            [...dashboard.el.querySelectorAll(".o_pivot_cell_value div")].map(
+                (el) => el.innerText
+            ),
+            ["5.00", "3.00", "8.00"]
+        )
     });
 });

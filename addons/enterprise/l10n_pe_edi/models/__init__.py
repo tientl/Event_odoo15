@@ -13,3 +13,4 @@ from . import uom_uom
 from . import account_edi_format
 from . import account_journal
 from . import product_template
+from . import mail_template

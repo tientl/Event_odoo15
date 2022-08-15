@@ -23,7 +23,7 @@ from odoo import api, fields, models, http, _, Command
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, config, get_lang, is_html_empty, formataddr
 from odoo.exceptions import UserError, ValidationError
 
-TTFSearchPath.append(os.path.join(config["root_path"], "..", "addons", "web", "static", "src", "fonts", "sign"))
+TTFSearchPath.append(os.path.join(config["root_path"], "..", "addons", "web", "static", "fonts", "sign"))
 
 
 def _fix_image_transparency(image):
@@ -732,7 +732,7 @@ class SignRequestItem(models.Model):
             self.env['sign.request']._message_send_mail(
                 body, 'mail.mail_notification_light',
                 {'record_name': signer.sign_request_id.reference},
-                {'model_description': 'signature', 'company': signer.create_uid.company_id},
+                {'model_description': 'signature', 'company': self.env.company},
                 {'email_from': signer.create_uid.email_formatted,
                  'author_id': signer.create_uid.partner_id.id,
                  'email_to': formataddr((signer.partner_id.name, signer.signer_email)),

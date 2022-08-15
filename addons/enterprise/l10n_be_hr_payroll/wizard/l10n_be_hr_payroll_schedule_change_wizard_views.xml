@@ -40,9 +40,9 @@
                 <separator string="Time Off Allocation"/>
                 <group>
                     <group>
-                        <field name="leave_type_id" options="{'no_create' : True}"/>
+                        <field name="leave_type_id" options="{'no_create' : True}" context="{'employee_id': employee_id}"/>
                     </group>
-                    <group>
+                    <group attrs="{'invisible': ['|', ('leave_type_id', '=', True), ('found_leave_allocation', '=', False)]}">
                         <label for="full_time_off_allocation"/>
                         <div class="o_row">
                             <field name="full_time_off_allocation"/>
@@ -54,7 +54,7 @@
                             <span>days</span>
                         </div>
                     </group>
-                    <strong class="text-warning o_group_col_12" attrs="{'invisible': ['|', ('leave_type_id', '=', False), ('found_leave_allocation', '=', True)]}">
+                    <strong class="o_group_col_12" attrs="{'invisible': ['|', ('leave_type_id', '=', False), ('found_leave_allocation', '=', True)]}" style="color:#ff6600;">
                         No time off allocation has been found for this time off type, no changes will occur to time off for this employee.
                     </strong>
                 </group>

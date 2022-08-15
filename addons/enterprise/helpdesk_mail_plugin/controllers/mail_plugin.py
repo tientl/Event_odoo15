@@ -9,7 +9,15 @@ from odoo.addons.mail_plugin.controllers import mail_plugin
 class MailPluginController(mail_plugin.MailPluginController):
 
     def _get_contact_data(self, partner):
+        """
+        Return the tickets key only if the current user can create tickets. So, if he can not
+        create tickets, the section won't be visible on the addin side (like if the Helpdesk
+        module was not installed on the database).
+        """
         contact_values = super(MailPluginController, self)._get_contact_data(partner)
+
+        if not request.env['helpdesk.ticket'].check_access_rights('create', raise_exception=False):
+            return contact_values
 
         contact_values['tickets'] = self._fetch_partner_tickets(partner) if partner else []
 
@@ -33,7 +41,13 @@ class MailPluginController(mail_plugin.MailPluginController):
         } for ticket in tickets]
 
     def _mail_content_logging_models_whitelist(self):
-        return super(MailPluginController, self)._mail_content_logging_models_whitelist() + ['helpdesk.ticket']
+        models_whitelist = super(MailPluginController, self)._mail_content_logging_models_whitelist()
+        if not request.env['helpdesk.ticket'].check_access_rights('create', raise_exception=False):
+            return models_whitelist
+        return models_whitelist + ['helpdesk.ticket']
 
     def _translation_modules_whitelist(self):
-        return super(MailPluginController, self)._translation_modules_whitelist() + ['helpdesk_mail_plugin']
+        modules_whitelist = super(MailPluginController, self)._translation_modules_whitelist()
+        if not request.env['helpdesk.ticket'].check_access_rights('create', raise_exception=False):
+            return modules_whitelist
+        return modules_whitelist + ['helpdesk_mail_plugin']

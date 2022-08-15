@@ -225,3 +225,10 @@ class DeliverCarrier(models.Model):
         weight_in_pounds = weight_uom_id._compute_quantity(weight, self.env.ref('uom.product_uom_lb'))
         weigth_in_ounces = max(0.1, float_round((weight_in_pounds * 16), precision_digits=1))
         return weigth_in_ounces
+
+    def _get_delivery_type(self):
+        """ Override of delivery to return the easypost delivery type."""
+        res = super()._get_delivery_type()
+        if self.delivery_type != 'easypost':
+            return res
+        return self.easypost_delivery_type

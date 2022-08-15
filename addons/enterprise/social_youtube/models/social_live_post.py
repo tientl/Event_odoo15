@@ -50,7 +50,7 @@ class SocialLivePostYoutube(models.Model):
                 )
 
                 if not result.ok:
-                    account.sudo().write({'is_media_disconnected': True})
+                    account._action_disconnect_accounts(result.json())
                     break
 
                 youtube_videos += result.json().get('items')

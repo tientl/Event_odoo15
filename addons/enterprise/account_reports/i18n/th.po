@@ -8,24 +8,36 @@
 # Potsawat Manuthamathorn <firmpotsawat@hotmail.com>, 2021
 # Pornvibool Tippayawat <pornvibool.t@gmail.com>, 2021
 # Odoo Thaidev <odoothaidev@gmail.com>, 2021
-# Martin Trigaux, 2021
 # Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2021
 # gsong <gsong2014@foxmail.com>, 2021
-# Wichanon Jamwutthipreecha, 2021
+# Wichanon Jamwutthipreecha, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Wichanon Jamwutthipreecha, 2021\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Thai (https://www.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: th\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr ""
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -395,6 +407,11 @@ msgid "Account Display Representative Field"
 msgstr ""
 
 #. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "รายงานสมุดรายวันบัญชี"
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_payable__account_name
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__account_name
@@ -505,7 +522,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__report_adjustment
 msgid "Adjustment"
-msgstr ""
+msgstr "การปรับ"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
@@ -562,9 +579,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "ทั้งหมด"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr ""
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
@@ -984,7 +1006,7 @@ msgstr "รหัส"
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:0
 #, python-format
 msgid "Code:"
-msgstr ""
+msgstr "โค้ด:"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_general_ledger.py:0
@@ -1111,6 +1133,7 @@ msgstr "ต้นทุนสินค้า"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "ประเทศ"
 
@@ -1351,7 +1374,7 @@ msgstr "โดเมน:"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
 msgid "Domestic"
-msgstr ""
+msgstr "ภายในประเทศ"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -1587,7 +1610,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template
 msgid "Folded"
-msgstr ""
+msgstr "พับ"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_report_manager__footnotes_ids
@@ -1638,7 +1661,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "From:"
-msgstr ""
+msgstr "จาก:"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_reports_export_wizard_format__fun_to_call
@@ -1686,6 +1709,11 @@ msgstr ""
 #, python-format
 msgid "Goods"
 msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "ตาราง"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
@@ -1767,6 +1795,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__id
 msgid "ID"
 msgstr "รหัส"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -1984,7 +2022,7 @@ msgstr "เดือนที่แล้ว"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "Last Quarter"
-msgstr ""
+msgstr "ไตรมาสที่แล้ว"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_cell_template_link_last_statement
@@ -2283,7 +2321,7 @@ msgstr ""
 #: code:addons/account_reports/static/src/js/account_reports.js:0
 #, python-format
 msgid "Odoo Warning"
-msgstr ""
+msgstr "คำเตือน Odoo"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__period5
@@ -2367,7 +2405,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_reports_export_wizard_format__export_wizard_id
 msgid "Parent Wizard"
-msgstr ""
+msgstr "ตัวช่วยหลัก"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_analytic_report.py:0
@@ -2459,7 +2497,7 @@ msgstr ""
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_performance0
 msgid "Performance"
-msgstr ""
+msgstr "ประสิทธิภาพ"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_config_settings__account_tax_periodicity
@@ -2469,7 +2507,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:account_reports.setup_financial_year_opening_form
 msgid "Periodicity"
-msgstr ""
+msgstr "เป็นระยะ"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_year_op__account_tax_periodicity
@@ -2522,7 +2560,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
 msgid "Previous Period"
-msgstr ""
+msgstr "ช่วงก่อนหน้า"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_previous_year_earnings0
@@ -2556,7 +2594,7 @@ msgstr "กำไรขาดทุน"
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_profitability0
 msgid "Profitability"
-msgstr ""
+msgstr "การทำกำไร"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_move_form_vat_return
@@ -2809,7 +2847,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_company__account_tax_periodicity_reminder_day
 msgid "Start from"
-msgstr ""
+msgstr "เริ่มต้นจาก"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_report_manager__summary
@@ -2849,6 +2887,11 @@ msgstr ""
 #, python-format
 msgid "Tax Declaration"
 msgstr "การแจ้งภาษี"
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr ""
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
@@ -3016,7 +3059,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template
 msgid "There are"
-msgstr ""
+msgstr "มี"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
@@ -3036,7 +3079,7 @@ msgstr "เดือนนี้"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "This Quarter"
-msgstr ""
+msgstr "ไตรมาสนี้"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -3096,7 +3139,7 @@ msgstr "รวม"
 #: code:addons/account_reports/models/account_general_ledger.py:0
 #, python-format
 msgid "Total %s"
-msgstr ""
+msgstr "รวม %s"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
@@ -3418,7 +3461,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_date_filter
 msgid "to:"
-msgstr ""
+msgstr "ถึง:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template

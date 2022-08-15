@@ -109,8 +109,8 @@ class TestL10nClDte(TestL10nClEdiCommon):
             'l10n_cl_edi', 'tests', 'expected_xml', 'token.xml')).read()
 
         self.assertXmlTreeEqual(
-            self.get_xml_tree_from_string(xml_expected_dte.encode()),
-            self.get_xml_tree_from_string(self.env['l10n_cl.edi.util']._get_signed_token(self.certificate, seed).encode())
+            self.get_xml_tree_from_string(self.env['l10n_cl.edi.util']._get_signed_token(self.certificate, seed).encode()),
+            self.get_xml_tree_from_string(xml_expected_dte.encode())
         )
 
     def test_analyze_sii_result_rsc(self):

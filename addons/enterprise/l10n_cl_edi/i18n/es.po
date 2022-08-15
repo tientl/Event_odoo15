@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-28 20:18+0000\n"
-"PO-Revision-Date: 2021-10-28 19:46-0300\n"
+"POT-Creation-Date: 2022-02-14 23:32+0000\n"
+"PO-Revision-Date: 2022-02-14 23:32+0000\n"
 "Last-Translator: Daniel Blanco <daniel@blancomartin.cl>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1698,15 +1698,9 @@ msgstr "Última actualización en"
 
 #. module: l10n_cl_edi
 #: model_terms:ir.ui.view,arch_db:l10n_cl_edi.fetchmail_server_form_l10n_cl
-msgid "Last message UID"
-msgstr "ID de Usuario del ultimo mensaje"
-
-#. module: l10n_cl_edi
 #: model:ir.model.fields,field_description:l10n_cl_edi.field_fetchmail_server__l10n_cl_last_uid
-#, fuzzy
-#| msgid "Last message UID"
-msgid "Last message UID (CL)"
-msgstr "ID de Usuario del ultimo mensaje"
+msgid "Last read message ID"
+msgstr "Ultimo mensaje leído"
 
 #. module: l10n_cl_edi
 #: model:ir.model,name:l10n_cl_edi.model_l10n_latam_document_type
@@ -2422,8 +2416,8 @@ msgid ""
 "There are no CAFs available for folio %s in the sequence of %s. Please "
 "upload a CAF file or ask for a new one at www.sii.cl website"
 msgstr ""
-"No hay CAFs disponibles para el folio %s de la secuencia %s. Por favor suba "
-"un archivo CAF o solicite uno nuevo en el sitio web del SII (www.sii.cl)"
+"No hay CAFs disponible para el folio %d en la secuencia de %s. Por favor "
+"subo un archivo CAF o solicite uno nuevo en el sitio www.sii.cl"
 
 #. module: l10n_cl_edi
 #: code:addons/l10n_cl_edi/models/l10n_latam_document_type.py:0
@@ -2521,23 +2515,59 @@ msgstr ""
 
 #. module: l10n_cl_edi
 #: code:addons/l10n_cl_edi/models/account_move.py:0
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "This %s is accepted by SII. It cannot be reset to draft state. Instead "
+#| "you should revert it."
 msgid ""
-"This %s is accepted by SII. It cannot be cancelled. Instead you should "
+"This %s is in SII status %s. It cannot be reset to draft state. Instead you "
+"should revert it."
+msgstr ""
+"Esta %s está %s por el SII. No puede ser restablecida a estado "
+"borrador. En su lugar Ud. Debería revertirla."
+
+#. module: l10n_cl_edi
+#: code:addons/l10n_cl_edi/models/account_move.py:0
+#, fuzzy, python-format
+#| msgid ""
+#| "This %s is accepted by SII. It cannot be cancelled. Instead you should "
+#| "revert it."
+msgid ""
+"This %s is in SII status: %s. It cannot be cancelled. Instead you should "
 "revert it."
 msgstr ""
-"Este/a %s está aceptada por el SII. No puede ser anulada. En su lugar Ud. "
+"Esta %s está %s por el SII. No puede ser anulada. En su lugar Ud. "
 "debería revertirla."
 
 #. module: l10n_cl_edi
 #: code:addons/l10n_cl_edi/models/account_move.py:0
 #, python-format
 msgid ""
-"This %s is accepted by SII. It cannot be set to draft state. Instead you "
-"should revert it."
+"This %s is in the intermediate state: 'Ask for Status in the SII'. You will "
+"be able to cancel it only when the document has reached the state of "
+"rejection. Otherwise, if it were accepted or objected you should revert it "
+"with a suitable document instead of cancelling it."
 msgstr ""
-"Este/a %s está aceptada por el SII. No puede ser puesta en estado borrador. "
-"En su lugar Ud. Debería revertirla."
+"Esta %s se encuentra en el estado intermedio: 'Consultar Estado en SII'. Ud "
+"podrá cancelarla unicamente cuando el documento haya llegado a estado de "
+"rechazo. De lo contrario, si llegó a estado de 'aceptado' o 'aceptado con "
+"reparos', en lugar de cancelarlo, deberá revertirlo con un documento "
+"adecuado."
+
+#. module: l10n_cl_edi
+#: code:addons/l10n_cl_edi/models/account_move.py:0
+#, python-format
+msgid ""
+"This %s is in the intermediate state: 'Ask for Status in the SII'. You will "
+"be able to reset it to draft only when the document has reached the state of "
+"rejection. Otherwise, if it were accepted or objected you should revert it "
+"with a suitable document instead of cancelling it."
+msgstr ""
+"Esta %s se encuentra en el estado intermedio: 'Consultar Estado en SII'. Ud "
+"podrá reestablecerla a borrador unicamente cuando el documento haya llegado "
+"a estado de rechazo. De lo contrario, si llegó a estado de 'aceptado' o "
+"'aceptado con reparos', en lugar de pasarlo a borrador, deberá revertirlo "
+"con un documento adecuado."
 
 #. module: l10n_cl_edi
 #: code:addons/l10n_cl_edi/models/account_move.py:0
@@ -2546,7 +2576,7 @@ msgid ""
 "This %s is rejected by SII. Instead of creating a reverse, you should set it "
 "to draft state, correct it and post it again."
 msgstr ""
-"Este %s fue rechazado por el SII. En lugar de crear una reversión, Ud. "
+"Esta %s fue rechazada por el SII. En lugar de crear una reversión, Ud. "
 "debería establecerla en estado de borrador, corregirla y publicarla "
 "nuevamente."
 
@@ -2599,6 +2629,12 @@ msgid "This feature is not available in certification/test mode"
 msgstr "Esta característica no está disponible (modo test/certificación)"
 
 #. module: l10n_cl_edi
+#: code:addons/l10n_cl_edi/models/account_move.py:0
+#, python-format
+msgid "This invoice is being processed already."
+msgstr "Esta factura ya se está procesando."
+
+#. module: l10n_cl_edi
 #: model:ir.model.fields,help:l10n_cl_edi.field_l10n_cl_certificate__subject_serial_number
 msgid ""
 "This is the document of the owner of this certificate.Some certificates does "
@@ -2638,11 +2674,11 @@ msgstr "Este número es necesario solo si el SII se lo ha provisto."
 #. module: l10n_cl_edi
 #: model:ir.model.fields,help:l10n_cl_edi.field_fetchmail_server__l10n_cl_last_uid
 msgid ""
-"This value is pointing to the number of the last message unread by odoo in "
+"This value is pointing to the number of the last message read by odoo in "
 "the inbox. This value will be updated by the system during its "
 "normaloperation."
 msgstr ""
-"Este número apunta al número del último mensaje no leído por Odoo en el "
+"Este número apunta al número del último mensaje leído por Odoo en el "
 "email entrante. Este valor será actualizado por el sistema durante su "
 "operación normal."
 
@@ -2656,6 +2692,15 @@ msgstr ""
 "Este valor debe ser provisto y debe aparecer en su PDF o documento "
 "tributario impreso, debajo del timbre electrónica para que el mismo sea "
 "válido."
+
+#. module: l10n_cl_edi
+#: code:addons/l10n_cl_edi/models/account_move.py:0
+#, python-format
+msgid ""
+"Ticket is not allowed, please contact your administrator to install the "
+"l10n_cl_edi_boletas module"
+msgstr "La Boleta no está permitida, por favor, contacte con su administrador "
+"para instalar el módulo l10n_cl_edi_boletas"
 
 #. module: l10n_cl_edi
 #: model_terms:ir.ui.view,arch_db:l10n_cl_edi.barcode_stamp_footer

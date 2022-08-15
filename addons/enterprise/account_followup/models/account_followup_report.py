@@ -61,7 +61,7 @@ class AccountFollowupReport(models.AbstractModel):
         res = {}
         today = fields.Date.today()
         line_num = 0
-        for l in partner.unreconciled_aml_ids.filtered(lambda l: l.company_id == self.env.company):
+        for l in partner.unreconciled_aml_ids.sorted():
             if l.company_id == self.env.company:
                 if self.env.context.get('print_mode') and l.blocked:
                     continue
@@ -74,7 +74,7 @@ class AccountFollowupReport(models.AbstractModel):
             total_issued = 0
             for aml in aml_recs:
                 amount = aml.amount_residual_currency if aml.currency_id else aml.amount_residual
-                date_due = format_date(self.env, aml.date_maturity or aml.date, lang_code=lang_code)
+                date_due = format_date(self.env, aml.date_maturity or aml.move_id.invoice_date or aml.date, lang_code=lang_code)
                 total += not aml.blocked and amount or 0
                 is_overdue = today > aml.date_maturity if aml.date_maturity else today > aml.date
                 is_payment = aml.payment_id
@@ -94,7 +94,7 @@ class AccountFollowupReport(models.AbstractModel):
                 if len(invoice_origin) > 43:
                     invoice_origin = invoice_origin[:40] + '...'
                 columns = [
-                    format_date(self.env, aml.date, lang_code=lang_code),
+                    format_date(self.env, aml.move_id.invoice_date or aml.date, lang_code=lang_code),
                     date_due,
                     invoice_origin,
                     move_line_name,
@@ -275,6 +275,8 @@ class AccountFollowupReport(models.AbstractModel):
         options['partner_id'] = partner_id
         partner = self.env['res.partner'].browse(partner_id)
         followup_line = partner.followup_level
+        if followup_line and followup_line._amount_due_in_description() and options.get('total_due', -1) != partner.total_due:
+            options['keep_summary'] = False
         report_manager_id = self._get_report_manager(options).id
         html = self.get_html(options)
         next_action = False
@@ -284,6 +286,7 @@ class AccountFollowupReport(models.AbstractModel):
             'report_manager_id': report_manager_id,
             'html': html,
             'next_action': next_action,
+            'total_due': partner.total_due,
         }
         if partner.followup_level:
             infos['followup_level'] = self._get_line_info(followup_line)
@@ -328,17 +331,17 @@ class AccountFollowupReport(models.AbstractModel):
             raise UserError(_('You are trying to send a followup report to a partner for which you didn\'t print all the invoices ({})').format(" ".join(non_printed_invoices.mapped('name'))))
         invoice_partner = self.env['res.partner'].browse(partner.address_get(['invoice'])['invoice'])
         email = invoice_partner.email
-        options['keep_summary'] = True
         if email and email.strip():
+            self = self.with_context(lang=partner.lang or self.env.user.lang)
             # When printing we need te replace the \n of the summary by <br /> tags
-            body_html = self.with_context(print_mode=True, mail=True, lang=partner.lang or self.env.user.lang).get_html(options)
+            body_html = self.with_context(print_mode=True, mail=True).get_html(options)
             body_html = body_html.replace('o_account_reports_edit_summary_pencil', 'o_account_reports_edit_summary_pencil d-none')
             start_index = body_html.find('<span>', body_html.find('<div class="o_account_reports_summary">'))
             end_index = start_index > -1 and body_html.find('</span>', start_index) or -1
             if end_index > -1:
                 replaced_msg = body_html[start_index:end_index].replace('\n', '')
                 body_html = body_html[:start_index] + replaced_msg + body_html[end_index:]
-            partner.with_context(mail_post_autofollow=True).message_post(
+            partner.with_context(mail_post_autofollow=True, lang=partner.lang or self.env.user.lang).message_post(
                 partner_ids=[invoice_partner.id],
                 body=body_html,
                 subject=self._get_report_manager(options).email_subject,

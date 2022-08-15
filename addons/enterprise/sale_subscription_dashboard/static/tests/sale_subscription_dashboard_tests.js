@@ -2,14 +2,10 @@ odoo.define('sale_subscription_dashboard.sale_subscription_tests', function (req
     "use strict";
 
     var testUtils = require('web.test_utils');
+    const { patchWithCleanup } = require("@web/../tests/helpers/utils");
 
     var SubscriptionDashBoard = require('sale_subscription_dashboard.dashboard');
-    SubscriptionDashBoard.sale_subscription_dashboard_main.include({
-        update_cp: function () {},
-    });
-    SubscriptionDashBoard.sale_subscription_dashboard_salesman.include({
-        update_cp: function () {},
-    });
+
     QUnit.module('sale_subscription_dashboard', {
         beforeEach: function () {
             this.data = {
@@ -204,6 +200,13 @@ odoo.define('sale_subscription_dashboard.sale_subscription_tests', function (req
                 },
                 compute_stat: 10495,
             };
+
+            patchWithCleanup(SubscriptionDashBoard.sale_subscription_dashboard_main, {
+                update_cp() {}
+            });
+            patchWithCleanup(SubscriptionDashBoard.sale_subscription_dashboard_salesman, {
+                update_cp() {}
+            });
         }
     }, function () {
 
@@ -411,6 +414,70 @@ odoo.define('sale_subscription_dashboard.sale_subscription_tests', function (req
             );
 
             salesman_dashboard.destroy();
+        });
+
+        QUnit.test('clicking on a box make the right doAction', async function (assert) {
+            assert.expect(3);
+
+            const self = this;
+            const dashboard = new SubscriptionDashBoard.sale_subscription_dashboard_main(null, {});
+            dashboard.salesman = this.data.fetch_salesmen.default_salesman;
+            await testUtils.mock.addMockEnvironment(dashboard, {
+                mockRPC(route) {
+                    if (route === '/sale_subscription_dashboard/fetch_data') {
+                        return Promise.resolve(self.data.fetch_data);
+                    }
+                    if (route === '/sale_subscription_dashboard/compute_graph_and_stats') {
+                        return Promise.resolve(self.data.compute_stats_graph);
+                    }
+                    if (route === '/sale_subscription_dashboard/get_default_values_forecast') {
+                        return Promise.resolve(self.data.forecast_values);
+                    }
+                },
+                intercepts: {
+                    do_action({ data }) {
+                        assert.strictEqual(data.action, "sale_subscription_dashboard.action_subscription_dashboard_report_detailed");
+
+                        // checking only the keys as the value contain dates that are painful
+                        // to deal with in tests due to timzeones.
+                        assert.deepEqual(Object.keys(data.options), [
+                            "stat_types",
+                            "selected_stat",
+                            "start_date",
+                            "end_date",
+                            "contract_templates",
+                            "tags",
+                            "companies",
+                            "filters",
+                            "currency_id",
+                            "push_main_state",
+                            "sales_team",
+                            "dashboard_options",
+                            "props",
+                            "on_reverse_breadcrumb",
+                        ]);
+                        assert.deepEqual(Object.keys(data.options.props), [
+                            "stat_types",
+                            "selected_stat",
+                            "start_date",
+                            "end_date",
+                            "contract_templates",
+                            "tags",
+                            "companies",
+                            "filters",
+                            "currency_id",
+                            "sales_team",
+                            "dashboard_options"
+                        ]);
+                    }
+                }
+            });
+            await dashboard.appendTo(testUtils.prepareTarget());
+            dashboard.on_attach_callback();
+            await testUtils.nextTick();
+            await testUtils.dom.click(dashboard.$(".on_stat_box"));
+
+            dashboard.destroy();
         });
     });
 });

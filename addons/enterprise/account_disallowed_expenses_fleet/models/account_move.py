@@ -10,4 +10,4 @@ class AccountMoveLine(models.Model):
     @api.depends('account_id.disallowed_expenses_category_id')
     def _compute_need_vehicle(self):
         for record in self:
-            record.need_vehicle = record.account_id.disallowed_expenses_category_id.car_category and record.move_id.move_type == 'in_invoice'
+            record.need_vehicle = record.account_id.disallowed_expenses_category_id.sudo().car_category and record.move_id.move_type == 'in_invoice'

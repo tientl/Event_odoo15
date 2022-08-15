@@ -85,7 +85,9 @@ class AccountJournal(models.Model):
 
     def _default_outbound_payment_methods(self):
         res = super()._default_outbound_payment_methods()
-        return res | self.env.ref('account_sepa.account_payment_method_sepa_ct')
+        if self._is_payment_method_available('sepa_ct'):
+            res |= self.env.ref('account_sepa.account_payment_method_sepa_ct')
+        return res
 
     def create_iso20022_credit_transfer(self, payments, batch_booking=False, sct_generic=False):
         """
@@ -119,15 +121,16 @@ class AccountJournal(models.Model):
         CtrlSum.text = self._get_CtrlSum(payments)
         GrpHdr.append(self._get_InitgPty(pain_version, sct_generic))
 
-        # Create one PmtInf XML block per execution date
+        # Create one PmtInf XML block per execution date, per currency
         payments_date_instr_wise = defaultdict(lambda: [])
         today = fields.Date.today()
         for payment in payments:
             local_instrument = self._get_local_instrument(payment)
             required_payment_date = payment['payment_date'] if payment['payment_date'] > today else today
-            payments_date_instr_wise[(required_payment_date, local_instrument)].append(payment)
+            currency = payment['currency_id'] or self.company_id.currency_id.id
+            payments_date_instr_wise[(required_payment_date, local_instrument, currency)].append(payment)
         count = 0
-        for (payment_date, local_instrument), payments_list in payments_date_instr_wise.items():
+        for (payment_date, local_instrument, currency), payments_list in payments_date_instr_wise.items():
             count += 1
             PmtInf = etree.SubElement(CstmrCdtTrfInitn, "PmtInf")
             PmtInfId = etree.SubElement(PmtInf, "PmtInfId")
@@ -151,7 +154,7 @@ class AccountJournal(models.Model):
             PmtInf.append(self._get_DbtrAcct())
             DbtrAgt = etree.SubElement(PmtInf, "DbtrAgt")
             FinInstnId = etree.SubElement(DbtrAgt, "FinInstnId")
-            if pain_version == "pain.001.001.03.se" and not self.bank_account_id.bank_bic:
+            if pain_version in ['pain.001.001.03.se', 'pain.001.001.03.ch.02'] and not self.bank_account_id.bank_bic:
                 raise UserError(_("Bank account %s 's bank does not have any BIC number associated. Please define one.") % self.bank_account_id.sanitized_acc_number)
             if self.bank_account_id.bank_bic:
                 BIC = etree.SubElement(FinInstnId, "BIC")
@@ -306,11 +309,21 @@ class AccountJournal(models.Model):
             AdrLine.text = sanitize_communication((partner_id.zip + " " + partner_id.city)[:70])
         return PstlAdr
 
+    def _skip_CdtrAgt(self, partner_bank, pain_version, local_instrument):
+        return (
+            self.env.context.get('skip_bic', False)
+            # Creditor Agent can be omitted with IBAN and QR-IBAN accounts
+            or pain_version == 'pain.001.001.03.ch.02'
+            and (self._is_qr_iban({'partner_bank_id' : partner_bank.id, 'journal_id' : self.id})
+                 or local_instrument == 'CH01')
+        )
+
     def _get_CdtTrfTxInf(self, PmtInfId, payment, sct_generic, pain_version, local_instrument=None):
         CdtTrfTxInf = etree.Element("CdtTrfTxInf")
         PmtId = etree.SubElement(CdtTrfTxInf, "PmtId")
-        InstrId = etree.SubElement(PmtId, "InstrId")
-        InstrId.text = sanitize_communication(payment['name'][:35])
+        if payment['name']:
+            InstrId = etree.SubElement(PmtId, "InstrId")
+            InstrId.text = sanitize_communication(payment['name'][:35])
         EndToEndId = etree.SubElement(PmtId, "EndToEndId")
         EndToEndId.text = (PmtInfId.text + str(payment['id']))[-30:]
         Amt = etree.SubElement(CdtTrfTxInf, "Amt")
@@ -338,7 +351,7 @@ class AccountJournal(models.Model):
 
         partner_bank = self.env['res.partner.bank'].sudo().browse(partner_bank_id)
 
-        if local_instrument != 'CH01' and not self.env.context.get('skip_bic', False):
+        if not self._skip_CdtrAgt(partner_bank, pain_version, local_instrument):
             CdtTrfTxInf.append(self._get_CdtrAgt(partner_bank, sct_generic, pain_version))
 
         Cdtr = etree.SubElement(CdtTrfTxInf, "Cdtr")
@@ -368,8 +381,8 @@ class AccountJournal(models.Model):
             BIC = etree.SubElement(FinInstnId, "BIC")
             BIC.text = bank_account.bank_bic.replace(' ', '').upper()
         else:
-            if pain_version == 'pain.001.001.03.austrian.004':
-                # Othr and NOTPROVIDED are not supported in CdtrAgt by this variant
+            if pain_version in ['pain.001.001.03.austrian.004', 'pain.001.001.03.ch.02']:
+                # Othr and NOTPROVIDED are not supported in CdtrAgt by those flavours
                 raise UserError(_("The bank defined on account %s (from partner %s) has no BIC. Please first set one.", bank_account.acc_number, bank_account.partner_id.name))
 
             Othr = etree.SubElement(FinInstnId, "Othr")

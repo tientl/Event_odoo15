@@ -177,3 +177,45 @@ class TestCaseDocumentsBridgeAccount(TransactionCase):
         documents = self.env['documents.document'].search([('attachment_id', 'in', attachments.ids)])
         self.assertEqual(len(documents), 2)
         setting.unlink()
+
+    def test_bridge_account_workflow_settings_on_write(self):
+        """
+        Tests that tags added by a workflow action are not completely overridden by the settings.
+        """
+        self.env.user.company_id.documents_account_settings = True
+        tag_category_a = self.env['documents.facet'].create({
+            'folder_id': self.folder_a.id,
+            'name': "categ_a",
+        })
+        tag_a = self.env['documents.tag'].create({
+            'facet_id': tag_category_a.id,
+            'name': "tag_a",
+        })
+        tag_b = self.env['documents.tag'].create({
+            'facet_id': tag_category_a.id,
+            'name': "tag_b",
+        })
+        tag_action_a = self.env['documents.workflow.action'].create({
+            'action': 'add',
+            'facet_id': tag_category_a.id,
+            'tag_id': tag_a.id,
+        })
+        self.workflow_rule_vendor_bill.tag_action_ids += tag_action_a
+
+        invoice_test = self.env['account.move'].with_context(default_move_type='in_invoice').create({
+            'name': 'invoice_test',
+            'move_type': 'in_invoice',
+        })
+        self.env['documents.account.folder.setting'].create({
+            'folder_id': self.folder_a.id,
+            'journal_id': invoice_test.journal_id.id,
+            'tag_ids': tag_b,
+        })
+        document_test = self.env['documents.document'].create({
+            'name': 'test reconciliation workflow',
+            'folder_id': self.folder_a.id,
+            'datas': TEXT,
+        })
+        self.workflow_rule_vendor_bill.apply_actions([document_test.id])
+        self.assertEqual(document_test.tag_ids, tag_a | tag_b,
+            "The document should have the workflow action's tag(s)")

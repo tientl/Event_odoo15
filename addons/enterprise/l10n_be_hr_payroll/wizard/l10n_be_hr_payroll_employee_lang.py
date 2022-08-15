@@ -45,4 +45,4 @@ class L10nBeHrPayrollEmployeeLangWizardLine(models.TransientModel):
 
     wizard_id = fields.Many2one('l10n_be.hr.payroll.employee.lang.wizard')
     employee_id = fields.Many2one('hr.employee')
-    lang = fields.Selection(_lang_get, string="Language", required=True)
+    lang = fields.Selection(_lang_get, string="Language", required=True, default=lambda self: self._lang_get()[0][0])

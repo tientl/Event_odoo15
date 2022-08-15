@@ -34,6 +34,13 @@ class ReportPartnerLedger(models.AbstractModel):
     ####################################################
 
     @api.model
+    def _get_filter_partners_domain(self, options):
+        if options.get('filter_accounts'):
+            return [('partner_id', 'ilike', options['filter_accounts'])]
+
+        return []
+
+    @api.model
     def _get_options_account_type(self, options):
         ''' Get select account type in the filter widget (see filter_account_type).
         :param options: The report options.
@@ -52,8 +59,11 @@ class ReportPartnerLedger(models.AbstractModel):
         # OVERRIDE
         # Handle filter_unreconciled + filter_account_type
         domain = super(ReportPartnerLedger, self)._get_options_domain(options)
+
+        domain += self._get_filter_partners_domain(options)
+
         if options.get('unreconciled'):
-            domain.append(('full_reconcile_id', '=', False))
+            domain += ['&', ('full_reconcile_id', '=', False), ('balance', '!=', '0')]
         exch_code = self.env['res.company'].browse(self.env.context.get('company_ids')).mapped('currency_exchange_journal_id')
         if exch_code:
             domain += ['!', '&', '&', '&', ('credit', '=', 0.0), ('debit', '=', 0.0), ('amount_currency', '!=', 0.0), ('journal_id.id', 'in', exch_code.ids)]

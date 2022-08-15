@@ -7,7 +7,7 @@ import session from 'web.session';
 import testUtils from 'web.test_utils';
 
 const createCalendarView = testUtils.createCalendarView;
-const initialDate = new Date('2020-10-26T08:00:00Z');
+const initialDate = new Date(moment().add(1, 'years').format('YYYY-01-05 00:00:00'));
 
 QUnit.module('appointment.appointment_link', {
     beforeEach: function () {
@@ -58,8 +58,8 @@ QUnit.module('appointment.appointment_link', {
                     user_id: session.uid,
                     partner_id: session.uid,
                     name: 'Event 1',
-                    start: moment().add(7, 'days').format('YYYY-MM-DD 10:00:00'),
-                    stop: moment().add(7, 'days').format('YYYY-MM-DD 11:00:00'),
+                    start: moment().add(1, 'years').format('YYYY-01-12 10:00:00'),
+                    stop: moment().add(1, 'years').format('YYYY-01-12 11:00:00'),
                     allday: false,
                     partner_ids: [1],
                 }, {
@@ -67,8 +67,8 @@ QUnit.module('appointment.appointment_link', {
                     user_id: session.uid,
                     partner_id: session.uid,
                     name: 'Event 2',
-                    start: moment().subtract(2, 'hours').format('YYYY-MM-DD HH:00:00'),
-                    stop: moment().subtract(1, 'hours').format('YYYY-MM-DD HH:00:00'),
+                    start: moment().add(1, 'years').format('YYYY-01-05 10:00:00'),
+                    stop: moment().add(1, 'years').format('YYYY-01-05 11:00:00'),
                     allday: false,
                     partner_ids: [1],
                 }, {
@@ -76,8 +76,8 @@ QUnit.module('appointment.appointment_link', {
                     user_id: 214,
                     partner_id: 214,
                     name: 'Event 3',
-                    start: moment().subtract(2, 'hours').format('YYYY-MM-DD HH:00:00'),
-                    stop: moment().subtract(1, 'hours').format('YYYY-MM-DD HH:00:00'),
+                    start: moment().add(1, 'years').format('YYYY-01-05 10:00:00'),
+                    stop: moment().add(1, 'years').format('YYYY-01-05 11:00:00'),
                     allday: false,
                     partner_ids: [214],
                 }
@@ -235,6 +235,9 @@ QUnit.test('discard slot in calendar', async function (assert) {
         translateParameters: { // Avoid issues due to localization formats
             time_format: "%I:%M:%S",
         },
+        viewOptions: {
+            initialDate: initialDate,
+        },
         mockRPC: async function (route, args) {
             if (route === '/microsoft_calendar/sync_data') {
                 return Promise.resolve();
@@ -296,6 +299,9 @@ QUnit.test("cannot move real event in slots-creation mode", async function (asse
             <field name="start"/>
             <field name="partner_ids" write_model="filter_partner" write_field="partner_id"/>
         </calendar>`,
+        viewOptions: {
+            initialDate: initialDate,
+        },
         mockRPC: function (route, args) {
             if (args.method === "write") {
                 assert.step('write event');
@@ -354,6 +360,9 @@ QUnit.test("create slots for custom appointment type", async function (assert) {
         </calendar>`,
         translateParameters: { // Avoid issues due to localization formats
             time_format: "%I:%M:%S",
+        },
+        viewOptions: {
+            initialDate: initialDate,
         },
         mockRPC: function (route, args) {
             if (route === "/appointment/calendar_appointment_type/create_custom") {
@@ -420,6 +429,9 @@ QUnit.test('filter works in slots-creation mode', async function (assert) {
         </calendar>`,
         translateParameters: { // Avoid issues due to localization formats
             time_format: "%I:%M:%S",
+        },
+        viewOptions: {
+            initialDate: initialDate,
         },
         mockRPC: function (route, args) {
             if (route === '/microsoft_calendar/sync_data') {
@@ -498,6 +510,9 @@ QUnit.test('click & copy appointment type url', async function (assert) {
             <field name="name"/>
             <field name="partner_ids" write_model="filter_partner" write_field="partner_id"/>
         </calendar>`,
+        viewOptions: {
+            initialDate: initialDate,
+        },
         mockRPC: function (route, args) {
             if (route === '/microsoft_calendar/sync_data') {
                 return Promise.resolve();
@@ -547,6 +562,9 @@ QUnit.test('create/search work hours appointment type', async function (assert) 
             <field name="name"/>
             <field name="partner_ids" write_model="filter_partner" write_field="partner_id"/>
         </calendar>`,
+        viewOptions: {
+            initialDate: initialDate,
+        },
         mockRPC: function (route, args) {
             if (route === "/appointment/calendar_appointment_type/search_create_work_hours") {
                 assert.step(route);

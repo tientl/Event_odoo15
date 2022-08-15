@@ -12,7 +12,7 @@ class HelpdeskSLAReport(models.Model):
     _order = 'create_date DESC'
 
     ticket_id = fields.Many2one('helpdesk.ticket', string='Ticket', readonly=True)
-    create_date = fields.Date("Ticket Create Date", readonly=True)
+    create_date = fields.Datetime("Ticket Create Date", readonly=True)
     priority = fields.Selection(TICKET_PRIORITY, string='Minimum Priority', readonly=True)
     user_id = fields.Many2one('res.users', string="Assigned To", readonly=True)
     partner_id = fields.Many2one('res.partner', string="Customer", readonly=True)

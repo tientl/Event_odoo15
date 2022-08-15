@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
-from odoo.tests import common
+from odoo.tests import common, tagged
 from odoo.addons.mail.tests.common import mail_new_test_user
 
 
+@tagged('dmfa')
 class TestDMFA(common.TransactionCase):
 
     def test_dmfa(self):

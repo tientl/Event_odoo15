@@ -10,7 +10,9 @@ class AccountJournal(models.Model):
 
     def _default_inbound_payment_methods(self):
         res = super()._default_inbound_payment_methods()
-        return res | self.env.ref('account_sepa_direct_debit.payment_method_sdd')
+        if self._is_payment_method_available('sdd'):
+            res |= self.env.ref('account_sepa_direct_debit.payment_method_sdd')
+        return res
 
     def get_journal_dashboard_datas(self):
         """ Overridden from account in order to add on the dashboard the number

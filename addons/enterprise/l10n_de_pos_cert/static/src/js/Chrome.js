@@ -12,6 +12,18 @@ odoo.define('l10n_de_pos_cert.Chrome', function(require) {
             useListener('fiskaly-error', this._fiskalyError);
             useListener('fiskaly-no-internet-confirm-popup', this._showFiskalyNoInternetConfirmPopup);
         }
+        // @Override
+        _errorHandler(error, errorToHandle) {
+            if (errorToHandle.code === 'fiskaly') {
+                const message = {
+                    'noInternet': this.env._t('Cannot sync the orders with Fiskaly !'),
+                    'unknown': this.env._t('An unknown error has occurred ! Please contact Odoo for more information.')
+                };
+                this.trigger('fiskaly-error', {error: errorToHandle, message});
+            } else {
+                super._errorHandler(...arguments);
+            }
+        }
         async _fiskalyError(event) {
             let error = event.detail.error;
             if (error.status === 0) {

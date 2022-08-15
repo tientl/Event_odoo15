@@ -4,12 +4,15 @@
 import base64
 import io
 
-from odoo.tests.common import TransactionCase
 from PIL import Image
 from datetime import datetime
 
+from odoo.addons.industry_fsm_sale.tests.common import TestFsmFlowSaleCommon
+from odoo.tests import tagged
 
-class TestTimerButtons(TransactionCase):
+
+@tagged('post_install', '-at_install')
+class TestTimerButtons(TestFsmFlowSaleCommon):
     """ Test visibility of the following buttons:
         - START/STOP/PAUSE/RESUME
         - Send/Sign Report
@@ -48,6 +51,10 @@ class TestTimerButtons(TransactionCase):
             'project_id': cls.project.id,
             'partner_id': cls.customer.id,
             'worksheet_template_id': cls.env.ref('industry_fsm_report.fsm_worksheet_template').id,
+        })
+        cls.employee = cls.env['hr.employee'].with_company(cls.env.company).create({
+            'name': 'Employee Default',
+            'user_id': cls.env.uid,
         })
 
     def test_timer_buttons_01(self):
@@ -113,6 +120,40 @@ class TestTimerButtons(TransactionCase):
         self.assertFalse(self.task.display_timer_stop)
         self.assertFalse(self.task.display_timer_pause)
         self.assertFalse(self.task.display_timer_resume)
+
+    def test_timer_buttons_06(self):
+        # only visible if the user has an employee in the company or one employee for all companies
+        company_2 = self.env['res.company'].create({
+            'name': 'Company 2',
+        })
+        company_3 = self.env['res.company'].create({
+            'name': 'Company 3',
+        })
+
+        task = self.task.with_context(allowed_company_ids=[company_3.id, company_2.id, self.env.company.id])
+
+        # allow user to write on tasks
+        self.project.write({
+            'privacy_visibility': 'followers',
+            'message_partner_ids': self.env.user.partner_id,
+        })
+        self.env.user.write ({
+            'groups_id': [(4, self.env.ref('project.group_project_manager').id)],
+        })
+
+        # 1 employee for 3 companies must work        
+        task._compute_display_timer_buttons()
+        self.assertTrue(task.display_timer_start_primary)
+        self.assertFalse(task.display_timer_start_secondary)
+
+        # 2 employee for 3 companies must not work
+        self.env['hr.employee'].with_company(company_2).create({
+            'name': 'Employee 2',
+            'user_id': self.env.uid,
+        })
+        task._compute_display_timer_buttons()
+        self.assertFalse(task.display_timer_start_primary)
+        self.assertFalse(task.display_timer_start_secondary)
 
     def test_send_sign_report_buttons_01(self):
         # Sign/Send not visible if Time = 0 AND Worksheet = 0 AND Products = 0

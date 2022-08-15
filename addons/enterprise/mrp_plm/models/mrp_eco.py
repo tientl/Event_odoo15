@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
 import ast
 
 from collections import defaultdict
@@ -107,6 +108,8 @@ class MrpEcoApproval(models.Model):
         compute='_compute_is_approved', store=True)
     is_rejected = fields.Boolean(
         compute='_compute_is_rejected', store=True)
+    awaiting_my_validation = fields.Boolean(
+        compute='_compute_awaiting_my_validation', search='_search_awaiting_my_validation')
 
     @api.depends('status', 'approval_template_id.approval_type')
     def _compute_is_approved(self):
@@ -124,6 +127,21 @@ class MrpEcoApproval(models.Model):
             else:
                 rec.is_rejected = False
 
+    @api.depends('status', 'approval_template_id.approval_type')
+    def _compute_awaiting_my_validation(self):
+        # trigger the search method and return a domain where approval ids satisfying the conditions in the search method
+        awaiting_validation_approval = self.search([('id', 'in', self.ids), ('awaiting_my_validation', '=', True)])
+        # set awaiting_my_validation values for approvals
+        awaiting_validation_approval.awaiting_my_validation = True
+        (self - awaiting_validation_approval).awaiting_my_validation = False
+
+    def _search_awaiting_my_validation(self, operator, value):
+        if (operator, value) not in [('=', True), ('!=', False)]:
+            raise NotImplementedError(_('Operation not supported'))
+        return [('required_user_ids', 'in', self.env.uid),
+                ('approval_template_id.approval_type', 'in', ('mandatory', 'optional')),
+                ('status', '!=', 'approved'),
+                ('is_closed', '=', False)]
 
 class MrpEcoStage(models.Model):
     _name = 'mrp.eco.stage'
@@ -288,11 +306,11 @@ class MrpEco(models.Model):
     def _get_difference_bom_lines(self, old_bom, new_bom):
         # Return difference lines from two bill of material.
         new_bom_commands = [(5,)]
-        old_bom_lines = dict(((line.product_id, tuple(line.bom_product_template_attribute_value_ids.ids), line.operation_id), line) for line in old_bom.bom_line_ids)
+        old_bom_lines = dict(((line.product_id, tuple(line.bom_product_template_attribute_value_ids.ids), line.operation_id._get_comparison_values()), line) for line in old_bom.bom_line_ids)
         if self.new_bom_id:
             for line in new_bom.bom_line_ids:
-                old_line = old_bom_lines.pop((line.product_id, tuple(line.bom_product_template_attribute_value_ids.ids), line.operation_id), None)
-                if old_line and (line.product_uom_id, line.product_qty, line.operation_id) != (old_line.product_uom_id, old_line.product_qty, old_line.operation_id):
+                old_line = old_bom_lines.pop((line.product_id, tuple(line.bom_product_template_attribute_value_ids.ids), line.operation_id._get_comparison_values()), None)
+                if old_line and (line.product_uom_id, line.product_qty) != (old_line.product_uom_id, old_line.product_qty):
                     new_bom_commands += [(0, 0, {
                         'change_type': 'update',
                         'product_id': line.product_id.id,
@@ -393,16 +411,16 @@ class MrpEco(models.Model):
             if rec.state == 'confirmed' or rec.type == 'product':
                 continue
             new_routing_commands = [Command.clear()]
-            old_routing_lines = defaultdict(list)
+            old_routing_lines = defaultdict(lambda: self.env['mrp.routing.workcenter'])
+            # Two operations could have the same values so we save them with the same key
             for op in rec.bom_id.operation_ids:
-                old_routing_lines[op.workcenter_id.id].append(op)
+                old_routing_lines[op._get_comparison_values()] |= op
             if rec.new_bom_id and rec.bom_id:
                 for operation in rec.new_bom_id.operation_ids:
-                    old_ops = old_routing_lines[operation.workcenter_id.id]
-                    if old_ops:
-                        old_op = old_ops.pop(0)
-                        if not old_ops:
-                            old_routing_lines.pop(operation.workcenter_id.id)
+                    key = (operation._get_comparison_values())
+                    old_op = old_routing_lines[key][:1]
+                    if old_op:
+                        old_routing_lines[key] -= old_op
                         if tools.float_compare(old_op.time_cycle_manual, operation.time_cycle_manual, 2) != 0:
                             new_routing_commands += [Command.create({
                                 'change_type': 'update',
@@ -422,7 +440,7 @@ class MrpEco(models.Model):
                         new_routing_commands += self._prepare_detailed_change_commands(operation, None)
             for old_ops in old_routing_lines.values():
                 for old_op in old_ops:
-                    new_routing_commands += [Command.create({
+                    new_routing_commands += [(0, 0, {
                         'change_type': 'remove',
                         'workcenter_id': old_op.workcenter_id.id,
                         'old_time_cycle_manual': old_op.time_cycle_manual,
@@ -657,7 +675,7 @@ class MrpEco(models.Model):
                             'res_model': 'product.template',
                             'res_id': eco.product_tmpl_id.id,
                         })
-                        eco.product_tmpl_id.version = eco.product_tmpl_id.version + 1
+                    eco.product_tmpl_id.version = eco.product_tmpl_id.version + 1
                 else:
                     eco.mapped('new_bom_id').apply_new_version()
                     for attach in eco.mrp_document_ids:
@@ -763,7 +781,7 @@ class MrpEcoBomChange(models.Model):
             rec.uom_change = False
             if (rec.old_uom_id and rec.new_uom_id) and rec.old_uom_id != rec.new_uom_id:
                 rec.uom_change = rec.old_uom_id.name + ' -> ' + rec.new_uom_id.name
-            if (rec.old_operation_id != rec.new_operation_id) and rec.change_type == 'update':
+            if (rec.old_operation_id._get_comparison_values() != rec.new_operation_id._get_comparison_values()) and rec.change_type == 'update':
                 rec.operation_change = (rec.old_operation_id.name or '') + ' -> ' + (rec.new_operation_id.name or '')
 
 

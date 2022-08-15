@@ -37,7 +37,7 @@ class AccountMoveLine(models.Model):
     # NOTE: deps on subscription_id are omitted by design, as it would trigger a recompute of
     # past data is a subscription's template where changed somehow
     # This computation should happen once and should basically be left as-is once done
-    @api.depends("price_subtotal", "subscription_start_date", "subscription_end_date")
+    @api.depends("price_subtotal", "subscription_start_date", "subscription_end_date", "move_id.move_type")
     def _compute_mrr(self):
         """Compute the Subscription MRR for the line.
 
@@ -59,3 +59,5 @@ class AccountMoveLine(models.Model):
             )
             months = delta.months + delta.days / 30.0 + delta.years * 12.0
             line.subscription_mrr = line.price_subtotal / months if months else 0
+            if line.move_id.move_type == "out_refund":
+                line.subscription_mrr *= -1

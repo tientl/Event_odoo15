@@ -3,25 +3,38 @@
 # 	* account_reports
 # 
 # Translators:
-# Martin Trigaux, 2021
 # Chris Egal <sodaswed@web.de>, 2021
 # Andreas Schmidt <schmigo@gmail.com>, 2021
 # Felix Schubert <felix.schubert@go-erp.com>, 2021
-# Friederike Fasterling-Nesselbosch, 2021
+# Raymond Vetter, 2021
+# Martin Trigaux, 2022
+# Friederike Fasterling-Nesselbosch, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~14.5+e\n"
+"Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 11:00+0000\n"
+"POT-Creation-Date: 2022-02-18 09:51+0000\n"
 "PO-Revision-Date: 2021-09-14 12:37+0000\n"
-"Last-Translator: Friederike Fasterling-Nesselbosch, 2021\n"
+"Last-Translator: Friederike Fasterling-Nesselbosch, 2022\n"
 "Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and %s others"
+msgstr "und %s andere"
+
+#. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid " and one other"
+msgstr "und ein anderer"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -33,7 +46,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
 msgid "\" account balance is affected by"
-msgstr ""
+msgstr "\" Kontostand wird beeinflusst durch"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
@@ -79,7 +92,7 @@ msgstr "(+) Ausstehende Belege"
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
 #, python-format
 msgid "(-) Outstanding Payments"
-msgstr ""
+msgstr "(-) Ausstehende Zahlungen"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_report.py:0
@@ -161,6 +174,8 @@ msgid ""
 "<span class=\"fa fa-book\"/>\n"
 "            Fiscal Position:"
 msgstr ""
+"<span class=\"fa fa-book\"/>\n"
+"            Steuerzuordnung:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
@@ -252,6 +267,8 @@ msgid ""
 "<span class=\"fa fa-filter\"/>\n"
 "            Group By:"
 msgstr ""
+"<span class=\"fa fa-filter\"/>\n"
+"            Gruppieren nach:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
@@ -274,6 +291,8 @@ msgid ""
 "<span class=\"fa fa-home\"/>\n"
 "                Tax Unit:"
 msgstr ""
+"<span class=\"fa fa-home\"/>\n"
+"                Steuereinheit:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -311,6 +330,8 @@ msgid ""
 "<span class=\"o_form_label\">Fiscal Country</span>\n"
 "                        <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
+"<span class=\"o_form_label\">Steuerland</span>\n"
+"                        <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" role=\"img\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -365,11 +386,15 @@ msgid ""
 "whole unit; to change that, tick the \"aggregate\" option of \"tax unit\" "
 "menu.</span>"
 msgstr ""
+"<span>Dieses Unternehmen ist Teil einer Steuereinheit. Sie sehen derzeit "
+"nicht die gesamte Einheit; um dies zu ändern, aktivieren Sie die Option "
+"\"Aggregieren\" im Menü \"Steuereinheit\"."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.template_multicurrency_report
 msgid "<span>This report only displays the data of the active company.</span>"
 msgstr ""
+"<span>Dieser Bericht zeigt nur die Daten des aktiven Unternehmens an.</span>"
 
 #. module: account_reports
 #: model:ir.model.constraint,message:account_reports.constraint_account_financial_html_report_line_code_uniq
@@ -383,6 +408,8 @@ msgid ""
 "A tax unit can only be created between companies sharing the same main "
 "currency."
 msgstr ""
+"Eine steuerliche Einheit kann nur zwischen Unternehmen gebildet werden, die "
+"dieselbe Hauptwährung haben."
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_total_assets0
@@ -419,12 +446,17 @@ msgstr "Kontenplanvorlage"
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__account_code
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__account_code
 msgid "Account Code"
-msgstr ""
+msgstr "Account Code"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_company__account_display_representative_field
 msgid "Account Display Representative Field"
 msgstr ""
+
+#. module: account_reports
+#: model:ir.model,name:account_reports.model_report_account_report_journal
+msgid "Account Journal Report"
+msgstr "Finanz-Journal Bericht"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_partner__account_name
@@ -475,7 +507,7 @@ msgstr "Buchhaltungsfirma"
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_accounting_report
 msgid "Accounting Report Helper"
-msgstr ""
+msgstr "Assistent für Buchhaltungsberichte"
 
 #. module: account_reports
 #. openerp-web
@@ -489,7 +521,7 @@ msgstr "Konten"
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
 #, python-format
 msgid "Accounts to adjust"
-msgstr ""
+msgstr "Abzugleichende Konten"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_analytic_report.py:0
@@ -595,14 +627,19 @@ msgstr "Überfällige Forderungen"
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_ec_sale_code
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_fiscal_position_choser
-#: model_terms:ir.ui.view,arch_db:account_reports.search_template_journals
 msgid "All"
 msgstr "Alle"
 
 #. module: account_reports
+#: code:addons/account_reports/models/account_report.py:0
+#, python-format
+msgid "All Journals"
+msgstr "Alle Journale"
+
+#. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_allocated_earnings
 msgid "Allocated Earnings"
-msgstr ""
+msgstr "Zugewiesene Gewinne"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__analytic
@@ -710,7 +747,7 @@ msgstr "zum %s"
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_payable__period0
 #: model:ir.model.fields,field_description:account_reports.field_account_aged_receivable__period0
 msgid "As of: "
-msgstr ""
+msgstr "Ab:"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:0
@@ -777,7 +814,7 @@ msgstr "Bilanz"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__report_amount_currency_current
 msgid "Balance at current rate"
-msgstr ""
+msgstr "Saldo zum aktuellen Kurs"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__report_balance
@@ -798,7 +835,7 @@ msgstr "Saldo in Fremdwährung"
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
 #, python-format
 msgid "Balance of %s"
-msgstr ""
+msgstr "Saldo von %s"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -876,12 +913,12 @@ msgstr "Übertrag für den Zeitraum %sbis%s "
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_cash0
 msgid "Cash"
-msgstr "Kasse/Bank"
+msgstr "Bargeld"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_cash_flow_report
 msgid "Cash Flow Report"
-msgstr "Geldfluß-Report (Cash Flow)"
+msgstr "Geldfluss-Bericht (Cash Flow)"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_cash_flow_report.py:0
@@ -1000,12 +1037,12 @@ msgstr "Untergeordnete Positionen"
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "Closing Entry"
-msgstr ""
+msgstr "Abschlussbuchung"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_closing_bank_balance0
 msgid "Closing bank balance"
-msgstr "Abschluß-Kontensaldo"
+msgstr "Abschluss-Kontensaldo"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__code
@@ -1050,11 +1087,13 @@ msgid ""
 "Company %s already belongs to a tax unit in %s. A company can at most be "
 "part of one tax unit per country."
 msgstr ""
+"Das Unternehmen %sgehört bereits zu einer steuerlichen Einheit in %s. Ein "
+"Unternehmen kann nur Teil einer steuerlichen Einheit pro Land sein."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 msgid "Company Currency:"
-msgstr ""
+msgstr "Unternehmenswährung:"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_tax_unit_chooser
@@ -1087,7 +1126,7 @@ msgstr "Konfiguration "
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "Configure your TAX accounts - %s"
-msgstr ""
+msgstr "Konfigurieren Sie Ihr Steuer-Konto - %s"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -1115,7 +1154,7 @@ msgstr "Kontakt"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__control_domain
 msgid "Control Domain"
-msgstr ""
+msgstr "Kontroll-Domain"
 
 #. module: account_reports
 #. openerp-web
@@ -1144,6 +1183,7 @@ msgstr "Herstellungskosten"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__country_id
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__country_id
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
 msgid "Country"
 msgstr "Land"
 
@@ -1215,13 +1255,13 @@ msgstr "Währung"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation__currency_code
 msgid "Currency Code"
-msgstr ""
+msgstr "Währungs-Code"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
 #, python-format
 msgid "Currency Rates (%s)"
-msgstr ""
+msgstr "Wechselkurse (%s)"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_current_assets0
@@ -1392,7 +1432,7 @@ msgstr "Inland"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
 msgid "Domestic country of your accounting"
-msgstr ""
+msgstr "Land Ihrer Buchhaltung"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
@@ -1426,7 +1466,7 @@ msgstr "EIGENKAPITAL"
 #: code:addons/account_reports/models/account_report_coa.py:0
 #, python-format
 msgid "End Balance"
-msgstr ""
+msgstr "Endbilanz"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
@@ -1456,6 +1496,8 @@ msgid ""
 "Error while validating the domain of line %s:\n"
 "%s"
 msgstr ""
+"Fehler bei der Validierung der Zeilen-Domain %s:\n"
+"%s"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:0
@@ -1481,7 +1523,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
 msgid "Exclude from adjustment/provisions entries"
-msgstr ""
+msgstr "Ausschluss von Anpassungs-/Rückstellungsbuchungen"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_account__exclude_from_aged_reports
@@ -1492,7 +1534,7 @@ msgstr ""
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
 #, python-format
 msgid "Excluded Accounts"
-msgstr ""
+msgstr "Ausgeschlossene Konten"
 
 #. module: account_reports
 #: model:account.financial.html.report,name:account_reports.account_financial_report_executivesummary0
@@ -1554,7 +1596,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation_wizard__expense_provision_account_id
 msgid "Expense account"
-msgstr ""
+msgstr "Auslagenkonto"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_expenses0
@@ -1614,7 +1656,7 @@ msgstr "Finanzberichte"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_config_settings__account_fiscal_country_id
 msgid "Fiscal Country"
-msgstr ""
+msgstr "Steuerland"
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__account_financial_html_report_line__figure_type__float
@@ -1645,14 +1687,14 @@ msgstr "Erzwinge vorgegebene Daten bei allen Konten und Kontenarten"
 #: code:addons/account_reports/wizard/multicurrency_revaluation.py:0
 #, python-format
 msgid "Foreign currencies adjustment entry as of %s"
-msgstr ""
+msgstr "Fremdwährungsausgleichsbuchung zum %s"
 
 #. module: account_reports
 #. openerp-web
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:0
 #, python-format
 msgid "Formula:"
-msgstr ""
+msgstr "Formel:"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__formulas
@@ -1701,7 +1743,7 @@ msgstr "Hauptbuch"
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_general_ledger
 msgid "General Ledger Report"
-msgstr "Umsätze nach Konten und Perioden"
+msgstr "Hauptbuchbericht"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_report.py:0
@@ -1732,6 +1774,11 @@ msgid "Goods"
 msgstr "Güter"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Grid"
+msgstr "Gitter"
+
+#. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_gross_profit0
 msgid "Gross Profit"
 msgstr "Bruttoergebnis"
@@ -1744,7 +1791,7 @@ msgstr "Bruttoergebnis"
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_gpmargin0
 msgid "Gross profit margin (gross profit / operating income)"
-msgstr "Bruttomarge (Bruttoergebnis / Operative Erlöse)"
+msgstr "Bruttomarge (Bruttogewinn / Betriebliche Erträge)"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__groupby
@@ -1770,7 +1817,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 msgid "Groupby:"
-msgstr ""
+msgstr "Gruppieren nach:"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__hide_if_empty
@@ -1813,6 +1860,16 @@ msgid "ID"
 msgstr "ID"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impact On Grid"
+msgstr ""
+
+#. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Impacted Tax Grids"
+msgstr ""
+
+#. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
 msgid "Include"
 msgstr ""
@@ -1825,7 +1882,7 @@ msgstr "Schließe ungebuchte Posten ein"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
 msgid "Include in adjustment/provisions entries"
-msgstr ""
+msgstr "In Anpassungs-/Rückstellungsbuchungen einbeziehen"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
@@ -1870,7 +1927,7 @@ msgstr ""
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
 #, python-format
 msgid "Inconsistent Statements"
-msgstr ""
+msgstr "Widersprüchliche Angaben"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_general_ledger.py:0
@@ -1959,7 +2016,7 @@ msgstr "Einzelposten für die Steuerprüfung"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_control_domain
 msgid "Journal Items on the"
-msgstr ""
+msgstr "Journaleinträge im"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_consolidated_journals.py:0
@@ -2033,7 +2090,7 @@ msgstr "Letztes Quartal"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_cell_template_link_last_statement
 msgid "Last Statement:"
-msgstr ""
+msgstr "Letzter Bericht:"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report__write_uid
@@ -2097,13 +2154,15 @@ msgstr "Hauptinfo"
 msgid ""
 "Main company of this unit; the one actually reporting and paying the taxes."
 msgstr ""
+"Hauptgesellschaft dieser Einheit; diejenige, die die Steuern meldet und "
+"zahlt."
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_multicurrency_revaluation_report.py:0
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_multicurrency_revaluation_wizard
 #, python-format
 msgid "Make Adjustment Entry"
-msgstr ""
+msgstr "Berichtigungseintrag vornehmen"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_report_manager
@@ -2135,7 +2194,7 @@ msgstr "Menü-Punkt"
 #: code:addons/account_reports/models/account_financial_report.py:0
 #, python-format
 msgid "Missing Journal Items"
-msgstr ""
+msgstr "Fehlende Journaleinträge"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_ir_module_module
@@ -2191,6 +2250,8 @@ msgid ""
 "Multiple draft tax closing entries exist for fiscal position %s after %s. There should be at most one. \n"
 " %s"
 msgstr ""
+"Es gibt mehrere Entwürfe von Steuerabschlussbuchungen für Steuerposition %s nach %s. Es sollte höchstens einen geben.\n"
+"%s"
 
 #. module: account_reports
 #: code:addons/account_reports/models/res_company.py:0
@@ -2292,13 +2353,13 @@ msgstr ""
 #: code:addons/account_reports/wizard/multicurrency_revaluation.py:0
 #, python-format
 msgid "No adjustment needed"
-msgstr ""
+msgstr "Keine Anpassung erforderlich"
 
 #. module: account_reports
 #: code:addons/account_reports/wizard/multicurrency_revaluation.py:0
 #, python-format
 msgid "No provision needed was found."
-msgstr ""
+msgstr "Es wurde keine erforderliche Bestimmung gefunden."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
@@ -2344,7 +2405,7 @@ msgstr "Ältere"
 #: code:addons/account_reports/wizard/report_export_wizard.py:0
 #, python-format
 msgid "One of the formats chosen can not be exported in the DMS"
-msgstr ""
+msgstr "Eines der gewählten Formate kann nicht in das DMS exportiert werden"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_sales_report.py:0
@@ -2367,12 +2428,12 @@ msgstr "Nur nicht ausgeglichene Einträge anzeigen"
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_financial_year_op
 msgid "Opening Balance of Financial Year"
-msgstr "Startsaldo des Geschäftsjahrs"
+msgstr "Anfangssaldo des Geschäftsjahrs"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_income0
 msgid "Operating Income"
-msgstr "Operative Erlöse"
+msgstr "Betriebliche Erträge"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_other_income0
@@ -2384,7 +2445,7 @@ msgstr "Sonstige betriebliche Erträge"
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_journal_dashboard_kanban_view
 #, python-format
 msgid "Outstanding Payments/Receipts"
-msgstr ""
+msgstr "Offene Zahlungen/Eingänge"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_report.py:0
@@ -2523,7 +2584,7 @@ msgstr "Zeitraum"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_year_op__account_tax_periodicity
 msgid "Periodicity in month"
-msgstr ""
+msgstr "Periodizität im Monat"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:0
@@ -2532,6 +2593,8 @@ msgid ""
 "Please specify a Group by field when using '%s' in Formulas, on line with "
 "name '%s'"
 msgstr ""
+"Bitte geben Sie ein Feld \"Gruppieren nach\" an, wenn Sie '%s' in Formeln "
+"verwenden, in der Zeile mit dem Namen '%s'."
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_fixed_assets_view0
@@ -2556,7 +2619,7 @@ msgstr "Position"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
 msgid "Posted Entries Only"
-msgstr "Nur gebuchte Posten"
+msgstr "Nur gebuchte Einträge"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_prepayements0
@@ -2566,7 +2629,7 @@ msgstr "Vorauszahlungen"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_multicurrency_revaluation_wizard__preview_data
 msgid "Preview Data"
-msgstr ""
+msgstr "Vorschau Daten"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_comparison
@@ -2589,6 +2652,8 @@ msgid ""
 "Proceed with caution as there might be an existing adjustment for this "
 "period ("
 msgstr ""
+"Seien Sie vorsichtig, da es für diesen Zeitraum eine Anpassung geben könnte "
+"("
 
 #. module: account_reports
 #: model:ir.actions.client,name:account_reports.action_account_report_pnl
@@ -2701,7 +2766,7 @@ msgstr "Berichtsposition"
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:0
 #, python-format
 msgid "Report Line Computation"
-msgstr ""
+msgstr "Berechnung der Berichtszeile"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_form
@@ -2767,7 +2832,7 @@ msgstr "Suche Konto"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_with_filter_input_partner
 msgid "Search partner"
-msgstr ""
+msgstr "Partner suchen"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__name
@@ -2791,6 +2856,8 @@ msgid ""
 "Set to True to automatically filter out journal items that are not tax "
 "exigible."
 msgstr ""
+"Setzen Sie diese Option auf True, um automatisch Journalposten "
+"herauszufiltern, die nicht steuerpflichtig sind."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_coa
@@ -2829,6 +2896,8 @@ msgid ""
 "Some of your tax groups are missing information in company %s. Please "
 "complete their configuration."
 msgstr ""
+"Bei einigen Ihrer Steuergruppen fehlen Informationen in Firma %s. Bitte "
+"vervollständigen Sie deren Konfiguration."
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__special_date_changer
@@ -2841,6 +2910,8 @@ msgid ""
 "Specify a control domain that will raise a warning if the report line is not"
 " computed correctly."
 msgstr ""
+"Geben Sie einen Kontrollbereich an, der eine Warnung ausgibt, wenn die "
+"Berichtszeile nicht korrekt berechnet wird."
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_res_company__account_representative_id
@@ -2902,6 +2973,11 @@ msgid "Tax Declaration"
 msgstr "Steuererklärung"
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.report_journal
+msgid "Tax Grid"
+msgstr ""
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_tax_unit__vat
 msgid "Tax ID"
 msgstr "USt-IdNr"
@@ -2946,14 +3022,14 @@ msgstr "Steuererklärung"
 #: model:ir.model,name:account_reports.model_account_tax_unit
 #: model_terms:ir.ui.view,arch_db:account_reports.view_tax_unit_form
 msgid "Tax Unit"
-msgstr ""
+msgstr "Steuereinheit"
 
 #. module: account_reports
 #: model:ir.actions.act_window,name:account_reports.action_view_tax_units
 #: model:ir.model.fields,field_description:account_reports.field_res_company__account_tax_unit_ids
 #: model:ir.ui.menu,name:account_reports.menu_view_tax_units
 msgid "Tax Units"
-msgstr ""
+msgstr "Steuereinheiten"
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__mail_activity_type__category__tax_report
@@ -2972,7 +3048,7 @@ msgstr "Steuererklärung für %s%s"
 #: code:addons/account_reports/models/res_company.py:0
 #, python-format
 msgid "Tax return from %s to %s%s"
-msgstr ""
+msgstr "Steuererklärung von %s bis %s%s"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_bank_statement_line__tax_closing_end_date
@@ -2982,11 +3058,13 @@ msgid ""
 "Technical field used for VAT closing, containig the end date of the period "
 "this entry closes."
 msgstr ""
+"Technisches Feld für den MwSt-Abschluss, das das Enddatum des Zeitraums "
+"enthält, den diese Buchung abschließt."
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_ir_actions_account_report_download
 msgid "Technical model for accounting report downloads"
-msgstr ""
+msgstr "Technisches Modell für Buchhaltungsberichte zum Herunterladen"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_report_footnote__text
@@ -3004,7 +3082,7 @@ msgstr ""
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "The amount will be : %s"
-msgstr ""
+msgstr "Der Betrag wird sich belaufen auf: %s"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -3018,16 +3096,20 @@ msgid ""
 "The country in which this tax unit is used to group your companies' tax "
 "reports declaration."
 msgstr ""
+"Das Land, in dem diese steuerliche Einheit verwendet wird, um die "
+"Steuererklärungen Ihrer Unternehmen zusammenzufassen."
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_financial_html_report__country_id
 msgid "The country this report is intended to."
-msgstr ""
+msgstr "Das Land, für das dieser Bericht bestimmt ist."
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_res_config_settings__account_fiscal_country_id
 msgid "The country to use the tax reports from for this company"
 msgstr ""
+"Das Land, aus dem die Steuerberichte für dieses Unternehmen zu verwenden "
+"sind"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:0
@@ -3036,23 +3118,30 @@ msgid ""
 "The current balance in the General Ledger %s doesn't match the balance of "
 "your last bank statement %s leading to an unexplained difference of %s."
 msgstr ""
+"Der aktuelle Saldo im Hauptbuch %s stimmt nicht mit dem Saldo Ihres letzten "
+"Kontoauszugs %süberein. Dies führt zu einer ungeklärten Differenz von %s."
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "The difference will be carried over to the next period's declaration."
 msgstr ""
+"Die Differenz wird auf die Erklärung für den nächsten Zeitraum übertragen."
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_tax_unit__vat
 msgid "The identifier to be used when submitting a report for this unit."
 msgstr ""
+"Die Kennung, die bei der Einreichung eines Berichts für diese Einheit zu "
+"verwenden ist."
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_tax.py:0
 #, python-format
 msgid "The main company of a tax unit has to be part of it."
 msgstr ""
+"Das Hauptunternehmen einer steuerlichen Einheit muss Teil dieser Einheit "
+"sein."
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_financial_html_report__generated_menu_id
@@ -3064,7 +3153,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_res_company__account_tax_unit_ids
 msgid "The tax units this company belongs to."
-msgstr ""
+msgstr "Die Steuereinheiten, zu denen dieses Unternehmen gehört."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template
@@ -3102,19 +3191,19 @@ msgstr ""
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "This amount will be increased by the positive amount from"
-msgstr ""
+msgstr "Dieser Betrag erhöht sich um den positiven Betrag aus"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "This amount will be reduced by the negative amount from"
-msgstr ""
+msgstr "Dieser Betrag wird reduziert um den negativen Betrag aus"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
 #, python-format
 msgid "This amount will be set to %s."
-msgstr ""
+msgstr "Dieser Betrag wird auf %s festgelegt."
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_generic_tax_report.py:0
@@ -3195,7 +3284,7 @@ msgstr "Vorläufige Bilanz"
 #: code:addons/account_reports/models/account_sales_report.py:0
 #, python-format
 msgid "Triangular"
-msgstr ""
+msgstr "Dreieckig"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__figure_type
@@ -3247,7 +3336,7 @@ msgstr "Unbekannter Partner"
 #: model:ir.ui.menu,name:account_reports.menu_action_account_report_multicurrency_revaluation
 #, python-format
 msgid "Unrealized Currency Gains/Losses"
-msgstr ""
+msgstr "Unrealisierte Währungsgewinne /-verluste"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
@@ -3259,6 +3348,8 @@ msgstr "Offene Posten"
 msgid ""
 "Use the dates that should normally be used, depending on the account types"
 msgstr ""
+"Verwenden Sie die Daten, die normalerweise verwendet werden sollten, je nach"
+" Kontotyp"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_sales_report_generic.py:0
@@ -3269,7 +3360,7 @@ msgstr "USt.-ID"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_company_form
 msgid "VAT Units"
-msgstr ""
+msgstr "MwSt.-Einheiten"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_activity.py:0
@@ -3287,14 +3378,14 @@ msgstr "Kontoauszüge ansehen"
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:0
 #, python-format
 msgid "View Carryover Lines"
-msgstr ""
+msgstr "Übertragszeilen ansehen"
 
 #. module: account_reports
 #. openerp-web
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:0
 #, python-format
 msgid "View Journal Entries"
-msgstr ""
+msgstr "Journaleinträge ansehen"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_caret_options
@@ -3343,6 +3434,8 @@ msgid ""
 "Whether or not we have to make provisions for the selected foreign "
 "currencies."
 msgstr ""
+"ob wir für die ausgewählten Fremdwährungen Rückstellungen bilden müssen oder"
+" nicht."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_extra_options
@@ -3402,7 +3495,7 @@ msgstr "Aufklappen aller Optionen in Bericht anzeigen"
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__res_company__account_tax_periodicity__2_months
 msgid "every 2 months"
-msgstr ""
+msgstr "alle zwei Monate"
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__res_company__account_tax_periodicity__4_months
@@ -3412,12 +3505,12 @@ msgstr "alle 4 Monate"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_control_domain
 msgid "following accounts"
-msgstr ""
+msgstr "folgenden Konten"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
 msgid "having a starting balance different than the previous ending balance"
-msgstr ""
+msgstr "mit einem anderen Anfangssaldo als dem vorherigen Endsaldo"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
@@ -3427,12 +3520,12 @@ msgstr "⇒ Journal-Posten"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_control_domain
 msgid "might be listed in an incorrect section of the report."
-msgstr ""
+msgstr "könnte in einem falschen Abschnitt des Berichts aufgeführt sein."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template_control_domain
 msgid "might be missing from the proper section of the report."
-msgstr ""
+msgstr "könnte im entsprechenden Abschnitt des Berichts fehlen."
 
 #. module: account_reports
 #: model:ir.model.fields.selection,name:account_reports.selection__res_company__account_tax_periodicity__monthly
@@ -3475,7 +3568,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
 msgid "statements"
-msgstr ""
+msgstr "statements"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_bank_statement_line__tax_report_control_error
@@ -3497,12 +3590,12 @@ msgstr "nicht gebuchte Journaleinträge"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.bank_reconciliation_report_main_template
 msgid "which doesn't result from a bank statement nor payments."
-msgstr ""
+msgstr "die sich weder aus einem Kontoauszug noch aus Zahlungen ergeben."
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
 msgid "⇒ General Ledger"
-msgstr ""
+msgstr "⇒ Hauptbuch"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_multicurrency_report
@@ -3512,7 +3605,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.template_multicurrency_report
 msgid "⇒ Reset to Odoo’s Rate"
-msgstr ""
+msgstr "⇒ Zurücksetzen auf Odoo's Rate"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_general_ledger_report

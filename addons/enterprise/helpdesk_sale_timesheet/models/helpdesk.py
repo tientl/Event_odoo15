@@ -153,6 +153,10 @@ class AccountAnalyticLine(models.Model):
             timesheet.so_line = timesheet.project_id.allow_billable and timesheet.helpdesk_ticket_id.sale_line_id
         super(AccountAnalyticLine, self - non_billed_helpdesk_timesheets)._compute_so_line()
 
+    @api.depends('timesheet_invoice_id.state')
+    def _compute_partner_id(self):
+        super(AccountAnalyticLine, self.filtered(lambda t: t._is_not_billed()))._compute_partner_id()
+
     def _get_portal_helpdesk_timesheet(self):
         param_invoiced_timesheet = self.env['ir.config_parameter'].sudo().get_param('sale.invoiced_timesheet', DEFAULT_INVOICED_TIMESHEET)
         if param_invoiced_timesheet == 'approved':

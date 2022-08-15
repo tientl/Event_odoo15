@@ -4,6 +4,8 @@
 import base64 
 import time
 
+from freezegun import freeze_time
+
 import odoo.tests
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.modules.module import get_module_resource
@@ -221,7 +223,8 @@ class TestUi(odoo.tests.HttpCase):
         })
 
         demo.flush()
-        self.start_tour("/", 'hr_contract_salary_tour', login='admin', timeout=300)
+        with freeze_time("2022-01-01"):
+            self.start_tour("/", 'hr_contract_salary_tour', login='admin', timeout=300)
 
         new_contract_id = self.env['hr.contract'].search([('name', 'ilike', 'nathalie')])
         self.assertTrue(new_contract_id, 'A contract has been created')

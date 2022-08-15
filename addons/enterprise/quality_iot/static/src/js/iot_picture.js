@@ -31,7 +31,7 @@ var TabletImageIoT = TabletImage.extend(iot_widgets.IoTValueFieldMixin, {
                 .then(function(data) {
                     self._onIoTActionResult(data);
                 })
-                .guardedCatch(self._onIoTActionFail);
+                .guardedCatch(self._onIoTActionFail.bind(self));
         }
     },
     /**

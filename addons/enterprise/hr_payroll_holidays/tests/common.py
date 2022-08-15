@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.fields import Date
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, new_test_user
 
 from dateutil.relativedelta import relativedelta
 
@@ -17,12 +17,16 @@ class TestPayrollHolidaysBase(TransactionCase):
         })
 
         # Create employee
+        cls.vlad = new_test_user(cls.env, login='vlad', groups='base.group_user')
         cls.emp = cls.env['hr.employee'].create({
             'name': 'Donald',
             'gender': 'male',
             'birthday': '1946-06-14',
             'department_id': cls.dep_rd.id,
+            'user_id': cls.vlad.id,
         })
+
+        cls.joseph = new_test_user(cls.env, login='joseph', groups='base.group_user,hr_holidays.group_hr_holidays_user')
 
         cls.structure_type = cls.env['hr.payroll.structure.type'].create({
             'name': 'Test - Developer',

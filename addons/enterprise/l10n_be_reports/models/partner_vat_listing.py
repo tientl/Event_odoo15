@@ -5,6 +5,7 @@ from odoo import api, models, _
 from odoo.tools.misc import formatLang
 from odoo.exceptions import UserError
 from itertools import groupby
+from markupsafe import Markup
 
 
 class ReportL10nBePartnerVatListing(models.AbstractModel):
@@ -23,7 +24,7 @@ class ReportL10nBePartnerVatListing(models.AbstractModel):
         return {
             'name': _('VAT Listing Audit'),
             'type': 'ir.actions.act_window',
-            'views': [(False, 'tree'), (False, 'form')],
+            'views': [[self.env.ref('account.view_move_line_tree').id, 'list'], [False, 'form']],
             'res_model': 'account.move.line',
             'context': {
                 'search_default_partner_id': params['id'],
@@ -83,19 +84,19 @@ class ReportL10nBePartnerVatListing(models.AbstractModel):
                           OR (inv.move_type = 'out_refund' AND inv.state = 'posted'))
                         GROUP BY l.partner_id, p.name, p.vat) AS refund_vat_sub
                     ON turnover_sub.partner_id = refund_vat_sub.partner_id
-            LEFT JOIN (SELECT l2.partner_id, SUM(l2.credit - l2.debit) as vat_amount, SUM(l2.debit) AS refund_vat_amount
+            LEFT JOIN (SELECT COALESCE(l2.partner_id, inv.partner_id) as partner_id, SUM(l2.credit - l2.debit) as vat_amount, SUM(l2.debit) AS refund_vat_amount
                   FROM account_move_line l2
                   JOIN account_account_tag_account_move_line_rel aml_tag2 ON l2.id = aml_tag2.account_move_line_id
                   JOIN account_tax_report_line_tags_rel tag_rep_ln_2 ON tag_rep_ln_2.account_account_tag_id = aml_tag2.account_account_tag_id
                   LEFT JOIN account_move inv ON l2.move_id = inv.id
                   WHERE tag_rep_ln_2.account_tax_report_line_id IN %(tags2)s
-                  AND l2.partner_id IN %(partner_ids)s
+                  AND COALESCE(l2.partner_id, inv.partner_id) IN %(partner_ids)s
                   AND l2.date >= %(date_from)s
                   AND l2.date <= %(date_to)s
                   AND l2.company_id IN %(company_ids)s
                   AND ((l2.move_id IS NULL AND l2.credit > 0)
                    OR (inv.move_type IN ('out_refund', 'out_invoice') AND inv.state = 'posted'))
-                GROUP BY l2.partner_id) AS refund_base_sub
+                GROUP BY COALESCE(l2.partner_id, inv.partner_id)) AS refund_base_sub
               ON turnover_sub.partner_id = refund_base_sub.partner_id
            WHERE turnover > 250 OR refund_base > 0 OR refund_vat_amount > 0
            ORDER BY turnover_sub.vat, turnover_sub.turnover DESC
@@ -162,7 +163,7 @@ class ReportL10nBePartnerVatListing(models.AbstractModel):
         addr = company.partner_id.address_get(['invoice'])
         if addr.get('invoice', False):
             ads = self.env['res.partner'].browse([addr['invoice']])[0]
-            phone = ads.phone and ads.phone.replace(' ', '') or ''
+            phone = ads.phone and self._raw_phonenumber(ads.phone) or address.phone and self._raw_phonenumber(address.phone)
             email = ads.email or ''
             city = ads.city or ''
             zip = ads.zip or ''
@@ -174,39 +175,6 @@ class ReportL10nBePartnerVatListing(models.AbstractModel):
                 street += ' ' + ads.street2
             if ads.country_id:
                 country = ads.country_id.code
-
-        annual_listing_data = {
-            'issued_by': issued_by,
-            'company_vat': company_vat,
-            'comp_name': company.name,
-            'street': street,
-            'zip': zip,
-            'city': city,
-            'country': country,
-            'email': email,
-            'phone': phone,
-            'SenderId': SenderId,
-            'period': options['date'].get('date_from')[0:4],
-            'comments': self._get_report_manager(options).summary or '',
-        }
-
-        data_file = """<?xml version="1.0" encoding="ISO-8859-1"?>
-  <ns2:ClientListingConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/ClientListingConsignment" ClientListingsNbr="1">
-  """ + self._get_belgian_xml_export_representative_node()
-
-        data_comp = """
-        <ns2:Declarant>
-            <VATNumber>%(SenderId)s</VATNumber>
-            <Name>%(comp_name)s</Name>
-            <Street>%(street)s</Street>
-            <PostCode>%(zip)s</PostCode>
-            <City>%(city)s</City>
-            <CountryCode>%(country)s</CountryCode>
-            <EmailAddress>%(email)s</EmailAddress>
-            <Phone>%(phone)s</Phone>
-        </ns2:Declarant>
-        <ns2:Period>%(period)s</ns2:Period>
-        """ % annual_listing_data
 
         # Turnover and Farmer tags are not included
         ctx = self._set_context(options)
@@ -231,29 +199,53 @@ class ReportL10nBePartnerVatListing(models.AbstractModel):
                 'turnover': turnover,
                 'vat_amount': tax,
             }
-            data_client_info += """
+            data_client_info += Markup("""
         <ns2:Client SequenceNumber="%(seq)s">
             <ns2:CompanyVATNumber issuedBy="BE">%(only_vat)s</ns2:CompanyVATNumber>
             <ns2:TurnOver>%(turnover).2f</ns2:TurnOver>
             <ns2:VATAmount>%(vat_amount).2f</ns2:VATAmount>
-        </ns2:Client>""" % amount_data
+        </ns2:Client>""") % amount_data
 
-        amount_data_begin = {
+        annual_listing_data = {
+            'issued_by': issued_by,
+            'company_vat': company_vat,
+            'comp_name': company.name,
+            'street': street,
+            'zip': zip,
+            'city': city,
+            'country': country,
+            'email': email,
+            'phone': phone,
+            'SenderId': SenderId,
+            'period': options['date'].get('date_from')[0:4],
+            'comments': self._get_report_manager(options).summary or '',
             'seq': str(seq),
             'dnum': dnum,
             'sum_turnover': sum_turnover,
             'sum_tax': sum_tax,
+            'representative_node': self._get_belgian_xml_export_representative_node(),
         }
-        data_begin = """
+
+        data_begin = Markup("""<?xml version="1.0" encoding="ISO-8859-1"?>
+<ns2:ClientListingConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/ClientListingConsignment" ClientListingsNbr="1">
     <ns2:ClientListing SequenceNumber="1" ClientsNbr="%(seq)s" DeclarantReference="%(dnum)s"
         TurnOverSum="%(sum_turnover).2f" VATAmountSum="%(sum_tax).2f">
-  """ % amount_data_begin
+        %(representative_node)s
+        <ns2:Declarant>
+            <VATNumber>%(SenderId)s</VATNumber>
+            <Name>%(comp_name)s</Name>
+            <Street>%(street)s</Street>
+            <PostCode>%(zip)s</PostCode>
+            <City>%(city)s</City>
+            <CountryCode>%(country)s</CountryCode>
+            <EmailAddress>%(email)s</EmailAddress>
+            <Phone>%(phone)s</Phone>
+        </ns2:Declarant>
+        <ns2:Period>%(period)s</ns2:Period>""") % annual_listing_data
 
-        data_end = """
-
+        data_end = Markup("""
         <ns2:Comment>%(comments)s</ns2:Comment>
     </ns2:ClientListing>
-  </ns2:ClientListingConsignment>
-  """ % annual_listing_data
+</ns2:ClientListingConsignment>""") % annual_listing_data
 
-        return (data_file + data_begin + data_comp + data_client_info + data_end).encode('ISO-8859-1')
+        return (data_begin + data_client_info + data_end).encode('ISO-8859-1', 'ignore')

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="account_financial_report_bs" model="account.financial.html.report">
+            <field name="name">Balans</field>
+            <field name="analytic" eval="True"/>
+            <field name="unfold_all_filter" eval="True"/>
+            <field name="date_range" eval="False"/>
+            <field name="show_journal_filter" eval="True"/>
+            <field name='parent_id' ref="l10n_nl.account_reports_nl_statements_menu"/>
+            <field name="country_id" ref="base.nl"/>
+        </record>
+
+        <!-- ASSETS -->
+        <record id="account_financial_report_bs_assets" model="account.financial.html.report.line">
+            <field name="name">ACTIVA</field>
+            <field name="code">NL_ASSETS</field>
+            <field name="financial_report_id" ref="account_financial_report_bs"/>
+            <field name="formulas">NL_FIXED + NL_CURRENT</field>
+            <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'asset')]"/>
+            <field name="level" eval="0"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <!-- ASSETS - FIXED -->
+        <record id="account_financial_report_bs_fixed" model="account.financial.html.report.line">
+            <field name="name">VASTE ACTIVA</field>
+            <field name="code">NL_FIXED</field>
+            <field name="parent_id" ref="account_financial_report_bs_assets"/>
+            <field name="formulas">NL_MAT + NL_IMMAT + NL_FIN</field>
+            <field name="level" eval="1"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_mat" model="account.financial.html.report.line">
+            <field name="name">Materiële Vaste Active</field>
+            <field name="code">NL_MAT</field>
+            <field name="parent_id" ref="account_financial_report_bs_fixed"/>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_23'))]"/>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '01%'),
+                '|',
+                    ('account_id.code', '=like', '02%'),
+                '|',
+                    ('account_id.code', '=like', '03%'),
+                    ('account_id.code', '=like', '04%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_immat" model="account.financial.html.report.line">
+            <field name="name">Immateriële Vaste Active</field>
+            <field name="code">NL_IMMAT</field>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_17'))]"/>
+            <field name="parent_id" ref="account_financial_report_bs_fixed"/>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '001%'),
+                    ('account_id.code', '=like', '002%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="sequence" eval="2"/>
+            <field name="level" eval="2"/>
+        </record>
+
+        <record id="account_financial_report_bs_fin" model="account.financial.html.report.line">
+            <field name="name">Financiële Vaste Active</field>
+            <field name="code">NL_FIN</field>
+            <field name="parent_id" ref="account_financial_report_bs_fixed"/>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_3'))]"/>
+            <field name="domain" eval="[('account_id.code', '=like', '05%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="3"/>
+        </record>
+
+        <!-- ASSETS - CURRENT -->
+        <record id="account_financial_report_bs_current" model="account.financial.html.report.line">
+            <field name="name">VLOTTENDE ACTIVA</field>
+            <field name="code">NL_CURRENT</field>
+            <field name="parent_id" ref="account_financial_report_bs_assets"/>
+            <field name="formulas">NL_STOCK + NL_CLAIMS + NL_CASH</field>
+            <field name="level" eval="1"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <record id="account_financial_report_bs_stock" model="account.financial.html.report.line">
+            <field name="name">Voorraden</field>
+            <field name="code">NL_STOCK</field>
+            <field name="parent_id" ref="account_financial_report_bs_current"/>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_4'))]"/>
+            <field name="domain" eval="[('account_id.code', '=like', '3%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_claims" model="account.financial.html.report.line">
+            <field name="name">Vorderingen</field>
+            <field name="code">NL_CLAIMS</field>
+            <field name="parent_id" ref="account_financial_report_bs_current"/>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_27'))]"/>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '11%'),
+                    ('account_id.code', '=like', '12%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <record id="account_financial_report_bs_cash" model="account.financial.html.report.line">
+            <field name="name">Liquide Middelen</field>
+            <field name="code">NL_CASH</field>
+            <field name="parent_id" ref="account_financial_report_bs_current"/>
+            <field name="formulas">sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_25'))]"/>
+            <field name="domain" eval="[('account_id.code', '=like', '10%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="3"/>
+        </record>
+
+        <!-- LIABILITIES/EQUITY -->
+        <record id="account_financial_report_bs_leq" model="account.financial.html.report.line">
+            <field name="name">PASSIVA</field>
+            <field name="code">NL_LEQ</field>
+            <field name="financial_report_id" ref="account_financial_report_bs"/>
+            <field name="formulas">NL_EQ + NL_PROVISIONS + NL_LONG_DEBT + NL_SHORT_DEBT</field>
+            <field name="control_domain" eval="[
+                '|',
+                    ('account_id.user_type_id.internal_group', '=', 'equity'),
+                '|',
+                    ('account_id.user_type_id.internal_group', '=', 'liability'),
+                '|',
+                    ('account_id.user_type_id.internal_group', '=', 'income'),
+                    ('account_id.user_type_id.internal_group', '=', 'expense')
+            ]"/>
+            <field name="level" eval="0"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <!-- EQUITY -->
+        <record id="account_financial_report_bs_eq" model="account.financial.html.report.line">
+            <field name="name">EIGEN VERMOGEN</field>
+            <field name="code">NL_EQ</field>
+            <field name="formulas">NL_CAP + NL_PREMIUM + NL_REVALUATION_RES + NL_LEGAL_RES + NL_OTHER_RES + NL_UNDIST_PROFIT</field>
+            <field name="control_domain" eval="[
+                '|',
+                    ('account_id.user_type_id.internal_group', '=', 'equity'),
+                '|',
+                    ('account_id.user_type_id.internal_group', '=', 'income'),
+                    ('account_id.user_type_id.internal_group', '=', 'expense')
+            ]"/>
+            <field name="parent_id" ref="account_financial_report_bs_leq"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="1"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_cap" model="account.financial.html.report.line">
+            <field name="name">Gestort en Opgevraagd Kapitaal</field>
+            <field name="code">NL_CAP</field>
+            <field name="formulas">-sum</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="domain" eval="[('account_id.code', '=like', '061%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_premium" model="account.financial.html.report.line">
+            <field name="name">Agio</field>
+            <field name="code">NL_PREMIUM</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '063%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <record id="account_financial_report_bs_revaluation_res" model="account.financial.html.report.line">
+            <field name="name">Herwaarderingsreserve</field>
+            <field name="code">NL_REVALUATION_RES</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '066%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="3"/>
+        </record>
+
+        <record id="account_financial_report_bs_legal_res" model="account.financial.html.report.line">
+            <field name="name">Wettelijke en Statutaire Reserves</field>
+            <field name="code">NL_LEGAL_RES</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '062%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="4"/>
+        </record>
+
+        <record id="account_financial_report_bs_other_res" model="account.financial.html.report.line">
+            <field name="name">Overige Reserves</field>
+            <field name="code">NL_OTHER_RES</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '064%'),
+                    ('account_id.code', '=like', '065%')
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="5"/>
+        </record>
+
+        <record id="account_financial_report_bs_undist_profit" model="account.financial.html.report.line">
+            <field name="name">Onverdeelde Winst</field>
+            <field name="code">NL_UNDIST_PROFIT</field>
+            <field name="parent_id" ref="account_financial_report_bs_eq"/>
+            <field name="formulas">-sum + NL_CURR_YEAR_EARNINGS + NL_PREV_YEARS_EARNINGS</field>
+            <field name="domain" eval="[('account_id.code', '=like', '9999%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="6"/>
+        </record>
+
+        <record id="account_financial_report_bs_curr_year_earnings" model="account.financial.html.report.line">
+            <field name="name">Huidig Jaar Winst</field>
+            <field name="code">NL_CURR_YEAR_EARNINGS</field>
+            <field name="parent_id" ref="account_financial_report_bs_undist_profit"/>
+            <field name="formulas">NL_RESNB</field>
+            <field name="level" eval="3"/>
+            <field name="sequence" eval="1"/>
+            <field name="action_id" ref="action_account_financial_report_nl_pnl"/>
+        </record>
+
+        <record id="account_financial_report_bs_prev_years_earnings" model="account.financial.html.report.line">
+            <field name="name">Voorgaande Jaren Winst</field>
+            <field name="code">NL_PREV_YEARS_EARNINGS</field>
+            <field name="parent_id" ref="account_financial_report_bs_undist_profit"/>
+            <field name="formulas">-sum - NL_RESNB</field>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '4%'),
+                '|',
+                    ('account_id.code', '=like', '5%'),
+                '|',
+                    ('account_id.code', '=like', '6%'),
+                '|',
+                    ('account_id.code', '=like', '7%'),
+                '|',
+                    ('account_id.code', '=like', '8%'),
+                    '&amp;',
+                        ('account_id.code', '=like', '9%'),
+                        ('account_id.code', 'not like', '9999%')
+            ]"/>
+            <field name="special_date_changer">from_beginning</field>
+            <field name="level" eval="3"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <!-- LIABILITIES -->
+        <record id="account_financial_report_bs_l" model="account.financial.html.report.line">
+            <field name="name">SCHULDEN</field>
+            <field name="code">NL_L</field>
+            <field name="parent_id" ref="account_financial_report_bs_leq"/>
+            <field name="formulas">NL_PROVISIONS + NL_LONG_DEBT + NL_SHORT_DEBT</field>
+            <field name="control_domain" eval="[('account_id.user_type_id.internal_group', '=', 'liability')]"/>
+            <field name="level" eval="1"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <!-- LIABILITIES - PROVISIONS -->
+        <record id="account_financial_report_bs_provisions" model="account.financial.html.report.line">
+            <field name="name">Voorzieningen</field>
+            <field name="code">NL_PROVISIONS</field>
+            <field name="parent_id" ref="account_financial_report_bs_l"/>
+            <field name="formulas">-sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_14'))]"/>
+            <field name="domain" eval="[('account_id.code', '=like', '07%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <!-- LIABILITIES - LONG DEBTS (over 1 year) -->
+        <record id="account_financial_report_bs_long_debt" model="account.financial.html.report.line">
+            <field name="name">Langlopende Schulden</field>
+            <field name="code">NL_LONG_DEBT</field>
+            <field name="parent_id" ref="account_financial_report_bs_l"/>
+            <field name="green_on_positive" eval="False"/>
+            <field name="formulas">-sum</field>
+            <field name="control_domain" eval="[('account_id.tag_ids', 'in', ref('l10n_nl.account_tag_15'))]"/>
+            <field name="domain" eval="[('account_id.code', '=like', '08%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="2"/>
+        </record>
+
+        <!-- LIABILITIES - SHORT DEBTS (under 1 year) -->
+        <record id="account_financial_report_bs_short_debt" model="account.financial.html.report.line">
+            <field name="name">Kortlopende Schulden</field>
+            <field name="code">NL_SHORT_DEBT</field>
+            <field name="parent_id" ref="account_financial_report_bs_l"/>
+            <field name="formulas">NL_SH_DEBT + NL_CRED</field>
+            <field name="level" eval="2"/>
+            <field name="sequence" eval="3"/>
+        </record>
+
+        <record id="account_financial_report_bs_sh_debt" model="account.financial.html.report.line">
+            <field name="name">Kortlopende Schulden</field>
+            <field name="code">NL_SH_DEBT</field>
+            <field name="parent_id" ref="account_financial_report_bs_short_debt"/>
+            <field name="green_on_positive" eval="False"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[
+                '|',
+                    ('account_id.code', '=like', '135%'),
+                '|',
+                    ('account_id.code', '=like', '14%'),
+                '|',
+                    ('account_id.code', '=like', '15%'),
+                '|',
+                    ('account_id.code', '=like', '16%'),
+                    ('account_id.code', '=like', '2%'),
+            ]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="3"/>
+            <field name="sequence" eval="1"/>
+        </record>
+
+        <record id="account_financial_report_bs_cred" model="account.financial.html.report.line">
+            <field name="name">Crediteuren</field>
+            <field name="code">NL_CRED</field>
+            <field name="parent_id" ref="account_financial_report_bs_short_debt"/>
+            <field name="green_on_positive" eval="False"/>
+            <field name="formulas">-sum</field>
+            <field name="domain" eval="[('account_id.code', '=like', '130%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="level" eval="3"/>
+            <field name="sequence" eval="2"/>
+        </record>
+    </data>
+</odoo>

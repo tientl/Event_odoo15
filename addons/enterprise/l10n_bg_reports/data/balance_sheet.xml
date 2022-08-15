@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_bg_bs" model="account.financial.html.report">
+        <field name="name">Balance sheet</field>
+        <field name="date_range" eval="False"/>
+        <field name="comparison" eval="True"/>
+        <field name="unfold_all_filter" eval="True"/>
+        <field name="parent_id" ref="l10n_bg.bg_reports_menu"/>
+        <field name="country_id" ref="base.bg"/>
+    </record>
+
+    <record id="l10n_bg_bs_assets" model="account.financial.html.report.line">
+        <field name="name">Assets</field>
+        <field name="sequence">10000</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_bg_bs"/>
+        <field name="code">bg_assets</field>
+        <field name="formulas">bg_assets_a + bg_assets_b + bg_assets_c + bg_assets_d</field>
+    </record>
+
+        <record id="l10n_bg_bs_assets_a" model="account.financial.html.report.line">
+            <field name="name">A. Subscribed but unpaid capital</field>
+            <field name="sequence">11000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_assets"/>
+            <field name="code">bg_assets_a</field>
+            <field name="domain" eval="[('account_id.code', '=like', '426%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+        <record id="l10n_bg_bs_assets_b" model="account.financial.html.report.line">
+            <field name="name">B. Non-current (fixed) assets</field>
+            <field name="sequence">12000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_assets"/>
+            <field name="code">bg_assets_b</field>
+            <field name="formulas">bg_assets_b_1 + bg_assets_b_2 + bg_assets_b_3 + bg_assets_b_4</field>
+        </record>
+
+            <record id="l10n_bg_bs_assets_b_1" model="account.financial.html.report.line">
+                <field name="name">I. Intangible assets</field>
+                <field name="sequence">12100</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_b"/>
+                <field name="code">bg_assets_b_1</field>
+                <field name="formulas">bg_assets_b_1_1 + bg_assets_b_1_2 + bg_assets_b_1_3</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_b_1_1" model="account.financial.html.report.line">
+                    <field name="name">Development products</field>
+                    <field name="sequence">12110</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_1"/>
+                    <field name="code">bg_assets_b_1_1</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '211%'),
+                             ('account_id.code', '=like', '2421%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_b_1_2" model="account.financial.html.report.line">
+                    <field name="name">Concessions, patents, licenses, trademarks, software products and other similar rights and assets</field>
+                    <field name="sequence">12120</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_1"/>
+                    <field name="code">bg_assets_b_1_2</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '212%'),
+                        '|', ('account_id.code', '=like', '213%'),
+                        '|', ('account_id.code', '=like', '214%'),
+                        '|', ('account_id.code', '=like', '219%'),
+                        '|', ('account_id.code', '=like', '2420%'),
+                        '|', ('account_id.code', '=like', '2422%'),
+                        '|', ('account_id.code', '=like', '2423%'),
+                        '|', ('account_id.code', '=like', '2424%'),
+                             ('account_id.code', '=like', '2429%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_b_1_3" model="account.financial.html.report.line">
+                    <field name="name">Goodwill</field>
+                    <field name="sequence">12130</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_1"/>
+                    <field name="code">bg_assets_b_1_3</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '231%'),
+                             ('account_id.code', '=like', '232%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_assets_b_2" model="account.financial.html.report.line">
+                <field name="name">II. Fixed assets</field>
+                <field name="sequence">12200</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_b"/>
+                <field name="code">bg_assets_b_2</field>
+                <field name="formulas">bg_assets_b_2_1 + bg_assets_b_2_2 + bg_assets_b_2_3 + bg_assets_b_2_4</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_b_2_1" model="account.financial.html.report.line">
+                    <field name="name">Lands and buildings</field>
+                    <field name="sequence">12210</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_2"/>
+                    <field name="code">bg_assets_b_2_1</field>
+                    <field name="formulas">bg_assets_b_2_1_1 + bg_assets_b_2_1_2</field>
+                </record>
+
+                    <record id="l10n_bg_bs_assets_b_2_1_1" model="account.financial.html.report.line">
+                        <field name="name">Lands</field>
+                        <field name="sequence">12211</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_b_2_1"/>
+                        <field name="code">bg_assets_b_2_1_1</field>
+                        <field name="domain" eval="[
+                            '|', ('account_id.code', '=like', '201%'),
+                                 ('account_id.code', '=like', '202%')
+                        ]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_b_2_1_2" model="account.financial.html.report.line">
+                        <field name="name">Buildings</field>
+                        <field name="sequence">12212</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_b_2_1"/>
+                        <field name="code">bg_assets_b_2_1_2</field>
+                        <field name="domain" eval="[
+                            '|', ('account_id.code', '=like', '203%'),
+                                 ('account_id.code', '=like', '2413%')
+                        ]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                <record id="l10n_bg_bs_assets_b_2_2" model="account.financial.html.report.line">
+                    <field name="name">Machinery, production equipment and apparatus</field>
+                    <field name="sequence">12220</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_2"/>
+                    <field name="code">bg_assets_b_2_2</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '206%'),
+                             ('account_id.code', '=like', '2416%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_b_2_3" model="account.financial.html.report.line">
+                    <field name="name">Equipment and other</field>
+                    <field name="sequence">12230</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_2"/>
+                    <field name="code">bg_assets_b_2_3</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '204%'),
+                        '|', ('account_id.code', '=like', '205%'),
+                        '|', ('account_id.code', '=like', '207%'),
+                        '|', ('account_id.code', '=like', '208%'),
+                        '|', ('account_id.code', '=like', '209%'),
+                        '|', ('account_id.code', '=like', '2410%'),
+                        '|', ('account_id.code', '=like', '2414%'),
+                        '|', ('account_id.code', '=like', '2415%'),
+                        '|', ('account_id.code', '=like', '2417%'),
+                        '|', ('account_id.code', '=like', '2418%'),
+                             ('account_id.code', '=like', '2419%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_b_2_4" model="account.financial.html.report.line">
+                    <field name="name">Long-term biological assets</field>
+                    <field name="sequence">12240</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_2"/>
+                    <field name="code">bg_assets_b_2_4</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '27%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_assets_b_3" model="account.financial.html.report.line">
+                <field name="name">III. Long-term financial assets</field>
+                <field name="sequence">12300</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_b"/>
+                <field name="code">bg_assets_b_3</field>
+                <field name="formulas">bg_assets_b_3_1 + bg_assets_b_3_2</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_b_3_1" model="account.financial.html.report.line">
+                    <field name="name">Long-term financial assets</field>
+                    <field name="sequence">12310</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_3"/>
+                    <field name="code">bg_assets_b_3_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '22%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_b_3_2" model="account.financial.html.report.line">
+                    <field name="name">Other loans</field>
+                    <field name="sequence">12320</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_b_3"/>
+                    <field name="code">bg_assets_b_3_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '26%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_assets_b_4" model="account.financial.html.report.line">
+                <field name="name">IV. Postponed taxes</field>
+                <field name="sequence">12400</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_b"/>
+                <field name="code">bg_assets_b_4</field>
+                <field name="domain" eval="[('account_id.code', '=like', '496%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">sum_if_pos_groupby</field>
+            </record>
+
+        <record id="l10n_bg_bs_assets_c" model="account.financial.html.report.line">
+            <field name="name">C. Current assets</field>
+            <field name="sequence">13000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_assets"/>
+            <field name="code">bg_assets_c</field>
+            <field name="formulas">bg_assets_c_1 + bg_assets_c_2 + bg_assets_c_3 + bg_assets_c_4</field>
+        </record>
+
+            <record id="l10n_bg_bs_assets_c_1" model="account.financial.html.report.line">
+                <field name="name">I. Inventories</field>
+                <field name="sequence">13100</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_c"/>
+                <field name="code">bg_assets_c_1</field>
+                <field name="formulas">bg_assets_c_1_1 + bg_assets_c_1_2 + bg_assets_c_1_3 + bg_assets_c_1_4</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_c_1_1" model="account.financial.html.report.line">
+                    <field name="name">Raw materials</field>
+                    <field name="sequence">13110</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_1"/>
+                    <field name="code">bg_assets_c_1_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '302%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_1_2" model="account.financial.html.report.line">
+                    <field name="name">Work in progress</field>
+                    <field name="sequence">13120</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_1"/>
+                    <field name="code">bg_assets_c_1_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '305%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_1_3" model="account.financial.html.report.line">
+                    <field name="name">Products and goods</field>
+                    <field name="sequence">13130</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_1"/>
+                    <field name="code">bg_assets_c_1_3</field>
+                    <field name="formulas">bg_assets_c_1_3_1 + bg_assets_c_1_3_2 + bg_assets_c_1_3_3</field>
+                </record>
+
+                    <record id="l10n_bg_bs_assets_c_1_3_1" model="account.financial.html.report.line">
+                        <field name="name">Products</field>
+                        <field name="sequence">13131</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_1_3"/>
+                        <field name="code">bg_assets_c_1_3_1</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '303%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_1_3_2" model="account.financial.html.report.line">
+                        <field name="name">Goods</field>
+                        <field name="sequence">13132</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_1_3"/>
+                        <field name="code">bg_assets_c_1_3_2</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '304%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_1_3_3" model="account.financial.html.report.line">
+                        <field name="name">Short-term biological assets</field>
+                        <field name="sequence">13133</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_1_3"/>
+                        <field name="code">bg_assets_c_1_3_3</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '31%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                <record id="l10n_bg_bs_assets_c_1_4" model="account.financial.html.report.line">
+                    <field name="name">Advances provided</field>
+                    <field name="sequence">13140</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_1"/>
+                    <field name="code">bg_assets_c_1_4</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '301%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_assets_c_2" model="account.financial.html.report.line">
+                <field name="name">II. Receivables</field>
+                <field name="sequence">13200</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_c"/>
+                <field name="code">bg_assets_c_2</field>
+                <field name="formulas">bg_assets_c_2_1 + bg_assets_c_2_2 + bg_assets_c_2_3 + bg_assets_c_2_4 + bg_assets_c_2_5</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_c_2_1" model="account.financial.html.report.line">
+                    <field name="name">Receivables from suppliers</field>
+                    <field name="sequence">13210</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_2"/>
+                    <field name="code">bg_assets_c_2_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '40%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum_if_pos_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_2_2" model="account.financial.html.report.line">
+                    <field name="name">Receivables from customers</field>
+                    <field name="sequence">13220</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_2"/>
+                    <field name="code">bg_assets_c_2_2</field>
+                    <field name="domain" eval="[
+                        ('account_id.code', '=like', '41%'),
+                        ('account_id.code', 'not like', '416%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum_if_pos_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_2_3" model="account.financial.html.report.line">
+                    <field name="name">Receivables from group companies</field>
+                    <field name="sequence">13230</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_2"/>
+                    <field name="code">bg_assets_c_2_3</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '416%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum_if_pos_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_2_4" model="account.financial.html.report.line">
+                    <field name="name">Receivables related to associates and joint ventures</field>
+                    <field name="sequence">13240</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_2"/>
+                    <field name="code">bg_assets_c_2_4</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '424%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_2_5" model="account.financial.html.report.line">
+                    <field name="name">Other receivables</field>
+                    <field name="sequence">13250</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_2"/>
+                    <field name="code">bg_assets_c_2_5</field>
+                    <field name="formulas">bg_assets_c_2_5_1 + bg_assets_c_2_5_2 + bg_assets_c_2_5_3 + bg_assets_c_2_5_4 + bg_assets_c_2_5_5 + bg_assets_c_2_5_6 + bg_assets_c_2_5_7 + bg_assets_c_2_5_8</field>
+                </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_1" model="account.financial.html.report.line">
+                        <field name="name">Accountable persons</field>
+                        <field name="sequence">13251</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_1</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '422%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_2" model="account.financial.html.report.line">
+                        <field name="name">Translation estimates and internal estimates</field>
+                        <field name="sequence">13252</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_2</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '43%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_3" model="account.financial.html.report.line">
+                        <field name="name">Receivables from absences, deductions and litigation</field>
+                        <field name="sequence">13253</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_3</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '44%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_4" model="account.financial.html.report.line">
+                        <field name="name">Estimates from the budget and departments</field>
+                        <field name="sequence">13254</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_4</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '45%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum_if_pos_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_5" model="account.financial.html.report.line">
+                        <field name="name">Settlements with insurers</field>
+                        <field name="sequence">13255</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_5</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '46%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum_if_pos_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_6" model="account.financial.html.report.line">
+                        <field name="name">Settlements with international financial institutions</field>
+                        <field name="sequence">13256</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_6</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '47%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum_if_pos_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_7" model="account.financial.html.report.line">
+                        <field name="name">Insurance and co-insurance estimates</field>
+                        <field name="sequence">13257</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_7</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '48%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum_if_pos_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_assets_c_2_5_8" model="account.financial.html.report.line">
+                        <field name="name">Other creditors</field>
+                        <field name="sequence">13258</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_assets_c_2_5"/>
+                        <field name="code">bg_assets_c_2_5_8</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '499%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">sum</field>
+                    </record>
+
+            <record id="l10n_bg_bs_assets_c_3" model="account.financial.html.report.line">
+                <field name="name">III. Investments</field>
+                <field name="sequence">13300</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_c"/>
+                <field name="code">bg_assets_c_3</field>
+                <field name="formulas">bg_assets_c_3_1 + bg_assets_c_3_2 + bg_assets_c_3_3</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_c_3_1" model="account.financial.html.report.line">
+                    <field name="name">Shares and interests in group companies</field>
+                    <field name="sequence">13310</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_3"/>
+                    <field name="code">bg_assets_c_3_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '517%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_3_2" model="account.financial.html.report.line">
+                    <field name="name">Repurchased treasury shares nominal value</field>
+                    <field name="sequence">13320</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_3"/>
+                    <field name="code">bg_assets_c_3_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '512%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_3_3" model="account.financial.html.report.line">
+                    <field name="name">Other investments</field>
+                    <field name="sequence">13330</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_3"/>
+                    <field name="code">bg_assets_c_3_3</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '511%'),
+                        '|', ('account_id.code', '=like', '513%'),
+                        '|', ('account_id.code', '=like', '514%'),
+                        '|', ('account_id.code', '=like', '515%'),
+                        '|', ('account_id.code', '=like', '516%'),
+                             ('account_id.code', '=like', '519%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_assets_c_4" model="account.financial.html.report.line">
+                <field name="name">IV. Financial assets</field>
+                <field name="sequence">13400</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_assets_c"/>
+                <field name="code">bg_assets_c_4</field>
+                <field name="formulas">bg_assets_c_4_1 + bg_assets_c_4_2 + bg_assets_c_4_3 + bg_assets_c_4_4</field>
+            </record>
+
+                <record id="l10n_bg_bs_assets_c_4_1" model="account.financial.html.report.line">
+                    <field name="name">Cash</field>
+                    <field name="sequence">13410</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_4"/>
+                    <field name="code">bg_assets_c_4_1</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '501%'),
+                             ('account_id.code', '=like', '502%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_4_2" model="account.financial.html.report.line">
+                    <field name="name">In perpetual accounts (deposits)</field>
+                    <field name="sequence">13420</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_4"/>
+                    <field name="code">bg_assets_c_4_2</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '503%'),
+                             ('account_id.code', '=like', '504%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_4_3" model="account.financial.html.report.line">
+                    <field name="name">Other cash</field>
+                    <field name="sequence">13430</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_4"/>
+                    <field name="code">bg_assets_c_4_3</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '505%'),
+                        '|', ('account_id.code', '=like', '506%'),
+                        '|', ('account_id.code', '=like', '507%'),
+                        '|', ('account_id.code', '=like', '508%'),
+                             ('account_id.code', '=like', '509%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_assets_c_4_4" model="account.financial.html.report.line">
+                    <field name="name">Current receivables and loans</field>
+                    <field name="sequence">13440</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_assets_c_4"/>
+                    <field name="code">bg_assets_c_4_4</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '52%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">sum</field>
+                </record>
+
+        <record id="l10n_bg_bs_assets_d" model="account.financial.html.report.line">
+            <field name="name">D. Deferred expenses</field>
+            <field name="sequence">14000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_assets"/>
+            <field name="code">bg_assets_d</field>
+            <field name="domain" eval="[('account_id.code', '=like', '531%')]"/>
+            <field name="groupby">account_id</field>
+            <field name="formulas">sum</field>
+        </record>
+
+    <record id="l10n_bg_bs_liabilities" model="account.financial.html.report.line">
+        <field name="name">Liabilities</field>
+        <field name="sequence">20000</field>
+        <field name="level" eval="0"/>
+        <field name="financial_report_id" ref="l10n_bg_bs"/>
+        <field name="code">bg_liabilities</field>
+        <field name="formulas">bg_liabilities_a + bg_liabilities_b + bg_liabilities_c + bg_liabilities_d</field>
+    </record>
+
+        <record id="l10n_bg_bs_liabilities_a" model="account.financial.html.report.line">
+            <field name="name">A. Equity</field>
+            <field name="sequence">21000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_liabilities"/>
+            <field name="code">bg_liabilities_a</field>
+            <field name="formulas">bg_liabilities_a_1 + bg_liabilities_a_2 + bg_liabilities_a_3 + bg_liabilities_a_4 + bg_liabilities_a_5 + bg_liabilities_a_6 + bg_liabilities_a_7</field>
+        </record>
+
+            <record id="l10n_bg_bs_liabilities_a_1" model="account.financial.html.report.line">
+                <field name="name">I. Subscribed capital</field>
+                <field name="sequence">21100</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_1</field>
+                <field name="domain" eval="[
+                    ('account_id.code', '=like', '10%'),
+                    ('account_id.code', 'not like', '105%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_bs_liabilities_a_2" model="account.financial.html.report.line">
+                <field name="name">ІІ. Emission premiums</field>
+                <field name="sequence">21200</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_2</field>
+                <field name="domain" eval="[('account_id.code', '=like', '105%')]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_bs_liabilities_a_3" model="account.financial.html.report.line">
+                <field name="name">III. Reserve of ex-post evaluations</field>
+                <field name="sequence">21300</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_3</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '112%'),
+                    '|', ('account_id.code', '=like', '113%'),
+                         ('account_id.code', '=like', '114%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_bs_liabilities_a_4" model="account.financial.html.report.line">
+                <field name="name">IV. Reserves</field>
+                <field name="sequence">21400</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_4</field>
+                <field name="formulas">bg_liabilities_a_4_1 + bg_liabilities_a_4_2 + bg_liabilities_a_4_3 + bg_liabilities_a_4_4 + bg_liabilities_a_4_5</field>
+            </record>
+
+                <record id="l10n_bg_bs_liabilities_a_4_1" model="account.financial.html.report.line">
+                    <field name="name">Legal reserves</field>
+                    <field name="sequence">21410</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_a_4"/>
+                    <field name="code">bg_liabilities_a_4_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '111%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_a_4_2" model="account.financial.html.report.line">
+                    <field name="name">Reserve related to repurchased own shares</field>
+                    <field name="sequence">21420</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_a_4"/>
+                    <field name="code">bg_liabilities_a_4_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '116%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_a_4_3" model="account.financial.html.report.line">
+                    <field name="name">Reserve according to constitutive act</field>
+                    <field name="sequence">21430</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_a_4"/>
+                    <field name="code">bg_liabilities_a_4_3</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '117%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_a_4_4" model="account.financial.html.report.line">
+                    <field name="name">Specific non-capital reserves</field>
+                    <field name="sequence">21440</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_a_4"/>
+                    <field name="code">bg_liabilities_a_4_4</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '13%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_a_4_5" model="account.financial.html.report.line">
+                    <field name="name">Other reserves</field>
+                    <field name="sequence">21450</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_a_4"/>
+                    <field name="code">bg_liabilities_a_4_5</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '115%'),
+                             ('account_id.code', '=like', '119%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+            <record id="l10n_bg_bs_liabilities_a_5" model="account.financial.html.report.line">
+                <field name="name">V. Accumulated profit (loss) from previous years</field>
+                <field name="sequence">215000</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_5</field>
+                <field name="domain" eval="[
+                    ('account_id.code', '=like', '12%'),
+                    ('account_id.code', 'not like', '123%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum</field>
+            </record>
+
+            <record id="l10n_bg_bs_liabilities_a_6" model="account.financial.html.report.line">
+                <field name="name">VI. Current profit (loss)</field>
+                <field name="sequence">21600</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_6</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.code', '=like', '123%'),
+                    '|', ('account_id.code', '=like', '141%'),
+                         ('account_id.code', '=like', '142%')
+                ]"/>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum + bg_pl_expenses_12</field>
+            </record>
+
+            <record id="l10n_bg_bs_liabilities_a_7" model="account.financial.html.report.line">
+                <field name="name">VII. Unallocated earnings</field>
+                <field name="sequence">21700</field>
+                <field name="level" eval="2"/>
+                <field name="parent_id" ref="l10n_bg_bs_liabilities_a"/>
+                <field name="code">bg_liabilities_a_7</field>
+                <field name="domain" eval="[
+                    '|', ('account_id.user_type_id.internal_group', '=', 'income'),
+                         ('account_id.user_type_id.internal_group', '=', 'expense')
+                ]"/>
+                <field name="show_domain">never</field>
+                <field name="groupby">account_id</field>
+                <field name="formulas">-sum - bg_pl_expenses_12</field>
+            </record>
+
+        <record id="l10n_bg_bs_liabilities_b" model="account.financial.html.report.line">
+            <field name="name">B. Provisions and similar obligations</field>
+            <field name="sequence">22000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_liabilities"/>
+            <field name="code">bg_liabilities_b</field>
+            <field name="formulas">bg_liabilities_b_1 + bg_liabilities_b_2 + bg_liabilities_b_3</field>
+        </record>
+
+                <record id="l10n_bg_bs_liabilities_b_1" model="account.financial.html.report.line">
+                    <field name="name">Provisions for pensions and other similar obligations</field>
+                    <field name="sequence">22100</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_b"/>
+                    <field name="code">bg_liabilities_b_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '4971%')] "/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_b_2" model="account.financial.html.report.line">
+                    <field name="name">Provisions for taxes</field>
+                    <field name="sequence">22200</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_b"/>
+                    <field name="code">bg_liabilities_b_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '496%')] "/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum_if_neg_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_b_3" model="account.financial.html.report.line">
+                    <field name="name">Other provisions and similar obligations</field>
+                    <field name="sequence">22300</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_b"/>
+                    <field name="code">bg_liabilities_b_3</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '4970%'),
+                             ('account_id.code', '=like', '4972%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+        <record id="l10n_bg_bs_liabilities_c" model="account.financial.html.report.line">
+            <field name="name">C. Obligations</field>
+            <field name="sequence">23000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_liabilities"/>
+            <field name="code">bg_liabilities_c</field>
+            <field name="formulas">bg_liabilities_c_1 + bg_liabilities_c_2 + bg_liabilities_c_3 + bg_liabilities_c_4 + bg_liabilities_c_5 + bg_liabilities_c_6 + bg_liabilities_c_7 + bg_liabilities_c_8</field>
+        </record>
+
+                <record id="l10n_bg_bs_liabilities_c_1" model="account.financial.html.report.line">
+                    <field name="name">Mandatory loans with a separate indication of convertibles</field>
+                    <field name="sequence">23100</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '153%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_2" model="account.financial.html.report.line">
+                    <field name="name">Liabilities to financial institutions</field>
+                    <field name="sequence">23200</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_2</field>
+                    <field name="domain" eval="[
+                        '|', ('account_id.code', '=like', '151%'),
+                             ('account_id.code', '=like', '152%')
+                    ]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_3" model="account.financial.html.report.line">
+                    <field name="name">Advances received</field>
+                    <field name="sequence">23300</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_3</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '41%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum_if_neg_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_4" model="account.financial.html.report.line">
+                    <field name="name">Liabilities to suppliers</field>
+                    <field name="sequence">23400</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_4</field>
+                    <field name="formulas">bg_liabilities_c_4_1 + bg_liabilities_c_4_2</field>
+                </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_4_1" model="account.financial.html.report.line">
+                        <field name="name">Liabilities to suppliers</field>
+                        <field name="sequence">23410</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_4"/>
+                        <field name="code">bg_liabilities_c_4_1</field>
+                        <field name="domain" eval="[
+                            ('account_id.code', '=like', '40%'),
+                            ('account_id.code', 'not like', '406%')
+                        ]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum_if_neg_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_4_2" model="account.financial.html.report.line">
+                        <field name="name">Other loans and debts</field>
+                        <field name="sequence">23420</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_4"/>
+                        <field name="code">bg_liabilities_c_4_2</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '159%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum</field>
+                    </record>
+
+                <record id="l10n_bg_bs_liabilities_c_5" model="account.financial.html.report.line">
+                    <field name="name">Liabilities under policies</field>
+                    <field name="sequence">23500</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_5</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '48%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum_if_neg_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_6" model="account.financial.html.report.line">
+                    <field name="name">Liabilities to group enterprises</field>
+                    <field name="sequence">23600</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_6</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '406%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum_if_neg_groupby</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_7" model="account.financial.html.report.line">
+                    <field name="name">Liabilities related to associates and joint ventures</field>
+                    <field name="sequence">23700</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_7</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '425%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_c_8" model="account.financial.html.report.line">
+                    <field name="name">Other obligations</field>
+                    <field name="sequence">23800</field>
+                    <field name="level" eval="3"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_c"/>
+                    <field name="code">bg_liabilities_c_8</field>
+                    <field name="formulas">bg_liabilities_c_8_1 + bg_liabilities_c_8_2 + bg_liabilities_c_8_3 + bg_liabilities_c_8_4 + bg_liabilities_c_8_5</field>
+                </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_8_1" model="account.financial.html.report.line">
+                        <field name="name">To the staff</field>
+                        <field name="sequence">23810</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_8"/>
+                        <field name="code">bg_liabilities_c_8_1</field>
+                        <field name="domain" eval="[
+                            '|', ('account_id.code', '=like', '421%'),
+                            '|', ('account_id.code', '=like', '423%'),
+                                 ('account_id.code', '=like', '429%')
+                        ]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_8_2" model="account.financial.html.report.line">
+                        <field name="name">Insurance liabilities</field>
+                        <field name="sequence">23820</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_8"/>
+                        <field name="code">bg_liabilities_c_8_2</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '46%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum_if_neg_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_8_3" model="account.financial.html.report.line">
+                        <field name="name">Tax obligations</field>
+                        <field name="sequence">23830</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_8"/>
+                        <field name="code">bg_liabilities_c_8_3</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '45%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum_if_neg_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_8_4" model="account.financial.html.report.line">
+                        <field name="name">Settlements with international financial institutions</field>
+                        <field name="sequence">23840</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_8"/>
+                        <field name="code">bg_liabilities_c_8_4</field>
+                        <field name="domain" eval="[('account_id.code', '=like', '47%')]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum_if_neg_groupby</field>
+                    </record>
+
+                    <record id="l10n_bg_bs_liabilities_c_8_5" model="account.financial.html.report.line">
+                        <field name="name">Miscellaneous debtors and creditors</field>
+                        <field name="sequence">23850</field>
+                        <field name="level" eval="4"/>
+                        <field name="parent_id" ref="l10n_bg_bs_liabilities_c_8"/>
+                        <field name="code">bg_liabilities_c_8_5</field>
+                        <field name="domain" eval="[
+                            ('account_id.code', '=like', '49%'),
+                            ('account_id.code', 'not like', '496%'),
+                            ('account_id.code', 'not like', '497%'),
+                            ('account_id.code', 'not like', '499%')
+                        ]"/>
+                        <field name="groupby">account_id</field>
+                        <field name="formulas">-sum</field>
+                    </record>
+
+        <record id="l10n_bg_bs_liabilities_d" model="account.financial.html.report.line">
+            <field name="name">D. Financing and deferred income</field>
+            <field name="sequence">24000</field>
+            <field name="level" eval="1"/>
+            <field name="parent_id" ref="l10n_bg_bs_liabilities"/>
+            <field name="code">bg_liabilities_d</field>
+            <field name="formulas">bg_liabilities_d_1 + bg_liabilities_d_2</field>
+        </record>
+
+                <record id="l10n_bg_bs_liabilities_d_1" model="account.financial.html.report.line">
+                    <field name="name">Funding</field>
+                    <field name="sequence">24100</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_d"/>
+                    <field name="code">bg_liabilities_d_1</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '518%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+
+                <record id="l10n_bg_bs_liabilities_d_2" model="account.financial.html.report.line">
+                    <field name="name">Income for future periods</field>
+                    <field name="sequence">24200</field>
+                    <field name="level" eval="4"/>
+                    <field name="parent_id" ref="l10n_bg_bs_liabilities_d"/>
+                    <field name="code">bg_liabilities_d_2</field>
+                    <field name="domain" eval="[('account_id.code', '=like', '532%')]"/>
+                    <field name="groupby">account_id</field>
+                    <field name="formulas">-sum</field>
+                </record>
+</odoo>

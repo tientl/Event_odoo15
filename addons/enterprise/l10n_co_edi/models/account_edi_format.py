@@ -8,6 +8,7 @@ from .carvajal_request import CarvajalRequest
 
 import pytz
 import base64
+import re
 
 from collections import defaultdict
 from datetime import timedelta
@@ -48,6 +49,8 @@ class AccountEdiFormat(models.Model):
                                                   int(invoice_number))
 
     def _l10n_co_edi_get_round_amount(self, amount):
+        if amount == '':
+            return ''
         if abs(amount - float("%.2f" % amount)) > 0.00001:
             return "%.3f" % amount
         return '%.2f' % amount
@@ -183,6 +186,10 @@ class AccountEdiFormat(models.Model):
             withholding_amount = invoice.amount_untaxed + sum(invoice.line_ids.filtered(lambda line: line.tax_line_id and not line.tax_line_id.l10n_co_edi_type.retention).mapped('price_total'))
             amount_in_words = invoice.currency_id.with_context(lang=invoice.partner_id.lang or 'es_ES').amount_to_text(withholding_amount)
             shipping_partner = self.env['res.partner'].browse(invoice._get_invoice_delivery_partner_id())
+
+            reg_a_tag = re.compile('<a.*?>')
+            clean_narration = re.sub(reg_a_tag, '', invoice.narration) if invoice.narration else False
+            narration = (html2plaintext(clean_narration or '') and html2plaintext(clean_narration) + ' ') + (invoice.invoice_origin or '')
             notas = [
                 '1.-%s|%s|%s|%s|%s|%s' % (invoice.company_id.l10n_co_edi_header_gran_contribuyente or '',
                                           invoice.company_id.l10n_co_edi_header_tipo_de_regimen or '',
@@ -191,11 +198,11 @@ class AccountEdiFormat(models.Model):
                                           invoice.company_id.l10n_co_edi_header_resolucion_aplicable or '',
                                           invoice.company_id.l10n_co_edi_header_actividad_economica or ''),
                 '2.-%s' % (invoice.company_id.l10n_co_edi_header_bank_information or '').replace('\n', '|'),
-                '3.- %s' % (html2plaintext(invoice.narration or 'N/A')),
+                ('3.- %s' % (narration or 'N/A'))[:500],
                 '6.- %s|%s' % (html2plaintext(invoice.invoice_payment_term_id.note), amount_in_words),
                 '7.- %s' % (invoice.company_id.website),
-                '8.-%s|%s|%s' % (invoice.partner_id.commercial_partner_id._get_vat_without_verification_code() or '', shipping_partner.phone or '', invoice.invoice_origin or ''),
-                '10.- | | | |%s' % (invoice.invoice_origin or 'N/A'),
+                '8.-%s|%s|%s' % (invoice.partner_id.commercial_partner_id._get_vat_without_verification_code() or '', shipping_partner.phone or '', invoice.invoice_origin and invoice.invoice_origin.split(',')[0] or ''),
+                '10.- | | | |%s' % (invoice.invoice_origin and invoice.invoice_origin.split(',')[0] or 'N/A'),
                 '11.- |%s| |%s|%s' % (total_units, total_weight, total_volume)
             ]
 
@@ -268,14 +275,14 @@ class AccountEdiFormat(models.Model):
 
         # description
         description_field = None
-        if invoice.move_type == 'out_refund':
+        if invoice.move_type in ('out_refund', 'in_refund'):
             description_field = 'l10n_co_edi_description_code_credit'
-        if invoice.move_type == 'out_invoice' and invoice.l10n_co_edi_debit_note:
+        if invoice.move_type in ('out_invoice', 'in_invoice') and invoice.l10n_co_edi_debit_note:
             description_field = 'l10n_co_edi_description_code_debit'
         description_code = invoice[description_field] if description_field else None
         description = dict(invoice._fields[description_field].selection).get(description_code) if description_code else None
 
-        xml_content = self.env.ref('l10n_co_edi.electronic_invoice_xml')._render({
+        xml_content = self._l10n_co_edi_get_electronic_invoice_template(invoice)._render({
             'invoice': invoice,
             'edi_type': edi_type,
             'company_partner': invoice.company_id.partner_id,
@@ -304,6 +311,11 @@ class AccountEdiFormat(models.Model):
         })
         return b'<?xml version="1.0" encoding="utf-8"?>' + xml_content.encode()
 
+    def _l10n_co_edi_get_electronic_invoice_template(self, invoice):
+        if invoice.move_type in ('in_invoice', 'in_refund'):
+            return self.env.ref('l10n_co_edi.electronic_invoice_vendor_document_xml')
+        return self.env.ref('l10n_co_edi.electronic_invoice_xml')
+
     def _l10n_co_post_invoice_step_1(self, invoice):
         '''Sends the xml to carvajal.
         '''
@@ -321,7 +333,7 @@ class AccountEdiFormat(models.Model):
         })
 
         # == Upload ==
-        request = CarvajalRequest(invoice.company_id)
+        request = CarvajalRequest(invoice.move_type, invoice.company_id)
         response = request.upload(xml_filename, xml)
 
         if 'error' not in response:
@@ -345,7 +357,7 @@ class AccountEdiFormat(models.Model):
         download a ZIP containing the official XML and PDF if the
         invoice is reported as fully validated.
         '''
-        request = CarvajalRequest(invoice.company_id)
+        request = CarvajalRequest(invoice.move_type, invoice.company_id)
         response = request.check_status(invoice)
         if not response.get('error'):
             response['success'] = True
@@ -365,6 +377,8 @@ class AccountEdiFormat(models.Model):
 
             # == Chatter ==
             invoice.with_context(no_new_invoice=True).message_post(body=response['message'], attachments=response['attachments'])
+        elif response.get('blocking_level') == 'error':
+            invoice.l10n_co_edi_transaction = False
 
         return response
 
@@ -381,7 +395,7 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
         if self.code != 'ubl_carvajal':
             return super()._is_compatible_with_journal(journal)
-        return journal.type == 'sale' and journal.country_code == 'CO'
+        return journal.type == 'sale' or (journal.type == 'purchase' and journal.l10n_co_edi_is_support_document) and journal.country_code == 'CO'
 
     def _is_required_for_invoice(self, invoice):
         # OVERRIDE
@@ -390,6 +404,8 @@ class AccountEdiFormat(models.Model):
             return super()._is_required_for_invoice(invoice)
 
         # Determine on which invoices the EDI must be generated.
+        if invoice.move_type in ('in_invoice', 'in_refund') and invoice.country_code == 'CO':
+            return bool(self.env.ref('l10n_co_edi.electronic_invoice_vendor_document_xml', False))
         return invoice.move_type in ('out_invoice', 'out_refund') and invoice.country_code == 'CO'
 
     def _check_move_configuration(self, move):
@@ -407,8 +423,8 @@ class AccountEdiFormat(models.Model):
         if not company.l10n_co_edi_username or not company.l10n_co_edi_password or not company.l10n_co_edi_company or \
            not company.l10n_co_edi_account:
             edi_result.append(_("Carvajal credentials are not set on the company, please go to Accounting Settings and set the credentials."))
-        if not journal.l10n_co_edi_dian_authorization_number or not journal.l10n_co_edi_dian_authorization_date or \
-           not journal.l10n_co_edi_dian_authorization_end_date:
+        if (move.move_type != 'out_refund' and not move.debit_origin_id) and \
+           (not journal.l10n_co_edi_dian_authorization_number or not journal.l10n_co_edi_dian_authorization_date or not journal.l10n_co_edi_dian_authorization_end_date):
             edi_result.append(_("'Resolución DIAN' fields must be set on the journal %s", journal.display_name))
         if not move.partner_id.vat:
             edi_result.append(_("You can not validate an invoice that has a partner without VAT number."))

@@ -14,6 +14,7 @@ import {
     removeGlobalFilter,
     editGlobalFilter,
     setGlobalFilterValue,
+    waitForEvaluation,
 } from "./spreadsheet_test_utils";
 
 import { getBasicPivotArch, getBasicData } from "./spreadsheet_test_data";
@@ -367,7 +368,7 @@ module(
             let result = await addGlobalFilter(model , { filter: { ...filter, id: "456" } });
             assert.deepEqual(result.reasons, [CommandResult.DuplicatedFilterLabel]);
             assert.equal(model.getters.getGlobalFilters().length, 1);
-            await model.waitForIdle();
+            await waitForEvaluation(model);
 
             // Edit to set same name as other filter
             await addGlobalFilter(model, {
@@ -385,6 +386,35 @@ module(
                 id: "789",
                 filter: { ...filter, label: "Other name" },
             });
+            assert.deepEqual(result, DispatchResult.Success);
+        });
+
+        test("Can name/rename filters with special characters", async function (assert) {
+            assert.expect(5);
+            const { model } = await createSpreadsheetFromPivot({
+                arch: `
+                    <pivot string="Partners">
+                        <field name="name" type="col"/>
+                        <field name="date" interval="month" type="row"/>
+                        <field name="probability" type="measure"/>
+                    </pivot>
+                `,
+            });
+            const filter = Object.assign({}, THIS_YEAR_FILTER.filter, { label: "{my} We)ird. |*ab(el []" });
+            let result = model.dispatch("ADD_GLOBAL_FILTER", { filter });
+            assert.deepEqual(result, DispatchResult.Success);
+            assert.equal(model.getters.getGlobalFilters().length, 1);
+
+            const filterId = model.getters.getGlobalFilters()[0].id;
+
+            // Edit to set another name with special characters
+            result = model.dispatch("EDIT_PIVOT_FILTER", {id: filterId, filter: Object.assign({}, filter, { label: "+Othe^ we?rd name+$" }) });
+            assert.deepEqual(result, DispatchResult.Success);
+
+            result = model.dispatch("EDIT_PIVOT_FILTER", {id: filterId, filter: Object.assign({}, filter, { label: "normal name" }) });
+            assert.deepEqual(result, DispatchResult.Success);
+
+            result = model.dispatch("EDIT_PIVOT_FILTER", {id: filterId, filter: Object.assign({}, filter, { label: "?ack +.* to {my} We)ird. |*ab(el []" }) });
             assert.deepEqual(result, DispatchResult.Success);
         });
 
@@ -610,7 +640,7 @@ module(
         });
 
         test("FILTER.VALUE date filter", async function (assert) {
-            assert.expect(2);
+            assert.expect(4);
 
             const model = new Model();
             setCellContent(model, "A10", `=FILTER.VALUE("Date Filter")`);
@@ -649,6 +679,23 @@ module(
             });
             await testUtils.nextTick();
             assert.equal(getCellValue(model, "A10"), `${moment().year()}`);
+            await setGlobalFilterValue(model, {
+                id: filter.id,
+                rangeType: "year",
+                value: {
+                    period: "january",
+                    year: "this_year",
+                },
+            });
+            await testUtils.nextTick();
+            assert.equal(getCellValue(model, "A10"), `01/${moment().year()}`);
+            await setGlobalFilterValue(model, {
+                id: filter.id,
+                rangeType: "year",
+                value: {},
+            });
+            await testUtils.nextTick();
+            assert.equal(getCellValue(model, "A10"), ``);
         });
 
         test("FILTER.VALUE relation filter", async function (assert) {
@@ -792,7 +839,7 @@ module(
                 </pivot>`,
                 },
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
             await addGlobalFilter(model, {
                 filter: {
                     id: "41",
@@ -802,7 +849,7 @@ module(
                     pivotFields: { 1: { field: "product_id", type: "many2one" } },
                 },
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
             model.dispatch("SELECT_CELL", { col: 0, row: 5 });
             const root = cellMenuRegistry.getAll().find((item) => item.id === "reinsert_pivot");
             const reinsertPivot = cellMenuRegistry.getChildren(root, env)[0];
@@ -933,6 +980,81 @@ module(
             assert.deepEqual(model.getters.getGlobalFilters()[0].defaultValue, {});
         });
 
+        test("Changing the range of a date global filter reset the current value", async function (assert) {
+          const { webClient, model } = await createSpreadsheetFromPivot();
+          await addGlobalFilter(model, {
+            filter: {
+              id: "42",
+              type: "date",
+              rangeType: "month",
+              label: "This month",
+              pivotFields: {
+                1: { field: "create_date", type: "datetime" },
+              },
+              defaultValue: {
+                period: "january",
+              },
+            },
+          });
+          const searchIcon = webClient.el.querySelector(
+            ".o_topbar_filter_icon"
+          );
+          await testUtils.dom.click(searchIcon);
+
+          // Edit filter value in filters list
+          const optionInFilterList = webClient.el.querySelector(
+            ".pivot_filter select"
+          );
+          optionInFilterList
+            .querySelector("select option[selected='1']")
+            .setAttribute("selected", "0");
+          optionInFilterList
+            .querySelector("select option[value='february']")
+            .setAttribute("selected", "1");
+          await testUtils.dom.triggerEvent(optionInFilterList, "change");
+          await testUtils.nextTick();
+          const editFilter = webClient.el.querySelector(
+            ".o_side_panel_filter_icon"
+          );
+
+           // Edit filter range and save
+          await testUtils.dom.click(editFilter);
+          const timeRangeOption = webClient.el.querySelectorAll(
+            ".o_spreadsheet_filter_editor_side_panel .o_side_panel_section"
+          )[1];
+          timeRangeOption
+            .querySelector("select option[value='quarter']")
+            .setAttribute("selected", "selected");
+          await testUtils.dom.triggerEvent(
+            timeRangeOption.querySelector("select"),
+            "change"
+          );
+          await testUtils.nextTick();
+          const quarterOption = webClient.el.querySelectorAll(
+            ".o_spreadsheet_filter_editor_side_panel .o_side_panel_section"
+          )[2];
+          quarterOption
+            .querySelector("select option[value='first_quarter']")
+            .setAttribute("selected", "selected");
+          await testUtils.dom.triggerEvent(
+            quarterOption.querySelector("select"),
+            "change"
+          );
+          await testUtils.nextTick();
+
+          await testUtils.dom.click(
+            webClient.el.querySelector(".o_global_filter_save")
+          );
+          await testUtils.nextTick();
+
+          assert.deepEqual(model.getters.getGlobalFilter(42).defaultValue, {
+            period: "first_quarter",
+            year: "this_year",
+          });
+          assert.deepEqual(model.getters.getGlobalFilterValue(42), model.getters.getGlobalFilter(42).defaultValue);
+
+        });
+
         test("pivot headers won't change when adding a filter ", async function (assert) {
             assert.expect(6);
             const { model } = await createSpreadsheetFromPivot({
@@ -945,7 +1067,7 @@ module(
                     `,
                 },
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
             assert.equal(getCellValue(model, "A3"), "xphone");
             assert.equal(getCellValue(model, "A4"), "xpad");
             await addGlobalFilter(model, {
@@ -958,7 +1080,7 @@ module(
                     pivotFields: {1: {field: "product_id", type: "many2one"}},
                 },
             });
-            await model.waitForIdle();
+            await waitForEvaluation(model);
             await testUtils.nextTick();
             assert.equal(getCellValue(model, "A3"), "xphone");
             assert.equal(getCellValue(model, "B3"), "");

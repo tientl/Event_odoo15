@@ -32,6 +32,21 @@
         </field>
     </record>
 
+    <record id="helpdesk_ticket_report_analysis_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.report.analysis.tree</field>
+        <field name="model">helpdesk.ticket.report.analysis</field>
+        <field name="arch" type="xml">
+            <tree string="Tickets Analysis">
+                <field name="ticket_id"/>
+                <field name="priority" optional="show" widget="priority"/>
+                <field name="ticket_type_id" optional="hide"/>
+                <field name="team_id" optional="show"/>
+                <field name="partner_id" widget="res_partner_many2one" optional="show"/>
+                <field name="ticket_stage_id" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="helpdesk_ticket_report_analysis_view_search" model="ir.ui.view">
         <field name="name">helpdesk.ticket.report.analysis.search</field>
         <field name="model">helpdesk.ticket.report.analysis</field>

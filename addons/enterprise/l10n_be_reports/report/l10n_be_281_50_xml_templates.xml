@@ -3,6 +3,14 @@
     <data>
         <template id="report_281_50_xml">
             <t t-foreach="docs" t-as="o">
+<!--            Belcotax has made its validation application available to run in standalone.  -->
+<!--            1) Go to https://finances.belgium.be/fr/E-services/Belcotaxonweb/documentation-technique  -->
+<!--            2) download the "Module de validation revenus 2020" file by right clicking on it and open   -->
+<!--            in a new window and refresh to download the "belcotax.jnlp" file.  -->
+<!--            3) install what is required to run java web start application on your system.  -->
+<!--            Linux mint: sudo apt install icedtea-netx  -->
+<!--            4) run your file in terminal this way:  -->
+<!--            javaws belcotax.jnlp  -->
 <Verzendingen>
     <Verzending>
         <v0002_inkomstenjaar><t t-esc="data['V0002']"/></v0002_inkomstenjaar>
@@ -24,44 +32,50 @@
                 <a1005_registratienummer><t t-esc="data['A1005']"/></a1005_registratienummer>
                 <a1011_naamnl1><t t-esc="data['A1011']"/></a1011_naamnl1>
                 <a1013_adresnl><t t-esc="data['A1013']"/></a1013_adresnl>
+                <a1014_postcodebelgisch><t t-esc="data['A1014']"/></a1014_postcodebelgisch>
                 <a1015_gemeente><t t-esc="data['A1015']"/></a1015_gemeente>
+                <a1016_landwoonplaats><t t-esc="data['A1016']"/></a1016_landwoonplaats>
                 <a1020_taalcode><t t-esc="data['A1020']"/></a1020_taalcode>
                 <Opgaven>
                     <Opgave32550>
-                        <Fiche28150>
-                            <f2002_inkomstenjaar><t t-esc="data['F2002']"/></f2002_inkomstenjaar>
-                            <f2005_registratienummer><t t-esc="data['F2005']"/></f2005_registratienummer>
-                            <f2008_typefiche><t t-esc="data['F2008']"/></f2008_typefiche>
-                            <f2009_volgnummer><t t-esc="data['F2009']"/></f2009_volgnummer>
-                            <f2011_nationaalnr><t t-esc="data['F2011']"/></f2011_nationaalnr>
-                            <f2013_naam><t t-esc="data['F2013']"/></f2013_naam>
-                            <f2015_adres><t t-esc="data['F2015']"/></f2015_adres>
-                            <f2016_postcodebelgisch><t t-esc="data['F2016']"/></f2016_postcodebelgisch>
-                            <f2017_gemeente><t t-esc="data['F2017']"/></f2017_gemeente>
-                            <f2028_typetraitement><t t-esc="data['F2028']"/></f2028_typetraitement>
-                            <f2029_enkelopgave325><t t-esc="data['F2029']"/></f2029_enkelopgave325>
-                            <f2105_birthplace><t t-esc="data['F2105']"/></f2105_birthplace>
-                            <f2114_voornamen><t t-esc="data['F2114']"/></f2114_voornamen>
-                            <f50_2030_aardpersoon><t t-esc="data['F50_2030']"/></f50_2030_aardpersoon>
-                            <f50_2031_nihil><t t-esc="data['F50_2031']"/></f50_2031_nihil>
-                            <f50_2059_totaalcontrole><t t-esc="data['F50_2059']"/></f50_2059_totaalcontrole>
-                            <f50_2060_commissies><t t-esc="data['F50_2060']"/></f50_2060_commissies>
-                            <f50_2061_erelonenofvacatie><t t-esc="data['F50_2061']"/></f50_2061_erelonenofvacatie>
-                            <f50_2062_voordelenaardbedrag><t t-esc="data['F50_2062']"/></f50_2062_voordelenaardbedrag>
-                            <f50_2063_kosten><t t-esc="data['F50_2063']"/></f50_2063_kosten>
-                            <f50_2064_totaal><t t-esc="data['F50_2064']"/></f50_2064_totaal>
-                            <f50_2065_werkelijkbetaaldb><t t-esc="data['F50_2065']"/></f50_2065_werkelijkbetaaldb>
-                            <f50_2066_sportremuneration><t t-esc="data['F50_2066']"/></f50_2066_sportremuneration>
-                            <f50_2067_managerremuneration><t t-esc="data['F50_2067']"/></f50_2067_managerremuneration>
-                            <f50_2099_comment><t t-esc="data['F50_2099']"/></f50_2099_comment>
-                            <f50_2103_advantagenature><t t-esc="data['F50_2103']"/></f50_2103_advantagenature>
-                            <f50_2107_uitgeoefendberoep><t t-esc="data['F50_2107']"/></f50_2107_uitgeoefendberoep>
-                            <f50_2109_fiscaalidentificat><t t-esc="data['F50_2109']"/></f50_2109_fiscaalidentificat>
-                            <f50_2110_kbonbr><t t-esc="data['F50_2110']"/></f50_2110_kbonbr>
-                        </Fiche28150>
+                        <t t-foreach="data['Fiches28150']" t-as="fiche">
+                            <Fiche28150>
+                                <f2002_inkomstenjaar><t t-esc="fiche['F2002']"/></f2002_inkomstenjaar>
+                                <f2005_registratienummer><t t-esc="fiche['F2005']"/></f2005_registratienummer>
+                                <f2008_typefiche><t t-esc="fiche['F2008']"/></f2008_typefiche>
+                                <f2009_volgnummer><t t-esc="fiche['F2009']"/></f2009_volgnummer>
+                                <f2013_naam><t t-esc="fiche['F2013']"/></f2013_naam>
+                                <f2015_adres><t t-esc="fiche['F2015']"/></f2015_adres>
+                                <f2016_postcodebelgisch><t t-esc="fiche['F2016']"/></f2016_postcodebelgisch>
+                                <f2017_gemeente><t t-esc="fiche['F2017']"/></f2017_gemeente>
+                                <f2018_landwoonplaats><t t-esc="fiche['F2018']"/></f2018_landwoonplaats>
+                                <f2028_typetraitement><t t-esc="fiche['F2028']"/></f2028_typetraitement>
+                                <f2029_enkelopgave325><t t-esc="fiche['F2029']"/></f2029_enkelopgave325>
+                                <f2105_birthplace><t t-esc="fiche['F2105']"/></f2105_birthplace>
+                                <f2112_buitenlandspostnummer><t t-esc="fiche['F2112']"/></f2112_buitenlandspostnummer>
+                                <f2114_voornamen><t t-esc="fiche['F2114']"/></f2114_voornamen>
+                                <f50_2030_aardpersoon><t t-esc="fiche['F50_2030']"/></f50_2030_aardpersoon>
+                                <f50_2031_nihil><t t-esc="fiche['F50_2031']"/></f50_2031_nihil>
+                                <f50_2059_totaalcontrole><t t-esc="fiche['F50_2059']"/></f50_2059_totaalcontrole>
+                                <f50_2060_commissies><t t-esc="fiche['F50_2060']"/></f50_2060_commissies>
+                                <f50_2061_erelonenofvacatie><t t-esc="fiche['F50_2061']"/></f50_2061_erelonenofvacatie>
+                                <f50_2062_voordelenaardbedrag><t t-esc="fiche['F50_2062']"/></f50_2062_voordelenaardbedrag>
+                                <f50_2063_kosten><t t-esc="fiche['F50_2063']"/></f50_2063_kosten>
+                                <f50_2064_totaal><t t-esc="fiche['F50_2064']"/></f50_2064_totaal>
+                                <f50_2065_werkelijkbetaaldb><t t-esc="fiche['F50_2065']"/></f50_2065_werkelijkbetaaldb>
+                                <f50_2066_sportremuneration><t t-esc="fiche['F50_2066']"/></f50_2066_sportremuneration>
+                                <f50_2067_managerremuneration><t t-esc="fiche['F50_2067']"/></f50_2067_managerremuneration>
+                                <f50_2099_comment><t t-esc="fiche['F50_2099']"/></f50_2099_comment>
+                                <f50_2103_advantagenature><t t-esc="fiche['F50_2103']"/></f50_2103_advantagenature>
+                                <f50_2107_uitgeoefendberoep><t t-esc="fiche['F50_2107']"/></f50_2107_uitgeoefendberoep>
+                                <f50_2109_fiscaalidentificat><t t-esc="fiche['F50_2109']"/></f50_2109_fiscaalidentificat>
+                                <f50_2110_kbonbr><t t-esc="fiche['F50_2110']"/></f50_2110_kbonbr>
+                            </Fiche28150>
+                        </t>
                     </Opgave32550>
                 </Opgaven>
                 <r8002_inkomstenjaar><t t-esc="data['R8002']"/></r8002_inkomstenjaar>
+                <r8005_registratienummer><t t-esc="data['R8005']"/></r8005_registratienummer>
                 <r8010_aantalrecords><t t-esc="data['R8010']"/></r8010_aantalrecords>
                 <r8011_controletotaal><t t-esc="data['R8011']"/></r8011_controletotaal>
                 <r8012_controletotaal><t t-esc="data['R8012']"/></r8012_controletotaal>

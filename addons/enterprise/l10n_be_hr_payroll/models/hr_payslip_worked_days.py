@@ -14,7 +14,7 @@ class HrPayslipWorkedDays(models.Model):
 
     is_credit_time = fields.Boolean(string='Credit Time')
 
-    @api.depends('is_paid', 'is_credit_time', 'number_of_hours', 'payslip_id', 'payslip_id.normal_wage', 'payslip_id.sum_worked_hours')
+    @api.depends('is_paid', 'is_credit_time', 'number_of_hours', 'payslip_id', 'contract_id.wage', 'payslip_id.sum_worked_hours')
     def _compute_amount(self):
         monthly_self = self.filtered(lambda wd: not wd.payslip_id.edited and wd.payslip_id.wage_type == "monthly")
 

@@ -5,7 +5,7 @@
             <field name="name">DTE - Send by Email</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="email_from">{{ (object.company_id.l10n_cl_dte_email or object.company_id.email) }}</field>
-            <field name="email_to">{{ object.partner_id.l10n_cl_dte_email }}</field>
+            <field name="email_to">{{ (object.partner_id.l10n_cl_dte_email or object.commercial_partner_id.l10n_cl_dte_email) }}</field>
             <field name="subject">{{ object.company_id.name }} DTE (Ref {{ (object.name or 'n/a') }})</field>
             <field name="auto_delete" eval="False"/>
             <field name="lang">{{ object.partner_id.lang }}</field>
@@ -49,7 +49,7 @@
             <field name="name">DTE Receipt Acknowledgment</field>
             <field name="subject">Acknowledgment of Receipt - {{ object.name }}</field>
             <field name="email_from">{{ object.company_id.l10n_cl_dte_email }}</field>
-            <field name="email_to">{{ object.partner_id.l10n_cl_dte_email }}</field>
+            <field name="email_to">{{ (object.partner_id.l10n_cl_dte_email or object.commercial_partner_id.l10n_cl_dte_email) }}</field>
             <field name="model_id" ref="l10n_cl_edi.model_account_move"/>
             <field name="auto_delete" eval="False"/>
             <field name="body_html">
@@ -70,7 +70,7 @@
             <field name="name">DTE Receipt Commercial Accepted</field>
             <field name="subject">Commercial Acceptance Response - {{ object.name }}</field>
             <field name="email_from">{{ object.company_id.l10n_cl_dte_email }}</field>
-            <field name="email_to">{{ object.partner_id.l10n_cl_dte_email }}</field>
+            <field name="email_to">{{ (object.partner_id.l10n_cl_dte_email or object.commercial_partner_id.l10n_cl_dte_email) }}</field>
             <field name="model_id" ref="account.model_account_move" />
             <field name="auto_delete" eval="False"/>
             <field name="body_html">
@@ -88,7 +88,7 @@
             <field name="name">DTE Commercial Reject</field>
             <field name="subject">Commercial Rejection response - {{ object.name }}</field>
             <field name="email_from">{{ object.company_id.l10n_cl_dte_email }}</field>
-            <field name="email_to">{{ object.partner_id.l10n_cl_dte_email }}</field>
+            <field name="email_to">{{ (object.partner_id.l10n_cl_dte_email or object.commercial_partner_id.l10n_cl_dte_email) }}</field>
             <field name="model_id" ref="l10n_cl_edi.model_account_move"/>
             <field name="auto_delete" eval="False"/>
             <field name="body_html">

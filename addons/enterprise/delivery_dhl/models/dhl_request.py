@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import os
-
 from lxml.etree import fromstring
 from datetime import datetime, date, timedelta
 from lxml import etree
@@ -11,6 +9,7 @@ from zeep.wsdl.utils import etree_to_string
 from odoo import _
 from odoo import release
 from odoo.exceptions import UserError
+from odoo.modules.module import get_resource_path
 from odoo.tools import float_repr
 
 class DHLProvider():
@@ -22,17 +21,17 @@ class DHLProvider():
         else:
             self.url = 'https://xmlpi-ea.dhl.com/XMLShippingServlet?isUTF8Support=true'
         if request_type == "ship":
-            self.client = self._set_client('../api/ship.wsdl', 'Ship')
+            self.client = self._set_client('ship-10.0.wsdl', 'Ship')
             self.factory = self.client.type_factory('ns1')
         elif request_type =="rate":
-            self.client = self._set_client('../api/rate.wsdl', 'Rate')
+            self.client = self._set_client('rate.wsdl', 'Rate')
             self.factory = self.client.type_factory('ns1')
             self.factory_dct_request = self.client.type_factory('ns2')
             self.factory_dct_response = self.client.type_factory('ns3')
 
 
-    def _set_client(self, wsdl, api):
-        wsdl_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), wsdl)
+    def _set_client(self, wsdl_filename, api):
+        wsdl_path = get_resource_path('delivery_dhl', 'api', wsdl_filename)
         client = Client('file:///%s' % wsdl_path.lstrip('/'))
         return client
 
@@ -53,12 +52,6 @@ class DHLProvider():
     def _set_region_code(self, region_code):
         return region_code
 
-    def _set_pieces_enabled(self, pieces_enabled):
-        if pieces_enabled:
-            return "Y"
-        else:
-            return "N"
-
     def _set_requested_pickup_time(self, requested_pickup):
         if requested_pickup:
             return "Y"
@@ -76,7 +69,8 @@ class DHLProvider():
     def _set_consignee(self, partner_id):
         consignee = self.factory.Consignee()
         consignee.CompanyName = partner_id.commercial_company_name or partner_id.name
-        consignee.AddressLine = ('%s %s') % (partner_id.street or '', partner_id.street2 or '')
+        consignee.AddressLine1 = partner_id.street or partner_id.street2
+        consignee.AddressLine2 = partner_id.street and partner_id.street2 or None
         consignee.City = partner_id.city
         if partner_id.state_id:
             consignee.Division = partner_id.state_id.name
@@ -102,7 +96,8 @@ class DHLProvider():
         shipper = self.factory.Shipper()
         shipper.ShipperID = account_number
         shipper.CompanyName = company_partner_id.name
-        shipper.AddressLine = ('%s %s') % (warehouse_partner_id.street or '', warehouse_partner_id.street2 or '')
+        shipper.AddressLine1 = warehouse_partner_id.street or warehouse_partner_id.street2
+        shipper.AddressLine2 = warehouse_partner_id.street and warehouse_partner_id.street2 or None
         shipper.City = warehouse_partner_id.city
         if warehouse_partner_id.state_id:
             shipper.Division = warehouse_partner_id.state_id.name
@@ -124,10 +119,13 @@ class DHLProvider():
         dct_from.City = warehouse_partner_id.city
         return dct_from
 
-    def _set_dutiable(self, total_value, currency_name):
+    def _set_dutiable(self, total_value, currency_name, incoterm):
         dutiable = self.factory.Dutiable()
         dutiable.DeclaredValue = float_repr(total_value, 2)
         dutiable.DeclaredCurrency = currency_name
+        if not incoterm:
+            raise UserError(_("Please define an incoterm in the associated sale order or set a default incoterm for the company in the accounting's settings."))
+        dutiable.TermsOfTrade = incoterm.code
         return dutiable
 
     def _set_dct_dutiable(self, total_value, currency_name):
@@ -204,12 +202,13 @@ class DHLProvider():
     def _set_shipment_details(self, picking):
         shipment_details = self.factory.ShipmentDetails()
         #CHECK IF WEIGHT BULK AND PACKAGES
-        shipment_details.NumberOfPieces = len(picking.package_ids) or 1
         pieces = []
+        index = 0
         for package in picking.package_ids:
+            index+=1
             package_type = package.package_type_id or picking.carrier_id.dhl_default_package_type_id
             piece = self.factory.Piece()
-            piece.PackageTypeCode = package_type.shipper_package_code or None
+            piece.PieceID = index
             piece.Width = package_type.width
             piece.Height = package_type.height
             piece.Depth = package_type.packaging_length
@@ -220,19 +219,20 @@ class DHLProvider():
             piece.PieceContents = package.name
             pieces.append(piece)
         if picking.weight_bulk or picking.is_return_picking:
+            index+=1
             package_type = picking.carrier_id.dhl_default_package_type_id
             piece = self.factory.Piece()
-            piece.PackageTypeCode = package_type.shipper_package_code or None
+            piece.PieceID = index
             piece.Width = package_type.width
             piece.Height = package_type.height
             piece.Depth = package_type.packaging_length
+            piece.Weight = picking.carrier_id._dhl_convert_weight(
+                picking.weight_bulk,
+                picking.carrier_id.dhl_package_weight_unit
+            )
             piece.PieceContents = "Bulk Content"
             pieces.append(piece)
         shipment_details.Pieces = self.factory.Pieces(pieces)
-        if picking.is_return_picking:
-            shipment_details.Weight = picking.carrier_id._dhl_convert_weight(picking._get_estimated_weight(), picking.carrier_id.dhl_package_weight_unit)
-        else:
-            shipment_details.Weight = picking.carrier_id._dhl_convert_weight(picking.shipping_weight, picking.carrier_id.dhl_package_weight_unit)
         shipment_details.WeightUnit = picking.carrier_id.dhl_package_weight_unit
         shipment_details.GlobalProductCode = picking.carrier_id.dhl_product_code
         shipment_details.LocalProductCode = picking.carrier_id.dhl_product_code

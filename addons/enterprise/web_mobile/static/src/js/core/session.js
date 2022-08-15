@@ -3,9 +3,10 @@ odoo.define('web_mobile.Session', function (require) {
 
 const core = require('web.core');
 const Session = require('web.Session');
-const utils = require('web.utils');
 
 const mobile = require('web_mobile.core');
+
+const DEFAULT_AVATAR_SIZE = 128;
 
 /*
     Android webview not supporting post download and odoo is using post method to download
@@ -49,8 +50,7 @@ Session.include({
         if (!mobile.methods.updateAccount) {
             return;
         }
-        const avatar = await this.fetchAvatar();
-        const base64Avatar = await utils.getDataURLFromFile(avatar);
+        const base64Avatar = await this.fetchAvatar();
         return mobile.methods.updateAccount({
             avatar: base64Avatar.substring(base64Avatar.indexOf(',') + 1),
             name: this.name,
@@ -59,18 +59,30 @@ Session.include({
     },
 
     /**
-     * Fetch current user's avatar
+     * Fetch current user's avatar as PNG image
      *
-     * @returns {Promise<Blob>}
+     * @returns {Promise} resolved with the dataURL, or rejected if the file is
+     *  empty or if an error occurs.
      */
-    async fetchAvatar() {
+    fetchAvatar() {
         const url = this.url('/web/image', {
             model: 'res.users',
             field: 'image_medium',
             id: this.uid,
         });
-        const response = await fetch(url);
-        return response.blob();
+        return new Promise((resolve, reject) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = DEFAULT_AVATAR_SIZE;
+            canvas.height = DEFAULT_AVATAR_SIZE;
+            const context = canvas.getContext('2d');
+            const image = new Image();
+            image.addEventListener('load', () => {
+                context.drawImage(image, 0, 0, DEFAULT_AVATAR_SIZE, DEFAULT_AVATAR_SIZE);
+                resolve(canvas.toDataURL('image/png'));
+            });
+            image.addEventListener('error', reject);
+            image.src = url;
+        });
     },
 });
 

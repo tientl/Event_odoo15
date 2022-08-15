@@ -55,6 +55,7 @@ tour.register('web_studio_tests_tour', {
     timeout: 60000, /* previous step reloads registry, etc. - could take a long time */
 }, {
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
+    extra_trigger: '.o_home_menu',
 }, {
     // open the app creator and leave it
     trigger: '.o_web_studio_new_app',
@@ -86,6 +87,7 @@ tour.register('web_studio_tests_tour', {
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
 }, {
     // edit an app
+    extra_trigger: '.o_studio_home_menu',
     trigger: `.o_app[data-menu-xmlid*="studio"]:contains(${createdAppString})`,
     run: function () {
         // We can't emulate a hover to display the edit icon
@@ -139,7 +141,7 @@ tour.register('web_studio_tests_tour', {
     // unfold 'Existing Fieldqs' section
     trigger: '.o_web_studio_existing_fields_header',
 }, {
-    // add an existing field (display_name)
+    // add an new field
     trigger: '.o_web_studio_sidebar .o_web_studio_field_type_container:eq(1) .o_web_studio_field_char',
     run: 'drag_and_drop .o_web_studio_form_view_editor .o_inner_group',
 }, {
@@ -155,9 +157,29 @@ tour.register('web_studio_tests_tour', {
     // verify that the field name has changed and change it
     trigger: 'input[data-type="field_name"][value="my_coucou_field"]',
     run: 'text coucou',
+    // the rename operation (/web_studio/rename_field + /web_studio/edit_view)
+    // takes a while and sometimes reaches the default 10s timeout
+    timeout: 20000,
 }, {
     // click on "Add" tab
     trigger: '.o_web_studio_sidebar .o_web_studio_new',
+    // the rename operation (/web_studio/rename_field + /web_studio/edit_view)
+    // takes a while and sometimes reaches the default 10s timeout
+    timeout: 20000,
+    async run() {
+        // During the rename, the UI is blocked. When the rpc returns, the UI is
+        // unblocked and the sidebar is re-rendered. Without this, the step is
+        // sometimes executed exactly when the sidebar is about to be replaced,
+        // and it doesn't work. We thus here wait for 1s to ensure that the
+        // sidebar has been re-rendered, before going further.
+        // note1: there's nothing in the DOM that could be used to determine that
+        // we're ready to continue (the sidebar is just replaced by itself, same state)
+        // note2: ideally, it should work whenever we click, but with the current
+        // architecture of studio, it's really hard to fix. Hopefully, when studio
+        // will be converted to owl, this should no longer be an issue.
+        await new Promise((r) => setTimeout(r, 1000));
+        $(".o_web_studio_sidebar .o_web_studio_new").click();
+    }
 }, {
     // add a new field
     trigger: '.o_web_studio_sidebar .o_web_studio_field_type_container:eq(1) .o_web_studio_field_char',
@@ -177,6 +199,9 @@ tour.register('web_studio_tests_tour', {
     // verify that the field name has changed (post-fixed by _1)
     extra_trigger: 'input[data-type="field_name"][value="coucou_1"]',
     trigger: '.o_web_studio_sidebar .o_web_studio_new',
+    // the rename operation (/web_studio/rename_field + /web_studio/edit_view)
+    // takes a while and sometimes reaches the default 10s timeout
+    timeout: 20000,
 }, {
     // add a monetary field --> create a currency field
     trigger: '.o_web_studio_sidebar .o_web_studio_field_type_container:eq(1) .o_web_studio_field_monetary',
@@ -187,6 +212,20 @@ tour.register('web_studio_tests_tour', {
     // verify that the currency field is in the view
     extra_trigger: '.o_web_studio_form_view_editor td.o_td_label:contains("Currency")',
     trigger: '.o_web_studio_sidebar .o_web_studio_new',
+    async run() {
+        // When adding a new field, the UI is blocked. When the rpc returns, the UI is
+        // unblocked and the sidebar is re-rendered. Without this, the step is
+        // sometimes executed exactly when the sidebar is about to be replaced,
+        // and it doesn't work. We thus here wait for 1s to ensure that the
+        // sidebar has been re-rendered, before going further.
+        // note1: there's nothing in the DOM that could be used to determine that
+        // we're ready to continue (the sidebar is just replaced by itself, same state)
+        // note2: ideally, it should work whenever we click, but with the current
+        // architecture of studio, it's really hard to fix. Hopefully, when studio
+        // will be converted to owl, this should no longer be an issue.
+        await new Promise((r) => setTimeout(r, 1000));
+        $(".o_web_studio_sidebar .o_web_studio_new").click();
+    }
 }, {
     // add a monetary field
     trigger: '.o_web_studio_sidebar .o_web_studio_field_type_container:eq(1) .o_web_studio_field_monetary',
@@ -348,6 +387,7 @@ tour.register('web_studio_tests_tour', {
     extra_trigger: '.o_activity_view',
     // edit action
     trigger: '.o_web_studio_menu .o_menu_sections li a:contains("Views")',
+    timeout: 20000, // activating a view takes a while and sometimes reaches the default 10s timeout
 }, {
     // add a graph view
     trigger: '.o_web_studio_view_category .o_web_studio_view_type.o_web_studio_inactive[data-type="graph"] .o_web_studio_thumbnail',

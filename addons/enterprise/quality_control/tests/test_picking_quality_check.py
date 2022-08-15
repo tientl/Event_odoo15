@@ -535,3 +535,76 @@ class TestQualityCheck(TestQualityCommon):
         self.assertEqual(len(self.picking_in.check_ids.filtered(lambda c: c.product_id.id == self.product_2.id)), 1)
         self.assertEqual(len(self.picking_in.check_ids.filtered(lambda c: c.product_id.id == self.product_3.id)), 0)
         self.assertEqual(len(self.picking_in.check_ids.filtered(lambda c: c.product_id.id == self.product_4.id)), 1)
+
+    def test_checks_removal_on_SM_cancellation(self):
+        """
+        Configuration:
+            - 2 storable products P1 and P2
+            - Receipt in 2 steps
+            - QCP for internal pickings
+        Process a first receipt with P1 and P2 (an internal picking and two
+        quality checks are created)
+        Process a second receipt with P1. The SM input->stock should be merged
+        into the existing one and the quality checks should still exist
+        """
+        warehouse = self.env['stock.warehouse'].search([], limit=1)
+        warehouse.reception_steps = 'two_steps'
+
+        p01, p02 = self.env['product.product'].create([{
+            'name': name,
+            'type': 'product',
+        } for name in ('SuperProduct01', 'SuperProduct02')])
+
+        self.env['quality.point'].create([{
+            'product_ids': [(4, product.id)],
+            'picking_type_ids': [(4, warehouse.int_type_id.id)],
+        } for product in (p01, p02)])
+
+        receipt = self.env['stock.picking'].create({
+            'picking_type_id': self.picking_type_id,
+            'partner_id': self.partner_id,
+            'location_id': self.location_id,
+            'location_dest_id': warehouse.wh_input_stock_loc_id.id,
+        })
+        self.env['stock.move'].create([{
+            'name': product.name,
+            'product_id': product.id,
+            'product_uom_qty': 1,
+            'product_uom': product.uom_id.id,
+            'picking_id': receipt.id,
+            'location_id': self.location_id,
+            'location_dest_id': warehouse.wh_input_stock_loc_id.id,
+        } for product in (p01, p02)])
+        receipt.action_confirm()
+        receipt.move_lines.quantity_done = 1
+        receipt.button_validate()
+
+        internal_transfer = self.env['stock.picking'].search(
+            [('location_id', '=', warehouse.wh_input_stock_loc_id.id), ('picking_type_id', '=', warehouse.int_type_id.id)],
+            order='id desc', limit=1)
+        self.assertEqual(internal_transfer.check_ids.product_id, p01 + p02)
+
+        receipt = self.env['stock.picking'].create({
+            'picking_type_id': self.picking_type_id,
+            'partner_id': self.partner_id,
+            'location_id': self.location_id,
+            'location_dest_id': warehouse.wh_input_stock_loc_id.id,
+        })
+        self.env['stock.move'].create({
+            'name': p01.name,
+            'product_id': p01.id,
+            'product_uom_qty': 1,
+            'product_uom': p01.uom_id.id,
+            'picking_id': receipt.id,
+            'location_id': self.location_id,
+            'location_dest_id': warehouse.wh_input_stock_loc_id.id,
+        })
+        receipt.action_confirm()
+        receipt.move_lines.quantity_done = 1
+        receipt.button_validate()
+
+        self.assertRecordValues(internal_transfer.move_lines, [
+            {'product_id': p01.id, 'product_uom_qty': 2},
+            {'product_id': p02.id, 'product_uom_qty': 1},
+        ])
+        self.assertEqual(internal_transfer.check_ids.product_id, p01 + p02)
