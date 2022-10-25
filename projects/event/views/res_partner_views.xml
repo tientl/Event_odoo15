@@ -17,6 +17,15 @@
                         <field string="Events" name="event_count" widget="statinfo"/>
                     </button>
                 </div>
+                <field name='email' position='after'>
+                    <field name='is_show_password' invisible='1'/>
+                    <field name='user_name'/>
+                    <label for='password'/>
+                    <div class="o_row">
+                        <field name='password' attrs="{'password': [('is_show_password','=', Fasle)]}"/>
+                        <button name="action_show_password" type="object" icon="fa-eye" class="oe_stat_button"/>
+                    </div>
+                </field>
             </field>
         </record>
     </data>
