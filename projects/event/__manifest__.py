@@ -22,6 +22,7 @@ Key Features
         'security/event_security.xml',
         'security/ir.model.access.csv',
         'views/event_menu_views.xml',
+        'views/event_address_view.xml',
         'views/event_ticket_views.xml',
         'views/event_views.xml',
         'views/event_stage_views.xml',
@@ -48,6 +49,9 @@ Key Features
         'web.assets_backend': [
             'event/static/src/scss/event.scss',
             'event/static/src/js/field_icon_selection.js',
+            'event/static/src/scss/field_widget.scss',
+            'event/static/src/js/field_widget.js',
+
         ],
         'web.assets_common': [
             'event/static/src/js/tours/**/*',

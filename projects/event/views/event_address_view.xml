@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="event_address_form" model="ir.ui.view">
+            <field name="name">event.address.form</field>
+            <field name="model">event.address</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name='name'/>
+                            <field name='address'/>
+                            <field name='phone'/>
+                            <field name='email'/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_event_address_form" model="ir.actions.act_window">
+            <field name="name">Event Address</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context"></field>
+        </record>
+    </data>
+</odoo>
