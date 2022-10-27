@@ -87,6 +87,8 @@ class EventEvent(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_begin'
 
+    event_discription = fields.Html(string='Event Discription')
+
     def _get_default_stage_id(self):
         return self.env['event.stage'].search([], limit=1)
 

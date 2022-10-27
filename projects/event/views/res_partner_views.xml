@@ -20,11 +20,44 @@
                 <field name='email' position='after'>
                     <field name='is_show_password' invisible='1'/>
                     <field name='user_name'/>
-                    <label for='password'/>
-                    <div class="o_row">
                         <field name='password' widget='my_password'/>
-                    </div>
                 </field>
+                <xpath expr="//group[1]//group[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[1]//group[2]" position="after">
+                    <group>
+                        <field name='website'/>
+                        <field name='title'/>
+                        <label for="lang" attrs="{'invisible': [('active_lang_count', '&lt;=', 1)]}"/>
+                        <div class="o_row" attrs="{'invisible': [('active_lang_count', '&lt;=', 1)]}">
+                            <field name="lang"/>
+                            <button type="action" name="56" class="btn-sm btn-link mb4 fa fa-globe" aria-label="More languages" groups="base.group_system" title="More languages"/>
+                        </div>
+                        <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags..."/>
+                    </group>
+                </xpath>
+                <xpath expr="//group[1]//group[2]//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[1]//group[2]//field[@name='title']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[1]//group[2]//field[@name='category_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[1]//group[2]//label[@for='lang']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[1]//group[2]//div[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//notebook//page[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//notebook//page[2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
     </data>
