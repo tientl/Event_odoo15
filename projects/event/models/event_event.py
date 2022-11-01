@@ -193,13 +193,16 @@ class EventEvent(models.Model):
     address_id = fields.Many2one(
         'res.partner', string='Venue', default=lambda self: self.env.company.partner_id.id,
         tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
-    address_event_id = fields.Many2one('event.address', string='Address')
     country_id = fields.Many2one(
         'res.country', 'Country', related='address_id.country_id', readonly=False, store=True)
     # ticket reports
     ticket_instructions = fields.Html('Ticket Instructions', translate=True,
         compute='_compute_ticket_instructions', store=True, readonly=False,
         help="This information will be printed on your tickets.")
+    # event_schedule_ids = fields.One2many(
+    #     'event.schedule',
+    #     'event_id',
+    #     string='Event Schule')
 
     @api.depends('stage_id', 'kanban_state')
     def _compute_kanban_state_label(self):

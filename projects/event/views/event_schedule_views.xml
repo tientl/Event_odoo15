@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="view_event_schedule_tree">
+        <field name="name">event.schedule.tree</field>
+        <field name="model">event.schedule</field>
+        <field name="arch" type="xml">
+            <tree string="Event Schedule" multi_edit="1" sample="1">
+                <field name='time_schedule'/>
+                <field name='name'/>
+                <field name='hour_start' widget="float_time"/>
+                <field name='hour_end' widget="float_time"/>
+                <field name='total_hour' widget="float_time"/>
+                <field name='detail'/>
+                <field name='room_id'/>
+                <field name='speaker_id'/>
+                <field name='event_id' invisible='1'/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_event_schedule_form">
+        <field name="name">event.schedule.form</field>
+        <field name="model">event.schedule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field class="o_text_overflow" name="name" default_focus="1" placeholder="Tên công việc"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name='time_schedule'/>
+                            <field name='hour_start' widget="float_time"/>
+                            <field name='hour_end' widget="float_time"/>
+                            <field name='total_hour' widget="float_time"/>
+                            <field name='detail'/>
+                            <field name='room_id'/>
+                            <field name='speaker_id'/>
+                            <field name='event_id'/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_event_schedule_view" model="ir.actions.act_window">
+        <field name="res_model">event.schedule</field>
+        <field name="name">Event Schedule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('event_id', '=', active_id)]</field>
+        <field name="context">{'default_event_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có lịch trinh nào
+            </p>
+        </field>
+    </record>
+</odoo>

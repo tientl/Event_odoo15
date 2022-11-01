@@ -181,6 +181,15 @@
                                     help="Total Registrations for this Event">
                                 <field name="seats_expected" widget="statinfo" string="Attendees"/>
                             </button>
+                            <button name="%(event.action_event_schedule_view)d"
+                                context="{'default_event_id': active_id}"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-users"
+                                help="Total Registrations for this Event">
+                        </button>
+
+
                         </div>
                         <field name="legend_blocked" invisible="1"/>
                         <field name="legend_normal" invisible="1"/>
@@ -193,6 +202,7 @@
                         </div>
                         <group>
                             <group>
+                                <!-- <field name='event_schedule_ids' invisible='1'/> -->
                                 <field name="active" invisible="1"/>
                                 <label for="date_begin" string="Date"/>
                                 <div class="o_row">
@@ -209,10 +219,9 @@
                                 <field name="user_id" domain="[('share', '=', False)]"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="address_id"
-                                    invisible='1'
+                                    domain= "[('is_company', '=', True )]"
                                     context="{'show_address': 1}"
                                     options='{"always_reload": True}'/>
-                                <field name="address_event_id"/>
                                 <div colspan="2" class="o_checkbox_optional_field">
                                     <label for="seats_limited" string="Limit Registrations"/>
                                     <field name="seats_limited"/>
