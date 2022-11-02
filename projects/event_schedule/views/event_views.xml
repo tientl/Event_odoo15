@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_event_inherit_form">
+        <field name="name">view.event.inherit.form</field>
+        <field name="inherit_id" ref="event.view_event_form"/>
+        <field name="model">event.event</field>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//div[1]//button" position="after">
+                <button name="%(action_event_schedule_view)d"
+                        context="{'default_event_id': active_id}"
+                        type="action"
+                        class="oe_stat_button"
+                        icon="fa-calendar"
+                        help="Total Schedule for this Event">
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

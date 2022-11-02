@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="view_event_schedule_tree">
+        <field name="name">event.schedule.tree</field>
+        <field name="model">event.schedule</field>
+        <field name="arch" type="xml">
+            <tree string="Event Schedule" multi_edit="1" sample="1">
+                <field name='time_schedule'/>
+                <field name='name'/>
+                <field name='detail'/>
+                <field name='event_id' invisible='1'/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_event_schedule_kanban">
+        <field name="name">event.schedule.kanban</field>
+        <field name="model">event.schedule</field>
+        <field name="arch" type="xml">
+            <kanban class="o_event_kanban_view">
+                <field name="time_schedule"/>
+                <field name="event_id"/>
+                <field name="name"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="d-flex flex-column p-0 oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_content p-0 m-0 position-relative row d-flex flex-fill">
+                                <div class="col-3 bg-primary p-2 text-center d-flex flex-column justify-content-center" style='background-color: #166c99 !important;'>
+                                    <div class="o_event_fontsize_20">
+                                        <field name="day"/>
+                                    </div>
+                                    <div>
+                                        <field name="month"/>
+                                        <field name="year"/>
+                                    </div>
+                                </div>
+                                <div class="col-9 py-2 px-3 d-flex flex-column justify-content-between pt-3">
+                                    <div>
+                                        <div class="o_kanban_record_title o_text_overflow" t-att-title="record.name.value" style='font-size: 17px'>
+                                            <field name="name"/>
+                                        </div>
+                                        <div t-if="record.event_id.value"><i class="fa fa-map-marker" title="Location"/> <span class="o_text_overflow o_event_kanban_location" t-esc="record.event_id.value"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_event_schedule_form">
+        <field name="name">event.schedule.form</field>
+        <field name="model">event.schedule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field class="o_text_overflow" name="name" default_focus="1" placeholder="Tên công việc"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name='time_schedule'/>
+                        </group>
+                        <group>
+                            <field name='event_id'/>
+                        </group>
+                        <group>
+                            <field name='detail'/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string='Chi tiết lịch trình'>
+                            <field name='schedule_detail_ids'>
+                                <tree editable='bottom'>
+                                    <field name='sequence' widget='handle'/>
+                                    <field name='name'/>
+                                    <field name='hour_start' widget="float_time"/>
+                                    <field name='hour_end' widget="float_time"/>
+                                    <field name='total_hour' widget="float_time"/>
+                                    <field name='detail'/>
+                                    <field name='room_id'/>
+                                    <field name='event_track_id'/>
+                                    <field name='speaker_id'/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_event_schedule_view" model="ir.actions.act_window">
+        <field name="res_model">event.schedule</field>
+        <field name="name">Event Schedule</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('event_id', '=', active_id)]</field>
+        <field name="context">{'default_event_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có lịch trinh nào
+            </p>
+        </field>
+    </record>
+</odoo>
