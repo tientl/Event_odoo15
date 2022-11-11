@@ -88,6 +88,7 @@ class EventEvent(models.Model):
     _order = 'date_begin'
 
     event_discription = fields.Html(string='Event Discription')
+    map_image = fields.Binary(string='Map')
 
     def _get_default_stage_id(self):
         return self.env['event.stage'].search([], limit=1)

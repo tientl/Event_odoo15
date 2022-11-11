@@ -22,6 +22,14 @@ class EventSchedule(models.Model):
     day = fields.Char(string='Day', compute='_compute_time')
     month = fields.Char(string='Month', compute='_compute_time')
     year = fields.Char(string='Year', compute='_compute_time')
+    count_schedule_detail = fields.Integer(
+        string='Count Schedule',
+        compute='_compute_count_schedule_detail')
+
+    @api.depends('schedule_detail_ids')
+    def _compute_count_schedule_detail(self):
+        for schedule in self:
+            schedule.count_schedule_detail = len(schedule.schedule_detail_ids)
 
     @api.depends('hour_start', 'hour_end')
     def _compute_total_hour(self):

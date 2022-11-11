@@ -22,6 +22,7 @@
                 <field name="time_schedule"/>
                 <field name="event_id"/>
                 <field name="name"/>
+                <field name="count_schedule_detail"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="d-flex flex-column p-0 oe_kanban_card oe_kanban_global_click">
@@ -40,7 +41,9 @@
                                         <div class="o_kanban_record_title o_text_overflow" t-att-title="record.name.value" style='font-size: 17px'>
                                             <field name="name"/>
                                         </div>
-                                        <div t-if="record.event_id.value"><i class="fa fa-map-marker" title="Location"/> <span class="o_text_overflow o_event_kanban_location" t-esc="record.event_id.value"/></div>
+                                        <div t-if="record.event_id.value"><i class="fa fa-ticket" title="Event"/> <span class="o_text_overflow o_event_kanban_location" t-esc="record.event_id.value"/></div>
+                                        <div><i class="fa fa-calendar-minus-o" title="Detail"/> <span class="o_text_overflow o_event_kanban_location" t-esc="record.count_schedule_detail.value"/> Công việc</div>
+                                        
                                     </div>
                                 </div>
                             </div>
