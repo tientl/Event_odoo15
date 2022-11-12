@@ -134,18 +134,31 @@ class EventController(odoo.http.Controller):
         })
         return "Cập nhật thành công"
 
-    @odoo.http.route(['/users/login'], method=['POST'], type='http',
+    @odoo.http.route(['/users/login'], method=['POST'], type='json',
                      auth="public", sitemap=False, cors='*', csrf=False)
     def get_info_login(self):
-        data = request.jsonrequest['data']
+        data = request.jsonrequest
         user = request.env['res.partner'].sudo().search([
             ('user_name', '=', data['user_name']),
             ('password', '=', data['password'])])
         if user:
+            # data_events = []
+            # events = request.env['event.event'].sudo().search([
+            #     ('event_id', '=', user.id)
+            # ])
+            # for event in events:
+            #     data_event = {
+            #         'id': event.id,
+            #         'name': event.name,
+            #         'date_begin': event.date_begin,
+            #         'date_end': event.date_end
+            #     }
+            #     data_events.append(data_event)
             data_user = {
                 'id': user.id,
                 'user_name': user.user_name,
-                'password': user.password
+                'password': user.password,
+                # 'events': data_events
             }
             response = {
                 'data': data_user,
