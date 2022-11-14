@@ -27,6 +27,7 @@ class EventMeetingRoom(models.Model):
     room_max_capacity = fields.Selection(default="8", copy=True)
     summary = fields.Char("Summary", translate=True)
     target_audience = fields.Char("Audience", translate=True)
+    address = fields.Char('Địa chỉ phòng')
 
     @api.depends('name', 'event_id.name')
     def _compute_website_url(self):

@@ -28,7 +28,7 @@
         <field name="arch" type="xml">
             <form string="Meeting Room">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
+                    <div class="oe_button_box" name="button_box" invisible='1'>
                         <field name="website_url" invisible="1"/>
                         <field name="is_published" widget="website_redirect_button"/>
                     </div>
@@ -44,10 +44,11 @@
                             <field name="is_pinned"/>
                         </group>
                         <group>
-                            <field name="chat_room_id" required="0"/>
+                            <field name="address"/>
+                            <field name="chat_room_id" required="0" invisible='1'/>
                             <field name="room_participant_count" readonly="1"/>
                             <field name="room_max_capacity" widget="radio" options="{'horizontal': true}"/>
-                            <field name="room_lang_id" options="{'no_create': True}"/>
+                            <field name="room_lang_id" options="{'no_create': True}" invisible='1'/>
                         </group>
                     </group>
                     <notebook>

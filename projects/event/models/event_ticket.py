@@ -54,6 +54,9 @@ class EventTicket(models.Model):
             res['name'] = _('Registration for %s', self.env.context['default_event_name'])
         return res
 
+    ticket_type = fields.Selection(
+        string='Ticket Type',
+        selection=[('vip', 'VIP'), ('normal', 'Normal')])
     # description
     event_type_id = fields.Many2one(ondelete='set null', required=False)
     event_id = fields.Many2one(
