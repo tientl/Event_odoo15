@@ -83,25 +83,6 @@ class EventController(odoo.http.Controller):
         }
         return json.dumps(response)
 
-    @odoo.http.route(['/users/'], type='http', auth="user",
-                     sitemap=False, cors='*', csrf=False)
-    def get_one_user_by_name(self, **kw):
-        print(request.session)
-        print(request.httprequest.headers.get('cookie'))
-        if kw['name']:
-            domain = [('name', '=', kw['name'])]
-            user = request.env['res.users'].sudo().search(domain)
-            response = {
-                "code": "200",
-                "message": "Get user info Successfuly!",
-                "content": {"name": user.name,
-                            "email": user.email,
-                            "phone": user.phone,
-                            }
-            }
-            return json.dumps(response)
-        return "Request params not valid"
-
     @odoo.http.route(['/users/del/<id>'], type='http', auth="user",
                      sitemap=False, cors='*', csrf=False)
     def del_handler(self, id):
@@ -147,11 +128,19 @@ class EventController(odoo.http.Controller):
                 ('registration_ids.partner_id', 'child_of', user.ids)
             ])
             for event in events:
+                state_user = event.registration_ids.filtered(
+                    lambda e: e.partner_id == user).state
+                if state_user == 'draft':
+                    state = False
+                elif state_user == 'open':
+                    state = True
                 data_event = {
                     'id': event.id,
                     'name': event.name,
                     'date_begin': event.date_begin,
                     'date_end': event.date_end,
+                    'company_name': event.organizer_id.name,
+                    'is_confirm': state
                 }
                 data_events.append(data_event)
             data_user = {
@@ -169,3 +158,42 @@ class EventController(odoo.http.Controller):
                 'code': 404,
                 'message': 'Tài khoản hoặc mật khẩu không đúng'}
         return response
+
+    @odoo.http.route(['/users/search'], type='http', auth="user",
+                     sitemap=False, cors='*', csrf=False)
+    def get_event(self, **kw):
+        if kw['name']:
+            domain = [('name', 'ilike', kw['name'])]
+            event = request.env['event.event'].sudo().search(domain)
+            if event:
+                response = {
+                    "code": "200",
+                    "message": "Get event info Successfuly!",
+                    "content": {
+                        'id': event.id,
+                        "name": event.name
+                        }
+                }
+                return json.dumps(response)
+        return "Request params not valid"
+
+    @odoo.http.route(['/users/confirm'], method=['POST'], type='json',
+                     auth="public", sitemap=False, cors='*', csrf=False)
+    def confirm_event(self):
+        data = request.jsonrequest
+        event = request.env['event.event'].sudo().browse(data.get('event_id'))
+        if event:
+            registration = event.registration_ids.filtered(
+                lambda r: r.partner_id.id == data.get('user_id'))
+            if registration:
+                registration.write({'state': 'open'})
+
+                return {
+                    'is_confirmed': True,
+                    'code': 200,
+                    'message': 'Xác nhận thành công'
+                }
+        return {
+            'is_confirmed': False,
+            'code': 404,
+            'message': 'Xác nhận không thành công'}
