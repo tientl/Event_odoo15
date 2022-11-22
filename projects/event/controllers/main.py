@@ -140,7 +140,9 @@ class EventController(odoo.http.Controller):
                     'date_begin': event.date_begin,
                     'date_end': event.date_end,
                     'company_name': event.organizer_id.name,
-                    'is_confirm': state
+                    'is_confirm': state,
+                    'address': event.address_id.contact_address_complete,
+                    'schedules': self._get_schedule_event(event)
                 }
                 data_events.append(data_event)
             data_user = {
@@ -158,6 +160,32 @@ class EventController(odoo.http.Controller):
                 'code': 404,
                 'message': 'Tài khoản hoặc mật khẩu không đúng'}
         return response
+
+    def _get_schedule_event(self, EventObj):
+        schedules = []
+        if EventObj:
+            for schedule in EventObj.event_schedule_ids:
+                schedule_details = []
+                for dets in schedule.schedule_detail_ids:
+                    details = {
+                        'name': dets.name,
+                        'hour_start': dets.hour_start,
+                        'hour_end': dets.hour_end,
+                        'total_hour': dets.total_hour,
+                        'detail': dets.detail,
+                        'room': dets.room_id.name,
+                        'track': dets.event_track_id.name,
+                        'speaker': dets.speaker_id.name
+                    }
+                    schedule_details.append(details)
+                schedule_info = {
+                    'name': schedule.name,
+                    'time_schedule': schedule.time_schedule,
+                    'detail': schedule.detail,
+                    'schedule_details': schedule_details
+                }
+                schedules.append(schedule_info)
+        return schedules
 
     @odoo.http.route(['/users/search'], type='http', auth="user",
                      sitemap=False, cors='*', csrf=False)
