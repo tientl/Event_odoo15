@@ -42,7 +42,9 @@ class EventController(odoo.http.Controller):
                     'map_image': self._get_url_image(
                         event._name, event.id, 'map_image')
                     if event.map_image else '',
-                    'schedules': self._get_schedule_event(event)
+                    'schedules': self._get_schedule_event(event),
+                    'sponsors': self._get_sponsors_event(event),
+                    'registrations': self._get_registrations_event(event)
                 }
                 data_events.append(data_event)
             data_user = {
@@ -60,6 +62,44 @@ class EventController(odoo.http.Controller):
                 'code': 404,
                 'message': 'Tài khoản hoặc mật khẩu không đúng'}
         return response
+
+    def _get_sponsors_event(self, EventObj):
+        Sponsors = []
+        if EventObj:
+            sponsors = request.env['event.sponsor'].sudo().search([
+                ('event_id', '=', EventObj.id),
+            ])
+            for sponsor in sponsors:
+                detail = {
+                    'name': sponsor.name or '',
+                    'company': sponsor.partner_id.name or '',
+                    'sponsor_type': sponsor.sponsor_type_id.name or '',
+                    'slogan': sponsor.subtitle or '',
+                    'email': sponsor.email or '',
+                    'mobile': sponsor.mobile or '',
+                    'url': sponsor.url,
+                    'image_url': self._get_url_image(
+                        'event.sponsor', sponsor.id, 'image_512')
+                    if sponsor.image_512 else ''
+                }
+                Sponsors.append(detail)
+        return Sponsors
+
+    def _get_registrations_event(self, EventObj):
+        Registrations = []
+        if EventObj:
+            for reg in EventObj.registration_ids:
+                resgistration = {
+                    'name': reg.name,
+                    'mobile': reg.mobile,
+                    'email': reg.email,
+                    'image_url': self._get_url_image(
+                        'res.partner', reg.partner_id.id, 'image_1920')
+                    if reg.partner_id.image_1920 else '',
+                    'ticket': reg.event_ticket_id.name or ''
+                }
+                Registrations.append(resgistration)
+        return Registrations
 
     def _get_url_image(self, model_name, res_id, field):
         image_url = \
