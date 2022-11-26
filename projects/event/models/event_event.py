@@ -87,7 +87,7 @@ class EventEvent(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_begin'
 
-    event_discription = fields.Text(string='Event Discription')
+    event_description = fields.Text(string='Event Description')
     map_image = fields.Binary(string='Map', attachment=True)
     event_image = fields.Binary(string='Event Avatar')
 

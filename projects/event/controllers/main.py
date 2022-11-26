@@ -41,8 +41,10 @@ class EventController(odoo.http.Controller):
                     'is_confirm': state,
                     'address': event.address_id.contact_address_complete,
                     'map_image': self._get_url_image(
-                        event._name, event.id, 'map_image')
-                    if event.map_image else False,
+                        event._name, event.id, 'map_image'),
+                    'event_description': event.event_description,
+                    'event_image': self._get_url_image(
+                        event._name, event.id, 'event_image'),
                     'schedules': self._get_schedule_event(event),
                     'sponsors': self._get_sponsors_event(event),
                     'registrations': self._get_registrations_event(event)
@@ -80,6 +82,7 @@ class EventController(odoo.http.Controller):
             ])
             for sponsor in sponsors:
                 detail = {
+                    'id': sponsor.id,
                     'name': sponsor.name or False,
                     'company': sponsor.partner_id.name or False,
                     'sponsor_type': sponsor.sponsor_type_id.name or False,
@@ -89,7 +92,6 @@ class EventController(odoo.http.Controller):
                     'url': sponsor.url,
                     'image_url': self._get_url_image(
                         'event.sponsor', sponsor.id, 'image_512')
-                    if sponsor.image_512 else False
                 }
                 detail = self._delete_key_null(detail)
                 Sponsors.append(detail)
@@ -100,12 +102,12 @@ class EventController(odoo.http.Controller):
         if EventObj:
             for reg in EventObj.registration_ids:
                 resgistration = {
+                    'id': reg.id,
                     'name': reg.name or False,
                     'mobile': reg.mobile or False,
                     'email': reg.email or False,
                     'image_url': self._get_url_image(
-                        'res.partner', reg.partner_id.id, 'image_1920')
-                    if reg.partner_id.image_1920 else False,
+                        'res.partner', reg.partner_id.id, 'image_1920'),
                     'ticket': reg.event_ticket_id.name or False
                 }
                 resgistration = self._delete_key_null(resgistration)
@@ -113,6 +115,9 @@ class EventController(odoo.http.Controller):
         return Registrations
 
     def _get_url_image(self, model_name, res_id, field):
+        # Field = request.env[model_name].sudo().browse(res_id).field
+        # image_url = Fa   lse
+        # if Field:
         image_url = \
             f'{URL}/web/image?model={model_name}&id={res_id}&field={field}'
         return image_url
