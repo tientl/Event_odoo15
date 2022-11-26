@@ -89,6 +89,7 @@ class EventEvent(models.Model):
 
     event_discription = fields.Text(string='Event Discription')
     map_image = fields.Binary(string='Map', attachment=True)
+    event_image = fields.Binary(string='Event Avatar')
 
     def _get_default_stage_id(self):
         return self.env['event.stage'].search([], limit=1)

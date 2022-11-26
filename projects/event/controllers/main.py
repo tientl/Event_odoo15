@@ -1,3 +1,4 @@
+from this import d
 import odoo
 import logging
 import json
@@ -41,11 +42,12 @@ class EventController(odoo.http.Controller):
                     'address': event.address_id.contact_address_complete,
                     'map_image': self._get_url_image(
                         event._name, event.id, 'map_image')
-                    if event.map_image else '',
+                    if event.map_image else False,
                     'schedules': self._get_schedule_event(event),
                     'sponsors': self._get_sponsors_event(event),
                     'registrations': self._get_registrations_event(event)
                 }
+                data_event = self._delete_key_null(data_event)
                 data_events.append(data_event)
             data_user = {
                 'id': user.id,
@@ -63,6 +65,13 @@ class EventController(odoo.http.Controller):
                 'message': 'Tài khoản hoặc mật khẩu không đúng'}
         return response
 
+    def _delete_key_null(self, Dictionary):
+        Dict_copy = Dictionary.copy()
+        for key, value in Dict_copy.items():
+            if not value:
+                Dictionary.pop(key)
+        return Dictionary
+
     def _get_sponsors_event(self, EventObj):
         Sponsors = []
         if EventObj:
@@ -71,17 +80,18 @@ class EventController(odoo.http.Controller):
             ])
             for sponsor in sponsors:
                 detail = {
-                    'name': sponsor.name or '',
-                    'company': sponsor.partner_id.name or '',
-                    'sponsor_type': sponsor.sponsor_type_id.name or '',
-                    'slogan': sponsor.subtitle or '',
-                    'email': sponsor.email or '',
-                    'mobile': sponsor.mobile or '',
+                    'name': sponsor.name or False,
+                    'company': sponsor.partner_id.name or False,
+                    'sponsor_type': sponsor.sponsor_type_id.name or False,
+                    'slogan': sponsor.subtitle or False,
+                    'email': sponsor.email or False,
+                    'mobile': sponsor.mobile or False,
                     'url': sponsor.url,
                     'image_url': self._get_url_image(
                         'event.sponsor', sponsor.id, 'image_512')
-                    if sponsor.image_512 else ''
+                    if sponsor.image_512 else False
                 }
+                detail = self._delete_key_null(detail)
                 Sponsors.append(detail)
         return Sponsors
 
@@ -90,14 +100,15 @@ class EventController(odoo.http.Controller):
         if EventObj:
             for reg in EventObj.registration_ids:
                 resgistration = {
-                    'name': reg.name,
-                    'mobile': reg.mobile,
-                    'email': reg.email,
+                    'name': reg.name or False,
+                    'mobile': reg.mobile or False,
+                    'email': reg.email or False,
                     'image_url': self._get_url_image(
                         'res.partner', reg.partner_id.id, 'image_1920')
-                    if reg.partner_id.image_1920 else '',
-                    'ticket': reg.event_ticket_id.name or ''
+                    if reg.partner_id.image_1920 else False,
+                    'ticket': reg.event_ticket_id.name or False
                 }
+                resgistration = self._delete_key_null(resgistration)
                 Registrations.append(resgistration)
         return Registrations
 
@@ -113,22 +124,23 @@ class EventController(odoo.http.Controller):
                 schedule_details = []
                 for dets in schedule.schedule_detail_ids:
                     details = {
-                        'name': dets.name,
-                        'hour_start': dets.hour_start,
-                        'hour_end': dets.hour_end,
-                        'total_hour': dets.total_hour,
-                        'detail': dets.detail,
-                        'room': dets.room_id.name,
-                        'track': dets.event_track_id.name,
-                        'speaker': dets.speaker_id.name
+                        'name': dets.name or False,
+                        'hour_start': dets.hour_start or False,
+                        'hour_end': dets.hour_end or False,
+                        'total_hour': dets.total_hour or False,
+                        'detail': dets.detail or False,
+                        'room': dets.room_id.name or False,
+                        'track': dets.event_track_id.name or False,
+                        'speaker': dets.speaker_id.name or False
                     }
                     schedule_details.append(details)
                 schedule_info = {
                     'name': schedule.name,
                     'time_schedule': schedule.time_schedule,
                     'detail': schedule.detail,
-                    'schedule_details': schedule_details
+                    'schedule_details': schedule_details or False
                 }
+                schedule_info = self._delete_key_null(schedule_info)
                 schedules.append(schedule_info)
         return schedules
 
