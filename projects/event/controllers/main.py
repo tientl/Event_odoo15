@@ -115,11 +115,11 @@ class EventController(odoo.http.Controller):
         return Registrations
 
     def _get_url_image(self, model_name, res_id, field):
-        # Field = request.env[model_name].sudo().browse(res_id).field
-        # image_url = Fa   lse
-        # if Field:
-        image_url = \
-            f'{URL}/web/image?model={model_name}&id={res_id}&field={field}'
+        Model = request.env[model_name].sudo().browse(res_id)
+        image_url = False
+        if getattr(Model, field):
+            image_url = \
+                f'{URL}/web/image?model={model_name}&id={res_id}&field={field}'
         return image_url
 
     def _get_schedule_event(self, EventObj):
