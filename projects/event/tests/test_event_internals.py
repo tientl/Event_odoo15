@@ -172,17 +172,17 @@ class TestEventData(TestEventCommon):
             'date_end': FieldsDatetime.to_string(datetime.today() + timedelta(days=15)),
             'event_type_id': event_type_default.id
         })
-        event.write({
-            'event_mail_ids': [
-                Command.clear(),
-                Command.create({
-                    'notification_type': 'mail',
-                    'interval_unit': 'now',
-                    'interval_type': 'after_sub',
-                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_subscription'),
-                })
-            ]
-        })
+        # event.write({
+        #     'event_mail_ids': [
+        #         Command.clear(),
+        #         Command.create({
+        #             'notification_type': 'mail',
+        #             'interval_unit': 'now',
+        #             'interval_type': 'after_sub',
+        #             'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_subscription'),
+        #         })
+        #     ]
+        # })
         mail = event.event_mail_ids[0]
         registration = self._create_registrations(event, 1)
         self.assertEqual(registration.state, 'open')  # event auto confirms
@@ -322,7 +322,7 @@ class TestEventData(TestEventCommon):
         self.assertEqual(len(event.event_mail_ids), 3)
         self.assertEqual(event.event_mail_ids[0].interval_unit, 'now')
         self.assertEqual(event.event_mail_ids[0].interval_type, 'after_sub')
-        self.assertEqual(event.event_mail_ids[0].template_ref, self.env.ref('event.event_subscription'))
+        # self.assertEqual(event.event_mail_ids[0].template_ref, self.env.ref('event.event_subscription'))
         self.assertEqual(event.event_mail_ids[1].interval_nbr, 1)
         self.assertEqual(event.event_mail_ids[1].interval_unit, 'hours')
         self.assertEqual(event.event_mail_ids[1].interval_type, 'before_event')

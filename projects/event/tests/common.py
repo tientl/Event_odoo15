@@ -77,10 +77,10 @@ class TestEventCommon(common.TransactionCase):
                 })
             ],
             'event_type_mail_ids': [
-                (0, 0, {  # right at subscription
-                    'interval_unit': 'now',
-                    'interval_type': 'after_sub',
-                    'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_subscription')}),
+                # (0, 0, {  # right at subscription
+                #     'interval_unit': 'now',
+                #     'interval_type': 'after_sub',
+                #     'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_subscription')}),
                 (0, 0, {  # 1 days before event
                     'interval_nbr': 1,
                     'interval_unit': 'days',

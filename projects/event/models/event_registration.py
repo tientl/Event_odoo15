@@ -324,17 +324,17 @@ class EventRegistration(models.Model):
         event_date = self.event_begin_date
         diff = (event_date.date() - today.date())
         if diff.days <= 0:
-            return _('today')
+            return _('Hôm nay')
         elif diff.days == 1:
-            return _('tomorrow')
+            return _('Ngày mai')
         elif (diff.days < 7):
-            return _('in %d days') % (diff.days, )
+            return _('trong %d ngày') % (diff.days, )
         elif (diff.days < 14):
-            return _('next week')
+            return _('Tuần tới')
         elif event_date.month == (today + relativedelta(months=+1)).month:
-            return _('next month')
+            return _('Tháng tới')
         else:
-            return _('on %(date)s', date=format_datetime(self.env, self.event_begin_date, tz=self.event_id.date_tz, dt_format='medium'))
+            return _('trong %(date)s', date=format_datetime(self.env, self.event_begin_date, tz=self.event_id.date_tz, dt_format='medium'))
 
     def _get_registration_summary(self):
         self.ensure_one()

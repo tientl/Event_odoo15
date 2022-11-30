@@ -25,13 +25,14 @@ class EventType(models.Model):
     _order = 'sequence, id'
 
     def _default_event_mail_type_ids(self):
-        return [(0, 0,
-                 {'notification_type': 'mail',
-                  'interval_nbr': 0,
-                  'interval_unit': 'now',
-                  'interval_type': 'after_sub',
-                  'template_ref': 'mail.template, %i' % self.env.ref('event.event_subscription').id,
-                 }),
+        return [
+            # (0, 0,
+            #      {'notification_type': 'mail',
+            #       'interval_nbr': 0,
+            #       'interval_unit': 'now',
+            #       'interval_type': 'after_sub',
+            #       'template_ref': 'mail.template, %i' % self.env.ref('event.event_subscription').id,
+            #      }),
                 (0, 0,
                  {'notification_type': 'mail',
                   'interval_nbr': 1,
@@ -314,10 +315,11 @@ class EventEvent(models.Model):
 
     @api.depends('date_tz', 'date_end')
     def _compute_date_end_tz(self):
+        tz = pytz.timezone('Asia/Ho_Chi_Minh')
         for event in self:
             if event.date_end:
                 event.date_end_located = format_datetime(
-                    self.env, event.date_end, tz=event.date_tz, dt_format='medium')
+                    self.env, event.date_end, tz=tz, dt_format='medium')
             else:
                 event.date_end_located = False
 
