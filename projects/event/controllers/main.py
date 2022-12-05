@@ -1,4 +1,3 @@
-from this import d
 import odoo
 import logging
 import json
@@ -143,7 +142,7 @@ class EventController(odoo.http.Controller):
             speaker = {
                     'id': DetailSchedule.id,
                     'name': DetailSchedule.name or False,
-                    'mobile': DetailSchedule.mobile or False,
+                    # 'mobile': DetailSchedule.mobile or False,
                     'email': DetailSchedule.email or False,
                     'image_url': self._get_url_image(
                         'res.partner', DetailSchedule.partner_id.id,
