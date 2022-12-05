@@ -121,7 +121,7 @@ class EventController(odoo.http.Controller):
         Speakers = []
         if EventObj:
             speakers = \
-                EventObj.event_schedul_ids.schedule_detail_ids.speaker_id
+                EventObj.event_schedule_ids.schedule_detail_ids.speaker_id
             for sp in speakers:
                 speaker = {
                     'id': sp.id,
@@ -129,29 +129,31 @@ class EventController(odoo.http.Controller):
                     'mobile': sp.mobile or False,
                     'email': sp.email or False,
                     'image_url': self._get_url_image(
-                        'res.partner', sp.partner_id.id, 'image_1920'),
-                    'company': sp.partner_id.parent_id.name or False,
-                    'function': sp.partner_id.function or False
+                        'res.partner', sp.id, 'image_1920'),
+                    'company': sp.parent_id.name or False,
+                    'function': sp.function or False
                 }
-                Speakers.append(speaker)
+                delete = self._delete_key_null(speaker)
+                Speakers.append(delete)
         return Speakers
 
     def _get_speaker_event_for_schedule(self, DetailSchedule):
         speaker = False
         if DetailSchedule:
-            speaker = DetailSchedule.speaker_id
-            speaker = {
-                    'id': speaker.id,
-                    'name': speaker.name or False,
-                    'mobile': speaker.mobile or False,
-                    'email': speaker.email or False,
+            speakerObj = DetailSchedule.speaker_id
+            speaker_info = {
+                    'id': speakerObj.id,
+                    'name': speakerObj.name or False,
+                    'mobile': speakerObj.mobile or False,
+                    'email': speakerObj.email or False,
                     'image_url': self._get_url_image(
-                        'res.partner', speaker.id,
+                        'res.partner', speakerObj.id,
                         'image_1920'),
                     'company':
-                    speaker.parent_id.name or False,
-                    'function': speaker.function or False
+                    speakerObj.parent_id.name or False,
+                    'function': speakerObj.function or False
                 }
+            speaker = self._delete_key_null(speaker_info)
         return speaker
 
     def _get_url_image(self, model_name, res_id, field):
