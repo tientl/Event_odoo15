@@ -139,17 +139,18 @@ class EventController(odoo.http.Controller):
     def _get_speaker_event_for_schedule(self, DetailSchedule):
         speaker = False
         if DetailSchedule:
+            speaker = DetailSchedule.speaker_id
             speaker = {
-                    'id': DetailSchedule.id,
-                    'name': DetailSchedule.name or False,
-                    # 'mobile': DetailSchedule.mobile or False,
-                    'email': DetailSchedule.email or False,
+                    'id': speaker.id,
+                    'name': speaker.name or False,
+                    'mobile': speaker.mobile or False,
+                    'email': speaker.email or False,
                     'image_url': self._get_url_image(
-                        'res.partner', DetailSchedule.partner_id.id,
+                        'res.partner', speaker.id,
                         'image_1920'),
                     'company':
-                    DetailSchedule.partner_id.parent_id.name or False,
-                    'function': DetailSchedule.partner_id.function or False
+                    speaker.parent_id.name or False,
+                    'function': speaker.function or False
                 }
         return speaker
 
