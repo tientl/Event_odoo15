@@ -7,6 +7,6 @@ class EventTemplateTicket(models.Model):
 
     @api.model
     def create(self, vals):
-        picture_public = {'public': True}
-        vals.update(picture_public)
+        access_token = {'access_token': self._generate_access_token()}
+        vals.update(access_token)
         return super().create(vals)

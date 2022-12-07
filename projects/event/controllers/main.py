@@ -157,11 +157,15 @@ class EventController(odoo.http.Controller):
         return speaker
 
     def _get_url_image(self, model_name, res_id, field):
-        Model = request.env[model_name].sudo().browse(res_id)
         image_url = False
-        if getattr(Model, field):
+        attachment = request.env['ir.attachment'].sudo().search([
+            ('res_id', '=', res_id),
+            ('res_model', '=', model_name),
+            ('name', '=', field)
+        ])
+        if attachment:
             image_url = \
-                f'{URL}/web/image?model={model_name}&id={res_id}&field={field}'
+                f'{URL}/web/image/{attachment.id}?access_token={attachment.access_token}'
         return image_url
 
     def _get_schedule_event(self, EventObj):
