@@ -161,7 +161,7 @@ class EventController(odoo.http.Controller):
         attachment = request.env['ir.attachment'].sudo().search([
             ('res_id', '=', res_id),
             ('res_model', '=', model_name),
-            ('name', '=', field)
+            ('res_field', '=', field)
         ])
         if attachment:
             image_url = \
