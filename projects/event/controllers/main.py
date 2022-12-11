@@ -44,7 +44,7 @@ class EventController(odoo.http.Controller):
                     'event_description': event.event_description,
                     'event_image': self._get_url_image(
                         event._name, event.id, 'event_image'),
-                    'schedules': self._get_schedule_event(event),
+                    'sub_schedules': self._get_schedule_event(event),
                     'sponsors': self._get_sponsors_event(event),
                     'registrations': self._get_registrations_event(event),
                     'speakers': self._get_speakers_event(event)
@@ -153,7 +153,7 @@ class EventController(odoo.http.Controller):
                     speakerObj.parent_id.name or False,
                     'function': speakerObj.function or False
                 }
-            speaker = self._delete_key_null(speaker_info)
+            speaker = [self._delete_key_null(speaker_info)]
         return speaker
 
     def _get_url_image(self, model_name, res_id, field):
@@ -172,27 +172,26 @@ class EventController(odoo.http.Controller):
         schedules = []
         if EventObj:
             for schedule in EventObj.event_schedule_ids:
-                schedule_details = []
                 for det in schedule.schedule_detail_ids:
-                    details = {
-                        'name': det.name or False,
-                        'hour_start': det.hour_start or False,
-                        'hour_end': det.hour_end or False,
-                        'total_hour': det.total_hour or False,
-                        'detail': det.detail or False,
-                        'room': det.room_id.name or False,
-                        'track': det.event_track_id.name or False,
+                    presentation_info = {
+                        'name': det.event_track_id.name or False,
+                        'time': schedule.time_schedule or False,
                         'speaker': self._get_speaker_event_for_schedule(det)
                     }
-                    schedule_details.append(details)
-                schedule_info = {
-                    'name': schedule.name,
-                    'time_schedule': schedule.time_schedule,
-                    'detail': schedule.detail,
-                    'schedule_details': schedule_details or False
-                }
-                schedule_info = self._delete_key_null(schedule_info)
-                schedules.append(schedule_info)
+                    details = {
+                        'name': det.name or False,
+                        'time_schedule': schedule.time_schedule or False,
+                        'hour_start':
+                        self._format_float_to_time(det.hour_start) or False,
+                        'hour_end':
+                        self._format_float_to_time(det.hour_end) or False,
+                        'total_hour': det.total_hour or False,
+                        'detail': det.detail or False,
+                        'location': det.room_id.name or False,
+                        'presentation': presentation_info or False
+                    }
+                    schedule_info = self._delete_key_null(details)
+                    schedules.append(schedule_info)
         return schedules
 
     @odoo.http.route(['/users/search'], type='http', auth="user",
@@ -233,3 +232,8 @@ class EventController(odoo.http.Controller):
             'is_confirmed': False,
             'code': 404,
             'message': 'Xác nhận không thành công'}
+
+    def _format_float_to_time(self, float_time):
+        minutes = float_time * 60
+        hours, minutes = divmod(minutes, 60)
+        return "%02d:%02d" % (hours, minutes)
