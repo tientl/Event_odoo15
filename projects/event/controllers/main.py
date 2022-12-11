@@ -175,16 +175,15 @@ class EventController(odoo.http.Controller):
                 for det in schedule.schedule_detail_ids:
                     presentation_info = {
                         'name': det.event_track_id.name or False,
-                        'time': schedule.time_schedule or False,
                         'speaker': self._get_speaker_event_for_schedule(det)
                     }
                     details = {
                         'name': det.name or False,
                         'time_schedule': schedule.time_schedule or False,
-                        'hour_start':
-                        self._format_float_to_time(det.hour_start) or False,
-                        'hour_end':
-                        self._format_float_to_time(det.hour_end) or False,
+                        'hour_start': self._format_float_to_datetime(
+                            det.hour_start, schedule.time_schedule) or False,
+                        'hour_end': self._format_float_to_datetime(
+                            det.hour_end, schedule.time_schedule) or False,
                         'total_hour': det.total_hour or False,
                         'detail': det.detail or False,
                         'location': det.room_id.name or False,
@@ -233,7 +232,7 @@ class EventController(odoo.http.Controller):
             'code': 404,
             'message': 'Xác nhận không thành công'}
 
-    def _format_float_to_time(self, float_time):
+    def _format_float_to_datetime(self, float_time, date):
         minutes = float_time * 60
         hours, minutes = divmod(minutes, 60)
-        return "%02d:%02d" % (hours, minutes)
+        return "%s %02d:%02d:00" % (date, hours, minutes)
