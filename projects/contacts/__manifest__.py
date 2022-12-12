@@ -11,10 +11,12 @@
 This module gives you a quick view of your contacts directory, accessible from your home page.
 You can track your vendors, customers and other contacts.
 """,
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'event'],
     'data': [
         'views/contact_views.xml',
     ],
     'application': True,
+    'installable': True,
+    'auto_install': True,
     'license': 'LGPL-3',
 }

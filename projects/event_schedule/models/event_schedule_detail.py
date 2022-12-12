@@ -36,9 +36,8 @@ class EventScheduleDetail(models.Model):
 
     @api.onchange('hour_start', 'hour_end')
     def _check_hour(self):
-        for schedule in self:
-            if schedule.hour_start > schedule.hour_end:
-                raise UserError(
-                    f'{schedule.name} Giờ bắt đầu đang lớn hơn giờ kết thúc Event!!')
-            if 0 > schedule.hour_start >= 24 and 0 > schedule.hour_end >= 24:
-                raise UserError(f'{schedule.name}: Vui lòng nhập lại giờ!!')
+        if self.hour_start > self.hour_end:
+            raise UserError(
+                f'{self.name} Giờ bắt đầu đang lớn hơn giờ kết thúc Event!!')
+        if 0 > self.hour_start >= 24 and 0 > self.hour_end >= 24:
+            raise UserError(f'{self.name}: Vui lòng nhập lại giờ!!')

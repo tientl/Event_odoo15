@@ -16,17 +16,5 @@ Schedule of event.
     ],
     'installable': True,
     'auto_install': True,
-    'assets': {
-        'web.assets_backend': [
-        ],
-        'web.assets_common': [
-        ],
-        'web.assets_qweb': [
-        ],
-        'web.report_assets_common': [
-        ],
-        'web.report_assets_pdf': [
-        ],
-    },
     'license': 'LGPL-3',
 }
