@@ -25,6 +25,10 @@ class EventSchedule(models.Model):
     count_schedule_detail = fields.Integer(
         string='Count Schedule',
         compute='_compute_count_schedule_detail')
+    event_rating_ids = fields.One2many(
+        comodel_name='event.rating',
+        inverse_name='schedule_id',
+        string='Event Rating')
 
     @api.depends('schedule_detail_ids')
     def _compute_count_schedule_detail(self):

@@ -134,14 +134,14 @@
                 <sheet string="Track">
                     <div class="oe_button_box" name="button_box">
                         <field name="website_url" invisible="1"/>
-                        <button name="%(website_event_track.website_visitor_action_from_track)d"
+                        <!-- <button name="%(website_event_track.website_visitor_action_from_track)d"
                             type="action"
                             class="oe_stat_button"
                             icon="fa-bell"
                             groups="event.group_event_user">
                             <field name="wishlist_visitor_count" string="Wishlisted By" widget="statinfo"/>
-                        </button>
-                        <field name="is_published" widget="website_redirect_button"/>
+                        </button> -->
+                        <field name="is_published" widget="website_redirect_button" invisible="1"/>
                     </div>
                     <field name="legend_blocked" invisible="1"/>
                     <field name="legend_normal" invisible="1"/>
@@ -165,7 +165,7 @@
                                 <span>hours</span>
                             </div>
                             <field name="active" invisible="1"/>
-                            <field name="wishlisted_by_default"/>
+                            <field name="wishlisted_by_default" invisible="1"/>
                         </group>
                         <group>
                             <field name="company_id" invisible="1"/>
@@ -201,9 +201,10 @@
                             </group>
                         </page>
                         <page string="Description" name="description">
-                            <field name="description"/>
+                            <field name="description" invisible='1'/>
+                            <field name="track_description"/>
                         </page>
-                        <page string="Interactivity" name="interactivity">
+                        <!-- <page string="Interactivity" name="interactivity">
                             <group>
                                 <group name="event_track_cta_group">
                                     <field name="website_cta"/>
@@ -221,7 +222,7 @@
                                     </div>
                                 </group>
                             </group>
-                        </page>
+                        </page> -->
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

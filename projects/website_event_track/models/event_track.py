@@ -22,6 +22,8 @@ class Track(models.Model):
     def _get_default_stage_id(self):
         return self.env['event.track.stage'].search([], limit=1).id
 
+    track_description = fields.Text(string='Mô tả')
+
     # description
     name = fields.Char('Title', required=True, translate=True)
     event_id = fields.Many2one('event.event', 'Event', required=True)

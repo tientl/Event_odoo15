@@ -6,7 +6,7 @@
     'description': """
 Schedule of event.
 """,
-    'depends': ['website_event_meet'],
+    'depends': ['website_event_track'],
     'data': [
         'security/ir.model.access.csv',
         'views/event_schedule_views.xml',
