@@ -55,6 +55,8 @@ class EventController(odoo.http.Controller):
                 'id': user.id,
                 'user_name': user.user_name,
                 'password': user.password,
+                'mobile': user.mobile,
+                'email': user.user,
                 'events': data_events
             }
             response = {
@@ -179,6 +181,8 @@ class EventController(odoo.http.Controller):
                         det.event_track_id.track_description or False,
                         'speaker': self._get_speaker_event_for_schedule(det)
                     }
+                    presentation_info = self._delete_key_null(
+                        presentation_info)
                     details = {
                         'name': det.name or False,
                         'time_schedule': schedule.time_schedule or False,
