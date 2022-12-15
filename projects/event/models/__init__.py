@@ -11,3 +11,5 @@ from . import mail_template
 from . import res_config_settings
 from . import res_partner
 from . import ir_attachment
+from . import event_rating
+from . import event_meeting_room

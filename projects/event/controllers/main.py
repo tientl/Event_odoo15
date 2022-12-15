@@ -175,6 +175,8 @@ class EventController(odoo.http.Controller):
                 for det in schedule.schedule_detail_ids:
                     presentation_info = {
                         'name': det.event_track_id.name or False,
+                        'description':
+                        det.event_track_id.track_description or False,
                         'speaker': self._get_speaker_event_for_schedule(det)
                     }
                     details = {

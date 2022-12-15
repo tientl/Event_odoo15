@@ -91,6 +91,22 @@ class EventEvent(models.Model):
     event_description = fields.Text(string='Event Description')
     map_image = fields.Binary(string='Map', attachment=True)
     event_image = fields.Binary(string='Event Avatar', attachment=True)
+    event_rating_ids = fields.One2many(
+        comodel_name='event.rating',
+        inverse_name='event_id',
+        string='Event Rating')
+    event_room_ids = fields.One2many(
+        comodel_name='event.meeting.room',
+        inverse_name='event_id',
+        string='Event Room')
+    count_room = fields.Integer(
+        string='Count Room',
+        compute='_compute_count_room')
+
+    @api.depends('event_room_ids')
+    def _compute_count_room(self):
+        for event in self:
+            event.count_room = len(event.event_room_ids)
 
     def _get_default_stage_id(self):
         return self.env['event.stage'].search([], limit=1)

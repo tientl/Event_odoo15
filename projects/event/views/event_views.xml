@@ -181,6 +181,15 @@
                                     help="Total Registrations for this Event">
                                 <field name="seats_expected" widget="statinfo" string="Attendees"/>
                             </button>
+
+                            <button name="%(event.action_event_room_view)d"
+                                    type="action"
+                                    context="{'default_event_id': active_id}"
+                                    class="oe_stat_button"
+                                    icon="fa-comments-o"
+                                    help="Room Event">
+                                <field name="count_room" widget="statinfo" string="Phòng"/>
+                            </button>
                         </div>
                         <field name="legend_blocked" invisible="1"/>
                         <field name="legend_normal" invisible="1"/>
@@ -254,6 +263,17 @@
                                         <field name="mail_count_done"/>
                                         <field name="mail_state" widget="icon_selection" string=" "
                                             options="{'sent': 'fa fa-check', 'scheduled': 'fa fa-hourglass-half', 'running': 'fa fa-cogs'}"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Event Rating" name="event_rating">
+                                <field name="event_rating_ids" domain="[('is_event', '=', True)]">
+                                    <tree string="Event Rating" create='0'>
+                                        <field name="partner_id"/>
+                                        <field name="evaluate"/>
+                                        <field name="rating"/>
+                                        <field name="create_date"/>
+                                        <field name="is_event" invisible='1'/>
                                     </tree>
                                 </field>
                             </page>
@@ -528,7 +548,7 @@
             <field name="arch" type="xml">
                 <form string="Event Registration">
                     <header>
-                        <button name="action_send_badge_email" string="Send by Email" type="object" states="open,done" class="oe_highlight"/>
+                        <button name="action_send_badge_email" string="Send by Email" type="object" class="oe_highlight"/>
                         <button name="action_confirm" string="Confirm" states="draft" type="object" class="oe_highlight"/>
                         <button name="action_set_done" string="Attended" states="open" type="object" class="oe_highlight"/>
                         <button name="action_set_draft" string="Set To Unconfirmed" states="cancel,done" type="object" />
