@@ -144,7 +144,7 @@ class EventController(odoo.http.Controller):
         if DetailSchedule:
             speakerObj = DetailSchedule.speaker_id
             speaker_info = {
-                    'id': speakerObj.id,
+                    'id': speakerObj.id or False,
                     'name': speakerObj.name or False,
                     'mobile': speakerObj.mobile or False,
                     'email': speakerObj.email or False,
@@ -155,7 +155,8 @@ class EventController(odoo.http.Controller):
                     speakerObj.parent_id.name or False,
                     'function': speakerObj.function or False
                 }
-            speaker = [self._delete_key_null(speaker_info)]
+            if self._delete_key_null(speaker_info):
+                speaker = [self._delete_key_null(speaker_info)]
         return speaker
 
     def _get_url_image(self, model_name, res_id, field):
