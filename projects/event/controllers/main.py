@@ -56,7 +56,7 @@ class EventController(odoo.http.Controller):
                 'user_name': user.user_name,
                 'password': user.password,
                 'mobile': user.mobile,
-                'email': user.user,
+                'email': user.email,
                 'events': data_events
             }
             response = {
