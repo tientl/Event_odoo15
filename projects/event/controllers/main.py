@@ -243,3 +243,23 @@ class EventController(odoo.http.Controller):
         minutes = float_time * 60
         hours, minutes = divmod(minutes, 60)
         return "%s %02d:%02d:00" % (date, hours, minutes)
+
+    @odoo.http.route(['/users/rating'], method=['POST'], type='json',
+                     auth="public", sitemap=False, cors='*', csrf=False)
+    def rating_event(self):
+        data = request.jsonrequest
+        event = request.env['event.event'].sudo().browse(data.get('event_id'))
+        if event:
+            value = {
+                'partner_id': data.get('partner_id', False),
+                'event_id': data.get('event_id', False),
+                'is_event': data.get('is_event', False),
+                'is_schedule': data.get('is_schedule', False),
+                'rating': data.get('rating', 0),
+                'evaluate': data.get('evaluate', False)
+            }
+            request.env['event.rating'].sudo().create(value)
+            return {'code': 200}
+        return {
+            'code': 500,
+            'message': 'Hệ thống đang xảy ra lỗi, vui lòng thử lại sau'}

@@ -28,6 +28,11 @@ class Sponsor(models.Model):
     def _default_sponsor_type_id(self):
         return self.env['event.sponsor.type'].search([], order="sequence desc", limit=1).id
 
+    sponsor_type = fields.Selection(
+        [('hien_vat', 'Hiện vật'), ('hien_kim', 'Hiện kim'),
+         ('maketing', 'Quảng bá'), ('location', 'Cơ sở vật chất')],
+        string="Kiểu tài trợ", default="hien_kim")
+
     event_id = fields.Many2one('event.event', 'Event', required=True)
     sponsor_type_id = fields.Many2one(
         'event.sponsor.type', 'Sponsoring Level',

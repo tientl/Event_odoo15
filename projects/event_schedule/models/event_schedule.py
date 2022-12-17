@@ -3,6 +3,8 @@
 
 from datetime import datetime
 from odoo import api, models, fields
+import pytz
+from odoo.exceptions import UserError
 
 
 class EventSchedule(models.Model):
@@ -51,3 +53,18 @@ class EventSchedule(models.Model):
                 date.day = time_schedule.strftime('%d') or False
                 date.month = 'T' + time_schedule.strftime('%m') or False
                 date.year = time_schedule.strftime('%Y') or False
+
+    @api.onchange('time_schedule')
+    def _check_time_schedule(self):
+        tz = pytz.timezone('Asia/Ho_Chi_Minh')
+        event = self.event_id
+        date_begin = self.convert_datetime_to_date(event.date_begin, tz)
+        date_end = self.convert_datetime_to_date(event.date_end, tz)
+        if not (date_begin <= self.time_schedule <= date_end):
+            raise UserError(
+                'Thời gian lịch trình không đúng với thời gian sự kiện')
+
+    def convert_datetime_to_date(self, value, tz):
+        result = datetime.strftime(
+            pytz.utc.localize(value, is_dst=None).astimezone(tz), '%Y-%m-%d')
+        return fields.Date.from_string(result)

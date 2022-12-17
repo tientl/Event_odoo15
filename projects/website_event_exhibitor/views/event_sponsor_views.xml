@@ -93,7 +93,7 @@
                             <field name="partner_id" string="Partner"/>
                             <field name="email" widget="email" string="Email"
                                 placeholder="e.g. : open.wood.decoration@example.com"/>
-                            <field name="phone" widget="phone" string="Phone" options="{'enable_sms': True}"/>
+                            <field name="phone" widget="phone" string="Phone" options="{'enable_sms': True}" invisible='1'/>
                             <field name="mobile" widget="phone" string="Mobile" options="{'enable_sms': True}"/>
                             <field name="url" widget="url" string="Website"
                                 placeholder="e.g. : https://www.odoo.com"/>
@@ -101,11 +101,12 @@
                         <group>
                             <field name="event_id"/>
                             <field name="sponsor_type_id"/>
-                            <field name="exhibitor_type" required="1"/>
+                            <field name="sponsor_type"/>
+                            <field name="exhibitor_type" required="0" invisible='1'/>
                             <!-- Use website_published because is_published already used and widget conflicts -->
                             <field name="website_published" widget="boolean_toggle"
                                 string="Display in footer"
-                                attrs="{'invisible': [('exhibitor_type', '!=', 'sponsor')]}"/>
+                                attrs="{'invisible': [('exhibitor_type', '!=', 'sponsor')]}" invisible='1'/>
                             <label for="hour_from" string="Opening Hours"
                                 attrs="{'invisible': [('exhibitor_type', '=', 'sponsor')]}"/>
                             <div class="o_row" attrs="{'invisible': [('exhibitor_type', '=', 'sponsor')]}">
