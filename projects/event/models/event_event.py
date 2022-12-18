@@ -91,10 +91,14 @@ class EventEvent(models.Model):
     event_description = fields.Text(string='Event Description')
     map_image = fields.Binary(string='Map', attachment=True)
     event_image = fields.Binary(string='Event Avatar', attachment=True)
-    event_rating_ids = fields.One2many(
+    event_rating_origin_ids = fields.One2many(
         comodel_name='event.rating',
         inverse_name='event_id',
         string='Event Rating')
+    event_rating_ids = fields.One2many(
+        comodel_name='event.rating',
+        inverse_name='event_id',
+        compute='_compute_event_rating_ids')
     event_room_ids = fields.One2many(
         comodel_name='event.meeting.room',
         inverse_name='event_id',
@@ -102,6 +106,13 @@ class EventEvent(models.Model):
     count_room = fields.Integer(
         string='Count Room',
         compute='_compute_count_room')
+
+    @api.depends('event_rating_origin_ids')
+    def _compute_event_rating_ids(self):
+        for event in self:
+            if event.event_rating_origin_ids:
+                event.event_rating_ids = event.event_rating_origin_ids.\
+                    filtered(lambda r: r.is_event)
 
     @api.depends('event_room_ids')
     def _compute_count_room(self):

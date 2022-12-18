@@ -9,7 +9,6 @@ class EventRating(models.Model):
     _description = 'Event rating for registration'
 
     event_id = fields.Many2one(comodel_name='event.event')
-    sub_schedule_id = fields.Many2one(comodel_name='event.schedule.detail')
     partner_id = fields.Many2one('res.partner', string='Registration')
 
     rating = fields.Integer(string='Rating')

@@ -65,7 +65,7 @@ class EventController(odoo.http.Controller):
             }
         else:
             response = {
-                'code': 404,
+                'code': 401,
                 'message': 'Tài khoản hoặc mật khẩu không đúng'}
         return response
 
@@ -258,7 +258,7 @@ class EventController(odoo.http.Controller):
                 'is_schedule': data.get('is_schedule', False),
                 'rating': data.get('rating', 0),
                 'evaluate': data.get('evaluate', False),
-                'sub_schedule_id': data.get('sub_schedule_id', False)
+                'schedule_detail_id': data.get('sub_schedule_id', False)
             }
             request.env['event.rating'].sudo().create(value)
             return {'code': 200}
