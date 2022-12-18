@@ -257,7 +257,8 @@ class EventController(odoo.http.Controller):
                 'is_event': data.get('is_event', False),
                 'is_schedule': data.get('is_schedule', False),
                 'rating': data.get('rating', 0),
-                'evaluate': data.get('evaluate', False)
+                'evaluate': data.get('evaluate', False),
+                'sub_schedule_id': data.get('sub_schedule_id', False)
             }
             request.env['event.rating'].sudo().create(value)
             return {'code': 200}
