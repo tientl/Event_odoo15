@@ -185,6 +185,7 @@ class EventController(odoo.http.Controller):
                     presentation_info = self._delete_key_null(
                         presentation_info)
                     details = {
+                        'id': det.id,
                         'name': det.name or False,
                         'time_schedule': schedule.time_schedule or False,
                         'hour_start': self._format_float_to_datetime(
