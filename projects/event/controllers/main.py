@@ -180,7 +180,8 @@ class EventController(odoo.http.Controller):
                     'id': booth.id,
                     'name': booth.name or False,
                     'email': booth.partner_id.email or False,
-                    'img_url': booth.image_booth or False,
+                    'img_url': self._get_url_image(
+                        booth._name, booth.id, 'image_booth') or False,
                     'company': booth.partner_id.name or False,
                     'level': booth.booth_category_id.name or False,
                     'desc': booth.description or False,
