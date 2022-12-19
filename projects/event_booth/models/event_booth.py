@@ -14,6 +14,8 @@ class EventBooth(models.Model):
         'mail.activity.mixin'
     ]
 
+    image_booth = fields.Binary(string='Ảnh gian hàng')
+    description = fields.Char(string='Mô tả')
     # owner
     event_type_id = fields.Many2one(ondelete='set null', required=False)
     event_id = fields.Many2one('event.event', string='Event', ondelete='cascade', required=True)

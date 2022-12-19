@@ -47,7 +47,8 @@ class EventController(odoo.http.Controller):
                     'sub_schedules': self._get_schedule_event(event),
                     'sponsors': self._get_sponsors_event(event),
                     'registrations': self._get_registrations_event(event),
-                    'speakers': self._get_speakers_event(event)
+                    'speakers': self._get_speakers_event(event),
+                    'booths': self._get_booths_event(event)
                 }
                 data_event = self._delete_key_null(data_event)
                 data_events.append(data_event)
@@ -170,6 +171,23 @@ class EventController(odoo.http.Controller):
             image_url = \
                 f'{URL}/web/image/{attachment.id}?access_token={attachment.access_token}'
         return image_url
+
+    def _get_booths_event(self, EventObj):
+        booths = []
+        if EventObj:
+            for booth in EventObj.event_booth_ids:
+                value_booth = {
+                    'id': booth.id,
+                    'name': booth.name or False,
+                    'email': booth.partner_id.email or False,
+                    'img_url': booth.image_booth or False,
+                    'company': booth.partner_id.name or False,
+                    'level': booth.booth_category_id.name or False,
+                    'desc': booth.description or False,
+                }
+                if self._delete_key_null(value_booth):
+                    booths.append(self._delete_key_null(value_booth))
+        return booths
 
     def _get_schedule_event(self, EventObj):
         schedules = []
