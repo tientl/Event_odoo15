@@ -110,9 +110,11 @@ class EventEvent(models.Model):
     @api.depends('event_rating_origin_ids')
     def _compute_event_rating_ids(self):
         for event in self:
+            value = False
             if event.event_rating_origin_ids:
-                event.event_rating_ids = event.event_rating_origin_ids.\
+                value = event.event_rating_origin_ids.\
                     filtered(lambda r: r.is_event)
+            event.event_rating_ids = value
 
     @api.depends('event_room_ids')
     def _compute_count_room(self):

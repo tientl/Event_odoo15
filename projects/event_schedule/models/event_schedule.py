@@ -60,7 +60,8 @@ class EventSchedule(models.Model):
         event = self.event_id
         date_begin = self.convert_datetime_to_date(event.date_begin, tz)
         date_end = self.convert_datetime_to_date(event.date_end, tz)
-        if not (date_begin <= self.time_schedule <= date_end):
+        if self.time_schedule and \
+                not (date_begin <= self.time_schedule <= date_end):
             raise UserError(
                 'Thời gian lịch trình không đúng với thời gian sự kiện')
 
