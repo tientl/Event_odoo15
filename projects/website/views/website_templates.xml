@@ -198,7 +198,7 @@
     </xpath>
 </template>
 
-<template id="brand_promotion" inherit_id="web.brand_promotion" name="Brand Promotion">
+<!-- <template id="brand_promotion" inherit_id="web.brand_promotion" name="Brand Promotion">
     <xpath expr="//t[@t-call='web.brand_promotion_message']" position="replace">
         <t t-call="web.brand_promotion_message">
             <t t-set="_message">
@@ -207,7 +207,7 @@
             <t t-set="_utm_medium" t-valuef="website"/>
         </t>
     </xpath>
-</template>
+</template> -->
 
 <!-- Navbar -->
 <template id="navbar_toggler" name="Navbar Toggler">
@@ -246,23 +246,23 @@
                     <t t-call="website.navbar_nav">
                         <t t-set="_nav_class" t-valuef="flex-grow-1"/>
                         <!-- Menu -->
-                        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                        <!-- <t t-foreach="website.menu_id.child_id" t-as="submenu">
                             <t t-call="website.submenu">
                                 <t t-set="item_class" t-valuef="nav-item"/>
                                 <t t-set="link_class" t-valuef="nav-link"/>
                             </t>
-                        </t>
+                        </t> -->
                         <!-- Sign In -->
                         <t t-call="portal.placeholder_user_sign_in">
                             <t t-set="_item_class" t-valuef="nav-item ml-lg-auto"/>
                             <t t-set="_link_class" t-valuef="nav-link font-weight-bold"/>
                         </t>
                         <!-- User Dropdown -->
-                        <t t-call="portal.user_dropdown">
+                        <!-- <t t-call="portal.user_dropdown">
                             <t t-set="_user_name" t-value="true"/>
                             <t t-set="_item_class" t-valuef="nav-item dropdown ml-lg-auto"/>
                             <t t-set="_link_class" t-valuef="nav-link font-weight-bold"/>
-                        </t>
+                        </t> -->
                     </t>
 
                     <!-- Language Selector -->
@@ -1315,7 +1315,7 @@
 <template id="option_header_brand_logo" inherit_id="website.placeholder_header_brand" name="Header Brand Logo" active="True">
     <xpath expr="//*[@id='o_fake_navbar_brand']" position="replace">
         <a href="/" t-attf-class="navbar-brand logo #{_link_class}">
-            <span t-field="website.logo" t-options="{'widget': 'image'}" role="img" t-att-aria-label="'Logo of %s' % website.name" t-att-title="website.name"/>
+            <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo" style="max-height:120px; max-width: 100%; width:auto"/>
         </a>
     </xpath>
 </template>
@@ -1378,7 +1378,7 @@
 </template>
 
 <!-- Footer templates -->
-<template id="footer_custom" inherit_id="website.layout" name="Default" active="True">
+<!-- <template id="footer_custom" inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
             <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Text">
@@ -1432,7 +1432,7 @@
             </section>
         </div>
     </xpath>
-</template>
+</template> -->
 
 <template id="template_footer_descriptive" inherit_id="website.layout" name="Descriptive" active="False">
     <xpath expr="//div[@id='footer']" position="replace">
@@ -1805,7 +1805,7 @@
 
 <template id="footer_copyright_company_name" inherit_id="website.layout">
     <xpath expr="//footer//span[hasclass('o_footer_copyright_name')]" position="replace">
-        <span class="o_footer_copyright_name mr-2">Copyright &amp;copy; Company name</span>
+        <span class="o_footer_copyright_name mr-2">Người phát triển &amp;copy; Lê Trần Tiến</span>
     </xpath>
 </template>
 
@@ -1980,7 +1980,7 @@
 </template>
 
 <template id="website.placeholder_header_call_to_action" name="Placeholder Header Call to Action"/>
-<template id="website.header_call_to_action" inherit_id="website.placeholder_header_call_to_action" name="Header Call to Action" active="True">
+<!-- <template id="website.header_call_to_action" inherit_id="website.placeholder_header_call_to_action" name="Header Call to Action" active="True">
     <xpath expr="." position="inside">
         <div t-attf-class="oe_structure oe_structure_solo #{_div_classes}">
             <section class="s_text_block" data-snippet="s_text_block" data-name="Text">
@@ -1990,7 +1990,7 @@
             </section>
         </div>
     </xpath>
-</template>
+</template> -->
 
 <template id="record_cover">
     <t t-set="_cp" t-value="_cp or json.loads(_record.cover_properties)"/>

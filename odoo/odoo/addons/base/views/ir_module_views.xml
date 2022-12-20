@@ -39,6 +39,7 @@
                         'ilike', self)]" string="Module"/>
                     <filter name="app" string="Apps" domain="[('application', '=', True)]"/>
                     <filter name="extra" string="Extra" domain="[('application', '=', False)]"/>
+                    <filter name="event" string="Sự kiện" domain="[('name', 'in', ['website_event', 'event'])]"/>
                     <separator/>
                     <filter name="installed" string="Installed" domain="[('state', 'in', ['installed', 'to upgrade', 'to remove'])]"/>
                     <filter name="not_installed" string="Not Installed" domain="[('state', 'in', ['uninstalled', 'uninstallable', 'to install'])]"/>
@@ -216,7 +217,7 @@
             <field name="name">Apps</field>
             <field name="res_model">ir.module.module</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="context">{'search_default_app':1}</field>
+            <field name="context">{'search_default_event':1}</field>
             <field name="search_view_id" ref="view_module_filter"/>
             <field name="help" type="html">
               <p class="o_view_nocontent_empty_folder">

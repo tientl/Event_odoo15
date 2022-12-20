@@ -12,11 +12,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible': [('id', '=', False)]}"/>
+                    <field name="image_booth" widget="image" class="oe_avatar"/>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" string="Name"/>
-                        <h1><field name="name" placeholder="e.g. First Booth Alley 1"/></h1>
+                        <h1><field name="name" placeholder="Tên gian hàng"/></h1>
                     </div>
-                    <field name="image_booth" widget="image" class="oe_avatar"/>
                     <group>
                         <group name="details">
                             <field name="booth_category_id"/>
@@ -26,7 +26,7 @@
                             <field name="partner_id"/>
                             <field name="contact_name"/>
                             <field name="contact_email" widget="email"/>
-                            <field name="contact_phone" widget="phone"/>
+                            <field name="contact_phone" widget="phone" invisible='1'/>
                             <field name="contact_mobile" widget="phone"/>
                         </group>
                     </group>
@@ -147,7 +147,7 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="name" placeholder="e.g. First Booth Alley 1"/>
+                    <field name="name" placeholder="Tên gian hàng"/>
                     <field name="booth_category_id"/>
                 </group>
             </form>

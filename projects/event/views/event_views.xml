@@ -210,9 +210,15 @@
                                     <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
                                     <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_begin'}"/>
                                 </div>
-                                <field name="date_tz"/>
-                                <field name="event_type_id" string="Template" options="{'no_create':True}"/>
+                                <field name="date_tz" invisible='1'/>
+                                <field name="event_type_id" string="Template" options="{'no_create':True}" invisible='1'/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_quick_create': True}"/>
+                                <div colspan="2" class="o_checkbox_optional_field">
+                                    <label for="seats_limited" string="Limit Registrations"/>
+                                    <field name="seats_limited"/>
+                                    <span attrs="{'invisible': [('seats_limited', '=', False)], 'required': [('seats_limited', '=', False)]}">to <field name="seats_max" class="oe_inline"/> Attendees</span>
+                                </div>
+                                <field name="auto_confirm"/>
                             </group>
                             <group>
                                 <field name="organizer_id"/>
@@ -222,12 +228,6 @@
                                     domain= "[('is_company', '=', True )]"
                                     context="{'show_address': 1}"
                                     options='{"always_reload": True}'/>
-                                <div colspan="2" class="o_checkbox_optional_field">
-                                    <label for="seats_limited" string="Limit Registrations"/>
-                                    <field name="seats_limited"/>
-                                    <span attrs="{'invisible': [('seats_limited', '=', False)], 'required': [('seats_limited', '=', False)]}">to <field name="seats_max" class="oe_inline"/> Attendees</span>
-                                </div>
-                                <field name="auto_confirm"/>
                             </group>
                         </group>
                         <notebook>
@@ -576,14 +576,14 @@
                                     ]"
                                     attrs="{'invisible': [('event_id', '=', False)]}"
                                     options="{'no_open': True, 'no_create': True}"/>
-                                <field name="date_open" groups="base.group_no_one"/>
+                                <!-- <field name="date_open" groups="base.group_no_one"/> -->
                                 <field name="date_closed" groups="base.group_no_one"/>
                             </group>
-                            <group string="Marketing" name="utm_link" groups="base.group_no_one">
+                            <!-- <group string="Marketing" name="utm_link" groups="base.group_no_one">
                                 <field name="utm_campaign_id"/>
                                 <field name="utm_medium_id"/>
                                 <field name="utm_source_id"/>
-                            </group>
+                            </group> -->
                         </group>
                     </sheet>
                     <div class="oe_chatter">

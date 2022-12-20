@@ -178,8 +178,8 @@ class EventController(odoo.http.Controller):
             for booth in EventObj.event_booth_ids:
                 value_booth = {
                     'id': booth.id,
-                    'name': booth.name or False,
-                    'email': booth.partner_id.email or False,
+                    'name': booth.contact_name or False,
+                    'email': booth.contact_email or False,
                     'img_url': self._get_url_image(
                         booth._name, booth.id, 'image_booth') or False,
                     'company': booth.partner_id.name or False,
