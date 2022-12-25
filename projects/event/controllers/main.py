@@ -58,8 +58,11 @@ class EventController(odoo.http.Controller):
                 'password': user.password,
                 'mobile': user.mobile,
                 'email': user.email,
-                'events': data_events
+                'events': data_events,
+                'avatar_url': self._get_url_image(
+                    user._name, user.id, 'image_1920')
             }
+            data_user = self._delete_key_null(data_user)
             response = {
                 'data': data_user,
                 'code': 200
@@ -284,3 +287,14 @@ class EventController(odoo.http.Controller):
         return {
             'code': 500,
             'message': 'Hệ thống đang xảy ra lỗi, vui lòng thử lại sau'}
+
+    @odoo.http.route(['/users/change_password'], method=['POST'], type='json',
+                     auth="public", sitemap=False, cors='*', csrf=False)
+    def change_password(self):
+        data = request.jsonrequest
+        user = request.env['res.partner'].sudo().browse(data.get('user_id'))
+        new_pass = data.get('new_pass', False)
+        if user and new_pass:
+            user.write({'password': new_pass})
+            return {'code': 200, 'message': 'Đổi mật khẩu thành công'}
+        return {'code': 402, 'message': 'Đổi mật khẩu thất bại'}
