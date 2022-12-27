@@ -54,13 +54,15 @@ class EventController(odoo.http.Controller):
                 data_events.append(data_event)
             data_user = {
                 'id': user.id,
+                'full_name': user.name,
                 'user_name': user.user_name,
                 'password': user.password,
                 'mobile': user.mobile,
                 'email': user.email,
-                'events': data_events,
                 'avatar_url': self._get_url_image(
-                    user._name, user.id, 'image_1920')
+                    user._name, user.id, 'image_1920'),
+                'is_admin': user.is_receptionist,
+                'events': data_events
             }
             data_user = self._delete_key_null(data_user)
             response = {

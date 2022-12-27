@@ -15,6 +15,7 @@ class ResPartner(models.Model):
         default=False,
         store=False
     )
+    is_receptionist = fields.Boolean(string='Lễ tân')
 
     @api.onchange('email')
     def _onchange_user_pasword(self):
