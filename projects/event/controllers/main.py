@@ -1,3 +1,4 @@
+from doctest import FAIL_FAST
 import odoo
 import logging
 import json
@@ -64,6 +65,20 @@ class EventController(odoo.http.Controller):
                 'is_admin': user.is_receptionist,
                 'events': data_events
             }
+            if user.is_receptionist:
+                all_event = request.env['event.event'].sudo().search([])
+                events = []
+                for event in all_event:
+                    value = {
+                        'event_id': event.id or False,
+                        'event_name': event.name or False,
+                        'registrations': self._get_registrations_event(event),
+                    }
+                    events.append(value)
+                data_user = {
+                    'is_admin': user.is_receptionist,
+                    'events': events
+                }
             data_user = self._delete_key_null(data_user)
             response = {
                 'data': data_user,
@@ -119,7 +134,9 @@ class EventController(odoo.http.Controller):
                         'res.partner', reg.partner_id.id, 'image_1920'),
                     'company': reg.partner_id.parent_id.name or False,
                     'ticket': reg.event_ticket_id.name or False,
-                    'function': reg.partner_id.function or False
+                    'function': reg.partner_id.function or False,
+                    'is_check_in': reg.date_closed and True or False,
+                    'checkin_time': reg.date_closed or False
                 }
                 resgistration = self._delete_key_null(resgistration)
                 Registrations.append(resgistration)
