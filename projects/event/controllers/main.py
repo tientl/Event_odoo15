@@ -1,4 +1,3 @@
-from doctest import FAIL_FAST
 import odoo
 import logging
 import json
@@ -70,8 +69,17 @@ class EventController(odoo.http.Controller):
                 events = []
                 for event in all_event:
                     value = {
-                        'event_id': event.id or False,
-                        'event_name': event.name or False,
+                        'id': event.id,
+                        'name': event.name,
+                        'date_begin': event.date_begin,
+                        'date_end': event.date_end,
+                        'company_name': event.organizer_id.name,
+                        'address': event.address_id.contact_address_complete,
+                        'map_image': self._get_url_image(
+                            event._name, event.id, 'map_image'),
+                        'event_description': event.event_description,
+                        'event_image': self._get_url_image(
+                            event._name, event.id, 'event_image'),
                         'registrations': self._get_registrations_event(event),
                     }
                     events.append(value)
