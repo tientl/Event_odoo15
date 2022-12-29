@@ -339,9 +339,13 @@ class EventController(odoo.http.Controller):
                 lambda u: u.partner_id.id == data.get('user_id'))
             if user:
                 user.write({'state': 'done', 'date_closed': datetime.now()})
-                return {
-                    'code': 200,
-                    'message': 'Quét mã thành công'
-                    }
+                info = {
+                    'full_name': user.partner_id.name,
+                    'position': user.partner_id.function,
+                    'company': user.partner_id.parent_id.name
+                }
+                info = self._delete_key_null(info)
+                info.update({'code': 200, 'message': 'Quét mã thành công'})
+                return info
         return {'code': 402,
                 'message': 'Quét mã thất bại'}
