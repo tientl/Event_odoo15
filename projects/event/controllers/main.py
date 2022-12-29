@@ -1,3 +1,5 @@
+from datetime import datetime
+from tkinter import E
 import odoo
 import logging
 import json
@@ -325,3 +327,21 @@ class EventController(odoo.http.Controller):
             user.write({'password': new_pass})
             return {'code': 200, 'message': 'Đổi mật khẩu thành công'}
         return {'code': 402, 'message': 'Đổi mật khẩu thất bại'}
+
+    @odoo.http.route(['/users/scan_qr'], method=['POST'], type='json',
+                     auth="public", sitemap=False, cors='*', csrf=False)
+    def scan_qr(self):
+        data = request.jsonrequest
+        event = request.env['event.event'].sudo().search([
+            ('id', '=', data.get('event_id'))])
+        if event:
+            user = event.registration_ids.filtered(
+                lambda u: u.partner_id.id == data.get('user_id'))
+            if user:
+                user.write({'state': 'done', 'date_closed': datetime.now()})
+                return {
+                    'code': 200,
+                    'message': 'Quét mã thành công'
+                    }
+        return {'code': 402,
+                'message': 'Quét mã thất bại'}
