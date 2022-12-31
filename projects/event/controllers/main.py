@@ -1,4 +1,5 @@
 from datetime import datetime
+from doctest import FAIL_FAST
 from tkinter import E
 import odoo
 import logging
@@ -28,9 +29,8 @@ class EventController(odoo.http.Controller):
             for event in events:
                 state_user = event.registration_ids.filtered(
                     lambda e: e.partner_id == user).state
-                if state_user == 'draft':
-                    state = False
-                elif state_user == 'open':
+                state = False
+                if state_user != 'draft':
                     state = True
 
                 data_event = {
