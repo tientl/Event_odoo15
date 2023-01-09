@@ -22,51 +22,52 @@ class EventController(odoo.http.Controller):
             ('user_name', '=', data['user_name']),
             ('password', '=', data['password'])])
         if user:
-            data_events = []
-            events = request.env['event.event'].sudo().search([
-                ('registration_ids.partner_id', 'child_of', user.ids)
-            ])
-            for event in events:
-                state_user = event.registration_ids.filtered(
-                    lambda e: e.partner_id == user).state
-                state = False
-                if state_user != 'draft':
-                    state = True
+            if not user.is_receptionist:
+                data_events = []
+                events = request.env['event.event'].sudo().search([
+                    ('registration_ids.partner_id', 'child_of', user.ids)
+                ])
+                for event in events:
+                    state_user = event.registration_ids.filtered(
+                        lambda e: e.partner_id == user).state
+                    state = False
+                    if state_user != 'draft':
+                        state = True
 
-                data_event = {
-                    'id': event.id,
-                    'name': event.name,
-                    'date_begin': event.date_begin,
-                    'date_end': event.date_end,
-                    'company_name': event.organizer_id.name,
-                    'is_confirm': state,
-                    'address': event.address_id.contact_address_complete,
-                    'map_image': self._get_url_image(
-                        event._name, event.id, 'map_image'),
-                    'event_description': event.event_description,
-                    'event_image': self._get_url_image(
-                        event._name, event.id, 'event_image'),
-                    'sub_schedules': self._get_schedule_event(event),
-                    'sponsors': self._get_sponsors_event(event),
-                    'registrations': self._get_registrations_event(event),
-                    'speakers': self._get_speakers_event(event),
-                    'booths': self._get_booths_event(event)
+                    data_event = {
+                        'id': event.id,
+                        'name': event.name,
+                        'date_begin': event.date_begin,
+                        'date_end': event.date_end,
+                        'company_name': event.organizer_id.name,
+                        'is_confirm': state,
+                        'address': event.address_id.contact_address_complete,
+                        'map_image': self._get_url_image(
+                            event._name, event.id, 'map_image'),
+                        'event_description': event.event_description,
+                        'event_image': self._get_url_image(
+                            event._name, event.id, 'event_image'),
+                        'sub_schedules': self._get_schedule_event(event),
+                        'sponsors': self._get_sponsors_event(event),
+                        'registrations': self._get_registrations_event(event),
+                        'speakers': self._get_speakers_event(event),
+                        'booths': self._get_booths_event(event)
+                    }
+                    data_event = self._delete_key_null(data_event)
+                    data_events.append(data_event)
+                data_user = {
+                    'id': user.id,
+                    'full_name': user.name,
+                    'user_name': user.user_name,
+                    'password': user.password,
+                    'mobile': user.mobile,
+                    'email': user.email,
+                    'avatar_url': self._get_url_image(
+                        user._name, user.id, 'image_1920'),
+                    'is_admin': user.is_receptionist,
+                    'events': data_events
                 }
-                data_event = self._delete_key_null(data_event)
-                data_events.append(data_event)
-            data_user = {
-                'id': user.id,
-                'full_name': user.name,
-                'user_name': user.user_name,
-                'password': user.password,
-                'mobile': user.mobile,
-                'email': user.email,
-                'avatar_url': self._get_url_image(
-                    user._name, user.id, 'image_1920'),
-                'is_admin': user.is_receptionist,
-                'events': data_events
-            }
-            if user.is_receptionist:
+            else:
                 all_event = request.env['event.event'].sudo().search([])
                 events = []
                 for event in all_event:
