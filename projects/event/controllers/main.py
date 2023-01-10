@@ -1,6 +1,4 @@
 from datetime import datetime
-from doctest import FAIL_FAST
-from tkinter import E
 import odoo
 import logging
 import json
@@ -85,7 +83,7 @@ class EventController(odoo.http.Controller):
                             event._name, event.id, 'event_image'),
                         'registrations': self._get_registrations_event(event),
                     }
-                    events.append(value)
+                    events.append(self._delete_key_null(value))
                 data_user = {
                     'is_admin': user.is_receptionist,
                     'events': events
